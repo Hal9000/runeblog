@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require_relative './wordiness'
+require_relative '../lib/wordiness'
 
 def handle_command
   case @cmd

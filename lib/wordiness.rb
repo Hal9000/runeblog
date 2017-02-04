@@ -17,9 +17,11 @@ data
 
 =end
 
+require 'rubygems'
+
 require 'ostruct'
 
-require_relative '../livetext/livetext'
+require 'livetext'
 
 ### def import
 
