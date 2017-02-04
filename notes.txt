@@ -1,0 +1,45 @@
+Work flow: Make a post, publish it
+
+Publishing involves:
+  - process text
+  - push into perspectives
+  - link into blog history
+  - scp to server
+
+
+features:
+  - youtube
+  - gist
+  - wikipedia?
+  - render inset quote as graphics?
+  - 
+
+Logic flow
+----------
+
+Post
+----
+Create a blog post
+Process it
+Link it
+Upload to server
+
+Edit (name)
+----
+Edit
+Process
+Redeploy
+
+Delete (name)
+------
+Mark deleted
+Relink
+Redeploy
+
+
+Issues:
+-------
+Leftover junk files?
+How form slug?
+How delete files?
+How embed images, links, etc.?

@@ -1,0 +1,31 @@
+#!/usr/bin/env ruby
+
+$: << "~/bin"
+
+require "liveblog"
+
+# system("vi src/#{@fname}")
+# system("livetext src/#{@fname}")
+# out = @fname.sub(/.lt$/, ".html")
+# system("open perspectives/computing/compiled/#{out}")
+
+
+def redeploy(per)
+  puts "Redeploying:"
+  server, dir = @deployment[per]
+  cmd = "scp #{@list[per].join(' ')} root@#{server}:#{dir}"
+  puts cmd.gsub(/ /, "\n\t")
+  system cmd
+end
+
+per = ARGV.first || abort("Need perspective parameter")
+
+init_liveblog
+
+@list = {per => []}
+@list[per] = Dir["perspectives/#{per}/compiled/**"]
+
+generate_index(per)
+
+redeploy(per)
+ 
