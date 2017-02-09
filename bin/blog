@@ -10,6 +10,7 @@ def handle_command
     when "new post";  new_post  # same as above
     when "new view";  new_view(@arg)
     when "lsv", "list views"; list_views
+    when "import";    import(@arg)
     else
       puts "Huh? I don't know #{@cmd}"
   end

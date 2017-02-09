@@ -23,10 +23,6 @@ require 'ostruct'
 
 require 'livetext'
 
-### def import
-
-def import
-end
 
 ### ask
 
@@ -120,7 +116,9 @@ end
 def link_post_view(view)
   # Create dir using slug (index.html, metadata?)
   dir = "#{@config.root}/views/#{view}/#@slug"
-  system("mkdir -p #{dir}")
+  cmd = "mkdir -p #{dir}"
+  puts "Running: #{cmd}"
+  system(cmd)
   File.write("#{dir}/metadata.yaml", @meta.to_yaml)
   File.write("#{dir}/index.html", @meta.body)
   # Add header/trailer to post index
@@ -172,6 +170,25 @@ def new_view(arg = nil)
   @config.views << arg
 end
 
+### import
+
+def import(arg = nil)
+  arg = nil if arg == ""
+  arg ||= ask("Filename: ")  # check validity later
+  name = arg
+  grep = `grep ^.title #{name}`
+  @title = grep.sub(/^.title /, "")
+  @slug = make_slug
+  @fname = @slug + ".ltx"
+  system("cp #{name} #{@config.root}/src/#@fname")
+  edit_post
+  process_post
+  if publish?
+    link_post
+    publish_post
+  end
+end
+
 ### new_post
 
 def new_post
@@ -188,4 +205,4 @@ def new_post
     publish_post
   end
 end
-  # check validity later
+
