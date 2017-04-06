@@ -1,16 +1,20 @@
 #!/usr/bin/env ruby
 
-require_relative '../lib/wordiness'
+$: << "./lib"
 
-def handle_command
+require 'runeblog'
+
+def execute_command
   case @cmd
-    when "h", "help"; help
-    when "q", "quit"; exit
-    when "p", "post"; new_post
-    when "new post";  new_post  # same as above
-    when "new view";  new_view(@arg)
+    when "h", "help";         help
+    when "q", "quit";         exit
+    when "p", "post";         new_post
+    when "new post";          new_post  # same as above
+    when "new view";          new_view(@arg)
     when "lsv", "list views"; list_views
-    when "import";    import(@arg)
+    when "import post";       import(@arg)
+    when "relink";            relink
+    when "rebuild";           rebuild
     else
       puts "Huh? I don't know #{@cmd}"
   end
@@ -27,6 +31,8 @@ def help
      list views   List all views available
      lsv          Same as: list views
      new view     Create a new view
+     relink       Regenerate index for all views
+     rebuild      Regenerate all posts and relink
   EOS
 end
 
@@ -37,16 +43,16 @@ STDOUT.sync = true
 @cmd = ARGV[0..1].join(" ")
 @arg = ARGV[2]
 
-if ! @cmd.empty?
-  file = File.open("/dev/tty")
-  STDIN.reopen(file)
-  handle_command
-  exit
-else
+if @cmd.empty?   # REPL
   read_config
   loop do
     print "blog> "
     @cmd = gets.chomp.gsub(/ +/, " ") rescue abort("\n")
-    handle_command
+    execute_command
   end
+else  # one command
+  read_config
+  file = File.open("/dev/tty")
+  STDIN.reopen(file)    # avoid ARGF dumbness
+  execute_command
 end

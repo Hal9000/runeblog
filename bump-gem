@@ -1,0 +1,42 @@
+#!/usr/bin/env ruby
+
+system("vi lib/runeblog.rb +3")
+
+require 'date'
+
+$: << "./lib"
+
+require "runeblog"
+
+today = Date.today.strftime("%Y-%m-%d")
+version = RuneBlog::VERSION
+
+system("git pull")
+gs = `git status 2>&1`
+
+if gs =~ /not staged for commit/
+  puts gs
+  puts "\n\n Possible bad git status. Continue? (y/n)"
+  resp = gets.chomp
+  case resp 
+    when "y"
+      system("git add -u")
+      print "Commit message = "
+      msg = gets.chomp
+      system("git commit -m '#{msg}' && git push")
+      puts "Now continuing..."
+    else         # assume "no"
+      puts "Exiting.\n "
+      exit
+  end
+else
+end
+
+update = <<-EOF
+  gem build runeblog.gemspec && 
+  gem push runeblog-*.gem && 
+  gem uninstall -x runeblog && 
+  gem install runeblog
+EOF
+system(update)
+
