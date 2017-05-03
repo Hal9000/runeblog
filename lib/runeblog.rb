@@ -1,6 +1,6 @@
 
 class RuneBlog
-  VERSION = "0.0.1"
+  VERSION = "0.0.2"
 end
 
 # FIXME lots of structure changes
