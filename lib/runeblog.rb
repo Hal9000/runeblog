@@ -1,6 +1,8 @@
 
 class RuneBlog
-  VERSION = "0.0.2"
+  VERSION = "0.0.3"
+
+  Path  = File.expand_path(File.join(File.dirname(__FILE__)))
 end
 
 # FIXME lots of structure changes
@@ -80,6 +82,14 @@ def read_config
   @config.root = root
   @config.views = dirs
   @config.sequence = File.read(root + "/sequence").to_i
+rescue
+  STDERR.puts "No config file found. Create a new blog?"
+  resp = gets.chomp
+  if resp.downcase == "y"
+    blog_new!
+    STDERR.puts "Created. Now run again."
+  end
+  exit
 end
 
 ### create_empty_post
