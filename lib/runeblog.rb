@@ -1,8 +1,6 @@
 
 class RuneBlog
-  VERSION = "0.0.6"
-
-  puts __FILE__
+  VERSION = "0.0.8"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
 end
@@ -32,7 +30,7 @@ data
 
 require 'rubygems'
 require 'ostruct'
-require 'livetext'
+# require 'livetext'
 
 
 ### ask

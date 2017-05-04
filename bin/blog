@@ -52,6 +52,9 @@ if @cmd.empty?   # REPL
   loop do
     print "blog> "
     @cmd = gets.chomp.gsub(/ +/, " ") rescue abort("\n")
+    words = @cmd.split
+    @cmd = words[0..1].join(" ")
+    @arg = words[2]
     execute_command
   end
 else  # one command
