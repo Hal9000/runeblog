@@ -1,6 +1,6 @@
 
 class RuneBlog
-  VERSION = "0.0.3"
+  VERSION = "0.0.4"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
 end
@@ -82,13 +82,13 @@ def read_config
   @config.root = root
   @config.views = dirs
   @config.sequence = File.read(root + "/sequence").to_i
-rescue
-  STDERR.puts "No config file found. Create a new blog?"
-  resp = gets.chomp
-  if resp.downcase == "y"
-    blog_new!
-    STDERR.puts "Created. Now run again."
+rescue => err
+  if root != "myblog"
+    raise err
   end
+
+  new_blog!
+  STDERR.puts "Created. Now run again."
   exit
 end
 
@@ -252,6 +252,13 @@ def list_views
   puts @config.views
 end
 
+### change_view
+
+def change_view(arg = nil)
+  raise "view #{arg} does not exist" unless @config.views.include?(arg)
+  @view = arg
+end
+
 ### new_view
 
 def new_view(arg = nil)
@@ -262,6 +269,10 @@ def new_view(arg = nil)
   dir = @config.root + "/views/" + arg
   cmd = "mkdir -p #{dir}/custom"
   system(cmd)
+  File.write("#{dir}/custom/blog_header.html",  RuneBlog::BlogHeader)
+  File.write("#{dir}/custom/blog_trailer.html", RuneBlog::BlogTrailer)
+  File.write("#{dir}/custom/post_header.html",  RuneBlog::PostHeader)
+  File.write("#{dir}/custom/post_trailer.html", RuneBlog::PostTrailer)
   @config.views << arg
 end
 
@@ -300,5 +311,93 @@ def new_post
     link_post(@meta)
     publish_post
   end
+end
+
+### list_posts
+
+def list_posts
+  system("ls -l #{@config.root}/views/#@view/")
+end
+
+
+### templates
+
+class RuneBlog
+
+  # Default BlogHeader: TITLE, IMAGE
+
+  BlogHeader = <<-EOF
+<html>
+<body background=speckle-texture-vector.jpg>
+
+<title>TITLE</title>
+
+<table>
+  <tr>
+    <td>
+        <img src=IMAGE.jpg width=400 height=300>
+    </td>
+    <td>
+      <h3>Yet another blog by Hal Fulton</h3>
+      <br>
+      <br>
+      <b>Note</b>: I can never find a blogging engine I like! <br>
+      For now, this will just be a set of static pages.
+      <br>
+      <br>
+      If you want to comment, just <a href=mailto:rubyhacker@gmail.com>email me</a>.
+    </td>
+  </tr>
+</table>
+
+<hr>
+  EOF
+
+  # Default BlogTrailer
+
+  BlogTrailer = <<-EOF
+  EOF
+
+  # Default PostHeader
+
+  PostHeader = <<-EOF
+<html>
+
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1176481582378716',
+      xfbml      : true,
+      version    : 'v2.4'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+<body>
+<div
+  class="fb-like"
+  data-share="true"
+  data-width="450"
+  data-show-faces="true">
+</div>
+
+<hr>
+  EOF
+
+  # Default PostTrailer: BACK, HOME
+
+  PostTrailer = <<-EOF
+<hr>
+<a href="http://rubyhacker.com/BACK" style="text-decoration: none">Back</a>
+<a href="http://rubyhacker.com/HOME" style="text-decoration: none">Home</a>
+  EOF
 end
 

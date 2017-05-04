@@ -10,8 +10,10 @@ def execute_command
     when "q", "quit";         exit
     when "p", "post";         new_post
     when "new post";          new_post  # same as above
+    when "list posts", "lsp"; list_posts
     when "new view";          new_view(@arg)
     when "lsv", "list views"; list_views
+    when "view", "v";         change_view(@arg)
     when "import post";       import(@arg)
     when "relink";            relink
     when "rebuild";           rebuild
