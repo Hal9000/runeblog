@@ -1,11 +1,7 @@
 
 class RuneBlog
-  VERSION = "0.0.10"
+  VERSION = "0.0.11"
 
-  puts __FILE__
-  puts File.dirname(__FILE__)
-  puts File.join(File.dirname(__FILE__))
-  puts File.expand_path(File.join(File.dirname(__FILE__)))
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
 end
 
