@@ -5,6 +5,7 @@ $: << "./lib"
 require 'runeblog'
 
 def execute_command
+  puts "CMD = #@cmd"
   case @cmd
     when "h", "help";         help
     when "q", "quit";         exit
