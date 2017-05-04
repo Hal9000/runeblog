@@ -23,4 +23,6 @@ Gem::Specification.new do |s|
   s.files       =  main + misc + test
   s.homepage    = 'https://github.com/Hal9000/runeblog'
   s.license     = "Ruby's license"
+  puts "Files:"
+  puts s.files
 end
