@@ -13,10 +13,11 @@ def execute_command
     when "list posts", "lsp"; list_posts
     when "new view";          new_view(@arg)
     when "lsv", "list views"; list_views
-    when "view", "v";         change_view(@arg)
+    when "change view";       change_view(@arg)
     when "import post";       import(@arg)
     when "relink";            relink
     when "rebuild";           rebuild
+    when "version";           puts RuneBlog::VERSION
     else
       puts "Huh? I don't know #{@cmd}"
   end
