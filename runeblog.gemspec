@@ -14,9 +14,13 @@ Gem::Specification.new do |s|
   s.authors     = ["Hal Fulton"]
   s.email       = 'rubyhacker@gmail.com'
   s.executables << "blog"
+
+  File.write("data/VERSION", "RuneBlog v #{s.version}   #{s.date}")
   
   # Files...
-  main = Find.find("bin").to_a + Find.find("lib").to_a
+  main = Find.find("bin").to_a + 
+         Find.find("lib").to_a + 
+         Find.find("data").to_a
   misc = %w[./README.lt3 ./README.md runeblog.gemspec]
   test = Find.find("test").to_a
 

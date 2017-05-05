@@ -1,8 +1,14 @@
 
 class RuneBlog
-  VERSION = "0.0.11"
+  VERSION = "0.0.12"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
+  DefaultData = Path + "/../data"
+
+  BlogHeader  = File.read(DefaultData + "/blog_header.html")  rescue "not found"
+  BlogTrailer = File.read(DefaultData + "/blog_trailer.html") rescue "not found"
+  PostHeader  = File.read(DefaultData + "/post_header.html")  rescue "not found"
+  PostTrailer = File.read(DefaultData + "/post_trailer.html") rescue "not found"
 end
 
 # FIXME lots of structure changes
@@ -47,9 +53,9 @@ def new_blog!
   unless File.exist?(".blog")
     yn = ask("No .blog found. Create new blog?")
     if yn.upcase == "Y"
-      system("mkdir data")
-      File.open(".blog", "w") {|f| f.puts data }
-      File.open("data/sequence", "w") {|f| f.puts 0 }
+      #-- what if data already exists?
+      system("cp -r #{DefaultData} .")
+      File.open(".blog", "w") {|f| f.puts "data" }
     end
   end
 end
@@ -316,7 +322,9 @@ end
 ### list_posts
 
 def list_posts
-  system("ls -l #{@config.root}/views/#@view/")
+  Dir.chdir("#{@config.root}/views/#@view/")
+  system("ls -d 0*")
+  puts
 end
 
 
@@ -324,80 +332,5 @@ end
 
 class RuneBlog
 
-  # Default BlogHeader: TITLE, IMAGE
-
-  BlogHeader = <<-EOF
-<html>
-<body background=speckle-texture-vector.jpg>
-
-<title>TITLE</title>
-
-<table>
-  <tr>
-    <td>
-        <img src=IMAGE.jpg width=400 height=300>
-    </td>
-    <td>
-      <h3>Yet another blog by Hal Fulton</h3>
-      <br>
-      <br>
-      <b>Note</b>: I can never find a blogging engine I like! <br>
-      For now, this will just be a set of static pages.
-      <br>
-      <br>
-      If you want to comment, just <a href=mailto:rubyhacker@gmail.com>email me</a>.
-    </td>
-  </tr>
-</table>
-
-<hr>
-  EOF
-
-  # Default BlogTrailer
-
-  BlogTrailer = <<-EOF
-  EOF
-
-  # Default PostHeader
-
-  PostHeader = <<-EOF
-<html>
-
-<script>
-  window.fbAsyncInit = function() {
-    FB.init({
-      appId      : '1176481582378716',
-      xfbml      : true,
-      version    : 'v2.4'
-    });
-  };
-
-  (function(d, s, id){
-     var js, fjs = d.getElementsByTagName(s)[0];
-     if (d.getElementById(id)) {return;}
-     js = d.createElement(s); js.id = id;
-     js.src = "//connect.facebook.net/en_US/sdk.js";
-     fjs.parentNode.insertBefore(js, fjs);
-   }(document, 'script', 'facebook-jssdk'));
-</script>
-
-<body>
-<div
-  class="fb-like"
-  data-share="true"
-  data-width="450"
-  data-show-faces="true">
-</div>
-
-<hr>
-  EOF
-
-  # Default PostTrailer: BACK, HOME
-
-  PostTrailer = <<-EOF
-<hr>
-<a href="http://rubyhacker.com/BACK" style="text-decoration: none">Back</a>
-<a href="http://rubyhacker.com/HOME" style="text-decoration: none">Home</a>
-  EOF
 end
 
