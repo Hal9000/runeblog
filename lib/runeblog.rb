@@ -1,6 +1,6 @@
 
 class RuneBlog
-  VERSION = "0.0.13"
+  VERSION = "0.0.14"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
   DefaultData = Path + "/../data"
@@ -54,7 +54,7 @@ def new_blog!
     yn = ask("No .blog found. Create new blog?")
     if yn.upcase == "Y"
       #-- what if data already exists?
-      system("cp -r #{DefaultData} .")
+      system("cp -r #{RuneBlog::DefaultData} .")
       File.open(".blog", "w") {|f| f.puts "data" }
     end
   end
