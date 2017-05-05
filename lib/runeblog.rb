@@ -1,6 +1,6 @@
 
 class RuneBlog
-  VERSION = "0.0.12"
+  VERSION = "0.0.13"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
   DefaultData = Path + "/../data"
@@ -64,7 +64,7 @@ end
 
 def next_sequence
   @config.sequence += 1
-  File.open("data/sequence", "w") {|f| f.puts @config.sequence }
+  File.open("#{@config.root}/data/sequence", "w") {|f| f.puts @config.sequence }
   @config.sequence
 end
 
@@ -322,15 +322,20 @@ end
 ### list_posts
 
 def list_posts
-  Dir.chdir("#{@config.root}/views/#@view/")
-  system("ls -d 0*")
-  puts
+  dir = "#{@config.root}/views/#@view/"
+  Dir.chdir(dir) do
+    posts = Dir.entries(".").grep(/^0.*/)
+    puts
+    if posts.empty?
+      puts "No posts"
+    else
+      posts.each {|post| puts "  #{post}" }
+    end
+    puts
+  end
+rescue 
+  puts "Oops? cwd = #{Dir.pwd}   dir = #{dir}"
+  exit
 end
 
-
-### templates
-
-class RuneBlog
-
-end
 

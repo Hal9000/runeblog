@@ -5,7 +5,6 @@ $: << "./lib"
 require 'runeblog'
 
 def execute_command
-  puts "CMD = #@cmd"
   case @cmd
     when "h", "help";         help
     when "q", "quit";         exit
@@ -20,7 +19,7 @@ def execute_command
     when "rebuild";           rebuild
     when "version";           puts RuneBlog::VERSION
     else
-      puts "Huh? I don't know #{@cmd}"
+      puts "\n  Huh? I don't know the command '#{@cmd}'"
   end
   puts
 end
@@ -28,15 +27,21 @@ end
 def help
   puts <<-EOS
   Commands:
-     h, help      This message
-     q, quit      Exit the program
-     p, post      Create a new post
-     new post     Same as post (create a post)
-     list views   List all views available
-     lsv          Same as: list views
-     new view     Create a new view
-     relink       Regenerate index for all views
-     rebuild      Regenerate all posts and relink
+     h, help           This message
+     q, quit           Exit the program
+
+     change view       Change current view
+     new view          Create a new view
+     list views        List all views available
+     lsv               Same as: list views
+
+     p, post           Create a new post
+     new post          Same as post (create a post)
+     lsp, list posts   List posts in current view
+
+     relink            Regenerate index for all views
+     rebuild           Regenerate all posts and relink
+
   EOS
 end
 
