@@ -4,6 +4,8 @@ $: << "./lib"
 
 require 'runeblog'
 
+trap("INT") { }
+
 def execute_command
   case @cmd
     when "h", "help";         help
@@ -22,6 +24,95 @@ def execute_command
       puts "\n  Huh? I don't know the command '#{@cmd}'"
   end
   puts
+end
+
+def check(boolean, msg)
+  abort msg unless boolean
+end
+
+def expected(nw = 1) 
+  abort "Unexpected '#{@words[nw]}'" unless @words.size == nw
+end
+
+def need_arg(nw = 1)
+  abort "Unexpected '#{@words[nw+1]}'" if @words[nw+1]
+  abort "Need an arg here" unless @words[nw]
+  @words[nw]
+end
+
+#   when "lsv", "list views"; list_views
+#   when "list posts", "lsp"; list_posts
+#   when "new view";          new_view(@arg)
+#   when "new post";          new_post  # same as above
+#   when "change view";       change_view(@arg)
+#   when "import post";       import(@arg)
+
+def parse_cmd
+  @cmd = gets.chomp
+  @arg = ""
+  @words = @cmd.split
+  case @words.first
+    when "h", "help"
+      @meth = :help
+      expected(1)
+    when "q", "quit"
+      @meth = :quit
+      expected(1)
+    when "p", "post"
+      @meth = :new_post
+      expected(1)
+    when "lsv"
+      @meth = :list_views
+      expected(1)
+    when "lsp"
+      @meth = :list_posts
+      expected(1)
+    when "relink"
+      @meth = :relink
+      expected(1)
+    when "rebuild"
+      @meth = :rebuild
+      expected(1)
+    when "version"
+      @meth = :version
+      expected(1)
+    when "cv"
+      @meth = :change_view
+      @arg = need_arg(1)
+    when "list"
+      case @words[1]
+        when "views"
+          @meth = :list_views
+          expected(2)
+        when "posts"
+          @meth = :list_posts
+          expected(2)
+        else 
+          raise "Unknown #{@words[1]}"
+      end
+    when "new"
+      case @words[1]
+        when "view"
+          @meth = :new_view
+          expected(2)
+          @arg = need_arg(2)
+        when "post"
+          @meth = :new_post
+          expected(2)
+        else
+          raise "Unknown '#{@words[1]}'"
+      end
+    else 
+      raise "Unknown '#{@words[0]}'"
+  end
+  @cmd
+end
+
+def get_argv
+  return nil if ARGV.size == 0
+  @cmd = ARGV[0..1].join(" ")
+  @arg = ARGV[2]
+  @cmd
 end
 
 def help
@@ -49,17 +140,13 @@ end
 
 STDOUT.sync = true
 
-@cmd = ARGV[0..1].join(" ")
-@arg = ARGV[2]
+@cmd = get_argv
 
-if @cmd.empty?   # REPL
+if @cmd.nil?   # REPL
   read_config
   loop do
-    print "blog> "
-    @cmd = gets.chomp.gsub(/ +/, " ") rescue abort("\n")
-    words = @cmd.split
-    @cmd = words[0..1].join(" ")
-    @arg = words[2]
+    print red("blog> ")
+    @cmd = parse_cmd
     execute_command
   end
 else  # one command

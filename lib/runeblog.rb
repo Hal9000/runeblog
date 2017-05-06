@@ -1,6 +1,6 @@
 
 class RuneBlog
-  VERSION = "0.0.14"
+  VERSION = "0.0.15"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
   DefaultData = Path + "/../data"
@@ -10,6 +10,23 @@ class RuneBlog
   PostHeader  = File.read(DefaultData + "/post_header.html")  rescue "not found"
   PostTrailer = File.read(DefaultData + "/post_trailer.html") rescue "not found"
 end
+
+def clear
+  puts "\e[H\e[2J"  # clear screen
+end
+
+def red(text)
+  "\e[31m#{text}\e[0m"
+end
+
+def blue(text)
+  "\e[34m#{text}\e[0m"
+end
+
+def bold(str)
+  "\e[1m#{str}\e[22m"
+end
+
 
 # FIXME lots of structure changes
 
@@ -255,14 +272,18 @@ end
 
 def list_views
   read_config unless @config
-  puts @config.views
+  puts
+  @config.views.each {|v| puts "  #{v}" }
 end
 
 ### change_view
 
 def change_view(arg = nil)
-  raise "view #{arg} does not exist" unless @config.views.include?(arg)
-  @view = arg
+  if @config.views.include?(arg)
+    @view = arg
+  else
+    puts "view #{arg.inspect} does not exist"
+  end
 end
 
 ### new_view
@@ -331,7 +352,6 @@ def list_posts
     else
       posts.each {|post| puts "  #{post}" }
     end
-    puts
   end
 rescue 
   puts "Oops? cwd = #{Dir.pwd}   dir = #{dir}"
