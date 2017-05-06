@@ -1,9 +1,5 @@
-require 'find'
-require 'yaml'
-
-
 class RuneBlog
-  VERSION = "0.0.17"
+  VERSION = "0.0.18"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
   DefaultData = Path + "/../data"
@@ -13,6 +9,12 @@ class RuneBlog
   PostHeader  = File.read(DefaultData + "/post_header.html")  rescue "not found"
   PostTrailer = File.read(DefaultData + "/post_trailer.html") rescue "not found"
 end
+
+require 'find'
+require 'yaml'
+require 'rubygems'
+require 'ostruct'
+require 'livetext'
 
 def clear
   puts "\e[H\e[2J"  # clear screen
@@ -30,31 +32,6 @@ def bold(str)
   "\e[1m#{str}\e[22m"
 end
 
-
-# FIXME lots of structure changes
-
-=begin
-
-Post
-----
-Create a blog post
-Process it
-Link it
-Upload to server
-
-
-data
-  views
-    computing
-      compiled
-      custom
-      deployment
-
-=end
-
-require 'rubygems'
-require 'ostruct'
-require 'livetext'
 
 
 ### ask

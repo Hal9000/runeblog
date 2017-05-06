@@ -161,8 +161,11 @@ STDOUT.sync = true
 
 @cmd = get_argv
 
+read_config
+
+puts red("\n  RuneBlog v #{RuneBlog::VERSION}")
+
 if @cmd.nil?   # REPL
-  read_config
   puts
   loop do
     print red("blog> ")
@@ -175,7 +178,6 @@ if @cmd.nil?   # REPL
     execute_command
   end
 else  # one command
-  read_config
   file = File.open("/dev/tty")
   STDIN.reopen(file)    # avoid ARGF dumbness
   execute_command

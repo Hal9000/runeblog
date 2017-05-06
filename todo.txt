@@ -1,18 +1,25 @@
-remove draft 
-remove post
-edit post
-cv without param?
-default view in .blog
-other vars in .blog?
-current view (all views?) into new post
-detect dirty files for publishing
-fix publishing
+ x remove post
+   edit post
+ x cv without param?
+   append onto VERSION when creating blog
+   special view 'all'
+   default view in .blog
+   other vars in .blog?
+   let main blog be named? call 'data' something else?
+   error checking!
+   current view (all views?) into new post
+   detect dirty files for publishing
+   fix publishing
+   
+   update docs
+   video tutorial
+   runeblog dependency on livetext
 
-make templates into LT3 files?
-vars for templates?
-edit templates?
-snippets for templates?
-undo last post?
-store in trash instead of deleting?
-
-disinguish unpublished?
+   make templates into LT3 files?
+   vars for templates?
+   edit templates?
+   snippets for templates?
+   undo last post?
+   store in trash instead of deleting?
+   
+   disinguish unpublished?

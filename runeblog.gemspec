@@ -15,8 +15,6 @@ Gem::Specification.new do |s|
   s.email       = 'rubyhacker@gmail.com'
   s.executables << "blog"
 
-  File.write("data/VERSION", "RuneBlog v #{s.version}   #{s.date}")
-  
   # Files...
   main = Find.find("bin").to_a + 
          Find.find("lib").to_a + 
