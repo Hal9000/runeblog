@@ -1,0 +1,18 @@
+remove draft 
+remove post
+edit post
+cv without param?
+default view in .blog
+other vars in .blog?
+current view (all views?) into new post
+detect dirty files for publishing
+fix publishing
+
+make templates into LT3 files?
+vars for templates?
+edit templates?
+snippets for templates?
+undo last post?
+store in trash instead of deleting?
+
+disinguish unpublished?

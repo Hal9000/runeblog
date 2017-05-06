@@ -1,6 +1,6 @@
 
 class RuneBlog
-  VERSION = "0.0.15"
+  VERSION = "0.0.16"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
   DefaultData = Path + "/../data"
@@ -53,7 +53,7 @@ data
 
 require 'rubygems'
 require 'ostruct'
-# require 'livetext'
+require 'livetext'
 
 
 ### ask
@@ -62,6 +62,19 @@ def ask(prompt, meth = :to_s)
   print prompt
   STDOUT.flush
   STDIN.gets.chomp.send(meth)
+end
+
+### quit
+
+def quit
+  puts
+  exit
+end
+
+### version
+
+def version
+  puts "\n  " + RuneBlog::VERSION
 end
 
 ### new_blog!
@@ -81,7 +94,7 @@ end
 
 def next_sequence
   @config.sequence += 1
-  File.open("#{@config.root}/data/sequence", "w") {|f| f.puts @config.sequence }
+  File.open("#{@config.root}/sequence", "w") {|f| f.puts @config.sequence }
   @config.sequence
 end
 
@@ -149,8 +162,9 @@ end
 
 def process_post(file)
   lt ||= Livetext.new
-  puts "  Processing: #{file}"
-  lt.process_file(file)
+# puts "  Processing: #{Dir.pwd}/#{file}"
+  path = @config.root + "/src/#{file}"
+  lt.process_file(path)
   @meta = lt.main.instance_eval { @meta }
   @meta.slug = file.sub(/.lt3$/, "")
   @meta

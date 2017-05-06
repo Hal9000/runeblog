@@ -7,48 +7,48 @@ require 'runeblog'
 trap("INT") { }
 
 def execute_command
-  case @cmd
-    when "h", "help";         help
-    when "q", "quit";         exit
-    when "p", "post";         new_post
-    when "new post";          new_post  # same as above
-    when "list posts", "lsp"; list_posts
-    when "new view";          new_view(@arg)
-    when "lsv", "list views"; list_views
-    when "change view";       change_view(@arg)
-    when "import post";       import(@arg)
-    when "relink";            relink
-    when "rebuild";           rebuild
-    when "version";           puts RuneBlog::VERSION
+  case @meth
+    when :help, :quit, :new_post, :list_views, :relink, :rebuild, :version, 
+         :list_posts, :do_nothing
+      self.send(@meth)
     else
-      puts "\n  Huh? I don't know the command '#{@cmd}'"
+      self.send(@meth, @arg)
   end
-  puts
+  puts unless @meth == :do_nothing
 end
 
 def check(boolean, msg)
-  abort msg unless boolean
+  save = @cmd
+  @cmd = nil
+  raise msg unless boolean
+  @cmd = save
 end
 
 def expected(nw = 1) 
-  abort "Unexpected '#{@words[nw]}'" unless @words.size == nw
+  save = @cmd
+  @cmd = nil
+  raise "Unexpected '#{@words[nw]}'" unless @words.size == nw
+  @cmd = save
 end
 
 def need_arg(nw = 1)
-  abort "Unexpected '#{@words[nw+1]}'" if @words[nw+1]
-  abort "Need an arg here" unless @words[nw]
+  save = @cmd
+  @cmd = nil
+  raise "Unexpected '#{@words[nw+1]}'" if @words[nw+1]
+  raise "Need an arg here" unless @words[nw]
+  @cmd = save
   @words[nw]
 end
 
-#   when "lsv", "list views"; list_views
-#   when "list posts", "lsp"; list_posts
-#   when "new view";          new_view(@arg)
-#   when "new post";          new_post  # same as above
-#   when "change view";       change_view(@arg)
-#   when "import post";       import(@arg)
+def do_nothing
+end
 
 def parse_cmd
   @cmd = gets.chomp
+  if @cmd == ""
+    @meth = :do_nothing
+    return @cmd
+  end
   @arg = ""
   @words = @cmd.split
   case @words.first
@@ -88,6 +88,7 @@ def parse_cmd
           @meth = :list_posts
           expected(2)
         else 
+          @cmd = nil
           raise "Unknown #{@words[1]}"
       end
     when "new"
@@ -100,9 +101,11 @@ def parse_cmd
           @meth = :new_post
           expected(2)
         else
+          @cmd = nil
           raise "Unknown '#{@words[1]}'"
       end
     else 
+      @cmd = nil
       raise "Unknown '#{@words[0]}'"
   end
   @cmd
@@ -117,7 +120,9 @@ end
 
 def help
   puts <<-EOS
+
   Commands:
+
      h, help           This message
      q, quit           Exit the program
 
@@ -132,7 +137,6 @@ def help
 
      relink            Regenerate index for all views
      rebuild           Regenerate all posts and relink
-
   EOS
 end
 
@@ -144,9 +148,15 @@ STDOUT.sync = true
 
 if @cmd.nil?   # REPL
   read_config
+  puts
   loop do
     print red("blog> ")
-    @cmd = parse_cmd
+    begin
+      @cmd = parse_cmd
+    rescue => err
+      puts err
+      next 
+    end
     execute_command
   end
 else  # one command
