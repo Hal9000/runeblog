@@ -1,6 +1,9 @@
+require 'find'
+require 'yaml'
+
 
 class RuneBlog
-  VERSION = "0.0.16"
+  VERSION = "0.0.17"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
   DefaultData = Path + "/../data"
@@ -29,8 +32,6 @@ end
 
 
 # FIXME lots of structure changes
-
-require 'yaml'
 
 =begin
 
@@ -81,7 +82,7 @@ end
 
 def new_blog!
   unless File.exist?(".blog")
-    yn = ask("No .blog found. Create new blog?")
+    yn = ask(red("  No .blog found. Create new blog?"))
     if yn.upcase == "Y"
       #-- what if data already exists?
       system("cp -r #{RuneBlog::DefaultData} .")
@@ -270,7 +271,7 @@ end
 ### publish?
 
 def publish?
-  yn = ask("Publish? y/n ")
+  yn = ask(red("  Publish? y/n "))
   yn.upcase == "Y"
 end
 
@@ -293,7 +294,9 @@ end
 ### change_view
 
 def change_view(arg = nil)
-  if @config.views.include?(arg)
+  if arg.nil?
+    puts "\n  #@view"
+  elsif @config.views.include?(arg)
     @view = arg
   else
     puts "view #{arg.inspect} does not exist"
@@ -307,6 +310,7 @@ def new_view(arg = nil)
   read_config unless @config
   arg ||= ask("New view: ")  # check validity later
   raise "view #{arg} already exists" if @config.views.include?(arg)
+
   dir = @config.root + "/views/" + arg
   cmd = "mkdir -p #{dir}/custom"
   system(cmd)
@@ -354,6 +358,34 @@ def new_post
   end
 end
 
+### remove_post
+
+#-- FIXME affects linking, building, deployment...
+
+def remove_post(arg)
+  id = Integer(arg) rescue raise("'#{arg}' is not an integer")
+  tag = "#{'%04d' % id}-"
+  files = Find.find("#{@config.root}").to_a
+  files = files.grep(/#{tag}/)
+  if files.empty?
+    puts "\n No such post found"
+    return
+  end
+  puts
+  files.each {|f| puts "  #{f}" }
+  yn = ask red("\n  Delete all these? ")
+  if yn.downcase == "y"
+    #-- maybe implement trash later?
+    system("rm -rf #{files.join(' ')}")
+    puts red("\n  Deleted")
+  else
+    puts red("\n  No action taken")
+  end
+rescue => err
+  puts err
+  puts
+end
+
 ### list_posts
 
 def list_posts
@@ -371,5 +403,24 @@ rescue
   puts "Oops? cwd = #{Dir.pwd}   dir = #{dir}"
   exit
 end
+
+### list_drafts
+
+def list_drafts
+  dir = "#{@config.root}/src"
+  Dir.chdir(dir) do
+    posts = Dir.entries(".").grep(/^0.*.lt3/)
+    puts
+    if posts.empty?
+      puts "No posts"
+    else
+      posts.each {|post| puts "  #{post.sub(/.lt3$/, "")}" }
+    end
+  end
+rescue 
+  puts "Oops? cwd = #{Dir.pwd}   dir = #{dir}"
+  exit
+end
+
 
 
