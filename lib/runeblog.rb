@@ -1,5 +1,5 @@
 class RuneBlog
-  VERSION = "0.0.18"
+  VERSION = "0.0.19"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
   DefaultData = Path + "/../data"
@@ -139,11 +139,13 @@ end
 ### process_post
 
 def process_post(file)
-  lt ||= Livetext.new
+  @main ||= Livetext.new
 # puts "  Processing: #{Dir.pwd}/#{file}"
-  path = @config.root + "/src/#{file}"
-  lt.process_file(path)
-  @meta = lt.main.instance_eval { @meta }
+# path = @config.root + "/src/#{file}"
+  @meta = @main.process_file(file)
+  @meta.slug = make_slug(@meta.title, @config.sequence)
+# @meta = @main.instance_eval { @meta }
+p @meta
   @meta.slug = file.sub(/.lt3$/, "")
   @meta
 end
@@ -152,21 +154,23 @@ end
 
 def reload_post(file)
   @main ||= Livetext.new
-  @meta = process_post("#{@config.root}/src/#{file}")
+  process_post("#{@config.root}/src/#{file}")
+  @meta = @main.instance_eval { @meta }
   @meta.slug = file.sub(/.lt3$/, "")
   @meta
 end
 
 ### posting
 
-def posting(meta)
+def posting(view, meta)
+  ref = "#{view}/#{meta.slug}/index.html"
   <<-HTML
     <br>
     <font size=+1>#{meta.pubdate}&nbsp;&nbsp;</font>
-    <font size=+2 color=blue><a href=../#{"FAKEREF"} style="text-decoration: none">#{meta.title}</font></a>
+    <font size=+2 color=blue><a href=../#{ref} style="text-decoration: none">#{meta.title}</font></a>
     <br>
     #{meta.teaser}  
-    <a href=../#{"FAKEREF2"} style="text-decoration: none">Read more...</a>
+    <a href=../#{ref} style="text-decoration: none">Read more...</a>
     <br><br>
     <hr>
   HTML
@@ -179,30 +183,27 @@ def generate_index(view)
   vdir = "#{@config.root}/views/#{view}"
   posts = Dir.entries(vdir).grep /^\d\d\d\d/
   posts = posts.sort.reverse
+
   # Add view header/trailer
   @bloghead = File.read("#{vdir}/custom/blogheader.html") rescue ""
   @blogtail = File.read("#{vdir}/custom/blogtrailer.html") rescue ""
+
   # Output view
-  posts.map! do |post|
-    YAML.load(File.read("#{vdir}/#{post}/metadata.yaml"))
-  end
+  posts.map! {|post| YAML.load(File.read("#{vdir}/#{post}/metadata.yaml")) }
   out = @bloghead.dup
-  posts.each do |post|
-    out << posting(post)
-  end
+  posts.each {|post| out << posting(view, post) }
   out << @blogtail
-  File.open("#{vdir}/index.html", "w") do |f|
-    f.puts out
-  end
+  File.open("#{vdir}/index.html", "w") {|f| f.puts out }
 end
 
 ### link_post_view
 
 def link_post_view(view)
+  p @meta
   # Create dir using slug (index.html, metadata?)
   vdir = "#{@config.root}/views/#{view}"
   dir = "#{vdir}/#{@meta.slug}"
-  cmd = "mkdir -p #{dir}"
+  cmd = "mkdir -p #{dir}"    #-- FIXME what if this exists??
   puts "    Running: #{cmd}"
   system(cmd)
   File.write("#{dir}/metadata.yaml", @meta.to_yaml)

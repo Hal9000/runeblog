@@ -1,6 +1,7 @@
  x remove post
    edit post
  x cv without param?
+   post template as LT3 file?
    append onto VERSION when creating blog
    special view 'all'
    default view in .blog
