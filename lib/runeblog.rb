@@ -1,5 +1,5 @@
 class RuneBlog
-  VERSION = "0.0.19"
+  VERSION = "0.0.20"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
   DefaultData = Path + "/../data"
@@ -140,12 +140,10 @@ end
 
 def process_post(file)
   @main ||= Livetext.new
-# puts "  Processing: #{Dir.pwd}/#{file}"
-# path = @config.root + "/src/#{file}"
+  puts "  Processing: #{Dir.pwd} :: #{file}"
+  path = @config.root + "/src/#{file}"
   @meta = @main.process_file(file)
   @meta.slug = make_slug(@meta.title, @config.sequence)
-# @meta = @main.instance_eval { @meta }
-p @meta
   @meta.slug = file.sub(/.lt3$/, "")
   @meta
 end
@@ -154,8 +152,7 @@ end
 
 def reload_post(file)
   @main ||= Livetext.new
-  process_post("#{@config.root}/src/#{file}")
-  @meta = @main.instance_eval { @meta }
+  @meta = process_post("#{@config.root}/src/#{file}")
   @meta.slug = file.sub(/.lt3$/, "")
   @meta
 end
@@ -230,6 +227,8 @@ end
 
 def rebuild
   files = Dir.entries("#{@config.root}/src/").grep /\d\d\d\d.*.lt3$/
+  files.map! {|f| File.basename(f) }
+  files.each {|f| p f }
   files = files.sort.reverse
   files.each do |file|
     reload_post(file)
@@ -346,14 +345,14 @@ def remove_post(arg)
   files = Find.find("#{@config.root}").to_a
   files = files.grep(/#{tag}/)
   if files.empty?
-    puts "\n No such post found"
+    puts red("\n  No such post found")
     return
   end
   puts
   files.each {|f| puts "  #{f}" }
-  yn = ask red("\n  Delete all these? ")
-  if yn.downcase == "y"
-    #-- maybe implement trash later?
+  ques = files.size > 1 ? "\n  Delete all these? " : "\n  Delete? "
+  yn = ask red(ques)
+  if yn.downcase == "y"   #-- maybe implement trash later?
     system("rm -rf #{files.join(' ')}")
     puts red("\n  Deleted")
   else
@@ -372,7 +371,7 @@ def list_posts
     posts = Dir.entries(".").grep(/^0.*/)
     puts
     if posts.empty?
-      puts "No posts"
+      puts "  No posts"
     else
       posts.each {|post| puts "  #{post}" }
     end
@@ -390,7 +389,7 @@ def list_drafts
     posts = Dir.entries(".").grep(/^0.*.lt3/)
     puts
     if posts.empty?
-      puts "No posts"
+      puts "  No posts"
     else
       posts.each {|post| puts "  #{post.sub(/.lt3$/, "")}" }
     end
@@ -399,6 +398,4 @@ rescue
   puts "Oops? cwd = #{Dir.pwd}   dir = #{dir}"
   exit
 end
-
-
 
