@@ -4,11 +4,11 @@
    post template as LT3 file?
    append onto VERSION when creating blog
    special view 'all'
-   default view in .blog
+ x default view in .blog
    other vars in .blog?
    let main blog be named? call 'data' something else?
    error checking!
-   current view (all views?) into new post
+ x current view (all views?) into new post
    detect dirty files for publishing
    fix publishing
    
@@ -23,4 +23,4 @@
    undo last post?
    store in trash instead of deleting?
    
-   disinguish unpublished?
+   distinguish unpublished?

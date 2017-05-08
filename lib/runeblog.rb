@@ -1,5 +1,6 @@
+
 class RuneBlog
-  VERSION = "0.0.20"
+  VERSION = "0.0.21"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
   DefaultData = Path + "/../data"
@@ -59,11 +60,15 @@ end
 
 def new_blog!
   unless File.exist?(".blog")
-    yn = ask(red("  No .blog found. Create new blog?"))
+    yn = ask(red("  No .blog found. Create new blog? "))
     if yn.upcase == "Y"
       #-- what if data already exists?
       system("cp -r #{RuneBlog::DefaultData} .")
-      File.open(".blog", "w") {|f| f.puts "data" }
+      File.open(".blog", "w") do |f| 
+        f.puts "data" 
+        f.puts "no_default"
+      end
+      system("echo Created #{Time.now} >>data/VERSION")
     end
   end
 end
@@ -87,23 +92,20 @@ end
 ### read_config
 
 def read_config
+  cfg_file = ".blog"
   @config = OpenStruct.new
   # What views are there? Deployment, etc.
   # Crude - FIXME later
-  root = File.readlines(".blog").first.chomp rescue "myblog"
+  new_blog! unless File.exist?(cfg_file)
+
+  lines = File.readlines(cfg_file).map {|x| x.chomp }
+  root = lines[0]
+  @view ||= lines[1]
   dirs = Dir.entries("#{root}/views/") - %w[. ..]
   dirs.reject! {|x| ! File.directory?("#{root}/views/#{x}") }
   @config.root = root
   @config.views = dirs
   @config.sequence = File.read(root + "/sequence").to_i
-rescue => err
-  if root != "myblog"
-    raise err
-  end
-
-  new_blog!
-  STDERR.puts "Created. Now run again."
-  exit
 end
 
 ### create_empty_post
@@ -114,10 +116,9 @@ def create_empty_post
 
 .liveblog_version 
 
-.title #{@title}
-.pubdate #{@date}
-.categories elixir ruby
-.views computing
+.title #@title
+.pubdate #@date
+.views #@view
 
 Teaser goes here.
 .readmore
@@ -140,9 +141,10 @@ end
 
 def process_post(file)
   @main ||= Livetext.new
+  @main.main.output = File.new("/tmp/WHOA","w")
   puts "  Processing: #{Dir.pwd} :: #{file}"
-  path = @config.root + "/src/#{file}"
-  @meta = @main.process_file(file)
+path = @config.root + "/src/#{file}"
+  @meta = @main.process_file(path)
   @meta.slug = make_slug(@meta.title, @config.sequence)
   @meta.slug = file.sub(/.lt3$/, "")
   @meta
@@ -152,7 +154,8 @@ end
 
 def reload_post(file)
   @main ||= Livetext.new
-  @meta = process_post("#{@config.root}/src/#{file}")
+  @main.main.output = File.new("/tmp/WHOA","w")
+  @meta = process_post(file)
   @meta.slug = file.sub(/.lt3$/, "")
   @meta
 end
@@ -196,10 +199,12 @@ end
 ### link_post_view
 
 def link_post_view(view)
-  p @meta
   # Create dir using slug (index.html, metadata?)
   vdir = "#{@config.root}/views/#{view}"
+p "vdir = #{vdir}"
   dir = "#{vdir}/#{@meta.slug}"
+p "dir = #{dir}"
+p "cwd = #{Dir.pwd}"
   cmd = "mkdir -p #{dir}"    #-- FIXME what if this exists??
   puts "    Running: #{cmd}"
   system(cmd)
@@ -328,7 +333,8 @@ def new_post
 
   file = create_empty_post
   edit_post(file)
-  process_post(file)
+# file = @config.root + "/src/" + file
+  process_post(file)  #- FIXME handle each view
   if publish?
     link_post(@meta)
     publish_post
