@@ -1,6 +1,6 @@
 
 class RuneBlog
-  VERSION = "0.0.22"
+  VERSION = "0.0.23"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
   DefaultData = Path + "/../data"
@@ -34,7 +34,7 @@ def bold(str)
 end
 
 def interpolate(str)
-  wrap = "<<-EOS\n#{str}EOS"
+  wrap = "<<-EOS\n#{str}\nEOS"
   eval wrap
 end
 
@@ -189,15 +189,18 @@ def generate_index(view)
   posts = posts.sort.reverse
 
   # Add view header/trailer
-  @bloghead = interpolate(BlogHeader)
-  @blogtail = interpolate(BlogTrailer)
+  head = File.read("#{vdir}/custom/blog_header.html") rescue RuneBlog::BlogHeader
+  tail = File.read("#{vdir}/custom/blog_trailer.html") rescue RuneBlog::BlogTrailer
+  @bloghead = interpolate(head)
+  @blogtail = interpolate(tail)
 
   # Output view
   posts.map! {|post| YAML.load(File.read("#{vdir}/#{post}/metadata.yaml")) }
-  out = @bloghead
-  posts.each {|post| out << posting(view, post) }
-  out << @blogtail
-  File.open("#{vdir}/index.html", "w") {|f| f.puts out }
+  File.open("#{vdir}/index.html", "w") do |f|
+    f.puts @bloghead
+    posts.each {|post| f.puts posting(view, post) }
+    f.puts @blogtail
+  end
 end
 
 ### link_post_view
@@ -211,8 +214,10 @@ def link_post_view(view)
   system(cmd)
   File.write("#{dir}/metadata.yaml", @meta.to_yaml)
   # Add header/trailer to post index
-  @posthead = interpolate(PostHeader)
-  @posttail = interpolate(PostTrailer)
+  head = File.read("#{vdir}/custom/post_header.html") rescue RuneBlog::PostHeader
+  tail = File.read("#{vdir}/custom/post_trailer.html") rescue RuneBlog::PostTrailer
+  @posthead = interpolate(head)
+  @posttail = interpolate(tail)
   File.open("#{dir}/index.html", "w") do |f|
     f.puts @posthead
     f.puts @meta.body
