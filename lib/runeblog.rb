@@ -1,6 +1,6 @@
 
 class RuneBlog
-  VERSION = "0.0.21"
+  VERSION = "0.0.22"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
   DefaultData = Path + "/../data"
@@ -33,6 +33,10 @@ def bold(str)
   "\e[1m#{str}\e[22m"
 end
 
+def interpolate(str)
+  wrap = "<<-EOS\n#{str}EOS"
+  eval wrap
+end
 
 
 ### ask
@@ -68,7 +72,7 @@ def new_blog!
         f.puts "data" 
         f.puts "no_default"
       end
-      system("echo Created #{Time.now} >>data/VERSION")
+      File.open("data/VERSION", "a") {|f| f.puts "\nBlog created: " + Time.now.to_s }
     end
   end
 end
@@ -185,12 +189,12 @@ def generate_index(view)
   posts = posts.sort.reverse
 
   # Add view header/trailer
-  @bloghead = File.read("#{vdir}/custom/blogheader.html") rescue ""
-  @blogtail = File.read("#{vdir}/custom/blogtrailer.html") rescue ""
+  @bloghead = interpolate(BlogHeader)
+  @blogtail = interpolate(BlogTrailer)
 
   # Output view
   posts.map! {|post| YAML.load(File.read("#{vdir}/#{post}/metadata.yaml")) }
-  out = @bloghead.dup
+  out = @bloghead
   posts.each {|post| out << posting(view, post) }
   out << @blogtail
   File.open("#{vdir}/index.html", "w") {|f| f.puts out }
@@ -201,17 +205,14 @@ end
 def link_post_view(view)
   # Create dir using slug (index.html, metadata?)
   vdir = "#{@config.root}/views/#{view}"
-p "vdir = #{vdir}"
   dir = "#{vdir}/#{@meta.slug}"
-p "dir = #{dir}"
-p "cwd = #{Dir.pwd}"
   cmd = "mkdir -p #{dir}"    #-- FIXME what if this exists??
   puts "    Running: #{cmd}"
   system(cmd)
   File.write("#{dir}/metadata.yaml", @meta.to_yaml)
   # Add header/trailer to post index
-  @posthead ||= File.read("#{vdir}/postheader.html") rescue ""
-  @posttail ||= File.read("#{vdir}/posttrailer.html") rescue ""
+  @posthead = interpolate(PostHeader)
+  @posttail = interpolate(PostTrailer)
   File.open("#{dir}/index.html", "w") do |f|
     f.puts @posthead
     f.puts @meta.body

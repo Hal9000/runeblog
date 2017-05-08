@@ -1,3 +1,4 @@
+   fix post template problem
  x remove post
    edit post
  x cv without param?
