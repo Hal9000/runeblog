@@ -1,6 +1,6 @@
 
 class RuneBlog
-  VERSION = "0.0.25"
+  VERSION = "0.0.26"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
   DefaultData = Path + "/../data"
@@ -169,9 +169,11 @@ def deploy
   vdir = @config.viewdir(@view)
   files = ["#{vdir}/index.html"]
   files += Dir.entries(vdir).grep(/^\d\d\d\d/).map {|x| "#{vdir}/#{x}" }
-  cmd = "scp -r #{files.join(' ')} root@#{server}:#{dir}"
-  puts cmd
+  cmd = "scp -r #{files.join(' ')} root@#{server}:#{dir} >/dev/null 2>&1"
+  print red("\n  Deploying #{files.size} files... ")
+# puts cmd
   system(cmd)
+  puts red("finished.")
 end
 
 ### process_post
@@ -249,6 +251,7 @@ def link_post_view(view)
   # Add header/trailer to post index
   head = File.read(vdir + "custom/post_header.html") rescue RuneBlog::PostHeader
   tail = File.read(vdir + "custom/post_trailer.html") rescue RuneBlog::PostTrailer
+# STDERR.puts "lpv: meta = #{@meta.teaser.inspect}"
   @posthead = interpolate(head)
   @posttail = interpolate(tail)
   File.open(dir + "index.html", "w") do |f|
@@ -424,7 +427,7 @@ def list_posts
     if posts.empty?
       puts "  No posts"
     else
-      posts.each {|post| puts "  #{post}" }
+      posts.each {|post| puts "  #{colored_slug(post)}" }
     end
   end
 rescue 
@@ -442,7 +445,7 @@ def list_drafts
     if posts.empty?
       puts "  No posts"
     else
-      posts.each {|post| puts "  #{post.sub(/.lt3$/, "")}" }
+      posts.each {|post| puts "  #{colored_slug(post.sub(/.lt3$/, ""))}" }
     end
   end
 rescue 
