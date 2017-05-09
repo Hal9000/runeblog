@@ -5,6 +5,7 @@
  x default view in .blog
  x current view (all views?) into new post
 
+   fix class structure!
    edit post
    special view 'all'
    other vars in .blog?

@@ -1,6 +1,6 @@
 
 class RuneBlog
-  VERSION = "0.0.23"
+  VERSION = "0.0.24"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
   DefaultData = Path + "/../data"
@@ -9,6 +9,36 @@ class RuneBlog
   BlogTrailer = File.read(DefaultData + "/blog_trailer.html") rescue "not found"
   PostHeader  = File.read(DefaultData + "/post_header.html")  rescue "not found"
   PostTrailer = File.read(DefaultData + "/post_trailer.html") rescue "not found"
+end
+
+class RuneBlog::Config
+  attr_reader :root, :views, :view, :sequence
+
+  def initialize(cfg_file = ".blog")
+    # What views are there? Deployment, etc.
+    # Crude - FIXME later
+    new_blog! unless File.exist?(cfg_file)
+
+    lines = File.readlines(cfg_file).map {|x| x.chomp }
+    @root = lines[0]
+    @view = lines[1]
+    dirs = Dir.entries("#@root/views/") - %w[. ..]
+    dirs.reject! {|x| ! File.directory?("#@root/views/#{x}") }
+    @root = root
+    @views = dirs
+    @sequence = File.read(root + "/sequence").to_i
+  end
+
+  def next_sequence
+    @sequence += 1
+    File.open("#@root/sequence", "w") {|f| f.puts @sequence }
+    @sequence
+  end
+
+  def viewdir(v)
+    @root + "/views/#{v}/"
+  end
+
 end
 
 require 'find'
@@ -36,6 +66,10 @@ end
 def interpolate(str)
   wrap = "<<-EOS\n#{str}\nEOS"
   eval wrap
+end
+
+def colored_slug(slug)
+  red(slug[0..3])+blue(slug[4..-1])
 end
 
 
@@ -77,18 +111,10 @@ def new_blog!
   end
 end
 
-### next_sequence
-
-def next_sequence
-  @config.sequence += 1
-  File.open("#{@config.root}/sequence", "w") {|f| f.puts @config.sequence }
-  @config.sequence
-end
-
 ### make_slug
 
 def make_slug(title, seq=nil)
-  num = '%04d' % (seq || next_sequence)   # FIXME can do better
+  num = '%04d' % (seq || @config.next_sequence)   # FIXME can do better
   slug = title.downcase.strip.gsub(' ', '-').gsub(/[^\w-]/, '')
   "#{num}-#{slug}"
 end
@@ -96,20 +122,14 @@ end
 ### read_config
 
 def read_config
-  cfg_file = ".blog"
-  @config = OpenStruct.new
-  # What views are there? Deployment, etc.
   # Crude - FIXME later
+  cfg_file = ".blog"
   new_blog! unless File.exist?(cfg_file)
+  @config = RuneBlog::Config.new(".blog")
 
-  lines = File.readlines(cfg_file).map {|x| x.chomp }
-  root = lines[0]
-  @view ||= lines[1]
-  dirs = Dir.entries("#{root}/views/") - %w[. ..]
-  dirs.reject! {|x| ! File.directory?("#{root}/views/#{x}") }
-  @config.root = root
-  @config.views = dirs
-  @config.sequence = File.read(root + "/sequence").to_i
+  @view = @config.view           # current view
+  @sequence = @config.sequence
+  @root = @config.root
 end
 
 ### create_empty_post
@@ -131,14 +151,23 @@ EOS
 
   @slug = make_slug(@title)
   @fname = @slug + ".lt3"
-  File.open("#{@config.root}/src/#{@fname}", "w") {|f| f.puts @template }
+  File.open("#@root/src/#@fname", "w") {|f| f.puts @template }
   @fname
 end
 
 ### edit_post
 
 def edit_post(file)
-  system("vi #{@config.root}/src/#{file}")
+  system("vi #@root/src/#{file} +8 ")
+end
+
+def deploy(view)
+  # TBD clunky FIXME 
+  deployment = @config.viewdir(view) + "deploy"
+  lines = File.readlines(deployment)
+  user, server, dir = *lines
+  files = 
+  cmd = "scp #{files.join(' ')} root@#{server}:#{dir}"
 end
 
 ### process_post
@@ -146,8 +175,8 @@ end
 def process_post(file)
   @main ||= Livetext.new
   @main.main.output = File.new("/tmp/WHOA","w")
-  puts "  Processing: #{Dir.pwd} :: #{file}"
-path = @config.root + "/src/#{file}"
+# puts "  Processing: #{Dir.pwd} :: #{file}"
+  path = @root + "/src/#{file}"
   @meta = @main.process_file(path)
   @meta.slug = make_slug(@meta.title, @config.sequence)
   @meta.slug = file.sub(/.lt3$/, "")
@@ -184,7 +213,7 @@ end
 
 def generate_index(view)
   # Gather all posts, create list
-  vdir = "#{@config.root}/views/#{view}"
+  vdir = "#@root/views/#{view}"
   posts = Dir.entries(vdir).grep /^\d\d\d\d/
   posts = posts.sort.reverse
 
@@ -207,18 +236,18 @@ end
 
 def link_post_view(view)
   # Create dir using slug (index.html, metadata?)
-  vdir = "#{@config.root}/views/#{view}"
-  dir = "#{vdir}/#{@meta.slug}"
+  vdir = @config.viewdir(view)
+  dir = vdir + @meta.slug + "/"
   cmd = "mkdir -p #{dir}"    #-- FIXME what if this exists??
-  puts "    Running: #{cmd}"
+# puts "    Running: #{cmd}"
   system(cmd)
   File.write("#{dir}/metadata.yaml", @meta.to_yaml)
   # Add header/trailer to post index
-  head = File.read("#{vdir}/custom/post_header.html") rescue RuneBlog::PostHeader
-  tail = File.read("#{vdir}/custom/post_trailer.html") rescue RuneBlog::PostTrailer
+  head = File.read(vdir + "custom/post_header.html") rescue RuneBlog::PostHeader
+  tail = File.read(vdir + "custom/post_trailer.html") rescue RuneBlog::PostTrailer
   @posthead = interpolate(head)
   @posttail = interpolate(tail)
-  File.open("#{dir}/index.html", "w") do |f|
+  File.open(dir + "index.html", "w") do |f|
     f.puts @posthead
     f.puts @meta.body
     f.puts @posttail
@@ -229,17 +258,23 @@ end
 ### link_post
 
 def link_post(meta)
+  puts "  #{colored_slug(meta.slug)}"
   # First gather the views
   views = meta.views
-  views.each {|view| puts "Handling view '#{view}'"; link_post_view(view) }
+  print "       Views: "
+  views.each do |view| 
+    print "#{view} "
+    link_post_view(view)
+  end
+  puts
 end
 
 ### rebuild
 
 def rebuild
-  files = Dir.entries("#{@config.root}/src/").grep /\d\d\d\d.*.lt3$/
+  puts
+  files = Dir.entries("#@root/src/").grep /\d\d\d\d.*.lt3$/
   files.map! {|f| File.basename(f) }
-  files.each {|f| p f }
   files = files.sort.reverse
   files.each do |file|
     reload_post(file)
@@ -268,13 +303,13 @@ end
 def publish_post
   # Grab destination data
   # scp changed files over
-  puts "    Publish: Not implemented yet"
+# puts "    Publish: Not implemented yet"
 end
 
 ### list_views
 
 def list_views
-  read_config unless @config
+  abort "Config file not read"  unless @config
   puts
   @config.views.each {|v| puts "  #{v}" }
 end
@@ -299,13 +334,13 @@ def new_view(arg = nil)
   arg ||= ask("New view: ")  # check validity later
   raise "view #{arg} already exists" if @config.views.include?(arg)
 
-  dir = @config.root + "/views/" + arg
-  cmd = "mkdir -p #{dir}/custom"
+  dir = @root + "/views/" + arg + "/"
+  cmd = "mkdir -p #{dir + 'custom'}"
   system(cmd)
-  File.write("#{dir}/custom/blog_header.html",  RuneBlog::BlogHeader)
-  File.write("#{dir}/custom/blog_trailer.html", RuneBlog::BlogTrailer)
-  File.write("#{dir}/custom/post_header.html",  RuneBlog::PostHeader)
-  File.write("#{dir}/custom/post_trailer.html", RuneBlog::PostTrailer)
+  File.write(dir + "custom/blog_header.html",  RuneBlog::BlogHeader)
+  File.write(dir + "custom/blog_trailer.html", RuneBlog::BlogTrailer)
+  File.write(dir + "custom/post_header.html",  RuneBlog::PostHeader)
+  File.write(dir + "custom/post_trailer.html", RuneBlog::PostTrailer)
   @config.views << arg
 end
 
@@ -320,7 +355,7 @@ def import(arg = nil)
   @title = grep.sub(/^.title /, "")
   @slug = make_slug(@title)
   @fname = @slug + ".lt3"
-  system("cp #{name} #{@config.root}/src/#@fname")
+  system("cp #{name} #@root/src/#@fname")
   edit_post(@fname)
   process_post(@fname)
   if publish?
@@ -339,7 +374,7 @@ def new_post
 
   file = create_empty_post
   edit_post(file)
-# file = @config.root + "/src/" + file
+# file = @root + "/src/" + file
   process_post(file)  #- FIXME handle each view
   if publish?
     link_post(@meta)
@@ -354,7 +389,7 @@ end
 def remove_post(arg)
   id = Integer(arg) rescue raise("'#{arg}' is not an integer")
   tag = "#{'%04d' % id}-"
-  files = Find.find("#{@config.root}").to_a
+  files = Find.find(@root).to_a
   files = files.grep(/#{tag}/)
   if files.empty?
     puts red("\n  No such post found")
@@ -378,7 +413,7 @@ end
 ### list_posts
 
 def list_posts
-  dir = "#{@config.root}/views/#@view/"
+  dir = @config.viewdir(@view)
   Dir.chdir(dir) do
     posts = Dir.entries(".").grep(/^0.*/)
     puts
@@ -396,7 +431,7 @@ end
 ### list_drafts
 
 def list_drafts
-  dir = "#{@config.root}/src"
+  dir = "#@root/src"
   Dir.chdir(dir) do
     posts = Dir.entries(".").grep(/^0.*.lt3/)
     puts
