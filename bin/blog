@@ -9,7 +9,7 @@ trap("INT") { }
 def execute_command
   case @meth
     when :help, :quit, :new_post, :list_views, :relink, :rebuild, :version, 
-         :list_posts, :list_drafts, :do_nothing
+         :list_posts, :list_drafts, :do_nothing, :deploy
       self.send(@meth)
     when Object
       self.send(@meth, @arg)
@@ -68,6 +68,9 @@ def parse_cmd
       expected(1)
     when "rebuild"
       @meth = :rebuild
+      expected(1)
+    when "deploy"
+      @meth = :deploy
       expected(1)
     when "version"
       @meth = :version
@@ -152,6 +155,7 @@ def help
 
      relink            Regenerate index for all views
      rebuild           Regenerate all posts and relink
+     deploy            Deploy (current view)
   EOS
 end
 

@@ -5,6 +5,8 @@
  x default view in .blog
  x current view (all views?) into new post
 
+   Bug: deployed post is still mangled
+
    fix class structure!
    edit post
    special view 'all'

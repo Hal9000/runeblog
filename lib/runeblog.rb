@@ -1,6 +1,6 @@
 
 class RuneBlog
-  VERSION = "0.0.24"
+  VERSION = "0.0.25"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
   DefaultData = Path + "/../data"
@@ -161,13 +161,17 @@ def edit_post(file)
   system("vi #@root/src/#{file} +8 ")
 end
 
-def deploy(view)
+def deploy
   # TBD clunky FIXME 
-  deployment = @config.viewdir(view) + "deploy"
-  lines = File.readlines(deployment)
+  deployment = @config.viewdir(@view) + "deploy"
+  lines = File.readlines(deployment).map {|x| x.chomp }
   user, server, dir = *lines
-  files = 
-  cmd = "scp #{files.join(' ')} root@#{server}:#{dir}"
+  vdir = @config.viewdir(@view)
+  files = ["#{vdir}/index.html"]
+  files += Dir.entries(vdir).grep(/^\d\d\d\d/).map {|x| "#{vdir}/#{x}" }
+  cmd = "scp -r #{files.join(' ')} root@#{server}:#{dir}"
+  puts cmd
+  system(cmd)
 end
 
 ### process_post
