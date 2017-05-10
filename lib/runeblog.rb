@@ -1,6 +1,6 @@
 
 class RuneBlog
-  VERSION = "0.0.27"
+  VERSION = "0.0.28"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
   DefaultData = Path + "/../data"
@@ -190,11 +190,16 @@ def deploy
   vdir = @config.viewdir(@view)
   files = ["#{vdir}/index.html"]
   files += Dir.entries(vdir).grep(/^\d\d\d\d/).map {|x| "#{vdir}/#{x}" }
+  files.reject! {|f| File.mtime(f) < File.mtime("#{vdir}/last_deployed") }
+  puts "Files:"
+  files.each {|f| puts "  " + f }
+  puts
   dir = "#{sroot}/#{spath}"
   cmd = "scp -r #{files.join(' ')} root@#{server}:#{dir} >/dev/null 2>&1"
   print red("\n  Deploying #{files.size} files... ")
 # puts cmd
   system(cmd)
+  File.write("#{vdir}/last_deployed", files)
   puts red("finished.")
 end
 
@@ -370,6 +375,7 @@ def new_view(arg = nil)
   File.write(dir + "custom/blog_trailer.html", RuneBlog::BlogTrailer)
   File.write(dir + "custom/post_header.html",  RuneBlog::PostHeader)
   File.write(dir + "custom/post_trailer.html", RuneBlog::PostTrailer)
+  File.write(dir + "last_deployed", "Initial creation")
   @config.views << arg
 end
 
