@@ -1,14 +1,12 @@
 
 class RuneBlog
-  VERSION = "0.0.28"
+  VERSION = "0.0.29"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
   DefaultData = Path + "/../data"
 
-  BlogHeader  = File.read(DefaultData + "/blog_header.html")  rescue "not found"
-  BlogTrailer = File.read(DefaultData + "/blog_trailer.html") rescue "not found"
-  PostHeader  = File.read(DefaultData + "/post_header.html")  rescue "not found"
-  PostTrailer = File.read(DefaultData + "/post_trailer.html") rescue "not found"
+  BlogHeader  = File.read(DefaultData + "/custom/blog_header.html")  rescue "not found"
+  BlogTrailer = File.read(DefaultData + "/custom/blog_trailer.html") rescue "not found"
 end
 
 class RuneBlog::Config
@@ -191,8 +189,8 @@ def deploy
   files = ["#{vdir}/index.html"]
   files += Dir.entries(vdir).grep(/^\d\d\d\d/).map {|x| "#{vdir}/#{x}" }
   files.reject! {|f| File.mtime(f) < File.mtime("#{vdir}/last_deployed") }
-  puts "Files:"
-  files.each {|f| puts "  " + f }
+  puts "\n  Files:"
+  files.each {|f| puts "    " + f }
   puts
   dir = "#{sroot}/#{spath}"
   cmd = "scp -r #{files.join(' ')} root@#{server}:#{dir} >/dev/null 2>&1"
@@ -272,20 +270,11 @@ def link_post_view(view)
   vdir = @config.viewdir(view)
   dir = vdir + @meta.slug + "/"
   cmd = "mkdir -p #{dir}"    #-- FIXME what if this exists??
-# puts "    Running: #{cmd}"
   system(cmd)
   File.write("#{dir}/metadata.yaml", @meta.to_yaml)
-  # Add header/trailer to post index
-  head = File.read(vdir + "custom/post_header.html") rescue RuneBlog::PostHeader
-  tail = File.read(vdir + "custom/post_trailer.html") rescue RuneBlog::PostTrailer
-# STDERR.puts "lpv: meta = #{@meta.teaser.inspect}"
-  @posthead = interpolate(head)
-  @posttail = interpolate(tail)
-  File.open(dir + "index.html", "w") do |f|
-    f.puts @posthead
-    f.puts @meta.body
-    f.puts @posttail
-  end
+  template = File.read(vdir + "custom/post_template.html")
+  post = interpolate(template)
+  File.write(dir + "index.html", post)
   generate_index(view)
 end
 
@@ -373,8 +362,6 @@ def new_view(arg = nil)
   system(cmd)
   File.write(dir + "custom/blog_header.html",  RuneBlog::BlogHeader)
   File.write(dir + "custom/blog_trailer.html", RuneBlog::BlogTrailer)
-  File.write(dir + "custom/post_header.html",  RuneBlog::PostHeader)
-  File.write(dir + "custom/post_trailer.html", RuneBlog::PostTrailer)
   File.write(dir + "last_deployed", "Initial creation")
   @config.views << arg
 end

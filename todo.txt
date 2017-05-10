@@ -7,9 +7,12 @@
  x fix deployment
  x Bug: deployed post is still mangled
  x open remote/local?
+ x detect dirty files for deployment
+ x single template for post?
 
+   Bug: make sure teaser goes into body of post
+   get rid of #readmore
    possibly change: relink, rebuild, etc.?
-   detect dirty files for deployment
    fix class structure!
    edit post
    special view 'all'
@@ -18,7 +21,6 @@
    make templates .lt3 files?
    edit templates?
    snippets for templates?
-   single template for post?
    let main blog be named? call 'data' something else?
    error checking!
    
