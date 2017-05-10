@@ -4,24 +4,28 @@
  x append onto VERSION when creating blog
  x default view in .blog
  x current view (all views?) into new post
+ x fix deployment
+ x Bug: deployed post is still mangled
 
-   Bug: deployed post is still mangled
-
+   possibly change: relink, rebuild, etc.?
+   detect dirty files for deployment
    fix class structure!
    edit post
    special view 'all'
    other vars in .blog?
+   out-of-the-box workflow
+   open remote/local?
+   make templates .lt3 files?
+   edit templates?
+   snippets for templates?
+   single template for post?
    let main blog be named? call 'data' something else?
    error checking!
-   detect dirty files for publishing
-   fix publishing
    
    update docs
    video tutorial
    runeblog dependency on livetext
 
-   edit templates?
-   snippets for templates?
    undo last post?
    store in trash instead of deleting?
    

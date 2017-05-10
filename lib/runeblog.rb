@@ -1,6 +1,6 @@
 
 class RuneBlog
-  VERSION = "0.0.26"
+  VERSION = "0.0.27"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
   DefaultData = Path + "/../data"
@@ -109,7 +109,7 @@ def new_blog!
       File.open("data/VERSION", "a") {|f| f.puts "\nBlog created: " + Time.now.to_s }
     end
   end
-end
+end 
 
 ### make_slug
 
@@ -161,14 +161,36 @@ def edit_post(file)
   system("vi #@root/src/#{file} +8 ")
 end
 
+### open_remote
+
+def open_remote
+  @deploy ||= {}
+  unless @deploy[@view]
+    puts red("\n  Deploy first.")
+    return
+  end
+  lines = @deploy[@view]
+  user, server, sroot, spath = *lines
+  system("open 'http://#{server}/#{spath}'")
+end
+
+### open_local
+
+def open_local
+  system("open #{@config.viewdir(@view)}/index.html")
+end
+
 def deploy
   # TBD clunky FIXME 
+  @deploy ||= {}
   deployment = @config.viewdir(@view) + "deploy"
   lines = File.readlines(deployment).map {|x| x.chomp }
-  user, server, dir = *lines
+  @deploy[@view] = lines
+  user, server, sroot, spath = *lines
   vdir = @config.viewdir(@view)
   files = ["#{vdir}/index.html"]
   files += Dir.entries(vdir).grep(/^\d\d\d\d/).map {|x| "#{vdir}/#{x}" }
+  dir = "#{sroot}/#{spath}"
   cmd = "scp -r #{files.join(' ')} root@#{server}:#{dir} >/dev/null 2>&1"
   print red("\n  Deploying #{files.size} files... ")
 # puts cmd

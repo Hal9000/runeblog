@@ -9,7 +9,7 @@ trap("INT") { }
 def execute_command
   case @meth
     when :help, :quit, :new_post, :list_views, :relink, :rebuild, :version, 
-         :list_posts, :list_drafts, :do_nothing, :deploy
+         :list_posts, :list_drafts, :do_nothing, :deploy, :open_remote, :open_local
       self.send(@meth)
     when Object
       self.send(@meth, @arg)
@@ -75,6 +75,19 @@ def parse_cmd
     when "version"
       @meth = :version
       expected(1)
+    when "open"
+      case @words.size
+        when 1
+          @meth = :open_local
+        when 2
+          if @words[1] == "remote"
+            @meth = :open_remote
+          else
+            raise "Don't know '#{@words[1]}'"
+          end
+        else
+          raise "Don't understand '#{@words.join(' ')}'"
+      end
     when "cv"
       raise "Too many arguments" if @words.size > 2
       @meth = :change_view
