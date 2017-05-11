@@ -9,12 +9,19 @@
  x open remote/local?
  x detect dirty files for deployment
  x single template for post?
+ x get rid of #readmore
+ x Bug: make sure teaser goes into body of post
 
-   Bug: make sure teaser goes into body of post
-   get rid of #readmore
-   possibly change: relink, rebuild, etc.?
    fix class structure!
    edit post
+   runeblog dependency on livetext
+   Figure out links
+   Figure out assets
+   Figure out linked-list dependencies?
+   possibly change: relink, rebuild, etc.?
+   allow abbreviating view names
+   shorten commands?
+   true command line options?
    special view 'all'
    other vars in .blog?
    out-of-the-box workflow
@@ -26,7 +33,6 @@
    
    update docs
    video tutorial
-   runeblog dependency on livetext
 
    undo last post?
    store in trash instead of deleting?

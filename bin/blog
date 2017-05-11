@@ -2,9 +2,11 @@
 
 $: << "./lib"
 
-require 'runeblog'
+require 'repl'
 
 trap("INT") { }
+
+include RuneBlog::REPL
 
 def execute_command
   case @meth
