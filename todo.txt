@@ -16,6 +16,7 @@
  x edit post
  x auto-rebuild after post edit?
 
+   Bug: views are not working properly
    error checking!
    Figure out links
    Figure out assets
