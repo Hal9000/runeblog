@@ -1,6 +1,6 @@
 
 class RuneBlog
-  VERSION = "0.0.30"
+  VERSION = "0.0.31"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
   DefaultData = Path + "/../data"

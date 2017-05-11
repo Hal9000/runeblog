@@ -11,10 +11,12 @@
  x single template for post?
  x get rid of #readmore
  x Bug: make sure teaser goes into body of post
+ x runeblog dependency on livetext
+ x improve class structure!
+ x edit post
+ x auto-rebuild after post edit?
 
-   fix class structure!
-   edit post
-   runeblog dependency on livetext
+   error checking!
    Figure out links
    Figure out assets
    Figure out linked-list dependencies?
@@ -29,7 +31,6 @@
    edit templates?
    snippets for templates?
    let main blog be named? call 'data' something else?
-   error checking!
    
    update docs
    video tutorial

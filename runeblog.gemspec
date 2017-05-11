@@ -14,6 +14,7 @@ Gem::Specification.new do |s|
   s.authors     = ["Hal Fulton"]
   s.email       = 'rubyhacker@gmail.com'
   s.executables << "blog"
+  s.add_runtime_dependency "", [">= 0.8.18"]
 
   # Files...
   main = Find.find("bin").to_a + 
