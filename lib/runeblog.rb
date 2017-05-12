@@ -3,7 +3,7 @@ require 'yaml'
 require 'livetext'
 
 class RuneBlog
-  VERSION = "0.0.32"
+  VERSION = "0.0.33"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
   DefaultData = Path + "/../data"

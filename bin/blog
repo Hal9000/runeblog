@@ -38,107 +38,102 @@ end
 def do_nothing
 end
 
+def expect_w(meth)
+  @meth = meth
+  expected(1)
+end
+
+def expect_w_arg(meth, optional = false)
+  raise "Too many arguments" if @words.size > 2
+  @meth = meth
+  @arg = optional ? @words[1] : need_arg(1)
+end
+
+def handle_open
+  case @words.size
+    when 1
+      @meth = :open_local
+    when 2
+      if @words[1] == "remote"
+        @meth = :open_remote
+      else
+        raise "Don't know '#{@words[1]}'"
+      end
+    else
+      raise "Don't understand '#{@words.join(' ')}'"
+  end
+end
+
+def handle_list
+  case @words[1]
+    when "views"
+      @meth = :list_views
+      expected(2)
+    when "posts"
+      @meth = :list_posts
+      expected(2)
+    when "drafts"
+      @meth = :list_drafts
+     expected(2)
+    else 
+      @cmd = nil
+      raise "Unknown #{@words[1]}"
+  end
+end
+
+def handle_new
+  case @words[1]
+    when "view"
+      @meth = :new_view
+      expected(2)
+      @arg = need_arg(2)
+    when "post"
+      @meth = :new_post
+      expected(2)
+    else
+      @cmd = nil
+      raise "Unknown '#{@words[1]}'"
+  end
+end
+
+def handle_change
+  case @words[2]
+    when "view"
+      raise "Too many arguments" if @words.size > 3
+      @meth = :change_view
+      @arg = need_arg(2)
+    else
+      raise "Unknown '#{@words[1]}'"
+  end
+end
+
 def parse_cmd
   @cmd = gets.chomp
+  @arg = ""
   if @cmd == ""
     @meth = :do_nothing
     return @cmd
   end
-  @arg = ""
+
   @words = @cmd.split
   case @words.first
-    when "h", "help"
-      @meth = :help
-      expected(1)
-    when "q", "quit"
-      @meth = :quit
-      expected(1)
-    when "p", "post"
-      @meth = :new_post
-      expected(1)
-    when "lsv"
-      @meth = :list_views
-      expected(1)
-    when "lsp"
-      @meth = :list_posts
-      expected(1)
-    when "lsd"
-      @meth = :list_drafts
-      expected(1)
-    when "relink"
-      @meth = :relink
-      expected(1)
-    when "rebuild"
-      @meth = :rebuild
-      expected(1)
-    when "deploy"
-      @meth = :deploy
-      expected(1)
-    when "version"
-      @meth = :version
-      expected(1)
-    when "open"
-      case @words.size
-        when 1
-          @meth = :open_local
-        when 2
-          if @words[1] == "remote"
-            @meth = :open_remote
-          else
-            raise "Don't know '#{@words[1]}'"
-          end
-        else
-          raise "Don't understand '#{@words.join(' ')}'"
-      end
-    when "cv"
-      raise "Too many arguments" if @words.size > 2
-      @meth = :change_view
-      @arg = @words[1]
-    when "rm"
-      raise "Too many arguments" if @words.size > 2
-      @meth = :remove_post
-      @arg = need_arg(1)
-    when "e", "edit"
-      raise "Too many arguments" if @words.size > 2
-      @meth = :edit_post
-      @arg = need_arg(1)
-    when "list"
-      case @words[1]
-        when "views"
-          @meth = :list_views
-          expected(2)
-        when "posts"
-          @meth = :list_posts
-          expected(2)
-        when "drafts"
-          @meth = :list_drafts
-         expected(2)
-        else 
-          @cmd = nil
-          raise "Unknown #{@words[1]}"
-      end
-    when "new"
-      case @words[1]
-        when "view"
-          @meth = :new_view
-          expected(2)
-          @arg = need_arg(2)
-        when "post"
-          @meth = :new_post
-          expected(2)
-        else
-          @cmd = nil
-          raise "Unknown '#{@words[1]}'"
-      end
-    when "change"
-      case @words[2]
-        when "view"
-          raise "Too many arguments" if @words.size > 3
-          @meth = :change_view
-          @arg = need_arg(2)
-        else
-          raise "Unknown '#{@words[1]}'"
-      end
+    when "h", "help";  expect_w(:help)
+    when "q", "quit";  expect_w(:quit)
+    when "p", "post";  expect_w(:new_post)
+    when "lsv";        expect_w(:list_views)
+    when "lsp";        expect_w(:list_posts)
+    when "lsd";        expect_w(:list_drafts)
+    when "relink";     expect_w(:relink)
+    when "rebuild";    expect_w(:rebuild)
+    when "deploy";     expect_w(:deploy)
+    when "version";    expect_w(:version)
+    when "cv";         expect_w_arg(:change_view, true)
+    when "rm";         expect_w_arg(:remove_post)
+    when "e", "edit";  expect_w_arg(:edit_post)
+    when "open";       handle_open
+    when "list";       handle_list
+    when "new";        handle_new
+    when "change";     handle_change
     else 
       @cmd = nil
       raise "Unknown '#{@words[0]}'"
@@ -161,7 +156,7 @@ def help
      h, help           This message
      q, quit           Exit the program
 
-     change view       Change current view
+     change view VIEW  Change current view
      new view          Create a new view
      list views        List all views available
      lsv               Same as: list views
@@ -170,8 +165,12 @@ def help
      new post          Same as post (create a post)
      lsp, list posts   List posts in current view
      lsd, list drafts  List all posts regardless of view
-     rm                Remove a post
 
+     rm ID             Remove a post
+     edit ID           Edit a post
+
+     open              Look at current (local) view in browser
+     open remote       Look at current (deployed) view in browser
      relink            Regenerate index for all views
      rebuild           Regenerate all posts and relink
      deploy            Deploy (current view)

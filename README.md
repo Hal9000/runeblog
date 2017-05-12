@@ -32,6 +32,37 @@ But the important points are these:
  * Any post can easily be included in a single view, in more than one, or in all of them.
  * Each view can have its own look and feel, and it can be linked/published separately from the others.
  * Each view can be hosted in a different location and/or a different server and domain
+## The `blog environment
+There is a command-line tool called <tt>blog</tt> which is a REPL (read-eval-print loop). 
+The help message looks like this:
+<p>
+
+<pre>
+  Commands:
+
+     h, help           This message
+     q, quit           Exit the program
+
+     change view <i>view</i> Change current view
+     new view          Create a new view
+     list views        List all views available
+     lsv               Same as: list views
+
+     p, post           Create a new post
+     new post          Same as post (create a post)
+     lsp, list posts   List posts in current view
+     lsd, list drafts  List all posts regardless of view
+
+     rm <i>id</i>             Remove a post
+     edit <i>id</i>           Edit a post
+
+     open              Look at current (local) view in browser
+     open remote       Look at current (deployed) view in browser
+
+     relink            Regenerate index for all views
+     rebuild           Regenerate all posts and relink
+     deploy            Deploy (current view)
+</pre>
 ## More later...
 <b>To be continued</b>
 <p>
