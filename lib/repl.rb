@@ -56,7 +56,9 @@ module RuneBlog::REPL
       yn = ask(red("  No .blog found. Create new blog? "))
       if yn.upcase == "Y"
         #-- what if data already exists?
-        system("cp -r #{RuneBlog::DefaultData} .")
+        result = system("cp -r #{RuneBlog::DefaultData} .")
+        raise "Error copying default data" unless result
+
         File.open(".blog", "w") do |f| 
           f.puts "data" 
           f.puts "no_default"
@@ -64,6 +66,8 @@ module RuneBlog::REPL
         File.open("data/VERSION", "a") {|f| f.puts "\nBlog created: " + Time.now.to_s }
       end
     end
+  rescue => err
+    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
   end 
 
   ### make_slug
@@ -85,35 +89,43 @@ module RuneBlog::REPL
     @view = @config.view           # current view
     @sequence = @config.sequence
     @root = @config.root
+  rescue => err
+    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
   end
 
   ### create_empty_post
 
   def create_empty_post
     @template = <<-EOS
-  .mixin liveblog
+.mixin liveblog
 
-  .liveblog_version 
+.liveblog_version 
 
-  .title #@title
-  .pubdate #@date
-  .views #@view
+.title #@title
+.pubdate #@date
+.views #@view
 
-  Teaser goes here.
-  .readmore
-  Remainder of post goes here.
+.teaser
+Teaser goes here.
+.end
+Remainder of post goes here.
   EOS
 
     @slug = make_slug(@title)
     @fname = @slug + ".lt3"
     File.open("#@root/src/#@fname", "w") {|f| f.puts @template }
     @fname
+  rescue => err
+    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
   end
 
   ### edit_initial_post
 
   def edit_initial_post(file)
-    system("vi #@root/src/#{file} +8 ")
+    result = system("vi #@root/src/#{file} +8 ")
+    raise "Problem editing #@root/src/#{file}" unless result
+  rescue => err
+    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
   end
 
   ### open_remote
@@ -124,19 +136,27 @@ module RuneBlog::REPL
 
     lines = @deploy[@view]
     user, server, sroot, spath = *lines
-    system("open 'http://#{server}/#{spath}'")
+    result = system("open 'http://#{server}/#{spath}'")
+    raise "Problem opening http://#{server}/#{spath}" unless result
+  rescue => err
+    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
   end
 
   ### open_local
 
   def open_local
     system("open #{@config.viewdir(@view)}/index.html")
+    raise "Problem opening #{@config.viewdir(@view)}/index.html" unless result
+  rescue => err
+    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
   end
 
   def deploy
     # TBD clunky FIXME 
     @deploy ||= {}
     deployment = @config.viewdir(@view) + "deploy"
+    raise "File '#{deployment}' not found" unless File.exist?(deployment)
+
     lines = File.readlines(deployment).map {|x| x.chomp }
     @deploy[@view] = lines
     user, server, sroot, spath = *lines
@@ -148,12 +168,18 @@ module RuneBlog::REPL
     files.each {|f| puts "    " + f }
     puts
     dir = "#{sroot}/#{spath}"
+    # FIXME - may or may not already exist
+    result = system("ssh root@#{server} mkdir #{dir}") 
+
     cmd = "scp -r #{files.join(' ')} root@#{server}:#{dir} >/dev/null 2>&1"
     print red("\n  Deploying #{files.size} files... ")
-  # puts cmd
-    system(cmd)
+    result = system(cmd)
+    raise "Problem occurred in deployment" unless result
+
     File.write("#{vdir}/last_deployed", files)
     puts red("finished.")
+  rescue => err
+    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
   end
 
   ### process_post
@@ -164,9 +190,13 @@ module RuneBlog::REPL
   # puts "  Processing: #{Dir.pwd} :: #{file}"
     path = @root + "/src/#{file}"
     @meta = @main.process_file(path)
+    raise "process_file returned nil" if @meta.nil?
+
     @meta.slug = make_slug(@meta.title, @config.sequence)
     @meta.slug = file.sub(/.lt3$/, "")
     @meta
+  rescue => err
+    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
   end
 
   ### reload_post
@@ -177,6 +207,8 @@ module RuneBlog::REPL
     @meta = process_post(file)
     @meta.slug = file.sub(/.lt3$/, "")
     @meta
+  rescue => err
+    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
   end
 
   ### posting
@@ -216,6 +248,8 @@ module RuneBlog::REPL
       posts.each {|post| f.puts posting(view, post) }
       f.puts @blogtail
     end
+  rescue => err
+    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
   end
 
   ### link_post_view
@@ -225,13 +259,16 @@ module RuneBlog::REPL
     vdir = @config.viewdir(view)
     dir = vdir + @meta.slug + "/"
     cmd = "mkdir -p #{dir}"
-    system(cmd) unless File.exist?(dir) and File.directory?(dir)
+    result = system(cmd) unless File.exist?(dir) and File.directory?(dir)
+    raise "Can't create #{dir}" unless result
 
     File.write("#{dir}/metadata.yaml", @meta.to_yaml)
     template = File.read(vdir + "custom/post_template.html")
     post = interpolate(template)
     File.write(dir + "index.html", post)
     generate_index(view)
+  rescue => err
+    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
   end
 
   ### link_post
@@ -246,6 +283,8 @@ module RuneBlog::REPL
       link_post_view(view)
     end
     puts
+  rescue => err
+    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
   end
 
   ### rebuild_post
@@ -254,6 +293,8 @@ module RuneBlog::REPL
     reload_post(file)
     link_post(@meta)       # FIXME ??
     publish_post
+  rescue => err
+    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
   end
 
   ### rebuild
@@ -264,12 +305,16 @@ module RuneBlog::REPL
     files.map! {|f| File.basename(f) }
     files = files.sort.reverse
     files.each {|file| rebuild_post(file) }
+  rescue => err
+    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
   end
 
   ### relink
 
   def relink
     @config.views.each {|view| generate_index(view) }
+  rescue => err
+    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
   end
 
   ### publish?
@@ -293,6 +338,8 @@ module RuneBlog::REPL
     abort "Config file not read"  unless @config
     puts
     @config.views.each {|v| puts "  #{v}" }
+  rescue => err
+    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
   end
 
   ### change_view
@@ -305,6 +352,8 @@ module RuneBlog::REPL
     else
       puts "view #{arg.inspect} does not exist"
     end
+  rescue => err
+    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
   end
 
   ### new_view
@@ -317,11 +366,15 @@ module RuneBlog::REPL
 
     dir = @root + "/views/" + arg + "/"
     cmd = "mkdir -p #{dir + 'custom'}"
-    system(cmd)
+    result = system(cmd)
+    raise "Could not create #{dir}/custom" unless result
+
     File.write(dir + "custom/blog_header.html",  RuneBlog::BlogHeader)
     File.write(dir + "custom/blog_trailer.html", RuneBlog::BlogTrailer)
     File.write(dir + "last_deployed", "Initial creation")
     @config.views << arg
+  rescue => err
+    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
   end
 
   ### import
@@ -335,13 +388,17 @@ module RuneBlog::REPL
     @title = grep.sub(/^.title /, "")
     @slug = make_slug(@title)
     @fname = @slug + ".lt3"
-    system("cp #{name} #@root/src/#@fname")
+    result = system("cp #{name} #@root/src/#@fname")
+    raise "Could not copy #{name} to #@root/src/#@fname" unless result
+
     edit_initial_post(@fname)
     process_post(@fname)
     if publish?
       link_post(@meta)
       publish_post
     end
+  rescue => err
+    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
   end
 
   ### new_post
@@ -360,6 +417,8 @@ module RuneBlog::REPL
       link_post(@meta)
       publish_post
     end
+  rescue => err
+    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
   end
 
   ### remove_post
@@ -378,7 +437,9 @@ module RuneBlog::REPL
     ques = files.size > 1 ? "\n  Delete all these? " : "\n  Delete? "
     yn = ask red(ques)
     if yn.downcase == "y"   #-- maybe implement trash later?
-      system("rm -rf #{files.join(' ')}")
+      result = system("rm -rf #{files.join(' ')}")
+      raise "Problem deleting file(s)" unless result
+
       puts red("\n  Deleted")
     else
       puts red("\n  No action taken")
@@ -402,7 +463,9 @@ module RuneBlog::REPL
     return puts red("\n  No such post found") if files.empty?
 
     file = files.first
-    system("vi #@root/src/#{file}")
+    result = system("vi #@root/src/#{file}")
+    raise "Problem editing #{file}" unless result
+
     rebuild_post(file)
   rescue => err
     puts err
