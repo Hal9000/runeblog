@@ -80,7 +80,7 @@ module RuneBlog::REPL
     # Crude - FIXME later
     cfg_file = ".blog"
     new_blog! unless File.exist?(cfg_file)
-    @config = RuneBlog::Config.new(".blog")
+    @config = RuneBlog::Config.new(cfg_file)
 
     @view = @config.view           # current view
     @sequence = @config.sequence
@@ -120,10 +120,8 @@ module RuneBlog::REPL
 
   def open_remote
     @deploy ||= {}
-    unless @deploy[@view]
-      puts red("\n  Deploy first.")
-      return
-    end
+    return puts red("\n  Deploy first.") unless @deploy[@view]
+
     lines = @deploy[@view]
     user, server, sroot, spath = *lines
     system("open 'http://#{server}/#{spath}'")
@@ -226,8 +224,9 @@ module RuneBlog::REPL
     # Create dir using slug (index.html, metadata?)
     vdir = @config.viewdir(view)
     dir = vdir + @meta.slug + "/"
-    cmd = "mkdir -p #{dir}"    #-- FIXME what if this exists??
-    system(cmd)
+    cmd = "mkdir -p #{dir}"
+    system(cmd) unless File.exist?(dir) and File.directory?(dir)
+
     File.write("#{dir}/metadata.yaml", @meta.to_yaml)
     template = File.read(vdir + "custom/post_template.html")
     post = interpolate(template)
@@ -372,10 +371,8 @@ module RuneBlog::REPL
     tag = "#{'%04d' % id}-"
     files = Find.find(@root).to_a
     files = files.grep(/#{tag}/)
-    if files.empty?
-      puts red("\n  No such post found")
-      return
-    end
+    return puts red("\n  No such post found") if files.empty?
+
     puts
     files.each {|f| puts "  #{f}" }
     ques = files.size > 1 ? "\n  Delete all these? " : "\n  Delete? "
@@ -401,14 +398,8 @@ module RuneBlog::REPL
     files = Find.find(@root+"/src").to_a
     files = files.grep(/#{tag}/)
     files = files.map {|f| File.basename(f) }
-    if files.size > 1
-      puts red("Multiple files: #{files}") 
-      return
-    end
-    if files.empty?
-      puts red("\n  No such post found")
-      return
-    end
+    return puts red("Multiple files: #{files}") if files.size > 1
+    return puts red("\n  No such post found") if files.empty?
 
     file = files.first
     system("vi #@root/src/#{file}")
@@ -424,10 +415,10 @@ module RuneBlog::REPL
     dir = @config.viewdir(@view)
     Dir.chdir(dir) do
       posts = Dir.entries(".").grep(/^0.*/)
-      puts
       if posts.empty?
-        puts "  No posts"
+        puts "\n  " + @view + ":" + red("  No posts")
       else
+        puts "\n  " + @view + ":\n "
         posts.each {|post| puts "  #{colored_slug(post)}" }
       end
     end
@@ -444,7 +435,7 @@ module RuneBlog::REPL
       posts = Dir.entries(".").grep(/^0.*.lt3/)
       puts
       if posts.empty?
-        puts "  No posts"
+        puts red("  No posts")
       else
         posts.each {|post| puts "  #{colored_slug(post.sub(/.lt3$/, ""))}" }
       end
