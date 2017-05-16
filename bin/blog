@@ -107,6 +107,11 @@ def handle_change
   end
 end
 
+def handle_multi_rm
+  raise "Need at least one arg" unless @words.size >= 2
+  @words[1..-1].each {|arg| remove_post(arg) }
+end
+
 def parse_cmd
   @cmd = gets.chomp
   @arg = ""
@@ -129,6 +134,7 @@ def parse_cmd
     when "version";    expect_w(:version)
     when "cv";         expect_w_arg(:change_view, true)
     when "rm";         expect_w_arg(:remove_post)
+    when "kill";       handle_multi_rm
     when "e", "edit";  expect_w_arg(:edit_post)
     when "open";       handle_open
     when "list";       handle_list

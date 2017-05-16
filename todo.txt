@@ -15,14 +15,15 @@
  x improve class structure!
  x edit post
  x auto-rebuild after post edit?
+ x error checking!
+ x Bug: views are not working properly
+ x Figure out links
+ x allow abbreviating view names
+ x delete multiple posts
 
-   Bug: views are not working properly
-   error checking!
-   Figure out links
    Figure out assets
    Figure out linked-list dependencies?
    possibly change: relink, rebuild, etc.?
-   allow abbreviating view names
    shorten commands?
    true command line options?
    special view 'all'

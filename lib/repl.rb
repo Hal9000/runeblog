@@ -145,7 +145,7 @@ Remainder of post goes here.
   ### open_local
 
   def open_local
-    system("open #{@config.viewdir(@view)}/index.html")
+    result = system("open #{@config.viewdir(@view)}/index.html")
     raise "Problem opening #{@config.viewdir(@view)}/index.html" unless result
   rescue => err
     puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
@@ -164,6 +164,8 @@ Remainder of post goes here.
     files = ["#{vdir}/index.html"]
     files += Dir.entries(vdir).grep(/^\d\d\d\d/).map {|x| "#{vdir}/#{x}" }
     files.reject! {|f| File.mtime(f) < File.mtime("#{vdir}/last_deployed") }
+    return puts red("\n  No files to deploy") if files.empty?
+
     puts "\n  Files:"
     files.each {|f| puts "    " + f }
     puts
@@ -258,9 +260,11 @@ Remainder of post goes here.
     # Create dir using slug (index.html, metadata?)
     vdir = @config.viewdir(view)
     dir = vdir + @meta.slug + "/"
-    cmd = "mkdir -p #{dir}"
-    result = system(cmd) unless File.exist?(dir) and File.directory?(dir)
-    raise "Can't create #{dir}" unless result
+    unless File.exist?(dir) and File.directory?(dir)
+      cmd = "mkdir -p #{dir}"
+      result = system(cmd) 
+      raise "Can't create #{dir}" unless result
+    end
 
     File.write("#{dir}/metadata.yaml", @meta.to_yaml)
     template = File.read(vdir + "custom/post_template.html")
@@ -347,10 +351,14 @@ Remainder of post goes here.
   def change_view(arg = nil)
     if arg.nil?
       puts "\n  #@view"
-    elsif @config.views.include?(arg)
-      @view = arg
     else
-      puts "view #{arg.inspect} does not exist"
+      list = @config.views.grep /^#{arg}/
+      if list.size == 1
+        @view = list.first
+        puts red("\n  View: #{@view}") if arg != @view
+      else
+        puts "view #{arg.inspect} does not exist"
+      end
     end
   rescue => err
     puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
@@ -421,28 +429,38 @@ Remainder of post goes here.
     puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
   end
 
+  ### remove_multiple_posts
+
+  def remove_multiple_posts(*args)
+    args.each {|arg| remove_post(arg, false) }
+  end
+
   ### remove_post
 
   #-- FIXME affects linking, building, deployment...
 
-  def remove_post(arg)
+  def remove_post(arg, safe=true)
     id = Integer(arg) rescue raise("'#{arg}' is not an integer")
     tag = "#{'%04d' % id}-"
     files = Find.find(@root).to_a
     files = files.grep(/#{tag}/)
     return puts red("\n  No such post found") if files.empty?
 
-    puts
-    files.each {|f| puts "  #{f}" }
-    ques = files.size > 1 ? "\n  Delete all these? " : "\n  Delete? "
-    yn = ask red(ques)
-    if yn.downcase == "y"   #-- maybe implement trash later?
-      result = system("rm -rf #{files.join(' ')}")
-      raise "Problem deleting file(s)" unless result
-
-      puts red("\n  Deleted")
+    if safe
+      puts
+      files.each {|f| puts "  #{f}" }
+      ques = files.size > 1 ? "\n  Delete all these? " : "\n  Delete? "
+      yn = ask red(ques)
+      if yn.downcase == "y"
+        result = system("rm -rf #{files.join(' ')}")
+        raise "Problem deleting file(s)" unless result
+        puts red("\n  Deleted")
+      else
+        puts red("\n  No action taken")
+      end
     else
-      puts red("\n  No action taken")
+      result = system("rm -rf #{files.join(' ')}")
+      raise "Problem mass-deleting file(s)" unless result
     end
   rescue => err
     puts err
