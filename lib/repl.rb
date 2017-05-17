@@ -254,18 +254,21 @@ Remainder of post goes here.
     puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
   end
 
+  ### create_dir
+
+  def create_dir
+    cmd = "mkdir -p #{dir} >/dev/null 2>&1"
+    result = system(cmd) 
+    raise "Can't create #{dir}" unless result
+  end
+
   ### link_post_view
 
   def link_post_view(view)
     # Create dir using slug (index.html, metadata?)
     vdir = @config.viewdir(view)
     dir = vdir + @meta.slug + "/"
-    unless File.exist?(dir) and File.directory?(dir)
-      cmd = "mkdir -p #{dir}"
-      result = system(cmd) 
-      raise "Can't create #{dir}" unless result
-    end
-
+    create_dir(dir + "assets") 
     File.write("#{dir}/metadata.yaml", @meta.to_yaml)
     template = File.read(vdir + "custom/post_template.html")
     post = interpolate(template)
@@ -273,6 +276,22 @@ Remainder of post goes here.
     generate_index(view)
   rescue => err
     puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
+  end
+
+  ### find_asset
+
+  def find_asset(asset, views)
+    STDERR.puts "  Search #{@meta.slug}"
+    views.each {|view| STDERR.puts "  Search #{view}" }
+    STDERR.puts "  Search #@root"
+  end
+
+  ### find_all_assets
+
+  def find_all_assets(list, views)
+    STDERR.puts "\n  Called find_assets with #{list.inspect}"
+    list ||= []
+    list.each {|asset| find_asset(asset, views) }
   end
 
   ### publish_post
@@ -286,6 +305,7 @@ Remainder of post goes here.
       print "#{view} "
       link_post_view(view)
     end
+    assets = find_assets(@meta.assets, views)
     puts
   rescue => err
     puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
@@ -364,9 +384,8 @@ Remainder of post goes here.
     raise "view #{arg} already exists" if @config.views.include?(arg)
 
     dir = @root + "/views/" + arg + "/"
-    cmd = "mkdir -p #{dir + 'custom'}"
-    result = system(cmd)
-    raise "Could not create #{dir}/custom" unless result
+    create_dir(dir + 'custom')
+    create_dir(dir + 'assets')
 
     File.write(dir + "custom/blog_header.html",  RuneBlog::BlogHeader)
     File.write(dir + "custom/blog_trailer.html", RuneBlog::BlogTrailer)

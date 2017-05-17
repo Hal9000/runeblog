@@ -6,6 +6,7 @@ Problem: How to handle assets?
   - keep manifests?
   - use a .asset command?
   - assets directories at each level?
+  - assets under src???
 
 
 
