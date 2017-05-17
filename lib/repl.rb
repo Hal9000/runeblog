@@ -256,7 +256,7 @@ Remainder of post goes here.
 
   ### create_dir
 
-  def create_dir
+  def create_dir(dir)
     cmd = "mkdir -p #{dir} >/dev/null 2>&1"
     result = system(cmd) 
     raise "Can't create #{dir}" unless result
@@ -281,17 +281,33 @@ Remainder of post goes here.
   ### find_asset
 
   def find_asset(asset, views)
-    STDERR.puts "  Search #{@meta.slug}"
-    views.each {|view| STDERR.puts "  Search #{view}" }
-    STDERR.puts "  Search #@root"
+    views.each do |view| 
+      vdir = @config.viewdir(view)
+      post_dir = "#{vdir}#{@meta.slug}/assets/"
+      path = post_dir + asset
+      STDERR.puts "  Seeking #{path}"
+      return path if File.exist?(path)
+    end
+    views.each do |view| 
+      dir = @config.viewdir(view) + "/assets/"
+      path = dir + asset
+      STDERR.puts "  Seeking #{path}"
+      return path if File.exist?(path)
+    end
+    top = @root + "/assets/"
+    path = top + asset
+    STDERR.puts "  Seeking #{path}"
+    return path if File.exist?(path)
+
+    return nil
   end
 
   ### find_all_assets
 
   def find_all_assets(list, views)
-    STDERR.puts "\n  Called find_assets with #{list.inspect}"
+    STDERR.puts "\n  Called find_all_assets with #{list.inspect}"
     list ||= []
-    list.each {|asset| find_asset(asset, views) }
+    list.each {|asset| puts "#{asset} => #{find_asset(asset, views)}" }
   end
 
   ### publish_post
@@ -305,10 +321,11 @@ Remainder of post goes here.
       print "#{view} "
       link_post_view(view)
     end
-    assets = find_assets(@meta.assets, views)
+    assets = find_all_assets(@meta.assets, views)
     puts
   rescue => err
     puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
+    puts err.backtrace
   end
 
   ### rebuild_post
