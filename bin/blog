@@ -109,11 +109,12 @@ end
 
 def handle_multi_rm
   raise "Need at least one arg" unless @words.size >= 2
-  @words[1..-1].each {|arg| remove_post(arg) }
+  @arg = @words[1..-1].join(" ")
+  @meth = :remove_multiple_posts
 end
 
-def parse_cmd
-  @cmd = gets.chomp
+def parse_cmd(str)
+  @cmd = str
   @arg = ""
   if @cmd == ""
     @meth = :do_nothing
@@ -198,7 +199,7 @@ if @cmd.nil?   # REPL
   loop do
     print red("blog> ")
     begin
-      @cmd = parse_cmd
+      parse_cmd(gets.chomp)
     rescue => err
       puts err
       next 
@@ -208,5 +209,6 @@ if @cmd.nil?   # REPL
 else  # one command
   file = File.open("/dev/tty")
   STDIN.reopen(file)    # avoid ARGF dumbness
+  parse_cmd(ARGV.join(" "))
   execute_command
 end

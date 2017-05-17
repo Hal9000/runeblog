@@ -1,0 +1,21 @@
+Problem: How to handle assets?
+  - avoid duplicating them
+  - hierarchy? global, view, post?
+  - upload as needed
+  - flag when missing
+  - keep manifests?
+  - use a .asset command?
+  - assets directories at each level?
+
+
+
+Logic:
+  Post is being published
+  Asset reference is detected
+  Check if there's already a local one?
+  Check the view?
+  Check global?
+  If not available, complain
+  If available, handle in publish *and* deploy
+  Write to manifest?
+  Asset inheritance depends on deployment server?

@@ -275,9 +275,9 @@ Remainder of post goes here.
     puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
   end
 
-  ### link_post
+  ### publish_post
 
-  def link_post(meta)
+  def publish_post(meta)
     puts "  #{colored_slug(meta.slug)}"
     # First gather the views
     views = meta.views
@@ -295,8 +295,7 @@ Remainder of post goes here.
   
   def rebuild_post(file)
     reload_post(file)
-    link_post(@meta)       # FIXME ??
-    publish_post
+    publish_post(@meta)       # FIXME ??
   rescue => err
     puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
   end
@@ -321,20 +320,12 @@ Remainder of post goes here.
     puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
   end
 
-  ### publish?
-
-  def publish?
-    yn = ask(red("  Publish? y/n "))
-    yn.upcase == "Y"
-  end
-
-  ### publish_post
-
-  def publish_post
-    # Grab destination data
-    # scp changed files over
-  # puts "    Publish: Not implemented yet"
-  end
+#  ### publish?
+#
+#  def publish?
+#    yn = ask(red("  Publish? y/n "))
+#    yn.upcase == "Y"
+#  end
 
   ### list_views
 
@@ -401,10 +392,7 @@ Remainder of post goes here.
 
     edit_initial_post(@fname)
     process_post(@fname)
-    if publish?
-      link_post(@meta)
-      publish_post
-    end
+    publish_post(@meta) # if publish?
   rescue => err
     puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
   end
@@ -421,17 +409,15 @@ Remainder of post goes here.
     edit_initial_post(file)
   # file = @root + "/src/" + file
     process_post(file)  #- FIXME handle each view
-    if publish?
-      link_post(@meta)
-      publish_post
-    end
+    publish_post(@meta) # if publish?
   rescue => err
     puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
   end
 
   ### remove_multiple_posts
-
-  def remove_multiple_posts(*args)
+  
+  def remove_multiple_posts(str)
+    args = str.split
     args.each {|arg| remove_post(arg, false) }
   end
 
@@ -444,7 +430,7 @@ Remainder of post goes here.
     tag = "#{'%04d' % id}-"
     files = Find.find(@root).to_a
     files = files.grep(/#{tag}/)
-    return puts red("\n  No such post found") if files.empty?
+    return puts red("\n  No such post found (#{tag})") if files.empty?
 
     if safe
       puts
@@ -460,6 +446,8 @@ Remainder of post goes here.
       end
     else
       result = system("rm -rf #{files.join(' ')}")
+      puts red("\n  Deleted:")
+      files.each {|f| puts "    #{f}" }
       raise "Problem mass-deleting file(s)" unless result
     end
   rescue => err
@@ -478,7 +466,7 @@ Remainder of post goes here.
     files = files.grep(/#{tag}/)
     files = files.map {|f| File.basename(f) }
     return puts red("Multiple files: #{files}") if files.size > 1
-    return puts red("\n  No such post found") if files.empty?
+    return puts red("\n  No such post found (#{tag})") if files.empty?
 
     file = files.first
     result = system("vi #@root/src/#{file}")

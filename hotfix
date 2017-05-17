@@ -6,6 +6,10 @@ lib = RuneBlog::Path
 puts "path is: #{lib}"
 
 system("cp lib/* #{lib}/")
-# system("cp dsl/* #{lib}/../dsl/")
-# system("cp test/*rb #{lib}/../test/")
-system("cp bin/* #{lib}/../bin/")
+# system("cp dsl/* #{lib}/dsl/")
+# system("cp test/*rb #{lib}/test/")
+
+# Exception in dir structure
+cmd = "cp bin/* #{lib.sub(/lib$/, "bin/")}"
+puts cmd
+system(cmd)
