@@ -20,9 +20,10 @@
  x Figure out links
  x allow abbreviating view names
  x delete multiple posts
+ x Figure out assets
 
-   Figure out assets
-   Figure out linked-list dependencies?
+   $$asset function 
+
    possibly change: relink, rebuild, etc.?
    shorten commands?
    true command line options?
@@ -39,5 +40,6 @@
 
    undo last post?
    store in trash instead of deleting?
+   figure out linked-list dependencies?
    
    distinguish unpublished?

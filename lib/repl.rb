@@ -89,6 +89,7 @@ module RuneBlog::REPL
     @view = @config.view           # current view
     @sequence = @config.sequence
     @root = @config.root
+    @config
   rescue => err
     puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
   end
@@ -199,6 +200,8 @@ Remainder of post goes here.
     @meta
   rescue => err
     puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
+    puts err.backtrace
+    puts
   end
 
   ### reload_post
@@ -321,7 +324,7 @@ Remainder of post goes here.
       print "#{view} "
       link_post_view(view)
     end
-    assets = find_all_assets(@meta.assets, views)
+#   assets = find_all_assets(@meta.assets, views)
     puts
   rescue => err
     puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
