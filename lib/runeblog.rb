@@ -3,7 +3,7 @@ require 'yaml'
 require 'livetext'
 
 class RuneBlog
-  VERSION = "0.0.41"
+  VERSION = "0.0.42"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
   DefaultData = Path + "/../data"
@@ -14,6 +14,7 @@ end
 
 class RuneBlog::Config
   attr_reader :root, :views, :view, :sequence
+  attr_writer :view  # FIXME
 
   def initialize(cfg_file = ".blog")
     # What views are there? Deployment, etc.

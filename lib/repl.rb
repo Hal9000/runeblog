@@ -68,6 +68,7 @@ module RuneBlog::REPL
     end
   rescue => err
     puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
+    puts err.backtrace
   end 
 
   ### make_slug
@@ -92,6 +93,7 @@ module RuneBlog::REPL
     @config
   rescue => err
     puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
+    puts err.backtrace
   end
 
   ### create_empty_post
@@ -99,8 +101,6 @@ module RuneBlog::REPL
   def create_empty_post
     @template = <<-EOS
 .mixin liveblog
-
-.liveblog_version 
 
 .title #@title
 .pubdate #@date
@@ -118,6 +118,7 @@ Remainder of post goes here.
     @fname
   rescue => err
     puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
+    puts err.backtrace
   end
 
   ### edit_initial_post
@@ -127,6 +128,7 @@ Remainder of post goes here.
     raise "Problem editing #@root/src/#{file}" unless result
   rescue => err
     puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
+    puts err.backtrace
   end
 
   ### open_remote
@@ -141,6 +143,7 @@ Remainder of post goes here.
     raise "Problem opening http://#{server}/#{spath}" unless result
   rescue => err
     puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
+    puts err.backtrace
   end
 
   ### open_local
@@ -150,6 +153,7 @@ Remainder of post goes here.
     raise "Problem opening #{@config.viewdir(@view)}/index.html" unless result
   rescue => err
     puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
+    puts err.backtrace
   end
 
   def deploy
@@ -183,6 +187,7 @@ Remainder of post goes here.
     puts red("finished.")
   rescue => err
     puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
+    puts err.backtrace
   end
 
   ### process_post
@@ -190,9 +195,8 @@ Remainder of post goes here.
   def process_post(file)
     @main ||= Livetext.new
     @main.main.output = File.new("/tmp/WHOA","w")
-  # puts "  Processing: #{Dir.pwd} :: #{file}"
     path = @root + "/src/#{file}"
-    @meta = @main.process_file(path)
+    @meta = @main.process_file(path, binding)
     raise "process_file returned nil" if @meta.nil?
 
     @meta.slug = make_slug(@meta.title, @config.sequence)
@@ -255,6 +259,7 @@ Remainder of post goes here.
     end
   rescue => err
     puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
+    puts err.backtrace
   end
 
   ### create_dir
@@ -279,11 +284,14 @@ Remainder of post goes here.
     generate_index(view)
   rescue => err
     puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
+    puts err.backtrace
   end
 
   ### find_asset
 
-  def find_asset(asset, views)
+  def find_asset(asset)    # , views)
+# STDERR.puts "repl find_asset: @meta = #{@meta.inspect}"
+    views = @meta.views
     views.each do |view| 
       vdir = @config.viewdir(view)
       post_dir = "#{vdir}#{@meta.slug}/assets/"
@@ -308,7 +316,7 @@ Remainder of post goes here.
   ### find_all_assets
 
   def find_all_assets(list, views)
-    STDERR.puts "\n  Called find_all_assets with #{list.inspect}"
+#   STDERR.puts "\n  Called find_all_assets with #{list.inspect}"
     list ||= []
     list.each {|asset| puts "#{asset} => #{find_asset(asset, views)}" }
   end
@@ -338,6 +346,7 @@ Remainder of post goes here.
     publish_post(@meta)       # FIXME ??
   rescue => err
     puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
+    puts err.backtrace
   end
 
   ### rebuild
@@ -350,6 +359,7 @@ Remainder of post goes here.
     files.each {|file| rebuild_post(file) }
   rescue => err
     puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
+    puts err.backtrace
   end
 
   ### relink
@@ -358,6 +368,7 @@ Remainder of post goes here.
     @config.views.each {|view| generate_index(view) }
   rescue => err
     puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
+    puts err.backtrace
   end
 
 #  ### publish?
@@ -375,6 +386,7 @@ Remainder of post goes here.
     @config.views.each {|v| puts "  #{v}" }
   rescue => err
     puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
+    puts err.backtrace
   end
 
   ### change_view
@@ -385,7 +397,7 @@ Remainder of post goes here.
     else
       list = @config.views.grep /^#{arg}/
       if list.size == 1
-        @view = list.first
+        @view = @config.view = list.first
         puts red("\n  View: #{@view}") if arg != @view
       else
         puts "view #{arg.inspect} does not exist"
@@ -393,6 +405,7 @@ Remainder of post goes here.
     end
   rescue => err
     puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
+    puts err.backtrace
   end
 
   ### new_view
@@ -413,6 +426,7 @@ Remainder of post goes here.
     @config.views << arg
   rescue => err
     puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
+    puts err.backtrace
   end
 
   ### import
@@ -434,6 +448,7 @@ Remainder of post goes here.
     publish_post(@meta) # if publish?
   rescue => err
     puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
+    puts err.backtrace
   end
 
   ### new_post
@@ -451,6 +466,7 @@ Remainder of post goes here.
     publish_post(@meta) # if publish?
   rescue => err
     puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
+    puts err.backtrace
   end
 
   ### remove_multiple_posts
@@ -491,6 +507,7 @@ Remainder of post goes here.
     end
   rescue => err
     puts err
+    puts err.backtrace
     puts
   end
 
@@ -514,6 +531,7 @@ Remainder of post goes here.
     rebuild_post(file)
   rescue => err
     puts err
+    puts err.backtrace
     puts
   end
 
@@ -532,6 +550,7 @@ Remainder of post goes here.
     end
   rescue 
     puts "Oops? cwd = #{Dir.pwd}   dir = #{dir}"
+    puts err.backtrace
     exit
   end
 
@@ -550,6 +569,7 @@ Remainder of post goes here.
     end
   rescue 
     puts "Oops? cwd = #{Dir.pwd}   dir = #{dir}"
+    puts err.backtrace
     exit
   end
 

@@ -21,9 +21,9 @@
  x allow abbreviating view names
  x delete multiple posts
  x Figure out assets
+ x $$asset function 
 
-   $$asset function 
-
+   maybe add deployment info to config?
    possibly change: relink, rebuild, etc.?
    shorten commands?
    true command line options?
