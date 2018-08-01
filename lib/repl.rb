@@ -1,5 +1,7 @@
 require 'runeblog'
 
+require 'ostruct'
+
 module RuneBlog::REPL
 
   def clear
@@ -27,6 +29,14 @@ module RuneBlog::REPL
     red(slug[0..3])+blue(slug[4..-1])
   end
 
+  ### error
+
+  def error(err, line, file)
+    str = "\n  Error: (line #{line} of #{File.basename(file)})  " 
+    str << err.to_s
+    puts red(str)
+    puts err.backtrace
+  end
 
   ### ask
 
@@ -67,8 +77,7 @@ module RuneBlog::REPL
       end
     end
   rescue => err
-    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
-    puts err.backtrace
+    error(err, __LINE__, __FILE__)
   end 
 
   ### make_slug
@@ -92,8 +101,7 @@ module RuneBlog::REPL
     @root = @config.root
     @config
   rescue => err
-    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
-    puts err.backtrace
+    error(err, __LINE__, __FILE__)
   end
 
   ### create_empty_post
@@ -117,8 +125,7 @@ Remainder of post goes here.
     File.open("#@root/src/#@fname", "w") {|f| f.puts @template }
     @fname
   rescue => err
-    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
-    puts err.backtrace
+    error(err, __LINE__, __FILE__)
   end
 
   ### edit_initial_post
@@ -127,8 +134,7 @@ Remainder of post goes here.
     result = system("vi #@root/src/#{file} +8 ")
     raise "Problem editing #@root/src/#{file}" unless result
   rescue => err
-    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
-    puts err.backtrace
+    error(err, __LINE__, __FILE__)
   end
 
   ### open_remote
@@ -142,8 +148,7 @@ Remainder of post goes here.
     result = system("open 'http://#{server}/#{spath}'")
     raise "Problem opening http://#{server}/#{spath}" unless result
   rescue => err
-    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
-    puts err.backtrace
+    error(err, __LINE__, __FILE__)
   end
 
   ### open_local
@@ -152,8 +157,7 @@ Remainder of post goes here.
     result = system("open #{@config.viewdir(@view)}/index.html")
     raise "Problem opening #{@config.viewdir(@view)}/index.html" unless result
   rescue => err
-    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
-    puts err.backtrace
+    error(err, __LINE__, __FILE__)
   end
 
   def deploy
@@ -186,8 +190,7 @@ Remainder of post goes here.
     File.write("#{vdir}/last_deployed", files)
     puts red("finished.")
   rescue => err
-    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
-    puts err.backtrace
+    error(err, __LINE__, __FILE__)
   end
 
   ### process_post
@@ -203,9 +206,7 @@ Remainder of post goes here.
     @meta.slug = file.sub(/.lt3$/, "")
     @meta
   rescue => err
-    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
-    puts err.backtrace
-    puts
+    error(err, __LINE__, __FILE__)
   end
 
   ### reload_post
@@ -217,7 +218,7 @@ Remainder of post goes here.
     @meta.slug = file.sub(/.lt3$/, "")
     @meta
   rescue => err
-    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
+    error(err, __LINE__, __FILE__)
   end
 
   ### posting
@@ -258,8 +259,7 @@ Remainder of post goes here.
       f.puts @blogtail
     end
   rescue => err
-    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
-    puts err.backtrace
+    error(err, __LINE__, __FILE__)
   end
 
   ### create_dir
@@ -283,43 +283,42 @@ Remainder of post goes here.
     File.write(dir + "index.html", post)
     generate_index(view)
   rescue => err
-    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
-    puts err.backtrace
+    error(err, __LINE__, __FILE__)
   end
 
   ### find_asset
 
-  def find_asset(asset)    # , views)
-# STDERR.puts "repl find_asset: @meta = #{@meta.inspect}"
-    views = @meta.views
-    views.each do |view| 
-      vdir = @config.viewdir(view)
-      post_dir = "#{vdir}#{@meta.slug}/assets/"
-      path = post_dir + asset
-      STDERR.puts "  Seeking #{path}"
-      return path if File.exist?(path)
-    end
-    views.each do |view| 
-      dir = @config.viewdir(view) + "/assets/"
-      path = dir + asset
-      STDERR.puts "  Seeking #{path}"
-      return path if File.exist?(path)
-    end
-    top = @root + "/assets/"
-    path = top + asset
-    STDERR.puts "  Seeking #{path}"
-    return path if File.exist?(path)
-
-    return nil
-  end
-
-  ### find_all_assets
-
-  def find_all_assets(list, views)
-#   STDERR.puts "\n  Called find_all_assets with #{list.inspect}"
-    list ||= []
-    list.each {|asset| puts "#{asset} => #{find_asset(asset, views)}" }
-  end
+#   def find_asset(asset)    # , views)
+# # STDERR.puts "repl find_asset: @meta = #{@meta.inspect}"
+#     views = @meta.views
+#     views.each do |view| 
+#       vdir = @config.viewdir(view)
+#       post_dir = "#{vdir}#{@meta.slug}/assets/"
+#       path = post_dir + asset
+#       STDERR.puts "          Seeking #{path}"
+#       return path if File.exist?(path)
+#     end
+#     views.each do |view| 
+#       dir = @config.viewdir(view) + "/assets/"
+#       path = dir + asset
+#       STDERR.puts "          Seeking #{path}"
+#       return path if File.exist?(path)
+#     end
+#     top = @root + "/assets/"
+#     path = top + asset
+#     STDERR.puts "          Seeking #{path}"
+#     return path if File.exist?(path)
+# 
+#     return nil
+#   end
+# 
+#   ### find_all_assets
+# 
+#   def find_all_assets(list, views)
+# #   STDERR.puts "\n  Called find_all_assets with #{list.inspect}"
+#     list ||= []
+#     list.each {|asset| puts "#{asset} => #{find_asset(asset, views)}" }
+#   end
 
   ### publish_post
 
@@ -335,8 +334,7 @@ Remainder of post goes here.
 #   assets = find_all_assets(@meta.assets, views)
     puts
   rescue => err
-    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
-    puts err.backtrace
+    error(err, __LINE__, __FILE__)
   end
 
   ### rebuild_post
@@ -345,8 +343,7 @@ Remainder of post goes here.
     reload_post(file)
     publish_post(@meta)       # FIXME ??
   rescue => err
-    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
-    puts err.backtrace
+    error(err, __LINE__, __FILE__)
   end
 
   ### rebuild
@@ -358,8 +355,7 @@ Remainder of post goes here.
     files = files.sort.reverse
     files.each {|file| rebuild_post(file) }
   rescue => err
-    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
-    puts err.backtrace
+    error(err, __LINE__, __FILE__)
   end
 
   ### relink
@@ -367,8 +363,7 @@ Remainder of post goes here.
   def relink
     @config.views.each {|view| generate_index(view) }
   rescue => err
-    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
-    puts err.backtrace
+    error(err, __LINE__, __FILE__)
   end
 
 #  ### publish?
@@ -385,8 +380,7 @@ Remainder of post goes here.
     puts
     @config.views.each {|v| puts "  #{v}" }
   rescue => err
-    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
-    puts err.backtrace
+    error(err, __LINE__, __FILE__)
   end
 
   ### change_view
@@ -404,8 +398,7 @@ Remainder of post goes here.
       end
     end
   rescue => err
-    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
-    puts err.backtrace
+    error(err, __LINE__, __FILE__)
   end
 
   ### new_view
@@ -425,8 +418,7 @@ Remainder of post goes here.
     File.write(dir + "last_deployed", "Initial creation")
     @config.views << arg
   rescue => err
-    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
-    puts err.backtrace
+    error(err, __LINE__, __FILE__)
   end
 
   ### import
@@ -447,8 +439,7 @@ Remainder of post goes here.
     process_post(@fname)
     publish_post(@meta) # if publish?
   rescue => err
-    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
-    puts err.backtrace
+    error(err, __LINE__, __FILE__)
   end
 
   ### new_post
@@ -465,8 +456,7 @@ Remainder of post goes here.
     process_post(file)  #- FIXME handle each view
     publish_post(@meta) # if publish?
   rescue => err
-    puts red("\n  Error: (line #{__LINE__} of #{File.basename(__FILE__)})  ") + err.to_s
-    puts err.backtrace
+    error(err, __LINE__, __FILE__)
   end
 
   ### remove_multiple_posts
