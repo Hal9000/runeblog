@@ -3,23 +3,35 @@ require 'yaml'
 require 'livetext'
 
 class RuneBlog
-  VERSION = "0.0.43"
+  VERSION = "0.0.47"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
   DefaultData = Path + "/../data"
 
-  BlogHeader  = File.read(DefaultData + "/custom/blog_header.html")  rescue "not found"
-  BlogTrailer = File.read(DefaultData + "/custom/blog_trailer.html") rescue "not found"
-end
+  BlogHeaderPath  = DefaultData + "/custom/blog_header.html"
+  BlogTrailerPath = DefaultData + "/custom/blog_trailer.html"
 
-class RuneBlog::Config
+  BlogHeader  = File.read(BlogHeaderPath)  rescue "not found"
+  BlogTrailer = File.read(BlogTrailerPath) rescue "not found"
+
   attr_reader :root, :views, :view, :sequence
   attr_writer :view  # FIXME
 
-  def initialize(cfg_file = ".blog")
+  def self.create_new_blog
+    #-- what if data already exists?
+    result = system("cp -r #{RuneBlog::DefaultData} .")
+    raise "Error copying default data" unless result
+
+    File.open(".blog", "w") do |f| 
+      f.puts "data" 
+      f.puts "no_default"
+    end
+    File.open("data/VERSION", "a") {|f| f.puts "\nBlog created: " + Time.now.to_s }
+  end
+
+  def initialize(cfg_file = ".blog")   # assumes existing blog
     # What views are there? Deployment, etc.
     # Crude - FIXME later
-    new_blog! unless File.exist?(cfg_file)
 
     lines = File.readlines(cfg_file).map {|x| x.chomp }
     @root = lines[0]
@@ -41,5 +53,30 @@ class RuneBlog::Config
     @root + "/views/#{v}/"
   end
 
-end
+  def self.exist?
+    File.exist?(".blog")
+  end
 
+#   def self.create_new_post(title, date, view)
+#     @template = <<-EOS
+# .mixin liveblog
+# 
+# .title #{title}
+# .pubdate #{date}
+# .views #{view}
+# 
+# .teaser
+# Teaser goes here.
+# .end
+# Remainder of post goes here.
+#   EOS
+# 
+#     @slug = make_slug(title)
+#     @fname = @slug + ".lt3"
+#     File.open("#@root/src/#@fname", "w") {|f| f.puts @template }
+#     @fname
+#   rescue => err
+#     error(err, __LINE__, __FILE__)
+#   end
+
+end

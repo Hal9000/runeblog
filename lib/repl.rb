@@ -2,39 +2,31 @@ require 'runeblog'
 
 require 'ostruct'
 
+=begin
+  Instance vars in original code:
+    @bloghead
+    @blogtail
+    @config
+    @date
+    @deploy
+    @fname
+    @main
+    @meta
+    @root
+    @sequence
+    @slug
+    @template
+    @title
+    @today
+    @view
+=end
+
 module RuneBlog::REPL
-
-  def clear
-    puts "\e[H\e[2J"  # clear screen
-  end
-
-  def red(text)
-    "\e[31m#{text}\e[0m"
-  end
-
-  def blue(text)
-    "\e[34m#{text}\e[0m"
-  end
-
-  def bold(str)
-    "\e[1m#{str}\e[22m"
-  end
-
-  def interpolate(str)
-    wrap = "<<-EOS\n#{str}\nEOS"
-    eval wrap
-  end
-
-  def colored_slug(slug)
-    red(slug[0..3])+blue(slug[4..-1])
-  end
 
   ### error
 
-  def error(err, line, file)
-    str = "\n  Error: (line #{line} of #{File.basename(file)})  " 
-    str << err.to_s
-    puts red(str)
+  def error(err)
+    str = "\n  Error: #{red(err)}"
     puts err.backtrace
   end
 
@@ -46,62 +38,59 @@ module RuneBlog::REPL
     STDIN.gets.chomp.send(meth)
   end
 
+  def yesno(prompt, meth = :to_s)
+    print prompt
+    STDOUT.flush
+    STDIN.gets.chomp.upcase[0] == "Y"
+  end
+
   ### quit
 
-  def quit
-    puts
+  def cmd_quit(arg)
+    raise "Glitch: Got an argument" if arg != []
+    puts "\n "
     exit
   end
 
   ### version
 
-  def version
+  def cmd_version(arg)
+    raise "Glitch: Got an argument" if arg != []
     puts "\n  " + RuneBlog::VERSION
   end
 
   ### new_blog!
 
-  def new_blog!
-    unless File.exist?(".blog")
-      yn = ask(red("  No .blog found. Create new blog? "))
-      if yn.upcase == "Y"
-        #-- what if data already exists?
-        result = system("cp -r #{RuneBlog::DefaultData} .")
-        raise "Error copying default data" unless result
-
-        File.open(".blog", "w") do |f| 
-          f.puts "data" 
-          f.puts "no_default"
-        end
-        File.open("data/VERSION", "a") {|f| f.puts "\nBlog created: " + Time.now.to_s }
-      end
-    end
+  def new_blog!(arg)
+    raise "Glitch: Got an argument" if arg != []
+    return if RuneBlog.exist?
+    yn = yesno(red("  No .blog found. Create new blog? "))
+    RuneBlog.create_new_blog if yn
   rescue => err
-    error(err, __LINE__, __FILE__)
+    error(err)
   end 
 
   ### make_slug
 
+  # What to do with this?
+
   def make_slug(title, seq=nil)
-    num = '%04d' % (seq || @config.next_sequence)   # FIXME can do better
+    num = '%04d' % (seq || @blog.next_sequence)   # FIXME can do better
     slug = title.downcase.strip.gsub(' ', '-').gsub(/[^\w-]/, '')
     "#{num}-#{slug}"
   end
 
-  ### read_config
+  ### open_blog
 
-  def read_config
-    # Crude - FIXME later
-    cfg_file = ".blog"
-    new_blog! unless File.exist?(cfg_file)
-    @config = RuneBlog::Config.new(cfg_file)
-
-    @view = @config.view           # current view
-    @sequence = @config.sequence
-    @root = @config.root
-    @config
+  def open_blog # Crude - FIXME later
+#   new_blog!([]) unless RuneBlog.exist?
+    @blog = RuneBlog.new
+    @view = @blog.view     # current view
+    @sequence = @blog.sequence
+    @root = @blog.root
+    @blog
   rescue => err
-    error(err, __LINE__, __FILE__)
+    error(err)
   end
 
   ### create_empty_post
@@ -125,7 +114,7 @@ Remainder of post goes here.
     File.open("#@root/src/#@fname", "w") {|f| f.puts @template }
     @fname
   rescue => err
-    error(err, __LINE__, __FILE__)
+    error(err)
   end
 
   ### edit_initial_post
@@ -137,9 +126,10 @@ Remainder of post goes here.
     error(err, __LINE__, __FILE__)
   end
 
-  ### open_remote
+  ### browse
 
-  def open_remote
+  def cmd_browse
+    raise "Glitch: Got an argument" if arg != []
     @deploy ||= {}
     return puts red("\n  Deploy first.") unless @deploy[@view]
 
@@ -148,28 +138,29 @@ Remainder of post goes here.
     result = system("open 'http://#{server}/#{spath}'")
     raise "Problem opening http://#{server}/#{spath}" unless result
   rescue => err
-    error(err, __LINE__, __FILE__)
+    error(err)
   end
 
   ### open_local
 
   def open_local
-    result = system("open #{@config.viewdir(@view)}/index.html")
-    raise "Problem opening #{@config.viewdir(@view)}/index.html" unless result
+    result = system("open #{@blog.viewdir(@view)}/index.html")
+    raise "Problem opening #{@blog.viewdir(@view)}/index.html" unless result
   rescue => err
-    error(err, __LINE__, __FILE__)
+    error(err)
   end
 
-  def deploy
+  def cmd_deploy(arg)
     # TBD clunky FIXME 
+    raise "Glitch: Got an argument" if arg != []
     @deploy ||= {}
-    deployment = @config.viewdir(@view) + "deploy"
+    deployment = @blog.viewdir(@view) + "deploy"
     raise "File '#{deployment}' not found" unless File.exist?(deployment)
 
     lines = File.readlines(deployment).map {|x| x.chomp }
     @deploy[@view] = lines
     user, server, sroot, spath = *lines
-    vdir = @config.viewdir(@view)
+    vdir = @blog.viewdir(@view)
     files = ["#{vdir}/index.html"]
     files += Dir.entries(vdir).grep(/^\d\d\d\d/).map {|x| "#{vdir}/#{x}" }
     files.reject! {|f| File.mtime(f) < File.mtime("#{vdir}/last_deployed") }
@@ -190,7 +181,7 @@ Remainder of post goes here.
     File.write("#{vdir}/last_deployed", files)
     puts red("finished.")
   rescue => err
-    error(err, __LINE__, __FILE__)
+    error(err)
   end
 
   ### process_post
@@ -202,11 +193,11 @@ Remainder of post goes here.
     @meta = @main.process_file(path, binding)
     raise "process_file returned nil" if @meta.nil?
 
-    @meta.slug = make_slug(@meta.title, @config.sequence)
+    @meta.slug = make_slug(@meta.title, @blog.sequence)
     @meta.slug = file.sub(/.lt3$/, "")
     @meta
   rescue => err
-    error(err, __LINE__, __FILE__)
+    error(err)
   end
 
   ### reload_post
@@ -218,7 +209,7 @@ Remainder of post goes here.
     @meta.slug = file.sub(/.lt3$/, "")
     @meta
   rescue => err
-    error(err, __LINE__, __FILE__)
+    error(err)
   end
 
   ### posting
@@ -259,7 +250,7 @@ Remainder of post goes here.
       f.puts @blogtail
     end
   rescue => err
-    error(err, __LINE__, __FILE__)
+    error(err)
   end
 
   ### create_dir
@@ -274,7 +265,7 @@ Remainder of post goes here.
 
   def link_post_view(view)
     # Create dir using slug (index.html, metadata?)
-    vdir = @config.viewdir(view)
+    vdir = @blog.viewdir(view)
     dir = vdir + @meta.slug + "/"
     create_dir(dir + "assets") 
     File.write("#{dir}/metadata.yaml", @meta.to_yaml)
@@ -283,7 +274,7 @@ Remainder of post goes here.
     File.write(dir + "index.html", post)
     generate_index(view)
   rescue => err
-    error(err, __LINE__, __FILE__)
+    error(err)
   end
 
   ### find_asset
@@ -334,7 +325,7 @@ Remainder of post goes here.
 #   assets = find_all_assets(@meta.assets, views)
     puts
   rescue => err
-    error(err, __LINE__, __FILE__)
+    error(err)
   end
 
   ### rebuild_post
@@ -343,27 +334,29 @@ Remainder of post goes here.
     reload_post(file)
     publish_post(@meta)       # FIXME ??
   rescue => err
-    error(err, __LINE__, __FILE__)
+    error(err)
   end
 
   ### rebuild
 
-  def rebuild
+  def cmd_rebuild(arg)
+    raise "Glitch: Got an argument" if arg != []
     puts
     files = Dir.entries("#@root/src/").grep /\d\d\d\d.*.lt3$/
     files.map! {|f| File.basename(f) }
     files = files.sort.reverse
     files.each {|file| rebuild_post(file) }
   rescue => err
-    error(err, __LINE__, __FILE__)
+    error(err)
   end
 
   ### relink
 
-  def relink
-    @config.views.each {|view| generate_index(view) }
+  def cmd_relink(arg)
+    raise "Glitch: Got an argument" if arg != []
+    @blog.views.each {|view| generate_index(view) }
   rescue => err
-    error(err, __LINE__, __FILE__)
+   error(err)
   end
 
 #  ### publish?
@@ -375,56 +368,60 @@ Remainder of post goes here.
 
   ### list_views
 
-  def list_views
-    abort "Config file not read"  unless @config
+  def cmd_list_views(arg)
+    abort "Config file not read"  unless @blog
+    raise "Glitch: Got an argument" if arg != []
     puts
-    @config.views.each {|v| puts "  #{v}" }
+    @blog.views.each {|v| puts "  #{v}" }
   rescue => err
-    error(err, __LINE__, __FILE__)
+    error(err)
   end
 
   ### change_view
 
-  def change_view(arg = nil)
-    if arg.nil?
+  def cmd_change_view(arg)
+    if arg.empty?
       puts "\n  #@view"
     else
-      list = @config.views.grep /^#{arg}/
+      arg = arg.first
+      list = @blog.views.grep /^#{arg}/
       if list.size == 1
-        @view = @config.view = list.first
+        @view = @blog.view = list.first
         puts red("\n  View: #{@view}") if arg != @view
       else
         puts "view #{arg.inspect} does not exist"
       end
     end
   rescue => err
-    error(err, __LINE__, __FILE__)
+    error(err)
   end
 
   ### new_view
 
-  def new_view(arg = nil)
-    arg = nil if arg == ""
-    read_config unless @config
+  def cmd_new_view(arg)
+    arg = arg.first
+    @blog ||= open_blog
     arg ||= ask("New view: ")  # check validity later
-    raise "view #{arg} already exists" if @config.views.include?(arg)
+    raise "view #{arg} already exists" if @blog.views.include?(arg)
 
     dir = @root + "/views/" + arg + "/"
     create_dir(dir + 'custom')
     create_dir(dir + 'assets')
 
+    # Something more like this?  RuneBlog.new_view(arg)
     File.write(dir + "custom/blog_header.html",  RuneBlog::BlogHeader)
     File.write(dir + "custom/blog_trailer.html", RuneBlog::BlogTrailer)
     File.write(dir + "last_deployed", "Initial creation")
-    @config.views << arg
+    @blog.views << arg
   rescue => err
-    error(err, __LINE__, __FILE__)
+    error(err)
   end
 
   ### import
 
   def import(arg = nil)
-    read_config unless @config
+    open_blog unless @blog
+
     arg = nil if arg == ""
     arg ||= ask("Filename: ")  # check validity later
     name = arg
@@ -439,13 +436,14 @@ Remainder of post goes here.
     process_post(@fname)
     publish_post(@meta) # if publish?
   rescue => err
-    error(err, __LINE__, __FILE__)
+    error(err)
   end
 
   ### new_post
 
-  def new_post
-    read_config unless @config
+  def cmd_new_post(arg)
+    raise "Glitch: Got an argument" if arg != []
+    open_blog unless @blog
     @title = ask("Title: ")
     @today = Time.now.strftime("%Y%m%d")
     @date = Time.now.strftime("%Y-%m-%d")
@@ -456,7 +454,7 @@ Remainder of post goes here.
     process_post(file)  #- FIXME handle each view
     publish_post(@meta) # if publish?
   rescue => err
-    error(err, __LINE__, __FILE__)
+    error(err)
   end
 
   ### remove_multiple_posts
@@ -470,12 +468,13 @@ Remainder of post goes here.
 
   #-- FIXME affects linking, building, deployment...
 
-  def remove_post(arg, safe=true)
+  def cmd_remove_post(arg, safe=true)
+    arg = arg.first
     id = Integer(arg) rescue raise("'#{arg}' is not an integer")
-    tag = "#{'%04d' % id}-"
+    tag = "#{'%04d' % id}"
     files = Find.find(@root).to_a
-    files = files.grep(/#{tag}/)
-    return puts red("\n  No such post found (#{tag})") if files.empty?
+    files = files.grep(/#{tag}-/)
+    return puts red("\n  No such post found (#{id})") if files.empty?
 
     if safe
       puts
@@ -505,14 +504,15 @@ Remainder of post goes here.
 
   #-- FIXME affects linking, building, deployment...
 
-  def edit_post(arg)
+  def cmd_edit_post(arg)
+    arg = arg.first
     id = Integer(arg) rescue raise("'#{arg}' is not an integer")
-    tag = "#{'%04d' % id}-"
+    tag = "#{'%04d' % id}"
     files = Find.find(@root+"/src").to_a
-    files = files.grep(/#{tag}/)
+    files = files.grep(/#{tag}-/)
     files = files.map {|f| File.basename(f) }
     return puts red("Multiple files: #{files}") if files.size > 1
-    return puts red("\n  No such post found (#{tag})") if files.empty?
+    return puts red("\n  No such post found (#{id})") if files.empty?
 
     file = files.first
     result = system("vi #@root/src/#{file}")
@@ -527,8 +527,9 @@ Remainder of post goes here.
 
   ### list_posts
 
-  def list_posts
-    dir = @config.viewdir(@view)
+  def cmd_list_posts(arg)
+    raise "Glitch: Got an argument" if arg != []
+    dir = @blog.viewdir(@view)
     Dir.chdir(dir) do
       posts = Dir.entries(".").grep(/^0.*/)
       if posts.empty?
@@ -546,7 +547,8 @@ Remainder of post goes here.
 
   ### list_drafts
 
-  def list_drafts
+  def cmd_list_drafts(arg)
+    raise "Glitch: Got an argument" if arg != []
     dir = "#@root/src"
     Dir.chdir(dir) do
       posts = Dir.entries(".").grep(/^0.*.lt3/)
@@ -561,6 +563,67 @@ Remainder of post goes here.
     puts "Oops? cwd = #{Dir.pwd}   dir = #{dir}"
     puts err.backtrace
     exit
+  end
+
+  def cmd_INVALID(arg)
+    puts "\n  Command '#{red(arg)}' was not understood."
+  end
+
+  def cmd_help(arg)
+    raise "Glitch: Got an argument" if arg != []
+    puts <<-EOS
+  
+    Commands:
+  
+       #{red('h, help       ')}    This message
+       #{red('q, quit        ')}   Exit the program
+       #{red('v, version    ')}    Print version information
+  
+       #{red('change view VIEW ')} Change current view
+       #{red('cv VIEW          ')} Change current view
+       #{red('new view         ')} Create a new view
+       #{red('list views       ')} List all views available
+       #{red('lsv              ')} Same as: list views
+  
+       #{red('p, post          ')} Create a new post
+       #{red('new post         ')} Same as post (create a post)
+       #{red('lsp, list posts  ')} List posts in current view
+       #{red('lsd, list drafts ')} List all posts regardless of view
+  
+       #{red('rm ID            ')} Remove a post
+       #{red('edit ID          ')} Edit a post
+  
+       #{red('preview          ')} Look at current (local) view in browser
+       #{red('browse           ')} Look at current (deployed) view in browser
+       #{red('relink           ')} Regenerate index for all views
+       #{red('rebuild          ')} Regenerate all posts and relink
+       #{red('deploy           ')} Deploy (current view)
+    EOS
+  end
+
+  def clear
+    puts "\e[H\e[2J"  # clear screen
+  end
+
+  def red(text)
+    "\e[31m#{text}\e[0m"
+  end
+
+  def blue(text)
+    "\e[34m#{text}\e[0m"
+  end
+
+  def bold(str)
+    "\e[1m#{str}\e[22m"
+  end
+
+  def interpolate(str)
+    wrap = "<<-EOS\n#{str}\nEOS"
+    eval wrap
+  end
+
+  def colored_slug(slug)
+    red(slug[0..3])+blue(slug[4..-1])
   end
 
 end

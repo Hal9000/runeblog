@@ -3,212 +3,44 @@
 $: << "./lib"
 
 require 'repl'
+require 'blogcmds'
 
 trap("INT") { }
 
 include RuneBlog::REPL
 
-def execute_command
-  case @meth
-    when :help, :quit, :new_post, :list_views, :relink, :rebuild, :version, 
-         :list_posts, :list_drafts, :do_nothing, :deploy, :open_remote, :open_local
-      self.send(@meth)
-    when Object
-      self.send(@meth, @arg)
-  end
-  puts unless @meth == :do_nothing
-end
-
-def expected(nw = 1) 
-  save = @cmd
-  @cmd = nil
-  raise "Unexpected '#{@words[nw]}'" unless @words.size == nw
-  @cmd = save
-end
-
-def need_arg(nw = 1)
-  save = @cmd
-  @cmd = nil
-  raise "Unexpected '#{@words[nw+1]}'" if @words[nw+1]
-  raise "Need an arg here" unless @words[nw]
-  @cmd = save
-  @words[nw]
-end
-
-def do_nothing
-end
-
-def expect_w(meth)
-  @meth = meth
-  expected(1)
-end
-
-def expect_w_arg(meth, optional = false)
-  raise "Too many arguments" if @words.size > 2
-  @meth = meth
-  @arg = optional ? @words[1] : need_arg(1)
-end
-
-def handle_open
-  case @words.size
-    when 1
-      @meth = :open_local
-    when 2
-      if @words[1] == "remote"
-        @meth = :open_remote
-      else
-        raise "Don't know '#{@words[1]}'"
-      end
-    else
-      raise "Don't understand '#{@words.join(' ')}'"
-  end
-end
-
-def handle_list
-  case @words[1]
-    when "views"
-      @meth = :list_views
-      expected(2)
-    when "posts"
-      @meth = :list_posts
-      expected(2)
-    when "drafts"
-      @meth = :list_drafts
-     expected(2)
-    else 
-      @cmd = nil
-      raise "Unknown #{@words[1]}"
-  end
-end
-
-def handle_new
-  case @words[1]
-    when "view"
-      @meth = :new_view
-      expected(2)
-      @arg = need_arg(2)
-    when "post"
-      @meth = :new_post
-      expected(2)
-    else
-      @cmd = nil
-      raise "Unknown '#{@words[1]}'"
-  end
-end
-
-def handle_change
-  case @words[2]
-    when "view"
-      raise "Too many arguments" if @words.size > 3
-      @meth = :change_view
-      @arg = need_arg(2)
-    else
-      raise "Unknown '#{@words[1]}'"
-  end
-end
-
-def handle_multi_rm
-  raise "Need at least one arg" unless @words.size >= 2
-  @arg = @words[1..-1].join(" ")
-  @meth = :remove_multiple_posts
-end
-
-def parse_cmd(str)
-  @cmd = str
-  @arg = ""
-  if @cmd == ""
-    @meth = :do_nothing
-    return @cmd
-  end
-
-  @words = @cmd.split
-  case @words.first
-    when "h", "help";  expect_w(:help)
-    when "q", "quit";  expect_w(:quit)
-    when "p", "post";  expect_w(:new_post)
-    when "lsv";        expect_w(:list_views)
-    when "lsp";        expect_w(:list_posts)
-    when "lsd";        expect_w(:list_drafts)
-    when "relink";     expect_w(:relink)
-    when "rebuild";    expect_w(:rebuild)
-    when "deploy";     expect_w(:deploy)
-    when "version";    expect_w(:version)
-    when "cv";         expect_w_arg(:change_view, true)
-    when "rm";         expect_w_arg(:remove_post)
-    when "kill";       handle_multi_rm
-    when "e", "edit";  expect_w_arg(:edit_post)
-    when "open";       handle_open
-    when "list";       handle_list
-    when "new";        handle_new
-    when "change";     handle_change
-    else 
-      @cmd = nil
-      raise "Unknown '#{@words[0]}'"
-  end
-  @cmd
-end
-
 def get_argv
   return nil if ARGV.size == 0
-  @cmd = ARGV[0..1].join(" ")
-  @arg = ARGV[2]
-  @cmd
-end
-
-def help
-  puts <<-EOS
-
-  Commands:
-
-     h, help           This message
-     q, quit           Exit the program
-
-     change view VIEW  Change current view
-     new view          Create a new view
-     list views        List all views available
-     lsv               Same as: list views
-
-     p, post           Create a new post
-     new post          Same as post (create a post)
-     lsp, list posts   List posts in current view
-     lsd, list drafts  List all posts regardless of view
-
-     rm ID             Remove a post
-     edit ID           Edit a post
-
-     open              Look at current (local) view in browser
-     open remote       Look at current (deployed) view in browser
-     relink            Regenerate index for all views
-     rebuild           Regenerate all posts and relink
-     deploy            Deploy (current view)
-  EOS
+  cmd = ARGV[0..1].join(" ")
+  arg = ARGV[2]
+  [cmd, arg]
 end
 
 ###########
 
 STDOUT.sync = true
 
-@cmd = get_argv
+cmd, arg = get_argv
 
-read_config
+open_blog
 
 puts red("\n  RuneBlog v #{RuneBlog::VERSION}")
 
-if @cmd.nil?   # REPL
+if cmd.nil?   # REPL
   puts
   loop do
-    print red("blog> ")
-    begin
-      parse_cmd(gets.chomp)
-    rescue => err
-      puts err
-      next 
-    end
-    execute_command
+    print red("\nblog> ")
+    cmd = gets
+    cmd_quit([]) if cmd.nil?   # ^D
+    cmd.chomp!
+    meth, params = RuneBlog::Command.choose_method(cmd)
+    send(meth, params)
   end
 else  # one command
+  raise "Not working right now"
   file = File.open("/dev/tty")
   STDIN.reopen(file)    # avoid ARGF dumbness
+  meth, params = RuneBlog::Command.choose_method(cmd)
   parse_cmd(ARGV.join(" "))
   execute_command
 end
