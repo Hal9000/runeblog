@@ -21,12 +21,15 @@ require 'ostruct'
     @view
 =end
 
+require 'prettiness'  # FIXME structure
+
 module RuneBlog::REPL
 
   ### error
 
   def error(err)
     str = "\n  Error: #{red(err)}"
+    puts str
     puts err.backtrace
   end
 
@@ -70,16 +73,6 @@ module RuneBlog::REPL
     error(err)
   end 
 
-  ### make_slug
-
-  # What to do with this?
-
-  def make_slug(title, seq=nil)
-    num = '%04d' % (seq || @blog.next_sequence)   # FIXME can do better
-    slug = title.downcase.strip.gsub(' ', '-').gsub(/[^\w-]/, '')
-    "#{num}-#{slug}"
-  end
-
   ### open_blog
 
   def open_blog # Crude - FIXME later
@@ -93,37 +86,13 @@ module RuneBlog::REPL
     error(err)
   end
 
-  ### create_empty_post
-
-  def create_empty_post
-    @template = <<-EOS
-.mixin liveblog
-
-.title #@title
-.pubdate #@date
-.views #@view
-
-.teaser
-Teaser goes here.
-.end
-Remainder of post goes here.
-  EOS
-
-    @slug = make_slug(@title)
-    @fname = @slug + ".lt3"
-    File.open("#@root/src/#@fname", "w") {|f| f.puts @template }
-    @fname
-  rescue => err
-    error(err)
-  end
-
   ### edit_initial_post
 
   def edit_initial_post(file)
     result = system("vi #@root/src/#{file} +8 ")
     raise "Problem editing #@root/src/#{file}" unless result
   rescue => err
-    error(err, __LINE__, __FILE__)
+    error(err)
   end
 
   ### browse
@@ -193,8 +162,9 @@ Remainder of post goes here.
     @meta = @main.process_file(path, binding)
     raise "process_file returned nil" if @meta.nil?
 
-    @meta.slug = make_slug(@meta.title, @blog.sequence)
-    @meta.slug = file.sub(/.lt3$/, "")
+    slug = @blog.make_slug(@meta.title, @blog.sequence)
+    slug = file.sub(/.lt3$/, "")
+    @meta.slug = slug
     @meta
   rescue => err
     error(err)
@@ -204,7 +174,7 @@ Remainder of post goes here.
 
   def reload_post(file)
     @main ||= Livetext.new
-    @main.main.output = File.new("/tmp/WHOA","w")
+    @main.main.output = File.new("/tmp/WHOA","w")  # FIXME srsly?
     @meta = process_post(file)
     @meta.slug = file.sub(/.lt3$/, "")
     @meta
@@ -215,6 +185,7 @@ Remainder of post goes here.
   ### posting
 
   def posting(view, meta)
+    # FIXME clean up and generalize
     ref = "#{view}/#{meta.slug}/index.html"
     <<-HTML
       <br>
@@ -427,7 +398,7 @@ Remainder of post goes here.
     name = arg
     grep = `grep ^.title #{name}`
     @title = grep.sub(/^.title /, "")
-    @slug = make_slug(@title)
+    @slug = @blog.make_slug(@title)
     @fname = @slug + ".lt3"
     result = system("cp #{name} #@root/src/#@fname")
     raise "Could not copy #{name} to #@root/src/#@fname" unless result
@@ -448,9 +419,8 @@ Remainder of post goes here.
     @today = Time.now.strftime("%Y%m%d")
     @date = Time.now.strftime("%Y-%m-%d")
 
-    file = create_empty_post
+    file = @blog.create_new_post(@title, @date, @view)
     edit_initial_post(file)
-  # file = @root + "/src/" + file
     process_post(file)  #- FIXME handle each view
     publish_post(@meta) # if publish?
   rescue => err
@@ -599,31 +569,6 @@ Remainder of post goes here.
        #{red('rebuild          ')} Regenerate all posts and relink
        #{red('deploy           ')} Deploy (current view)
     EOS
-  end
-
-  def clear
-    puts "\e[H\e[2J"  # clear screen
-  end
-
-  def red(text)
-    "\e[31m#{text}\e[0m"
-  end
-
-  def blue(text)
-    "\e[34m#{text}\e[0m"
-  end
-
-  def bold(str)
-    "\e[1m#{str}\e[22m"
-  end
-
-  def interpolate(str)
-    wrap = "<<-EOS\n#{str}\nEOS"
-    eval wrap
-  end
-
-  def colored_slug(slug)
-    red(slug[0..3])+blue(slug[4..-1])
   end
 
 end

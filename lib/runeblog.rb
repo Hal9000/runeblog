@@ -3,7 +3,7 @@ require 'yaml'
 require 'livetext'
 
 class RuneBlog
-  VERSION = "0.0.47"
+  VERSION = "0.0.50"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
   DefaultData = Path + "/../data"
@@ -57,26 +57,32 @@ class RuneBlog
     File.exist?(".blog")
   end
 
-#   def self.create_new_post(title, date, view)
-#     @template = <<-EOS
-# .mixin liveblog
-# 
-# .title #{title}
-# .pubdate #{date}
-# .views #{view}
-# 
-# .teaser
-# Teaser goes here.
-# .end
-# Remainder of post goes here.
-#   EOS
-# 
-#     @slug = make_slug(title)
-#     @fname = @slug + ".lt3"
-#     File.open("#@root/src/#@fname", "w") {|f| f.puts @template }
-#     @fname
-#   rescue => err
-#     error(err, __LINE__, __FILE__)
-#   end
+  def create_new_post(title, date, view)
+    @template = <<-EOS
+.mixin liveblog
+ 
+.title #{title}
+.pubdate #{date}
+.views #{view}
+ 
+.teaser
+Teaser goes here.
+.end
+Remainder of post goes here.
+EOS
+ 
+    @slug = make_slug(title)
+    @fname = @slug + ".lt3"
+    File.open("#@root/src/#@fname", "w") {|f| f.puts @template }
+    @fname
+  rescue => err
+    error(err)
+  end
+
+  def make_slug(title, seq=nil)
+    num = '%04d' % (seq || self.next_sequence)   # FIXME can do better
+    slug = title.downcase.strip.gsub(' ', '-').gsub(/[^\w-]/, '')
+    "#{num}-#{slug}"
+  end
 
 end
