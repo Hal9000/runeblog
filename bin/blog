@@ -3,7 +3,6 @@
 $: << "./lib"
 
 require 'repl'
-require 'blogcmds'
 
 trap("INT") { }
 
@@ -33,7 +32,7 @@ if cmd.nil?   # REPL
     cmd = gets
     cmd_quit([]) if cmd.nil?   # ^D
     cmd.chomp!
-    meth, params = RuneBlog::Command.choose_method(cmd)
+    meth, params = RuneBlog::REPL.choose_method(cmd)
     send(meth, params)
   end
 else  # one command

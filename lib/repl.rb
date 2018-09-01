@@ -21,33 +21,9 @@ require 'ostruct'
     @view
 =end
 
-require 'prettiness'  # FIXME structure
+require 'helpers-repl'  # FIXME structure
 
 module RuneBlog::REPL
-
-  ### error
-
-  def error(err)
-    str = "\n  Error: #{red(err)}"
-    puts str
-    puts err.backtrace
-  end
-
-  ### ask
-
-  def ask(prompt, meth = :to_s)
-    print prompt
-    STDOUT.flush
-    STDIN.gets.chomp.send(meth)
-  end
-
-  def yesno(prompt, meth = :to_s)
-    print prompt
-    STDOUT.flush
-    STDIN.gets.chomp.upcase[0] == "Y"
-  end
-
-  ### quit
 
   def cmd_quit(arg)
     raise "Glitch: Got an argument" if arg != []
@@ -55,16 +31,12 @@ module RuneBlog::REPL
     exit
   end
 
-  ### version
-
   def cmd_version(arg)
     raise "Glitch: Got an argument" if arg != []
     puts "\n  " + RuneBlog::VERSION
   end
 
-  ### new_blog!
-
-  def new_blog!(arg)
+  def new_blog!(arg)   # FIXME weird?
     raise "Glitch: Got an argument" if arg != []
     return if RuneBlog.exist?
     yn = yesno(red("  No .blog found. Create new blog? "))
@@ -72,8 +44,6 @@ module RuneBlog::REPL
   rescue => err
     error(err)
   end 
-
-  ### open_blog
 
   def open_blog # Crude - FIXME later
 #   new_blog!([]) unless RuneBlog.exist?
@@ -86,16 +56,12 @@ module RuneBlog::REPL
     error(err)
   end
 
-  ### edit_initial_post
-
   def edit_initial_post(file)
     result = system("vi #@root/src/#{file} +8 ")
     raise "Problem editing #@root/src/#{file}" unless result
   rescue => err
     error(err)
   end
-
-  ### browse
 
   def cmd_browse
     raise "Glitch: Got an argument" if arg != []
@@ -110,9 +76,7 @@ module RuneBlog::REPL
     error(err)
   end
 
-  ### open_local
-
-  def open_local
+  def cmd_open_local
     result = system("open #{@blog.viewdir(@view)}/index.html")
     raise "Problem opening #{@blog.viewdir(@view)}/index.html" unless result
   rescue => err
@@ -153,163 +117,6 @@ module RuneBlog::REPL
     error(err)
   end
 
-  ### process_post
-
-  def process_post(file)
-    @main ||= Livetext.new
-    @main.main.output = File.new("/tmp/WHOA","w")
-    path = @root + "/src/#{file}"
-    @meta = @main.process_file(path, binding)
-    raise "process_file returned nil" if @meta.nil?
-
-    slug = @blog.make_slug(@meta.title, @blog.sequence)
-    slug = file.sub(/.lt3$/, "")
-    @meta.slug = slug
-    @meta
-  rescue => err
-    error(err)
-  end
-
-  ### reload_post
-
-  def reload_post(file)
-    @main ||= Livetext.new
-    @main.main.output = File.new("/tmp/WHOA","w")  # FIXME srsly?
-    @meta = process_post(file)
-    @meta.slug = file.sub(/.lt3$/, "")
-    @meta
-  rescue => err
-    error(err)
-  end
-
-  ### posting
-
-  def posting(view, meta)
-    # FIXME clean up and generalize
-    ref = "#{view}/#{meta.slug}/index.html"
-    <<-HTML
-      <br>
-      <font size=+1>#{meta.pubdate}&nbsp;&nbsp;</font>
-      <font size=+2 color=blue><a href=../#{ref} style="text-decoration: none">#{meta.title}</font></a>
-      <br>
-      #{meta.teaser}  
-      <a href=../#{ref} style="text-decoration: none">Read more...</a>
-      <br><br>
-      <hr>
-    HTML
-  end
-
-  ### generate_index
-
-  def generate_index(view)
-    # Gather all posts, create list
-    vdir = "#@root/views/#{view}"
-    posts = Dir.entries(vdir).grep /^\d\d\d\d/
-    posts = posts.sort.reverse
-
-    # Add view header/trailer
-    head = File.read("#{vdir}/custom/blog_header.html") rescue RuneBlog::BlogHeader
-    tail = File.read("#{vdir}/custom/blog_trailer.html") rescue RuneBlog::BlogTrailer
-    @bloghead = interpolate(head)
-    @blogtail = interpolate(tail)
-
-    # Output view
-    posts.map! {|post| YAML.load(File.read("#{vdir}/#{post}/metadata.yaml")) }
-    File.open("#{vdir}/index.html", "w") do |f|
-      f.puts @bloghead
-      posts.each {|post| f.puts posting(view, post) }
-      f.puts @blogtail
-    end
-  rescue => err
-    error(err)
-  end
-
-  ### create_dir
-
-  def create_dir(dir)
-    cmd = "mkdir -p #{dir} >/dev/null 2>&1"
-    result = system(cmd) 
-    raise "Can't create #{dir}" unless result
-  end
-
-  ### link_post_view
-
-  def link_post_view(view)
-    # Create dir using slug (index.html, metadata?)
-    vdir = @blog.viewdir(view)
-    dir = vdir + @meta.slug + "/"
-    create_dir(dir + "assets") 
-    File.write("#{dir}/metadata.yaml", @meta.to_yaml)
-    template = File.read(vdir + "custom/post_template.html")
-    post = interpolate(template)
-    File.write(dir + "index.html", post)
-    generate_index(view)
-  rescue => err
-    error(err)
-  end
-
-  ### find_asset
-
-#   def find_asset(asset)    # , views)
-# # STDERR.puts "repl find_asset: @meta = #{@meta.inspect}"
-#     views = @meta.views
-#     views.each do |view| 
-#       vdir = @config.viewdir(view)
-#       post_dir = "#{vdir}#{@meta.slug}/assets/"
-#       path = post_dir + asset
-#       STDERR.puts "          Seeking #{path}"
-#       return path if File.exist?(path)
-#     end
-#     views.each do |view| 
-#       dir = @config.viewdir(view) + "/assets/"
-#       path = dir + asset
-#       STDERR.puts "          Seeking #{path}"
-#       return path if File.exist?(path)
-#     end
-#     top = @root + "/assets/"
-#     path = top + asset
-#     STDERR.puts "          Seeking #{path}"
-#     return path if File.exist?(path)
-# 
-#     return nil
-#   end
-# 
-#   ### find_all_assets
-# 
-#   def find_all_assets(list, views)
-# #   STDERR.puts "\n  Called find_all_assets with #{list.inspect}"
-#     list ||= []
-#     list.each {|asset| puts "#{asset} => #{find_asset(asset, views)}" }
-#   end
-
-  ### publish_post
-
-  def publish_post(meta)
-    puts "  #{colored_slug(meta.slug)}"
-    # First gather the views
-    views = meta.views
-    print "       Views: "
-    views.each do |view| 
-      print "#{view} "
-      link_post_view(view)
-    end
-#   assets = find_all_assets(@meta.assets, views)
-    puts
-  rescue => err
-    error(err)
-  end
-
-  ### rebuild_post
-  
-  def rebuild_post(file)
-    reload_post(file)
-    publish_post(@meta)       # FIXME ??
-  rescue => err
-    error(err)
-  end
-
-  ### rebuild
-
   def cmd_rebuild(arg)
     raise "Glitch: Got an argument" if arg != []
     puts
@@ -321,23 +128,12 @@ module RuneBlog::REPL
     error(err)
   end
 
-  ### relink
-
   def cmd_relink(arg)
     raise "Glitch: Got an argument" if arg != []
     @blog.views.each {|view| generate_index(view) }
   rescue => err
    error(err)
   end
-
-#  ### publish?
-#
-#  def publish?
-#    yn = ask(red("  Publish? y/n "))
-#    yn.upcase == "Y"
-#  end
-
-  ### list_views
 
   def cmd_list_views(arg)
     abort "Config file not read"  unless @blog
@@ -388,28 +184,6 @@ module RuneBlog::REPL
     error(err)
   end
 
-  ### import
-
-  def import(arg = nil)
-    open_blog unless @blog
-
-    arg = nil if arg == ""
-    arg ||= ask("Filename: ")  # check validity later
-    name = arg
-    grep = `grep ^.title #{name}`
-    @title = grep.sub(/^.title /, "")
-    @slug = @blog.make_slug(@title)
-    @fname = @slug + ".lt3"
-    result = system("cp #{name} #@root/src/#@fname")
-    raise "Could not copy #{name} to #@root/src/#@fname" unless result
-
-    edit_initial_post(@fname)
-    process_post(@fname)
-    publish_post(@meta) # if publish?
-  rescue => err
-    error(err)
-  end
-
   ### new_post
 
   def cmd_new_post(arg)
@@ -422,19 +196,15 @@ module RuneBlog::REPL
     file = @blog.create_new_post(@title, @date, @view)
     edit_initial_post(file)
     process_post(file)  #- FIXME handle each view
-    publish_post(@meta) # if publish?
+    publish_post(@meta)
   rescue => err
     error(err)
   end
 
-  ### remove_multiple_posts
-  
-  def remove_multiple_posts(str)
-    args = str.split
-    args.each {|arg| remove_post(arg, false) }
+  def cmd_kill(arg)
+    args = arg.first.split
+    args.each {|x| cmd_remove_post([x], false) }
   end
-
-  ### remove_post
 
   #-- FIXME affects linking, building, deployment...
 
@@ -465,12 +235,8 @@ module RuneBlog::REPL
       raise "Problem mass-deleting file(s)" unless result
     end
   rescue => err
-    puts err
-    puts err.backtrace
-    puts
+    error(err)
   end
-
-  ### edit_post
 
   #-- FIXME affects linking, building, deployment...
 
@@ -490,12 +256,8 @@ module RuneBlog::REPL
 
     rebuild_post(file)
   rescue => err
-    puts err
-    puts err.backtrace
-    puts
+    error(err)
   end
-
-  ### list_posts
 
   def cmd_list_posts(arg)
     raise "Glitch: Got an argument" if arg != []
@@ -509,13 +271,9 @@ module RuneBlog::REPL
         posts.each {|post| puts "  #{colored_slug(post)}" }
       end
     end
-  rescue 
-    puts "Oops? cwd = #{Dir.pwd}   dir = #{dir}"
-    puts err.backtrace
-    exit
+  rescue => err
+    error(err)
   end
-
-  ### list_drafts
 
   def cmd_list_drafts(arg)
     raise "Glitch: Got an argument" if arg != []
