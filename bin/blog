@@ -33,7 +33,8 @@ if cmd.nil?   # REPL
     cmd_quit([]) if cmd.nil?   # ^D
     cmd.chomp!
     meth, params = RuneBlog::REPL.choose_method(cmd)
-    send(meth, params)
+    str = send(meth, params)
+    puts str unless str.nil?
   end
 else  # one command
   raise "Not working right now"
