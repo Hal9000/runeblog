@@ -59,7 +59,6 @@ module RuneBlog::REPL
     rx.gsub!(/\$(\w+) */) { " *(?<#{$1}>\\w+)" }
     # How to handle multiple optional args?
     rx.sub!(/>(\w+)$/) { "(.+)" }
-p rx if rx =~ /kill/
     rx << "$"
     rx = Regexp.new(rx)
     Regexes[rx] = meth
