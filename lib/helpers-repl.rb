@@ -124,41 +124,32 @@ module RuneBlog::REPL
     red(slug[0..3])+blue(slug[4..-1])
   end
 
-  ### reload_post
-
-  def reload_post(file)
-    @main ||= Livetext.new
-    @main.main.output = File.new("/tmp/WHOA","w")  # FIXME srsly?
-    @meta = process_post(file)
-    @meta.slug = file.sub(/.lt3$/, "")
-    @meta
-  rescue => err
-    error(err)
-  end
-
-  ## posting
-
-  def posting(view, meta)
-    # FIXME clean up and generalize
-    ref = "#{view}/#{meta.slug}/index.html"
-    <<-HTML
-      <br>
-      <font size=+1>#{meta.pubdate}&nbsp;&nbsp;</font>
-      <font size=+2 color=blue><a href=../#{ref} style="text-decoration: none">#{meta.title}</font></a>
-      <br>
-      #{meta.teaser}  
-      <a href=../#{ref} style="text-decoration: none">Read more...</a>
-      <br><br>
-      <hr>
-    HTML
-  end
-
   ### create_dir
 
   def create_dir(dir)
     cmd = "mkdir -p #{dir} >/dev/null 2>&1"
     result = system(cmd) 
     raise "Can't create #{dir}" unless result
+  end
+
+  def import(arg = nil)
+    open_blog unless @blog
+
+    arg = nil if arg == ""
+    arg ||= ask("Filename: ")  # check validity later
+    name = arg
+    grep = `grep ^.title #{name}`
+    @title = grep.sub(/^.title /, "")
+    @slug = @blog.make_slug(@title)
+    @fname = @slug + ".lt3"
+    result = system("cp #{name} #@root/src/#@fname")
+    raise "Could not copy #{name} to #@root/src/#@fname" unless result
+
+    edit_initial_post(@fname)
+    process_post(@fname)
+    publish_post(@meta) # if publish?
+  rescue => err
+    error(err)
   end
 
   ### find_asset
@@ -194,34 +185,5 @@ module RuneBlog::REPL
 #     list ||= []
 #     list.each {|asset| puts "#{asset} => #{find_asset(asset, views)}" }
 #   end
-
-  ### rebuild_post
-  
-  def rebuild_post(file)
-    reload_post(file)
-    publish_post(@meta)       # FIXME ??
-  rescue => err
-    error(err)
-  end
-
-  def import(arg = nil)
-    open_blog unless @blog
-
-    arg = nil if arg == ""
-    arg ||= ask("Filename: ")  # check validity later
-    name = arg
-    grep = `grep ^.title #{name}`
-    @title = grep.sub(/^.title /, "")
-    @slug = @blog.make_slug(@title)
-    @fname = @slug + ".lt3"
-    result = system("cp #{name} #@root/src/#@fname")
-    raise "Could not copy #{name} to #@root/src/#@fname" unless result
-
-    edit_initial_post(@fname)
-    process_post(@fname)
-    publish_post(@meta) # if publish?
-  rescue => err
-    error(err)
-  end
 
 end

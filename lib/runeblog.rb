@@ -3,7 +3,7 @@ require 'yaml'
 require 'livetext'
 
 class RuneBlog
-  VERSION = "0.0.56"
+  VERSION = "0.0.57"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
   DefaultData = Path + "/../data"
@@ -153,6 +153,38 @@ EOS
       posts.each {|post| f.puts posting(view, post) }
       f.puts @blogtail
     end
+  rescue => err
+    error(err)
+  end
+
+  def reload_post(file)
+    @main ||= Livetext.new
+    @main.main.output = File.new("/tmp/WHOA","w")  # FIXME srsly?
+    @meta = process_post(file)
+    @meta.slug = file.sub(/.lt3$/, "")
+    @meta
+  rescue => err
+    error(err)
+  end
+
+  def posting(view, meta)
+    # FIXME clean up and generalize
+    ref = "#{view}/#{meta.slug}/index.html"
+    <<-HTML
+      <br>
+      <font size=+1>#{meta.pubdate}&nbsp;&nbsp;</font>
+      <font size=+2 color=blue><a href=../#{ref} style="text-decoration: none">#{meta.title}</font></a>
+      <br>
+      #{meta.teaser}  
+      <a href=../#{ref} style="text-decoration: none">Read more...</a>
+      <br><br>
+      <hr>
+    HTML
+  end
+
+  def rebuild_post(file)
+    reload_post(file)
+    publish_post(@meta)       # FIXME ??
   rescue => err
     error(err)
   end
