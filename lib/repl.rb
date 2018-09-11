@@ -1,43 +1,22 @@
 require 'runeblog'
-
 require 'ostruct'
-
-=begin
-  Instance vars in original code:
-    @bloghead
-    @blogtail
-    @config
-    @date
-    @deploy
-    @fname
-    @main
-    @meta
-    @root
-    @sequence
-    @slug
-    @template
-    @title
-    @today
-    @view
-=end
-
 require 'helpers-repl'  # FIXME structure
 
 module RuneBlog::REPL
 
   def cmd_quit(arg)
-    raise "Glitch: #{__callee__} Got an argument" if arg != []
+    raise "Glitch: #{__callee__} got arg #{arg.inspect}" unless arg.nil?
     puts "\n "
     exit
   end
 
   def cmd_version(arg)
-    raise "Glitch: #{__callee__} Got an argument" if arg != []
+    raise "Glitch: #{__callee__} got arg #{arg.inspect}" unless arg.nil?
     return "\n  " + RuneBlog::VERSION
   end
 
   def new_blog!(arg)   # FIXME weird?
-    raise "Glitch: #{__callee__} Got an argument" if arg != []
+    raise "Glitch: #{__callee__} got arg #{arg.inspect}" unless arg.nil?
     return if RuneBlog.exist?
     yn = yesno(red("  No .blog found. Create new blog? "))
     RuneBlog.create_new_blog if yn
@@ -46,7 +25,6 @@ module RuneBlog::REPL
   end 
 
   def open_blog # Crude - FIXME later
-#   new_blog!([]) unless RuneBlog.exist?
     @blog = RuneBlog.new
     @view = @blog.view     # current view
     @sequence = @blog.sequence
@@ -56,16 +34,8 @@ module RuneBlog::REPL
     error(err)
   end
 
-  def edit_initial_post(file)
-    result = system("vi #@root/src/#{file} +8 ")
-    raise "Problem editing #@root/src/#{file}" unless result
-    nil
-  rescue => err
-    error(err)
-  end
-
   def cmd_browse
-    raise "Glitch: #{__callee__} Got an argument" if arg != []
+    raise "Glitch: #{__callee__} got arg #{arg.inspect}" unless arg.nil?
     @deploy ||= {}
     return puts red("\n  Deploy first.") unless @deploy[@view]
 
@@ -88,7 +58,7 @@ module RuneBlog::REPL
 
   def cmd_deploy(arg)  # FIXME non-string return expected in caller?
     # TBD clunky FIXME 
-    raise "Glitch: #{__callee__} Got an argument" if arg != []
+    raise "Glitch: #{__callee__} got arg #{arg.inspect}" unless arg.nil?
     @deploy ||= {}
     deployment = @blog.viewdir(@view) + "deploy"
     raise "File '#{deployment}' not found" unless File.exist?(deployment)
@@ -125,7 +95,7 @@ module RuneBlog::REPL
   end
 
   def cmd_rebuild(arg)
-    raise "Glitch: #{__callee__} Got an argument" if arg != []
+    raise "Glitch: #{__callee__} got arg #{arg.inspect}" unless arg.nil?
     puts
     files = Dir.entries("#@root/src/").grep /\d\d\d\d.*.lt3$/
     files.map! {|f| File.basename(f) }
@@ -137,7 +107,7 @@ module RuneBlog::REPL
   end
 
   def cmd_relink(arg)
-    raise "Glitch: #{__callee__} Got an argument" if arg != []
+    raise "Glitch: #{__callee__} got arg #{arg.inspect}" unless arg.nil?
     @blog.views.each {|view| generate_index(view) }
     nil
   rescue => err
@@ -146,7 +116,7 @@ module RuneBlog::REPL
 
   def cmd_list_views(arg)
     abort "Config file not read"  unless @blog
-    raise "Glitch: #{__callee__} Got an argument" if arg != []
+    raise "Glitch: #{__callee__} got arg #{arg.inspect}" unless arg.nil?
     out = "\n"
     @blog.views.each {|v| out << "  #{v}\n" }
     out
@@ -155,11 +125,10 @@ module RuneBlog::REPL
   end
 
   def cmd_change_view(arg)
-    if arg.empty?
+    if arg.nil?
       return "\n  #{@blog.view}"
     else
       out = ""
-      arg = arg.first
       list = @blog.views.grep /^#{arg}/
       if list.size == 1
         @view = @blog.view = list.first
@@ -174,7 +143,6 @@ module RuneBlog::REPL
   end
 
   def cmd_new_view(arg)
-    arg = arg.first
     @blog ||= open_blog
     arg ||= ask("New view: ")  # check validity later
     raise "view #{arg} already exists" if @blog.views.include?(arg)
@@ -182,6 +150,7 @@ module RuneBlog::REPL
     dir = @root + "/views/" + arg + "/"
     create_dir(dir + 'custom')
     create_dir(dir + 'assets')
+    File.open(dir + "deploy") { }  # FIXME
 
     # Something more like this?  RuneBlog.new_view(arg)
     File.write(dir + "custom/blog_header.html",  RuneBlog::BlogHeader)
@@ -193,23 +162,16 @@ module RuneBlog::REPL
   end
 
   def cmd_new_post(arg)
-    raise "Glitch: #{__callee__} Got an argument" if arg != []
-    open_blog unless @blog
+    raise "Glitch: #{__callee__} got arg #{arg.inspect}" unless arg.nil?
+    open_blog unless @blog   # duh?
     @title = ask("Title: ")
-    @today = Time.now.strftime("%Y%m%d")
-    @date = Time.now.strftime("%Y-%m-%d")
-
-    file = @blog.create_new_post(@title, @date, @view)
-    edit_initial_post(file)
-    process_post(file)  #- FIXME handle each view
-    publish_post(@meta)
-    nil
+    @blog.create_new_post(@title)
   rescue => err
     error(err)
   end
 
   def cmd_kill(arg)
-    args = arg.first.split
+    args = arg.split
     args.each {|x| cmd_remove_post([x], false) }
     nil
   rescue => err
@@ -220,7 +182,6 @@ module RuneBlog::REPL
 
   def cmd_remove_post(arg, safe=true)
     out = ""
-    arg = arg.first
     id = Integer(arg) rescue raise("'#{arg}' is not an integer")
     tag = "#{'%04d' % id}"
     files = Find.find(@root).to_a
@@ -258,7 +219,6 @@ module RuneBlog::REPL
   #-- FIXME affects linking, building, deployment...
 
   def cmd_edit_post(arg)
-    arg = arg.first
     id = Integer(arg) rescue raise("'#{arg}' is not an integer")
     tag = "#{'%04d' % id}"
     files = Find.find(@root+"/src").to_a
@@ -278,7 +238,7 @@ module RuneBlog::REPL
   end
 
   def cmd_list_posts(arg)
-    raise "Glitch: #{__callee__} Got an argument" if arg != []
+    raise "Glitch: #{__callee__} got arg #{arg.inspect}" unless arg.nil?
     out = ""
     @view = @blog.view
     dir = @blog.viewdir(@view)
@@ -297,7 +257,7 @@ module RuneBlog::REPL
   end
 
   def cmd_list_drafts(arg)
-    raise "Glitch: #{__callee__} Got an argument" if arg != []
+    raise "Glitch: #{__callee__} got arg #{arg.inspect}" unless arg.nil?
     out = ""
     dir = "#@root/src"
     Dir.chdir(dir) do
@@ -319,7 +279,7 @@ module RuneBlog::REPL
   end
 
   def cmd_help(arg)
-    raise "Glitch: #{__callee__} Got an argument" if arg != []
+    raise "Glitch: #{__callee__} got arg #{arg.inspect}" unless arg.nil?
     out = <<-EOS
   
     Commands:

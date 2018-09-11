@@ -74,17 +74,17 @@ module RuneBlog::REPL
       result = m ? m.to_a : nil
       next unless result
       found = meth
-      params = m[1..-1]
+      params = m[1]
     end
     meth = found || :cmd_INVALID
     params = cmd if meth == :cmd_INVALID
-    [meth, params.first]
+    [meth, params]
   end
 
   def error(err)
     str = "\n  Error: #{red(err)}"
     puts str
-    puts err.backtrace
+    puts err.backtrace[0]
   end
 
   def ask(prompt, meth = :to_s)
@@ -124,23 +124,6 @@ module RuneBlog::REPL
     red(slug[0..3])+blue(slug[4..-1])
   end
 
-  ### process_post
-
-  def process_post(file)
-    @main ||= Livetext.new
-    @main.main.output = File.new("/tmp/WHOA","w")
-    path = @root + "/src/#{file}"
-    @meta = @main.process_file(path, binding)
-    raise "process_file returned nil" if @meta.nil?
-
-    slug = @blog.make_slug(@meta.title, @blog.sequence)
-    slug = file.sub(/.lt3$/, "")
-    @meta.slug = slug
-    @meta
-  rescue => err
-    error(err)
-  end
-
   ### reload_post
 
   def reload_post(file)
@@ -153,7 +136,7 @@ module RuneBlog::REPL
     error(err)
   end
 
-  ### posting
+  ## posting
 
   def posting(view, meta)
     # FIXME clean up and generalize
@@ -170,53 +153,12 @@ module RuneBlog::REPL
     HTML
   end
 
-  ### generate_index
-
-  def generate_index(view)
-    # Gather all posts, create list
-    vdir = "#@root/views/#{view}"
-    posts = Dir.entries(vdir).grep /^\d\d\d\d/
-    posts = posts.sort.reverse
-
-    # Add view header/trailer
-    head = File.read("#{vdir}/custom/blog_header.html") rescue RuneBlog::BlogHeader
-    tail = File.read("#{vdir}/custom/blog_trailer.html") rescue RuneBlog::BlogTrailer
-    @bloghead = interpolate(head)
-    @blogtail = interpolate(tail)
-
-    # Output view
-    posts.map! {|post| YAML.load(File.read("#{vdir}/#{post}/metadata.yaml")) }
-    File.open("#{vdir}/index.html", "w") do |f|
-      f.puts @bloghead
-      posts.each {|post| f.puts posting(view, post) }
-      f.puts @blogtail
-    end
-  rescue => err
-    error(err)
-  end
-
   ### create_dir
 
   def create_dir(dir)
     cmd = "mkdir -p #{dir} >/dev/null 2>&1"
     result = system(cmd) 
     raise "Can't create #{dir}" unless result
-  end
-
-  ### link_post_view
-
-  def link_post_view(view)
-    # Create dir using slug (index.html, metadata?)
-    vdir = @blog.viewdir(view)
-    dir = vdir + @meta.slug + "/"
-    create_dir(dir + "assets") 
-    File.write("#{dir}/metadata.yaml", @meta.to_yaml)
-    template = File.read(vdir + "custom/post_template.html")
-    post = interpolate(template)
-    File.write(dir + "index.html", post)
-    generate_index(view)
-  rescue => err
-    error(err)
   end
 
   ### find_asset
@@ -252,23 +194,6 @@ module RuneBlog::REPL
 #     list ||= []
 #     list.each {|asset| puts "#{asset} => #{find_asset(asset, views)}" }
 #   end
-
-  ### publish_post
-
-  def publish_post(meta)
-    puts "  #{colored_slug(meta.slug)}"
-    # First gather the views
-    views = meta.views
-    print "       Views: "
-    views.each do |view| 
-      print "#{view} "
-      link_post_view(view)
-    end
-#   assets = find_all_assets(@meta.assets, views)
-    puts
-  rescue => err
-    error(err)
-  end
 
   ### rebuild_post
   
