@@ -3,7 +3,7 @@ require 'yaml'
 require 'livetext'
 
 class RuneBlog
-  VERSION = "0.0.52"
+  VERSION = "0.0.55"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
   DefaultData = Path + "/../data"
@@ -36,8 +36,7 @@ class RuneBlog
     lines = File.readlines(cfg_file).map {|x| x.chomp }
     @root = lines[0]
     @view = lines[1]
-    dirs = Dir.entries("#@root/views/") - %w[. ..]
-    dirs.reject! {|x| ! File.directory?("#@root/views/#{x}") }
+    dirs = subdirs("#@root/views/")
     @root = root
     @views = dirs
     @sequence = File.read(root + "/sequence").to_i
@@ -85,4 +84,9 @@ EOS
     "#{num}-#{slug}"
   end
 
+  def subdirs(dir)
+    dirs = Dir.entries(dir) - %w[. ..]
+    dirs.reject! {|x| ! File.directory?("#@root/views/#{x}") }
+    dirs
+  end
 end

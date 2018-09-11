@@ -156,7 +156,7 @@ module RuneBlog::REPL
 
   def cmd_change_view(arg)
     if arg.empty?
-      return "\n  #@view"
+      return "\n  #{@blog.view}"
     else
       out = ""
       arg = arg.first
@@ -280,6 +280,7 @@ module RuneBlog::REPL
   def cmd_list_posts(arg)
     raise "Glitch: #{__callee__} Got an argument" if arg != []
     out = ""
+    @view = @blog.view
     dir = @blog.viewdir(@view)
     Dir.chdir(dir) do
       posts = Dir.entries(".").grep(/^0.*/)

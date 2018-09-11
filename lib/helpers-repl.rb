@@ -65,6 +65,7 @@ module RuneBlog::REPL
   end
 
   def self.choose_method(cmd)
+    cmd = cmd.strip
     found = nil
     params = []
     Regexes.each_pair do |rx, meth|
@@ -77,8 +78,9 @@ module RuneBlog::REPL
     end
     meth = found || :cmd_INVALID
     params = cmd if meth == :cmd_INVALID
-    [meth, params]
+    [meth, params.first]
   end
+
   def error(err)
     str = "\n  Error: #{red(err)}"
     puts str
