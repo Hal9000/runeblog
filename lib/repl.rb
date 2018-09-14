@@ -5,63 +5,49 @@ require 'helpers-repl'  # FIXME structure
 module RuneBlog::REPL
 
   def cmd_quit(arg)
-    raise "Glitch: #{__callee__} got arg #{arg.inspect}" unless arg.nil?
-    puts "\n "
-    exit
+    check_empty(arg)
+    abort "\n "
   end
 
   def cmd_version(arg)
-    raise "Glitch: #{__callee__} got arg #{arg.inspect}" unless arg.nil?
-    return "\n  " + RuneBlog::VERSION
-  end
-
-  def new_blog!(arg)   # FIXME weird?
-    raise "Glitch: #{__callee__} got arg #{arg.inspect}" unless arg.nil?
-    return if RuneBlog.exist?
-    yn = yesno(red("  No .blog found. Create new blog? "))
-    RuneBlog.create_new_blog if yn
-  rescue => err
-    error(err)
-  end 
-
-  def open_blog # Crude - FIXME later
-    @blog = RuneBlog.new
-    @view = @blog.view     # current view
-    @sequence = @blog.sequence
-    @root = @blog.root
-    @blog
-  rescue => err
-    error(err)
+    reset_output
+    check_empty(arg)
+    output RuneBlog::VERSION
+    return @out
   end
 
   def cmd_browse
-    raise "Glitch: #{__callee__} got arg #{arg.inspect}" unless arg.nil?
+    reset_output
+    check_empty(arg)
     @deploy ||= {}
     return puts red("\n  Deploy first.") unless @deploy[@view]
 
     lines = @deploy[@view]
     user, server, sroot, spath = *lines
-    result = system("open 'http://#{server}/#{spath}'")
-    raise "Problem opening http://#{server}/#{spath}" unless result
+    url = "http://#{server}/#{spath}"
+    result = system("open '#{url}'")
+    raise CantOpen, url unless result
     nil
   rescue => err
     error(err)
   end
 
   def cmd_open_local
-    result = system("open #{@blog.viewdir(@view)}/index.html")
-    raise "Problem opening #{@blog.viewdir(@view)}/index.html" unless result
-    nil
+    reset_output
+    local = @blog.viewdir(@view) + "/index.html"
+    result = system("open #{local}")
+    raise CantOpen, local unless result
   rescue => err
     error(err)
   end
 
   def cmd_deploy(arg)  # FIXME non-string return expected in caller?
     # TBD clunky FIXME 
-    raise "Glitch: #{__callee__} got arg #{arg.inspect}" unless arg.nil?
+    reset_output
+    check_empty(arg)
     @deploy ||= {}
     deployment = @blog.viewdir(@view) + "deploy"
-    raise "File '#{deployment}' not found" unless File.exist?(deployment)
+    check_file_exists(deployment)
 
     lines = File.readlines(deployment).map {|x| x.chomp }
     @deploy[@view] = lines
@@ -75,27 +61,28 @@ module RuneBlog::REPL
       return nil
     end
 
-    out = "\n  Files:"
-    files.each {|f| out << ("    " + f + "\n") }
-    out << "\n"
+    output "Files:"
+    files.each {|f| output "    #{f}\n" }
+    output_newline
     dir = "#{sroot}/#{spath}"
     # FIXME - may or may not already exist
     result = system("ssh root@#{server} mkdir #{dir}") 
 
     cmd = "scp -r #{files.join(' ')} root@#{server}:#{dir} >/dev/null 2>&1"
-    out << red("\n  Deploying #{files.size} files...\n")
+    output! "Deploying #{files.size} files...\n"
     result = system(cmd)
     raise "Problem occurred in deployment" unless result
 
     File.write("#{vdir}/last_deployed", files)
-    out << red("finished.\n")
-    out
+    output! "...finished.\n"
+    @out
   rescue => err
     error(err)
   end
 
   def cmd_rebuild(arg)
-    raise "Glitch: #{__callee__} got arg #{arg.inspect}" unless arg.nil?
+    reset_output
+    check_empty(arg)
     puts
     files = Dir.entries("#@root/src/").grep /\d\d\d\d.*.lt3$/
     files.map! {|f| File.basename(f) }
@@ -107,7 +94,8 @@ module RuneBlog::REPL
   end
 
   def cmd_relink(arg)
-    raise "Glitch: #{__callee__} got arg #{arg.inspect}" unless arg.nil?
+    reset_output
+    check_empty(arg)
     @blog.views.each {|view| generate_index(view) }
     nil
   rescue => err
@@ -115,34 +103,36 @@ module RuneBlog::REPL
   end
 
   def cmd_list_views(arg)
+    reset_output("\n")
+    check_empty(arg)
     abort "Config file not read"  unless @blog
-    raise "Glitch: #{__callee__} got arg #{arg.inspect}" unless arg.nil?
-    out = "\n"
-    @blog.views.each {|v| out << "  #{v}\n" }
-    out
+    @blog.views.each {|v| outstr "  #{v}\n" }
+    @out
   rescue => err
     error(err)
   end
 
   def cmd_change_view(arg)
+    reset_output
     if arg.nil?
-      return "\n  #{@blog.view}"
+      output "#{@blog.view}"
+      return @out
     else
-      out = ""
       list = @blog.views.grep /^#{arg}/
       if list.size == 1
         @view = @blog.view = list.first
-        out << red("\n  View: #{@view}\n") if arg != @view
+        output! "View: #{@view}\n" if arg != @view
       else
-        out << "view #{arg.inspect} does not exist\n"
+        output! "view #{arg.inspect} does not exist\n"
       end
     end
-    out
+    @out
   rescue => err
     error(err)
   end
 
   def cmd_new_view(arg)
+    reset_output
     @blog ||= open_blog
     arg ||= ask("New view: ")  # check validity later
     raise "view #{arg} already exists" if @blog.views.include?(arg)
@@ -162,7 +152,8 @@ module RuneBlog::REPL
   end
 
   def cmd_new_post(arg)
-    raise "Glitch: #{__callee__} got arg #{arg.inspect}" unless arg.nil?
+    reset_output
+    check_empty(arg)
     open_blog unless @blog   # duh?
     @title = ask("Title: ")
     @blog.create_new_post(@title)
@@ -171,6 +162,7 @@ module RuneBlog::REPL
   end
 
   def cmd_kill(arg)
+    reset_output
     args = arg.split
     args.each {|x| cmd_remove_post([x], false) }
     nil
@@ -181,37 +173,43 @@ module RuneBlog::REPL
   #-- FIXME affects linking, building, deployment...
 
   def cmd_remove_post(arg, safe=true)
-    out = ""
-    id = Integer(arg) rescue raise("'#{arg}' is not an integer")
+    reset_output
+    err = "'#{arg}' is not an integer"
+    id = get_integer(arg)
     tag = "#{'%04d' % id}"
     files = Find.find(@root).to_a
     files = files.grep(/#{tag}-/)
     if files.empty?
-      out = red("\n  No such post found (#{id})") 
-      return out
+      output! "No such post found (#{id})"
+      return @out
     end
 
     if safe
-      out << "\n"
-      files.each {|f| out << "  #{f}\n" }
-      puts out
-      out = ""
-      ques = files.size > 1 ? "\n  Delete all these?\n " : "\n  Delete?\n "
+      output_newline
+      files.each {|f| outstr "  #{f}\n" }
+      puts @out   # ??
+      reset_output
+      ques = "\n  Delete?\n "
+      ques.sub!(/\?/, " all these?") if files.size > 1
       yn = ask red(ques)
       if yn.downcase == "y"
         result = system("rm -rf #{files.join(' ')}")
-        raise "Problem deleting file(s)" unless result
-        out << red("\n  Deleted\n")
+        error_cant_delete(files) unless result
+        output! "Deleted\n"
       else
-        out << red("\n  No action taken\n")
+        output! "No action taken\n"
       end
     else
       result = system("rm -rf #{files.join(' ')}")
-      out << red("\n  Deleted:\n")
-      files.each {|f| out << "    #{f}\n" }
-      raise "Problem mass-deleting file(s)" unless result
+      error_cant_delete(files) unless result
+      output! "Deleted:\n"
+      files.each {|f| output "    #{f}\n" }
     end
-    out
+    @out
+  rescue ArgumentError => err
+    puts err
+  rescue CantDelete => err
+    puts err
   rescue => err
     error(err)
   end
@@ -219,7 +217,8 @@ module RuneBlog::REPL
   #-- FIXME affects linking, building, deployment...
 
   def cmd_edit_post(arg)
-    id = Integer(arg) rescue raise("'#{arg}' is not an integer")
+    reset_output
+    id = get_integer(arg)
     tag = "#{'%04d' % id}"
     files = Find.find(@root+"/src").to_a
     files = files.grep(/#{tag}-/)
@@ -238,51 +237,56 @@ module RuneBlog::REPL
   end
 
   def cmd_list_posts(arg)
-    raise "Glitch: #{__callee__} got arg #{arg.inspect}" unless arg.nil?
-    out = ""
+    check_empty(arg)
+    reset_output
     @view = @blog.view
     dir = @blog.viewdir(@view)
     Dir.chdir(dir) do
       posts = Dir.entries(".").grep(/^0.*/)
+      output @view + ":\n"
       if posts.empty?
-        out << ("\n  " + @view + ":" + red("  No posts\n"))
+        output! "No posts\n"
       else
-        out << ("\n  " + @view + ":\n ")
-        posts.each {|post| out << "  #{colored_slug(post)}\n" }
+        posts.each {|post| outstr "  #{colored_slug(post)}\n" }
       end
     end
-    out
+    @out
   rescue => err
     error(err)
   end
 
   def cmd_list_drafts(arg)
-    raise "Glitch: #{__callee__} got arg #{arg.inspect}" unless arg.nil?
-    out = ""
+    check_empty(arg)
+    reset_output
     dir = "#@root/src"
     Dir.chdir(dir) do
       posts = Dir.entries(".").grep(/^0.*.lt3/)
-      out << "\n"
+      output_newline
       if posts.empty?
-        return red("  No posts")
+        output! "No posts"
+        return @out
       else
-        posts.each {|post| out << "  #{colored_slug(post.sub(/.lt3$/, ""))}\n" }
+        posts.each do |post| 
+          str = "  #{colored_slug(post.sub(/.lt3$/, ""))}\n" 
+          outstr str
+        end
       end
     end
-    out
+    @out
   rescue => err
     error(err)
   end
 
   def cmd_INVALID(arg)
-    return "\n  Command '#{red(arg)}' was not understood."
+    reset_output "\n  Command '#{red(arg)}' was not understood."
+    return @out
   end
 
   def cmd_help(arg)
-    raise "Glitch: #{__callee__} got arg #{arg.inspect}" unless arg.nil?
-    out = <<-EOS
-  
-    Commands:
+    reset_output 
+    check_empty(arg)
+    output(<<-EOS)
+  Commands:
   
        #{red('h, help       ')}    This message
        #{red('q, quit        ')}   Exit the program
@@ -308,7 +312,28 @@ module RuneBlog::REPL
        #{red('rebuild          ')} Regenerate all posts and relink
        #{red('deploy           ')} Deploy (current view)
     EOS
-    out
+    @out
+  end
+
+  ## Funky stuff -- needs to move?
+
+  def new_blog!(arg)   # FIXME weird?
+    check_empty(arg)
+    return if RuneBlog.exist?
+    yn = yesno(red("  No .blog found. Create new blog? "))
+    RuneBlog.create_new_blog if yn
+  rescue => err
+    error(err)
+  end 
+
+  def open_blog # Crude - FIXME later
+    @blog = RuneBlog.new
+    @view = @blog.view     # current view
+    @sequence = @blog.sequence
+    @root = @blog.root
+    @blog
+  rescue => err
+    error(err)
   end
 
 end

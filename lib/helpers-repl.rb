@@ -99,6 +99,64 @@ module RuneBlog::REPL
     STDIN.gets.chomp.upcase[0] == "Y"
   end
 
+  def reset_output(initial = "")
+    @out ||= ""
+    @out.replace initial
+  end
+
+  def flush_output(initial = "")
+    @out ||= ""
+    puts @out
+    reset_output
+  end
+
+  def output(str)  # \n and indent
+    @out ||= ""
+    @out << "\n  " + str
+  end
+
+  def outstr(str)  # \n and indent
+    @out ||= ""
+    @out << str
+  end
+
+  def output!(str)  # red, \n and indent
+    @out ||= ""
+    @out << "\n  " + red(str)
+  end
+
+  def output_newline(n = 1)
+    @out ||= ""
+    n.times { @out << "\n" }
+  end
+
+  FileNotFound = StandardError.dup
+  CantOpen     = StandardError.dup
+  CantDelete   = StandardError.dup 
+
+  def check_empty(arg)
+    raise "Glitch: #{caller[0]} got arg #{arg.inspect}" unless arg.nil?
+  end
+
+  def get_integer(arg)
+    Integer(arg) 
+  rescue 
+    raise ArgumentError, "'#{arg}' is not an integer"
+  end
+
+  def check_file_exists(file)
+    raise FileNotFound, file unless File.exist?(file)
+  end
+
+  def error_cant_delete(files)
+    case files
+      when String
+        raise CantDelete, "Error deleting #{files}"
+      when Array
+        raise CantDelete, "Error deleting: \n#{files.join("\n")}"
+    end
+  end
+
   def clear
     puts "\e[H\e[2J"  # clear screen
   end
