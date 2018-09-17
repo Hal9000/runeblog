@@ -24,6 +24,7 @@ module RuneBlog::REPL
     @deploy ||= {}
     return puts red("\n  Deploy first.") unless @deploy[@view]
 
+    # Simlify this
     lines = @deploy[@view]
     user, server, sroot, spath = *lines
     url = "http://#{server}/#{spath}"
@@ -86,6 +87,7 @@ module RuneBlog::REPL
     reset_output
     check_empty(arg)
     puts
+    # Simlify this
     files = Dir.entries("#@root/src/").grep /\d\d\d\d.*.lt3$/
     files.map! {|f| File.basename(f) }
     files = files.sort.reverse
@@ -119,6 +121,7 @@ module RuneBlog::REPL
 
   def cmd_change_view(arg)
     reset_output
+    # Simlify this
     if arg.nil?
       output "#{@blog.view}"
       return @out
@@ -148,7 +151,6 @@ module RuneBlog::REPL
   def cmd_new_post(arg)
     reset_output
     check_empty(arg)
-#   open_blog unless @blog   # duh?
     @title = ask("Title: ")
     @blog.create_new_post(@title)
     return nil
@@ -169,7 +171,7 @@ module RuneBlog::REPL
 
   def cmd_remove_post(arg, safe=true)
     reset_output
-    err = "'#{arg}' is not an integer"
+#   err = "'#{arg}' is not an integer"
     id = get_integer(arg)
     tag = "#{'%04d' % id}"
     files = Find.find(@root).to_a
@@ -214,6 +216,7 @@ module RuneBlog::REPL
   def cmd_edit_post(arg)
     reset_output
     id = get_integer(arg)
+    # Simlify this
     tag = "#{'%04d' % id}"
     files = Find.find(@root+"/src").to_a
     files = files.grep(/#{tag}-/)
@@ -234,16 +237,12 @@ module RuneBlog::REPL
   def cmd_list_posts(arg)
     check_empty(arg)
     reset_output
-    @view = @blog.view
-    dir = @blog.viewdir(@view)
-    Dir.chdir(dir) do
-      posts = Dir.entries(".").grep(/^0.*/)
-      output @view + ":\n"
-      if posts.empty?
-        output! "No posts\n"
-      else
-        posts.each {|post| outstr "  #{colored_slug(post)}\n" }
-      end
+    posts = @blog.posts  # current view
+    output @view + ":\n"
+    if posts.empty?
+      output! "No posts\n"
+    else
+      posts.each {|post| outstr "  #{colored_slug(post)}\n" }
     end
     @out
   rescue => err
@@ -253,18 +252,14 @@ module RuneBlog::REPL
   def cmd_list_drafts(arg)
     check_empty(arg)
     reset_output
-    dir = "#@root/src"
-    Dir.chdir(dir) do
-      posts = Dir.entries(".").grep(/^0.*.lt3/)
-      output_newline
-      if posts.empty?
-        output! "No posts"
-        return @out
-      else
-        posts.each do |post| 
-          str = "  #{colored_slug(post.sub(/.lt3$/, ""))}\n" 
-          outstr str
-        end
+    output_newline
+    drafts = @blog.drafts  # current view
+    if drafts.empty?
+      output! "No drafts"
+      return @out
+    else
+      drafts.each do |draft| 
+        outstr "  #{colored_slug(draft.sub(/.lt3$/, ""))}\n" 
       end
     end
     @out
