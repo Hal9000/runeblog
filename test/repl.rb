@@ -9,7 +9,7 @@ class TestREPL < Minitest::Test
 
   def setup
     Dir.chdir("/Users/Hal/Dropbox/files/blog") # temp code!!
-    @blog ||= open_blog
+    @blog = open_blog
   end
 
   def test_001_cmd_help

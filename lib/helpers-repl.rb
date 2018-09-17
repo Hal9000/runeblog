@@ -191,7 +191,7 @@ module RuneBlog::REPL
   end
 
   def import(arg = nil)
-    open_blog unless @blog
+#   open_blog unless @blog
 
     arg = nil if arg == ""
     arg ||= ask("Filename: ")  # check validity later

@@ -3,7 +3,7 @@ require 'yaml'
 require 'livetext'
 
 class RuneBlog
-  VERSION = "0.0.58"
+  VERSION = "0.0.59"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
   DefaultData = Path + "/../data"
@@ -54,6 +54,21 @@ class RuneBlog
 
   def self.exist?
     File.exist?(".blog")
+  end
+
+  def create_view(name)
+    raise "view #{arg} already exists" if self.views.include?(arg)
+
+    dir = @root + "/views/" + arg + "/"
+    create_dir(dir + 'custom')
+    create_dir(dir + 'assets')
+    File.open(dir + "deploy", "w") { }  # FIXME
+
+    # Something more like this?  RuneBlog.new_view(arg)
+    File.write(dir + "custom/blog_header.html",  RuneBlog::BlogHeader)
+    File.write(dir + "custom/blog_trailer.html", RuneBlog::BlogTrailer)
+    File.write(dir + "last_deployed", "Initial creation")
+    self.views << arg
   end
 
   def create_new_post(title, view=nil)

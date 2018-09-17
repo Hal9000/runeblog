@@ -1,3 +1,31 @@
+  - large testbed!
+  - rebuild
+  - relink
+  - deployment
+  - error-checking on params
+  - back-sync with remote
+
+   maybe add deployment info to config?
+   possibly change: relink, rebuild, etc.?
+   shorten commands?
+   true command line options?
+   special view 'all'
+   other vars in .blog?
+   out-of-the-box workflow
+   make templates .lt3 files?
+   edit templates?
+   snippets for templates?
+   let main blog be named? call 'data' something else?
+   
+   update docs
+   video tutorial
+
+   undo last post?
+   store in trash instead of deleting?
+   figure out linked-list dependencies?
+   
+   distinguish unpublished?
+
  x fix post template problem
  x remove post
  x cv without param?
@@ -23,23 +51,3 @@
  x Figure out assets
  x $$asset function 
 
-   maybe add deployment info to config?
-   possibly change: relink, rebuild, etc.?
-   shorten commands?
-   true command line options?
-   special view 'all'
-   other vars in .blog?
-   out-of-the-box workflow
-   make templates .lt3 files?
-   edit templates?
-   snippets for templates?
-   let main blog be named? call 'data' something else?
-   
-   update docs
-   video tutorial
-
-   undo last post?
-   store in trash instead of deleting?
-   figure out linked-list dependencies?
-   
-   distinguish unpublished?

@@ -4,6 +4,8 @@ require 'helpers-repl'  # FIXME structure
 
 module RuneBlog::REPL
 
+# @blog = open_blog
+
   def cmd_quit(arg)
     check_empty(arg)
     abort "\n "
@@ -106,7 +108,10 @@ module RuneBlog::REPL
     reset_output("\n")
     check_empty(arg)
     abort "Config file not read"  unless @blog
-    @blog.views.each {|v| outstr "  #{v}\n" }
+    @blog.views.each do |v| 
+      v = bold(v) if v == @blog.view
+      outstr "  #{v}\n"
+    end
     @out
   rescue => err
     error(err)
@@ -133,20 +138,9 @@ module RuneBlog::REPL
 
   def cmd_new_view(arg)
     reset_output
-    @blog ||= open_blog
     arg ||= ask("New view: ")  # check validity later
-    raise "view #{arg} already exists" if @blog.views.include?(arg)
-
-    dir = @root + "/views/" + arg + "/"
-    create_dir(dir + 'custom')
-    create_dir(dir + 'assets')
-    File.open(dir + "deploy") { }  # FIXME
-
-    # Something more like this?  RuneBlog.new_view(arg)
-    File.write(dir + "custom/blog_header.html",  RuneBlog::BlogHeader)
-    File.write(dir + "custom/blog_trailer.html", RuneBlog::BlogTrailer)
-    File.write(dir + "last_deployed", "Initial creation")
-    @blog.views << arg
+    RuneBlog.create_view(arg)
+    return nil
   rescue => err
     error(err)
   end
@@ -154,9 +148,10 @@ module RuneBlog::REPL
   def cmd_new_post(arg)
     reset_output
     check_empty(arg)
-    open_blog unless @blog   # duh?
+#   open_blog unless @blog   # duh?
     @title = ask("Title: ")
     @blog.create_new_post(@title)
+    return nil
   rescue => err
     error(err)
   end
@@ -165,7 +160,7 @@ module RuneBlog::REPL
     reset_output
     args = arg.split
     args.each {|x| cmd_remove_post([x], false) }
-    nil
+    return nil
   rescue => err
     error(err)
   end
