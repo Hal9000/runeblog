@@ -21,13 +21,11 @@ module RuneBlog::REPL
   def cmd_browse
     reset_output
     check_empty(arg)
-    @deploy ||= {}
-    return puts red("\n  Deploy first.") unless @deploy[@view]
-
-    # Simlify this
-    lines = @deploy[@view]
-    user, server, sroot, spath = *lines
-    url = "http://#{server}/#{spath}"
+    url = @blog.deployment_url
+    if url.nil?
+      output! "Deploy first."
+      return @out
+    end
     result = system("open '#{url}'")
     raise CantOpen, url unless result
     nil
@@ -48,20 +46,10 @@ module RuneBlog::REPL
     # TBD clunky FIXME 
     reset_output
     check_empty(arg)
-    @deploy ||= {}
-    deployment = @blog.viewdir(@view) + "deploy"
-    check_file_exists(deployment)
-
-    lines = File.readlines(deployment).map {|x| x.chomp }
-    @deploy[@view] = lines
-    user, server, sroot, spath = *lines
-    vdir = @blog.viewdir(@view)
-    files = ["#{vdir}/index.html"]
-    files += Dir.entries(vdir).grep(/^\d\d\d\d/).map {|x| "#{vdir}/#{x}" }
-    files.reject! {|f| File.mtime(f) < File.mtime("#{vdir}/last_deployed") }
+    user, server, sroot, spath = *@deploy[@view]
     if files.empty?
-      puts red("\n  No files to deploy") 
-      return nil
+      output! "No files to deploy"
+      return @out
     end
 
     output "Files:"
@@ -70,6 +58,7 @@ module RuneBlog::REPL
     dir = "#{sroot}/#{spath}"
     # FIXME - may or may not already exist
     result = system("ssh root@#{server} mkdir #{dir}") 
+    # ^ needs -c?? 
 
     cmd = "scp -r #{files.join(' ')} root@#{server}:#{dir} >/dev/null 2>&1"
     output! "Deploying #{files.size} files...\n"
@@ -87,7 +76,7 @@ module RuneBlog::REPL
     reset_output
     check_empty(arg)
     puts
-    # Simlify this
+    # Simplify this
     files = Dir.entries("#@root/src/").grep /\d\d\d\d.*.lt3$/
     files.map! {|f| File.basename(f) }
     files = files.sort.reverse
@@ -142,7 +131,7 @@ module RuneBlog::REPL
   def cmd_new_view(arg)
     reset_output
     arg ||= ask("New view: ")  # check validity later
-    RuneBlog.create_view(arg)
+    @blog.create_view(arg)
     return nil
   rescue => err
     error(err)
@@ -171,11 +160,8 @@ module RuneBlog::REPL
 
   def cmd_remove_post(arg, safe=true)
     reset_output
-#   err = "'#{arg}' is not an integer"
     id = get_integer(arg)
-    tag = "#{'%04d' % id}"
-    files = Find.find(@root).to_a
-    files = files.grep(/#{tag}-/)
+    files = @blog.files_by_id(id)
     if files.empty?
       output! "No such post found (#{id})"
       return @out
@@ -184,7 +170,7 @@ module RuneBlog::REPL
     if safe
       output_newline
       files.each {|f| outstr "  #{f}\n" }
-      puts @out   # ??
+#     puts @out   # ??
       reset_output
       ques = "\n  Delete?\n "
       ques.sub!(/\?/, " all these?") if files.size > 1
@@ -321,6 +307,13 @@ module RuneBlog::REPL
     @view = @blog.view     # current view
     @sequence = @blog.sequence
     @root = @blog.root
+    @deploy ||= {}
+    @blog.views.each do |view|
+      deployment = @blog.viewdir(@view) + "deploy"
+      check_file_exists(deployment)
+      lines = File.readlines(deployment).map {|x| x.chomp }
+      @deploy[@view] = lines
+    end
     @blog
   rescue => err
     error(err)

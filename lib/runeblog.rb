@@ -3,16 +3,18 @@ require 'yaml'
 require 'livetext'
 
 class RuneBlog
-  VERSION = "0.0.60"
+  VERSION = "0.0.61"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
   DefaultData = Path + "/../data"
 
   BlogHeaderPath  = DefaultData + "/custom/blog_header.html"
   BlogTrailerPath = DefaultData + "/custom/blog_trailer.html"
+  BlogTemplatePath = DefaultData + "/custom/blog_trailer.html"
 
   BlogHeader  = File.read(BlogHeaderPath)  rescue "not found"
   BlogTrailer = File.read(BlogTrailerPath) rescue "not found"
+  BlogTemplate = File.read(BlogTemplatePath) rescue "not found"
 
   attr_reader :root, :views, :view, :sequence
   attr_writer :view  # FIXME
@@ -56,7 +58,7 @@ class RuneBlog
     File.exist?(".blog")
   end
 
-  def create_view(name)
+  def create_view(arg)
     raise "view #{arg} already exists" if self.views.include?(arg)
 
     dir = @root + "/views/" + arg + "/"
@@ -64,11 +66,32 @@ class RuneBlog
     create_dir(dir + 'assets')
     File.open(dir + "deploy", "w") { }  # FIXME
 
-    # Something more like this?  RuneBlog.new_view(arg)
     File.write(dir + "custom/blog_header.html",  RuneBlog::BlogHeader)
     File.write(dir + "custom/blog_trailer.html", RuneBlog::BlogTrailer)
+    File.write(dir + "custom/post_template.html", RuneBlog::BlogTemplate)
     File.write(dir + "last_deployed", "Initial creation")
     self.views << arg
+  end
+
+  def deployment_url
+    return nil unless @deploy[@view]
+    lines = @deploy[@view]
+    user, server, sroot, spath = *@deploy[@view]
+    url = "http://#{server}/#{spath}"
+  end
+
+  def view_files
+    vdir = @blog.viewdir(@view)
+    # meh
+    files = ["#{vdir}/index.html"]
+    files += Dir.entries(vdir).grep(/^\d\d\d\d/).map {|x| "#{vdir}/#{x}" }
+    files.reject! {|f| File.mtime(f) < File.mtime("#{vdir}/last_deployed") }
+  end
+
+  def files_by_id(id)
+    files = Find.find(@root).to_a
+    tag = "#{'%04d' % id}"
+    files.grep(/#{tag}-/)
   end
 
   def create_new_post(title, view=nil)

@@ -1,0 +1,13 @@
+--- !ruby/object:OpenStruct
+table:
+  :title: |
+    view1 post 2
+  :date: 2018-09-17
+  :pubdate: '20180917'
+  :views:
+  - view1
+  :teaser: |
+    Teaser goes here.
+  :body: "<h1>view1 post 2\n</h1> \nTeaser goes here.\n\nRemainder of post goes here.\n"
+  :slug: 0002-view1-post-2
+modifiable: true

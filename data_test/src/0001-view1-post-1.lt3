@@ -1,0 +1,10 @@
+.mixin liveblog
+ 
+.title view1 post 1
+.pubdate 2018-09-17
+.views view1
+ 
+.teaser
+Teaser goes here.
+.end
+Remainder of post goes here.
