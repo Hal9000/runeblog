@@ -3,7 +3,7 @@ require 'yaml'
 require 'livetext'
 
 class RuneBlog
-  VERSION = "0.0.61"
+  VERSION = "0.0.62"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
   DefaultData = Path + "/../data"
@@ -136,6 +136,10 @@ EOS
   def drafts
     dir = "#@root/src"
     drafts = Dir.entries(dir).grep(/^0.*.lt3/)
+  end
+
+  def change_view(view)
+    @view = view
   end
 
   def process_post(file)

@@ -170,12 +170,11 @@ module RuneBlog::REPL
     if safe
       output_newline
       files.each {|f| outstr "  #{f}\n" }
-#     puts @out   # ??
       reset_output
       ques = "\n  Delete?\n "
       ques.sub!(/\?/, " all these?") if files.size > 1
-      yn = ask red(ques)
-      if yn.downcase == "y"
+      yes = yesno red(ques)
+      if yes
         result = system("rm -rf #{files.join(' ')}")
         error_cant_delete(files) unless result
         output! "Deleted\n"
@@ -270,16 +269,21 @@ module RuneBlog::REPL
   
        #{red('change view VIEW ')} Change current view
        #{red('cv VIEW          ')} Change current view
+
        #{red('new view         ')} Create a new view
+
        #{red('list views       ')} List all views available
        #{red('lsv              ')} Same as: list views
   
        #{red('p, post          ')} Create a new post
        #{red('new post         ')} Same as post (create a post)
+
        #{red('lsp, list posts  ')} List posts in current view
+
        #{red('lsd, list drafts ')} List all posts regardless of view
   
        #{red('rm ID            ')} Remove a post
+       #{red('kill ID ID ID... ')} Remove multiple posts
        #{red('edit ID          ')} Edit a post
   
        #{red('preview          ')} Look at current (local) view in browser
@@ -296,8 +300,8 @@ module RuneBlog::REPL
   def new_blog!(arg)   # FIXME weird?
     check_empty(arg)
     return if RuneBlog.exist?
-    yn = yesno(red("  No .blog found. Create new blog? "))
-    RuneBlog.create_new_blog if yn
+    yes = yesno(red("  No .blog found. Create new blog? "))
+    RuneBlog.create_new_blog if yes
   rescue => err
     error(err)
   end 

@@ -8,7 +8,6 @@ class TestREPL < Minitest::Test
   include RuneBlog::REPL
 
   def setup
-    Dir.chdir("/Users/Hal/Dropbox/files/blog") # temp code!!
     @blog = open_blog
   end
 
@@ -37,21 +36,21 @@ class TestREPL < Minitest::Test
   def test_004_change_view
     out = cmd_change_view(nil)  # no param
     assert out.is_a?(String), "Expected a string; got: #{out.inspect}"
-    assert out =~ /computing/m, "Expecting 'computing' as default; got: #{out.inspect}"
+    assert out =~ /view1/m, "Expecting 'view1' as default; got: #{out.inspect}"
   end
 
   def test_005_lsd
     out = cmd_list_drafts(nil)
     assert out.is_a?(String), "Expected a string returned"
     lines = out.split("\n").length 
-    assert lines >= 15, "Expecting more lines; got: #{out.inspect}"
+    assert lines >= 2, "Expecting more lines; got: #{out.inspect}"
   end
 
   def test_006_lsp
     out = cmd_list_posts(nil)
     assert out.is_a?(String), "Expected a string returned; got: #{out.inspect}"
     lines = out.split("\n").length 
-    assert lines >= 20, "Expecting more lines; got: #{out.inspect}"
+    assert lines >= 2, "Expecting more lines; got: #{out.inspect}"
   end
 
   def test_007_parser
@@ -99,5 +98,19 @@ class TestREPL < Minitest::Test
       assert result == expected, "Expected #{expected.inspect} but got #{result.inspect}"
     end
   end
+
+  def test_008_current_view
+    assert @blog.view == "view1", "Current view seems wrong (#{@blog.view}, not view1)"
+  end
+
+  def test_009_change_view
+    assert @blog.change_view("view2")
+    assert @blog.view == "view2", "Current view seems wrong (#{@blog.view}, not view2)"
+  end
+
+  def test_010_accessors
+    assert @blog.views.sort == ["view1", "view2"]
+  end
+
 end
 
