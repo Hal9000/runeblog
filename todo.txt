@@ -1,4 +1,5 @@
-  - large testbed!
+  - coupling between runeblog and repl
+x - large testbed!
   - rebuild
   - relink
   - deployment

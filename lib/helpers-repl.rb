@@ -173,21 +173,8 @@ module RuneBlog::REPL
     "\e[1m#{str}\e[22m"
   end
 
-  def interpolate(str)
-    wrap = "<<-EOS\n#{str}\nEOS"
-    eval wrap
-  end
-
   def colored_slug(slug)
     red(slug[0..3])+blue(slug[4..-1])
-  end
-
-  ### create_dir
-
-  def create_dir(dir)
-    cmd = "mkdir -p #{dir} >/dev/null 2>&1"
-    result = system(cmd) 
-    raise "Can't create #{dir}" unless result
   end
 
   def import(arg = nil)

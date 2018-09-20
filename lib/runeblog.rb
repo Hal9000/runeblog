@@ -3,7 +3,7 @@ require 'yaml'
 require 'livetext'
 
 class RuneBlog
-  VERSION = "0.0.62"
+  VERSION = "0.0.63"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
   DefaultData = Path + "/../data"
@@ -16,8 +16,8 @@ class RuneBlog
   BlogTrailer = File.read(BlogTrailerPath) rescue "not found"
   BlogTemplate = File.read(BlogTemplatePath) rescue "not found"
 
-  attr_reader :root, :views, :view, :sequence
-  attr_writer :view  # FIXME
+  attr_reader :root, :views, :sequence
+  attr_accessor :view  # FIXME
 
   def self.create_new_blog
     #-- what if data already exists?
@@ -73,6 +73,13 @@ class RuneBlog
     self.views << arg
   end
 
+  def delete_view(name, force = false)
+    if force
+      system("rm -rf #@root/views/#{name}") 
+      @views -= [name]
+    end
+  end
+
   def deployment_url
     return nil unless @deploy[@view]
     lines = @deploy[@view]
@@ -89,13 +96,14 @@ class RuneBlog
   end
 
   def files_by_id(id)
-    files = Find.find(@root).to_a
+    files = Find.find(self.root).to_a
     tag = "#{'%04d' % id}"
-    files.grep(/#{tag}-/)
+    result = files.grep(/#{tag}-/)
+    result
   end
 
-  def create_new_post(title, view=nil)
-    view ||= @view
+  def create_new_post(title, testing = false)
+    view = @view
     date = Time.now.strftime("%Y-%m-%d")
     @template = <<-EOS
 .mixin liveblog
@@ -110,14 +118,15 @@ Teaser goes here.
 Remainder of post goes here.
 EOS
  
-    @slug = make_slug(title)
+    num, @slug = make_slug(title)
     @fname = @slug + ".lt3"
     File.open("#@root/src/#@fname", "w") {|f| f.puts @template }
-    edit_initial_post(@fname)  # How eliminate for testing?
-    process_post(@fname)  #- FIXME handle each view
+    edit_initial_post(@fname) unless testing
+    process_post(@fname) #- FIXME handle each view
     publish_post(@meta)
+    num
   rescue => err
-    error(err)
+    puts err # error(err)
   end
 
   def edit_initial_post(file)
@@ -149,7 +158,7 @@ EOS
     @meta = @main.process_file(path, binding)
     raise "process_file returned nil" if @meta.nil?
 
-    slug = self.make_slug(@meta.title, self.sequence)
+    num, slug = self.make_slug(@meta.title, self.sequence)
     slug = file.sub(/.lt3$/, "")
     @meta.slug = slug
     @meta
@@ -158,16 +167,12 @@ EOS
   end
 
   def publish_post(meta)
-    puts "  #{colored_slug(meta.slug)}"
+    puts "  #{colored_slug(meta.slug)}" rescue nil  # puts(meta.slug)  # FIXME
     # First gather the views
     views = meta.views
-    print "       Views: "
-    views.each do |view| 
-      print "#{view} "
-      link_post_view(view)
-    end
+    views.each {|view| link_post_view(view) }
 #   assets = find_all_assets(@meta.assets, views)
-    puts
+    nil
   rescue => err
     error(err)
   end
@@ -209,6 +214,10 @@ EOS
     error(err)
   end
 
+  def relink
+    self.views.each {|view| generate_index(view) }
+  end
+
   def reload_post(file)
     @main ||= Livetext.new
     @main.main.output = File.new("/tmp/WHOA","w")  # FIXME srsly?
@@ -241,10 +250,22 @@ EOS
     error(err)
   end
 
-  def make_slug(title, seq=nil)
-    num = '%04d' % (seq || self.next_sequence)   # FIXME can do better
+  def remove_post(num)
+    list = files_by_id(num)
+    result = system("rm -rf #{list.join(' ')}")
+    error_cant_delete(files) unless result
+  end
+
+  def post_exists?(num)
+    list = files_by_id(num)
+    list.empty? ? nil : list
+  end
+
+  def make_slug(title, postnum = nil)
+    postnum ||= self.next_sequence
+    num = '%04d' % postnum   # FIXME can do better
     slug = title.downcase.strip.gsub(' ', '-').gsub(/[^\w-]/, '')
-    "#{num}-#{slug}"
+    [postnum, "#{num}-#{slug}"]
   end
 
   def subdirs(dir)
@@ -252,4 +273,29 @@ EOS
     dirs.reject! {|x| ! File.directory?("#@root/views/#{x}") }
     dirs
   end
+
+  def create_dir(dir)
+    cmd = "mkdir -p #{dir} >/dev/null 2>&1"
+    result = system(cmd) 
+    raise "Can't create #{dir}" unless result
+  end
+
+  def error(err)  # FIXME - this is duplicated
+    str = "\n  Error: #{err}"
+    puts str
+    puts err.backtrace  # [0]
+  end
+
+  def interpolate(str)
+    wrap = "<<-EOS\n#{str}\nEOS"
+    eval wrap
+  end
+
+  def find_src_slugs
+    files = Dir.entries("#@root/src/").grep /\d\d\d\d.*.lt3$/
+    files.map! {|f| File.basename(f) }
+    files = files.sort.reverse
+    files
+  end
+
 end

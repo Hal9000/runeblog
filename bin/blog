@@ -21,7 +21,7 @@ STDOUT.sync = true
 
 cmd, arg = get_argv
 
-@blog = open_blog
+@blog = RuneBlog.new
 
 puts red("\n  RuneBlog v #{RuneBlog::VERSION}")
 

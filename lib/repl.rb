@@ -35,7 +35,7 @@ module RuneBlog::REPL
 
   def cmd_open_local
     reset_output
-    local = @blog.viewdir(@view) + "/index.html"
+    local = @blog.viewdir(@blog.view) + "/index.html"
     result = system("open #{local}")
     raise CantOpen, local unless result
   rescue => err
@@ -46,8 +46,8 @@ module RuneBlog::REPL
     # TBD clunky FIXME 
     reset_output
     check_empty(arg)
-    user, server, sroot, spath = *@deploy[@view]
-    if files.empty?
+    user, server, sroot, spath = *@deploy[@blog.view]
+    if files.empty?    # FIXME  baloney
       output! "No files to deploy"
       return @out
     end
@@ -76,10 +76,7 @@ module RuneBlog::REPL
     reset_output
     check_empty(arg)
     puts
-    # Simplify this
-    files = Dir.entries("#@root/src/").grep /\d\d\d\d.*.lt3$/
-    files.map! {|f| File.basename(f) }
-    files = files.sort.reverse
+    files = @blog.find_src_slugs
     files.each {|file| rebuild_post(file) }
     nil
   rescue => err
@@ -89,7 +86,7 @@ module RuneBlog::REPL
   def cmd_relink(arg)
     reset_output
     check_empty(arg)
-    @blog.views.each {|view| generate_index(view) }
+    @blog.relink
     nil
   rescue => err
    error(err)
@@ -98,7 +95,6 @@ module RuneBlog::REPL
   def cmd_list_views(arg)
     reset_output("\n")
     check_empty(arg)
-    abort "Config file not read"  unless @blog
     @blog.views.each do |v| 
       v = bold(v) if v == @blog.view
       outstr "  #{v}\n"
@@ -110,15 +106,15 @@ module RuneBlog::REPL
 
   def cmd_change_view(arg)
     reset_output
-    # Simlify this
+    # Simplify this
     if arg.nil?
       output "#{@blog.view}"
       return @out
     else
       list = @blog.views.grep /^#{arg}/
       if list.size == 1
-        @view = @blog.view = list.first
-        output! "View: #{@view}\n" if arg != @view
+        @blog.view = list.first
+        output! "View: #{@blog.view}\n" if arg != @blog.view
       else
         output! "view #{arg.inspect} does not exist\n"
       end
@@ -130,9 +126,8 @@ module RuneBlog::REPL
 
   def cmd_new_view(arg)
     reset_output
-    arg ||= ask("New view: ")  # check validity later
     @blog.create_view(arg)
-    return nil
+    nil
   rescue => err
     error(err)
   end
@@ -140,9 +135,9 @@ module RuneBlog::REPL
   def cmd_new_post(arg)
     reset_output
     check_empty(arg)
-    @title = ask("Title: ")
-    @blog.create_new_post(@title)
-    return nil
+    title = ask("Title: ")
+    @blog.create_new_post(title)
+    nil
   rescue => err
     error(err)
   end
@@ -150,10 +145,11 @@ module RuneBlog::REPL
   def cmd_kill(arg)
     reset_output
     args = arg.split
-    args.each {|x| cmd_remove_post([x], false) }
-    return nil
+    args.each {|x| cmd_remove_post(x, false) }
+    nil
   rescue => err
     error(err)
+    puts err.backtrace
   end
 
   #-- FIXME affects linking, building, deployment...
@@ -161,8 +157,8 @@ module RuneBlog::REPL
   def cmd_remove_post(arg, safe=true)
     reset_output
     id = get_integer(arg)
-    files = @blog.files_by_id(id)
-    if files.empty?
+    files = @blog.post_exists?(id)
+    if files.nil?
       output! "No such post found (#{id})"
       return @out
     end
@@ -175,25 +171,26 @@ module RuneBlog::REPL
       ques.sub!(/\?/, " all these?") if files.size > 1
       yes = yesno red(ques)
       if yes
-        result = system("rm -rf #{files.join(' ')}")
-        error_cant_delete(files) unless result
+        @blog.remove_post(id)
         output! "Deleted\n"
       else
         output! "No action taken\n"
       end
     else
-      result = system("rm -rf #{files.join(' ')}")
-      error_cant_delete(files) unless result
+      @blog.remove_post(id)
       output! "Deleted:\n"
       files.each {|f| output "    #{f}\n" }
     end
     @out
   rescue ArgumentError => err
     puts err
+    puts err.backtrace
   rescue CantDelete => err
     puts err
+    puts err.backtrace
   rescue => err
     error(err)
+    puts err.backtrace
   end
 
   #-- FIXME affects linking, building, deployment...
@@ -201,16 +198,16 @@ module RuneBlog::REPL
   def cmd_edit_post(arg)
     reset_output
     id = get_integer(arg)
-    # Simlify this
+    # Simplify this
     tag = "#{'%04d' % id}"
-    files = Find.find(@root+"/src").to_a
+    files = Find.find(@blog.root+"/src").to_a
     files = files.grep(/#{tag}-/)
     files = files.map {|f| File.basename(f) }
     return red("Multiple files: #{files}") if files.size > 1
     return red("\n  No such post found (#{id})") if files.empty?
 
     file = files.first
-    result = system("vi #@root/src/#{file}")
+    result = system("vi #{@blog.root}/src/#{file}")
     raise "Problem editing #{file}" unless result
 
     rebuild_post(file)
@@ -223,7 +220,7 @@ module RuneBlog::REPL
     check_empty(arg)
     reset_output
     posts = @blog.posts  # current view
-    output @view + ":\n"
+    output @blog.view + ":\n"
     if posts.empty?
       output! "No posts\n"
     else
@@ -297,30 +294,30 @@ module RuneBlog::REPL
 
   ## Funky stuff -- needs to move?
 
-  def new_blog!(arg)   # FIXME weird?
-    check_empty(arg)
-    return if RuneBlog.exist?
-    yes = yesno(red("  No .blog found. Create new blog? "))
-    RuneBlog.create_new_blog if yes
-  rescue => err
-    error(err)
-  end 
+#  def new_blog!(arg)   # FIXME weird?
+#    check_empty(arg)
+#    return if RuneBlog.exist?
+#    yes = yesno(red("  No .blog found. Create new blog? "))
+#    RuneBlog.create_new_blog if yes
+#  rescue => err
+#    error(err)
+#  end 
 
-  def open_blog # Crude - FIXME later
-    @blog = RuneBlog.new
-    @view = @blog.view     # current view
-    @sequence = @blog.sequence
-    @root = @blog.root
-    @deploy ||= {}
-    @blog.views.each do |view|
-      deployment = @blog.viewdir(@view) + "deploy"
-      check_file_exists(deployment)
-      lines = File.readlines(deployment).map {|x| x.chomp }
-      @deploy[@view] = lines
-    end
-    @blog
-  rescue => err
-    error(err)
-  end
+#  def open_blog # Crude - FIXME later
+#    @blog = RuneBlog.new
+#    @view = @blog.view     # current view
+#    @sequence = @blog.sequence
+#    @root = @blog.root
+#    @deploy ||= {}
+#    @blog.views.each do |view|
+#      deployment = @blog.viewdir(@view) + "deploy"
+#      check_file_exists(deployment)
+#      lines = File.readlines(deployment).map {|x| x.chomp }
+#      @deploy[@view] = lines
+#    end
+#    @blog
+#  rescue => err
+#    error(err)
+#  end
 
 end

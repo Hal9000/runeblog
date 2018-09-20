@@ -8,7 +8,7 @@ class TestREPL < Minitest::Test
   include RuneBlog::REPL
 
   def setup
-    @blog = open_blog
+    @blog = RuneBlog.new
   end
 
   def test_001_cmd_help
@@ -112,5 +112,21 @@ class TestREPL < Minitest::Test
     assert @blog.views.sort == ["view1", "view2"]
   end
 
+  def test_011_create_delete_view
+    @blog.create_view("anotherview")
+    assert @blog.views.sort == ["anotherview", "view1", "view2"], "After create: #{@blog.views.sort.inspect}"
+    @blog.delete_view("anotherview", true)
+    assert @blog.views.sort == ["view1", "view2"], "After delete: #{@blog.views.sort.inspect}"
+  end
+
+  def test_012_create_remove_post   # FIXME - several problems here
+    @blog.change_view("view2")
+    assert @blog.view == "view2"
+    before = @blog.posts.size 
+    num = @blog.create_new_post("Uninteresting title", true)
+    assert @blog.posts.size == before + 1, "Don't see new post"
+    @blog.remove_post(num)
+    assert @blog.posts.size == before, "Failed to delete post"
+  end
 end
 
