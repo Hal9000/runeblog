@@ -1,4 +1,7 @@
-  - coupling between runeblog and repl
+  - should there be a Post class?
+  - remove/kill should be aware of views??
+  - Make a View class?
+x - coupling between runeblog and repl
 x - large testbed!
   - rebuild
   - relink

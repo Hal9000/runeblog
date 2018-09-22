@@ -3,7 +3,7 @@ require 'yaml'
 require 'livetext'
 
 class RuneBlog
-  VERSION = "0.0.63"
+  VERSION = "0.0.64"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
   DefaultData = Path + "/../data"
@@ -148,12 +148,12 @@ EOS
   end
 
   def change_view(view)
-    @view = view
+    @view = view   # error checking?
   end
 
   def process_post(file)
     @main ||= Livetext.new
-    @main.main.output = File.new("/tmp/WHOA","w")
+    @main.main.output = File.new("/tmp/WHOA","w")  # FIXME srsly?
     path = @root + "/src/#{file}"
     @meta = @main.process_file(path, binding)
     raise "process_file returned nil" if @meta.nil?
@@ -167,10 +167,7 @@ EOS
   end
 
   def publish_post(meta)
-    puts "  #{colored_slug(meta.slug)}" rescue nil  # puts(meta.slug)  # FIXME
-    # First gather the views
-    views = meta.views
-    views.each {|view| link_post_view(view) }
+    meta.views.each {|view| link_post_view(view) }
 #   assets = find_all_assets(@meta.assets, views)
     nil
   rescue => err
@@ -254,6 +251,7 @@ EOS
     list = files_by_id(num)
     result = system("rm -rf #{list.join(' ')}")
     error_cant_delete(files) unless result
+    # FIXME - update index/etc
   end
 
   def post_exists?(num)
@@ -298,4 +296,36 @@ EOS
     files
   end
 
+end
+
+#######
+
+class RuneBlog::Post
+
+  attr_reader :id, :title, :date, :views, :num, :slug
+
+  def self.files(num, root)
+    files = Find.find(root).to_a
+    result = files.grep(/#{tag(num)}-/)
+    result
+  end
+  
+  def initialize(title, view)
+    @title = title
+    @view = view
+    @num, @slug = make_slug
+  end
+
+  private
+
+  def make_slug(postnum = nil)
+    postnum ||= RuneBlog.next_sequence
+    num = tag(postnum)   # FIXME can do better
+    slug = @title.downcase.strip.gsub(' ', '-').gsub(/[^\w-]/, '')
+    [postnum, "#{num}-#{slug}"]
+  end
+
+  def tag(num)
+    "#{'%04d' % num}"
+  end
 end
