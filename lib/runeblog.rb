@@ -20,7 +20,7 @@ def error(err)  # FIXME - this is duplicated
 end
 
 class RuneBlog
-  VERSION = "0.0.64"
+  VERSION = "0.0.65"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
   DefaultData = Path + "/../data/views/_default"
