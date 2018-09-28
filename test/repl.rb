@@ -9,6 +9,7 @@ class TestREPL < Minitest::Test
 
   def setup
     @blog = RuneBlog.new
+    RuneBlog::Post.blog = @blog
   end
 
   def test_001_cmd_help

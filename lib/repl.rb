@@ -4,8 +4,6 @@ require 'helpers-repl'  # FIXME structure
 
 module RuneBlog::REPL
 
-# @blog = open_blog
-
   def cmd_quit(arg)
     check_empty(arg)
     abort "\n "
@@ -33,8 +31,9 @@ module RuneBlog::REPL
     error(err)
   end
 
-  def cmd_open_local
+  def cmd_preview(arg)
     reset_output
+    check_empty(arg)
     local = @blog.viewdir(@blog.view) + "/index.html"
     result = system("open #{local}")
     raise CantOpen, local unless result
@@ -77,7 +76,7 @@ module RuneBlog::REPL
     check_empty(arg)
     puts
     files = @blog.find_src_slugs
-    files.each {|file| rebuild_post(file) }
+    files.each {|file| @blog.rebuild_post(file) }
     nil
   rescue => err
     error(err)
@@ -210,7 +209,7 @@ module RuneBlog::REPL
     result = system("vi #{@blog.root}/src/#{file}")
     raise "Problem editing #{file}" unless result
 
-    rebuild_post(file)
+    @blog.rebuild_post(file)
     nil
   rescue => err
     error(err)
@@ -291,33 +290,5 @@ module RuneBlog::REPL
     EOS
     @out
   end
-
-  ## Funky stuff -- needs to move?
-
-#  def new_blog!(arg)   # FIXME weird?
-#    check_empty(arg)
-#    return if RuneBlog.exist?
-#    yes = yesno(red("  No .blog found. Create new blog? "))
-#    RuneBlog.create_new_blog if yes
-#  rescue => err
-#    error(err)
-#  end 
-
-#  def open_blog # Crude - FIXME later
-#    @blog = RuneBlog.new
-#    @view = @blog.view     # current view
-#    @sequence = @blog.sequence
-#    @root = @blog.root
-#    @deploy ||= {}
-#    @blog.views.each do |view|
-#      deployment = @blog.viewdir(@view) + "deploy"
-#      check_file_exists(deployment)
-#      lines = File.readlines(deployment).map {|x| x.chomp }
-#      @deploy[@view] = lines
-#    end
-#    @blog
-#  rescue => err
-#    error(err)
-#  end
 
 end
