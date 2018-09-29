@@ -9,7 +9,6 @@ class TestREPL < Minitest::Test
 
   def setup
     @blog = RuneBlog.new
-    RuneBlog::Post.blog = @blog
   end
 
   def test_001_cmd_help
@@ -101,28 +100,31 @@ class TestREPL < Minitest::Test
   end
 
   def test_008_current_view
-    assert @blog.view == "view1", "Current view seems wrong (#{@blog.view}, not view1)"
+    assert @blog.view.to_s == "view1", "Current view seems wrong (#{@blog.view}, not view1)"
   end
 
   def test_009_change_view
     assert @blog.change_view("view2")
-    assert @blog.view == "view2", "Current view seems wrong (#{@blog.view}, not view2)"
+    assert @blog.view.to_s == "view2", "Current view seems wrong (#{@blog.view}, not view2)"
   end
 
   def test_010_accessors
-    assert @blog.views.sort == ["view1", "view2"]
+    sorted_views = @blog.views.map(&:to_s).sort
+    assert sorted_views == ["view1", "view2"], "Got: #{sorted_views.inspect}"
   end
 
   def test_011_create_delete_view
     @blog.create_view("anotherview")
-    assert @blog.views.sort == ["anotherview", "view1", "view2"], "After create: #{@blog.views.sort.inspect}"
+    sorted_views = @blog.views.map(&:to_s).sort
+    assert sorted_views == ["anotherview", "view1", "view2"], "After create: #{sorted_views.inspect}"
     @blog.delete_view("anotherview", true)
-    assert @blog.views.sort == ["view1", "view2"], "After delete: #{@blog.views.sort.inspect}"
+    sorted_views = @blog.views.map(&:to_s).sort 
+    assert sorted_views == ["view1", "view2"], "After delete: #{sorted_views.inspect}"
   end
 
   def test_012_create_remove_post   # FIXME - several problems here
     @blog.change_view("view2")
-    assert @blog.view == "view2"
+    assert @blog.view.to_s == "view2", "Expected view2"
     before = @blog.posts.size 
     num = @blog.create_new_post("Uninteresting title", true)
     assert @blog.posts.size == before + 1, "Don't see new post"

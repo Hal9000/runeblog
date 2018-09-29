@@ -34,7 +34,7 @@ module RuneBlog::REPL
   def cmd_preview(arg)
     reset_output
     check_empty(arg)
-    local = @blog.viewdir(@blog.view) + "/index.html"
+    local = @blog.view.index
     result = system("open #{local}")
     raise CantOpen, local unless result
   rescue => err
@@ -42,6 +42,36 @@ module RuneBlog::REPL
   end
 
   def cmd_deploy(arg)  # FIXME non-string return expected in caller?
+    reset_output
+    check_empty(arg)
+    @blog.view.deploy
+    user, server, sroot, spath = *@deploy[@blog.view]
+    if files.empty?    # FIXME  baloney
+      output! "No files to deploy"
+      return @out
+    end
+
+    output "Files:"
+    files.each {|f| output "    #{f}\n" }
+    output_newline
+    dir = "#{sroot}/#{spath}"
+    # FIXME - may or may not already exist
+    result = system("ssh root@#{server} mkdir #{dir}") 
+    # ^ needs -c?? 
+
+    cmd = "scp -r #{files.join(' ')} root@#{server}:#{dir} >/dev/null 2>&1"
+    output! "Deploying #{files.size} files...\n"
+    result = system(cmd)
+    raise "Problem occurred in deployment" unless result
+
+    File.write("#{vdir}/last_deployed", files)
+    output! "...finished.\n"
+    @out
+  rescue => err
+    error(err)
+  end
+
+  def old_cmd_deploy(arg)  # FIXME non-string return expected in caller?
     # TBD clunky FIXME 
     reset_output
     check_empty(arg)
@@ -110,19 +140,15 @@ module RuneBlog::REPL
       output "#{@blog.view}"
       return @out
     else
-      list = @blog.views.grep /^#{arg}/
-      if list.size == 1
-        @blog.view = list.first
-        output! "View: #{@blog.view}\n" if arg != @blog.view
-      else
-        output! "view #{arg.inspect} does not exist\n"
+      if @blog.view?(arg)
+        @blog.view = arg
+        output! "View: #{@blog.view}\n"
       end
     end
     @out
   rescue => err
     error(err)
   end
-
   def cmd_new_view(arg)
     reset_output
     @blog.create_view(arg)
@@ -219,7 +245,7 @@ module RuneBlog::REPL
     check_empty(arg)
     reset_output
     posts = @blog.posts  # current view
-    output @blog.view + ":\n"
+    output @blog.view.name + ":\n"
     if posts.empty?
       output! "No posts\n"
     else

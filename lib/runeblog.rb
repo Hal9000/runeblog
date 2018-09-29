@@ -20,7 +20,11 @@ def error(err)  # FIXME - this is duplicated
 end
 
 class RuneBlog
-  VERSION = "0.0.65"
+  VERSION = "0.0.66"
+
+  class << self
+    attr_accessor :blog
+  end
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
   DefaultData = Path + "/../data/views/_default"
@@ -34,7 +38,7 @@ class RuneBlog
   PostTemplate = File.read(PostTemplatePath) rescue "not found"
 
   attr_reader :root, :views, :sequence
-  attr_accessor :view  # FIXME
+  attr_accessor :view  # overridden
 
   def self.create_new_blog
     #-- what if data already exists?
@@ -48,22 +52,51 @@ class RuneBlog
     File.open("data/VERSION", "a") {|f| f.puts "\nBlog created: " + Time.now.to_s }
   end
 
-  def initialize(cfg_file = ".blog")   # assumes existing blog
-    # What views are there? Deployment, etc.
-    # Crude - FIXME later
+  def get_config(file)
+    lines = File.readlines(file).map(&:chomp)
+    root, view_name = *lines
+  end
 
-    lines = File.readlines(cfg_file).map {|x| x.chomp }
-    @root = lines[0]
-    @view = lines[1]
-    dirs = subdirs("#@root/views/")
-    @root = root
-    @views = dirs
-    @sequence = File.read(root + "/sequence").to_i
+  def initialize(cfg_file = ".blog")   # assumes existing blog
+    # Crude - FIXME later - What views are there? Deployment, etc.
+    self.class.blog = self   # Weird. Like a singleton - dumbass circular dependency?
+    @root, view_name = get_config(cfg_file)
+    @views = subdirs("#@root/views/").sort.map {|name| RuneBlog::View.new(name) }
+    @view = str2view(view_name)
+    @sequence = get_sequence
+  end
+
+  def view?(name)
+    views.any? {|x| x.name == name }
+  end
+
+  def view
+    @view
+  end
+
+  def str2view(str)
+    @views.find {|x| x.name == str }
+  end
+
+  def view=(arg)
+    case arg
+      when RuneBlog::View
+        @view = arg
+      when String
+        new_view = str2view(arg)
+        raise "Can't find view #{arg}" if new_view.nil?
+        @view = new_view
+      else 
+        raise "#{arg.inspect} was not a View or a String"
+    end
+  end
+
+  def get_sequence
+    File.read(root + "/sequence").to_i
   end
 
   def next_sequence
-    @sequence += 1
-    File.open("#@root/sequence", "w") {|f| f.puts @sequence }
+    File.write("#@root/sequence", @sequence += 1)
     @sequence
   end
 
@@ -76,7 +109,8 @@ class RuneBlog
   end
 
   def create_view(arg)
-    raise "view #{arg} already exists" if self.views.include?(arg)
+    names = self.views.map(&:to_s)
+    raise "view #{arg} already exists" if names.include?(arg)
 
     dir = @root + "/views/" + arg + "/"
     create_dir(dir + 'custom')
@@ -87,13 +121,13 @@ class RuneBlog
     File.write(dir + "custom/blog_trailer.html", RuneBlog::BlogTrailer)
     File.write(dir + "custom/post_template.html", RuneBlog::PostTemplate)
     File.write(dir + "last_deployed", "Initial creation")
-    self.views << arg
+    @views << RuneBlog::View.new(arg)
   end
 
   def delete_view(name, force = false)
     if force
       system("rm -rf #@root/views/#{name}") 
-      @views -= [name]
+      @views -= [str2view(name)]
     end
   end
 
@@ -109,6 +143,7 @@ class RuneBlog
     # meh
     files = ["#{vdir}/index.html"]
     files += Dir.entries(vdir).grep(/^\d\d\d\d/).map {|x| "#{vdir}/#{x}" }
+    # Huh? 
     files.reject! {|f| File.mtime(f) < File.mtime("#{vdir}/last_deployed") }
   end
 
@@ -120,7 +155,7 @@ class RuneBlog
   end
 
   def create_new_post(title, testing = false)
-    post = RuneBlog::Post.new(title, @view)
+    post = RuneBlog::Post.new(title, @view.to_s)
     post.edit unless testing
     post.publish
     post.num
@@ -137,8 +172,9 @@ class RuneBlog
   end
 
   def posts
-    dir = self.viewdir(@view)
+    dir = self.view.dir
     posts = Dir.entries(dir).grep(/^0.*/)
+    posts
   end
 
   def drafts
@@ -147,7 +183,7 @@ class RuneBlog
   end
 
   def change_view(view)
-    @view = view   # error checking?
+    self.view = view   # error checking?
   end
 
   def process_post(file)
@@ -202,7 +238,7 @@ class RuneBlog
     posts.map! {|post| YAML.load(File.read("#{vdir}/#{post}/metadata.yaml")) }
     File.open("#{vdir}/index.html", "w") do |f|
       f.puts @bloghead
-      posts.each {|post| f.puts posting(view, post) }
+      posts.each {|post| f.puts index_entry(view, post) }
       f.puts @blogtail
     end
   rescue => err
@@ -213,7 +249,7 @@ class RuneBlog
     self.views.each {|view| generate_index(view) }
   end
 
-  def posting(view, meta)
+  def index_entry(view, meta)
     # FIXME clean up and generalize
     ref = "#{view}/#{meta.slug}/index.html"
     <<-HTML
@@ -226,8 +262,6 @@ class RuneBlog
       <br><br>
       <hr>
     HTML
-    text = File.read(self.viewdir(view) + "custom/post_template.html")
-    interpolate(text)
   end
 
   def rebuild_post(file)
@@ -273,11 +307,89 @@ end
 
 #######
 
-class RuneBlog::Post
+class RuneBlog::Deployment
+  attr_reader :user, :server, :root, :path
 
-  class << self
-    attr_accessor :blog
+  def initialize(user, server, root, path, protocol = "http")
+    @blog = RuneBlog.blog
+    @user, @server, @root, @path = 
+      user, server, root, path
   end
+
+  def url
+    url = "#{protocol}://#{@server}/#{@path}"
+  end
+ 
+  def deploy(files)
+    reset_output
+    dir = "#@root/#@path"
+    result = system("ssh -c #@user@#@server mkdir #{dir}") 
+    list = files.join(' ')
+    cmd = "scp -r #{list} root@#{server}:#{dir} >/dev/null 2>&1"
+    output! "Deploying #{files.size} files...\n"
+    result = system(cmd)
+    raise "Problem occurred in deployment" unless result
+
+    File.write("#{@blog.view.dir}/last_deployed", files)
+    output! "...finished.\n"
+    @out
+  end
+end
+
+#######
+
+class RuneBlog::View
+  attr_reader :name, :state
+  attr_accessor :deploy
+
+  def initialize(name)
+    raise "RuneBlog.blog is not set!" if RuneBlog.blog.nil?
+    @blog = RuneBlog.blog
+    @name = name
+    # How read deployment info??
+  end
+
+  def dir
+    @blog.root + "/views/#@name/"
+  end
+
+  def index
+    dir + "index.html"
+  end
+
+  def to_s
+    @name
+  end
+
+  def files(recent = false)
+    vdir = dir()
+    files = [index()]
+    others = Dir.entries(vdir).grep(/^\d\d\d\d/)
+    files += others.map {|x| "#{vdir}/#{x}" }
+    files.reject! {|f| recent?(f) } if recent
+    files
+  end
+
+  def deploy
+    # ?? @blog.view.deployment.deploy
+    # output "Files:"
+    # files.each {|f| output "    #{f}\n" }
+    output_newline
+    list = files(true)
+    @deployer.deploy(list)
+  rescue => err
+    error(err)
+  end
+
+  def recent?(file)
+    File.mtime(file) < File.mtime("#{dir()}/last_deployed")
+  end
+end
+
+#######
+
+
+class RuneBlog::Post
 
   attr_reader :id, :title, :date, :views, :num, :slug
 
@@ -287,20 +399,19 @@ class RuneBlog::Post
     result
   end
   
-  def initialize(title, view)
-    raise "Post.blog is not set!" if RuneBlog::Post.blog.nil?
-    @blog = RuneBlog::Post.blog
+  def initialize(title, view_name)
+    raise "RuneBlog.blog is not set!" if RuneBlog.blog.nil?
+    @blog = RuneBlog.blog
     @title = title
-    @view = view
+    @view = @blog.str2view(view_name)
     @num, @slug = make_slug
-##
     date = Time.now.strftime("%Y-%m-%d")
     template = <<-EOS.gsub(/^ */, "")
       .mixin liveblog
  
       .title #{title}
       .pubdate #{date}
-      .views #{view}
+      .views #@view
  
       .teaser
       Teaser goes here.
@@ -325,8 +436,9 @@ class RuneBlog::Post
     @meta = livetext.process_file(@draft, binding)
     raise "process_file returned nil" if @meta.nil?
 
-    @meta.views.each do |view|   # Create dir using slug (index.html, metadata?)
-      vdir = @blog.viewdir(view)
+    @meta.views.each do |view_name|   # Create dir using slug (index.html, metadata?)
+      view = @blog.str2view(view_name)
+      vdir = view.dir
       dir = vdir + @slug + "/"
       Dir.mkdir(dir)
       Dir.chdir(dir) do

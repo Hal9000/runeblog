@@ -1,10 +1,21 @@
+Creating a view:
+----------------
+*Ideally: enter deployment info up front
+Copy default files over (header, trailer, template)
+These "should" have vars referring to server/etc. (for Back/Home)
+Can't deploy with deployment info
+What about rebuild??
+Make a View class?
+
+
 Work flow: Make a post, publish it
+----------
 
 Publishing involves:
   - process text
-  - push into perspectives
+  - push into views
   - link into blog history
-  - scp to server
+  - scp to server (call that deploy now?)
 
 
 features:
@@ -12,7 +23,6 @@ features:
   - gist
   - wikipedia?
   - render inset quote as graphics?
-  - 
 
 Logic flow
 ----------
