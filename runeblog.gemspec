@@ -25,9 +25,9 @@ Gem::Specification.new do |s|
   test = Find.find("test").to_a
 
   s.files       =  main + misc + test
-puts "Files are:"
-s.files.each {|fn| puts "  " + fn }
-puts
+STDERR.puts "Files are:"
+s.files.each {|fn| STDERR.puts "  " + fn }
+STDERR.puts
   s.homepage    = 'https://github.com/Hal9000/runeblog'
   s.license     = "Ruby's license"
 end
