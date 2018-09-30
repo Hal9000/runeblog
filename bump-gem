@@ -4,7 +4,7 @@ system("vi lib/version.rb +3")
 
 require 'date'
 
-$: << "./lib"
+$LOAD_PATH << "./lib"
 
 require "version"
 

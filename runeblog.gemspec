@@ -2,7 +2,7 @@ require 'date'
 require 'find'
 
 $: << "."
-require "lib/runeblog"
+require "lib/version"
 
 Gem::Specification.new do |s|
   system("rm -f *.gem")
