@@ -197,6 +197,19 @@ module RuneBlog::REPL
     error(err)
   end
 
+  def ask_deployment_info   # returns Deployment object
+    # user, server, root, path, protocol = "http"
+    puts "Please enter deployment data for view #{@blog.view}..."
+    user = ask("User: ")
+    root = ask("Doc root: ")
+    server = ask("Server: ")
+    path = ask("View path: ")
+    proto = ask("Protocol (ENTER for http): ")
+    [user, root, server, path, proto].each {|x| x.chomp! }
+    proto = "http" if proto.empty?
+    RuneBlog::Deployment.new(user, server, root, path, proto)
+  end
+
   ### find_asset
 
 #   def find_asset(asset)    # , views)

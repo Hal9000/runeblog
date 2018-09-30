@@ -149,9 +149,12 @@ module RuneBlog::REPL
   rescue => err
     error(err)
   end
+
   def cmd_new_view(arg)
     reset_output
     @blog.create_view(arg)
+    depl = get_deployment_info
+    @blog.view(arg).deploy = depl
     nil
   rescue => err
     error(err)

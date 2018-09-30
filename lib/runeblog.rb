@@ -20,7 +20,7 @@ def error(err)  # FIXME - this is duplicated
 end
 
 class RuneBlog
-  VERSION = "0.0.66"
+  VERSION = "0.0.67"
 
   class << self
     attr_accessor :blog
@@ -70,8 +70,8 @@ class RuneBlog
     views.any? {|x| x.name == name }
   end
 
-  def view
-    @view
+  def view(name = nil)
+    name.nil? ? @view : str2view(name)
   end
 
   def str2view(str)
@@ -346,7 +346,7 @@ class RuneBlog::View
     raise "RuneBlog.blog is not set!" if RuneBlog.blog.nil?
     @blog = RuneBlog.blog
     @name = name
-    # How read deployment info??
+    @deploy = read_config
   end
 
   def dir
@@ -383,6 +383,18 @@ class RuneBlog::View
 
   def recent?(file)
     File.mtime(file) < File.mtime("#{dir()}/last_deployed")
+  end
+
+  def read_config
+    file = self.dir + "/deploy"
+    lines = File.readlines(file).map(&:chomp)
+    user, server, root, path, proto = *lines
+    @deploy = RuneBlog::Deployment.new(user, server, root, path, proto)
+  end
+
+  def write_config
+    file = @blog.view.dir + "/deploy"
+    File.open(file) {|f| f.puts [@user, @server, @root, @path, @proto] }
   end
 end
 
