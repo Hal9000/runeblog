@@ -6,17 +6,16 @@ require 'view'
 require 'deploy'
 require 'post'
 require 'helpers-blog'
+require 'version'
 
 ###
 
 class RuneBlog
-  VERSION = "0.0.68"
 
   class << self
     attr_accessor :blog
   end
 
-  Path  = File.expand_path(File.join(File.dirname(__FILE__)))
   DefaultData = Path + "/../data/views/_default"
 
   BlogHeaderPath   = DefaultData + "/custom/blog_header.html"

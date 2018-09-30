@@ -1,12 +1,12 @@
 #!/usr/bin/env ruby
 
-system("vi lib/runeblog.rb +3")
+system("vi lib/version.rb +3")
 
 require 'date'
 
 $: << "./lib"
 
-require "runeblog"
+require "version"
 
 today = Date.today.strftime("%Y-%m-%d")
 version = RuneBlog::VERSION
