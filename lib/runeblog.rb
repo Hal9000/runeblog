@@ -1,11 +1,11 @@
 require 'find'
 require 'yaml'
 require 'livetext'
-require 'helpers-blog'
 require 'skeleton'
 require 'view'
 require 'deploy'
 require 'post'
+require 'helpers-blog'
 
 ###
 
