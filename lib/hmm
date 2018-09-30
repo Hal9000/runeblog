@@ -1,0 +1,102 @@
+helpers-repl.rb
+67:  def self.choose_method(cmd)
+84:  def error(err)
+90:  def ask(prompt, meth = :to_s)
+96:  def yesno(prompt, meth = :to_s)
+102:  def reset_output(initial = "")
+107:  def flush_output(initial = "")
+113:  def output(str)  # \n and indent
+118:  def outstr(str)  # \n and indent
+123:  def output!(str)  # red, \n and indent
+128:  def output_newline(n = 1)
+137:  def check_empty(arg)
+141:  def get_integer(arg)
+147:  def check_file_exists(file)
+151:  def error_cant_delete(files)
+160:  def clear
+164:  def red(text)
+168:  def blue(text)
+172:  def bold(str)
+176:  def colored_slug(slug)
+180:  def import(arg = nil)
+200:  def ask_deployment_info   # returns Deployment object
+215:#   def find_asset(asset)    # , views)
+241:#   def find_all_assets(list, views)
+
+repl.rb
+7:  def cmd_quit(arg)
+12:  def cmd_version(arg)
+19:  def cmd_browse
+34:  def cmd_preview(arg)
+44:  def cmd_deploy(arg)  # FIXME non-string return expected in caller?
+74:  def old_cmd_deploy(arg)  # FIXME non-string return expected in caller?
+104:  def cmd_rebuild(arg)
+115:  def cmd_relink(arg)
+124:  def cmd_list_views(arg)
+136:  def cmd_change_view(arg)
+153:  def cmd_new_view(arg)
+163:  def cmd_new_post(arg)
+173:  def cmd_kill(arg)
+185:  def cmd_remove_post(arg, safe=true)
+226:  def cmd_edit_post(arg)
+247:  def cmd_list_posts(arg)
+262:  def cmd_list_drafts(arg)
+280:  def cmd_INVALID(arg)
+285:  def cmd_help(arg)
+
+runeblog.rb
+5:def create_dir(dir)   # FIXME move later
+11:def interpolate(str)
+16:def error(err)  # FIXME - this is duplicated
+43:  def self.create_new_blog
+55:  def get_config(file)
+60:  def initialize(cfg_file = ".blog")   # assumes existing blog
+69:  def view?(name)
+73:  def view(name = nil)
+77:  def str2view(str)
+81:  def view=(arg)
+94:  def get_sequence
+98:  def next_sequence
+103:  def viewdir(v)
+107:  def self.exist?
+111:  def create_view(arg)
+127:  def delete_view(name, force = false)
+134:  def deployment_url
+141:  def view_files
+150:  def files_by_id(id)
+157:  def create_new_post(title, testing = false)
+166:  def edit_initial_post(file)
+174:  def posts
+180:  def drafts
+185:  def change_view(view)
+189:  def process_post(file)
+203:  def publish_post(meta)
+211:  def link_post_view(view)
+225:  def generate_index(view)
+248:  def relink
+252:  def index_entry(view, meta)
+267:  def rebuild_post(file)
+274:  def remove_post(num)
+281:  def post_exists?(num)
+286:  def make_slug(title, postnum = nil)
+293:  def subdirs(dir)
+299:  def find_src_slugs
+313:  def initialize(user, server, root, path, protocol = "http")
+319:  def url
+323:  def deploy(files)
+345:  def initialize(name)
+352:  def dir
+356:  def index
+360:  def to_s
+364:  def files(recent = false)
+373:  def deploy
+384:  def recent?(file)
+388:  def read_config
+395:  def write_config
+408:  def self.files(num, root)
+414:  def initialize(title, view_name)
+438:  def edit
+446:  def publish
+469:  def create_post_subtree(vdir)
+477:  def make_slug(postnum = nil)
+484:  def tag(num)

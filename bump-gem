@@ -17,6 +17,7 @@ system("git pull")
 gs = `git status 2>&1`
 
 if gs =~ /not staged for commit/
+  puts
   puts gs
   puts "\n\n Possible bad git status. Continue? (y/n)"
   resp = gets.chomp
