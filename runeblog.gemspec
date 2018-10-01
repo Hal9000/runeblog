@@ -1,8 +1,9 @@
 require 'date'
 require 'find'
 
-$: << "."
-require "lib/version"
+$LOAD_PATH << "lib"
+
+require "version"
 
 Gem::Specification.new do |s|
   system("rm -f *.gem")
@@ -25,9 +26,6 @@ Gem::Specification.new do |s|
   test = Find.find("test").to_a
 
   s.files       =  main + misc + test
-STDERR.puts "Files are:"
-s.files.each {|fn| STDERR.puts "  " + fn }
-STDERR.puts
   s.homepage    = 'https://github.com/Hal9000/runeblog'
-  s.license     = "Ruby's license"
+  s.license     = "Ruby license"
 end

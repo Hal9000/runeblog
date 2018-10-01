@@ -11,7 +11,9 @@ class RuneBlog::Post
     result
   end
   
-  def initialize(title, view_name)
+  def initialize(title, view_name, 
+                 teaser = "Teaser goes here.",
+                 remainder = "Remainder of post goes here.")
     raise "RuneBlog.blog is not set!" if RuneBlog.blog.nil?
     @blog = RuneBlog.blog
     @title = title
@@ -26,9 +28,9 @@ class RuneBlog::Post
       .views #@view
  
       .teaser
-      Teaser goes here.
+      #{teaser}
       .end
-      Remainder of post goes here.
+      #{remainder}
     EOS
  
     @draft = "#{@blog.root}/src/#@slug.lt3"

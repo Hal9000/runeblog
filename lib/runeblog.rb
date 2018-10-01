@@ -1,11 +1,10 @@
 require 'find'
-require 'yaml'
+require 'yaml'   # get rid of YAML later
 require 'livetext'
 require 'skeleton'
 require 'view'
 require 'deploy'
 require 'post'
-require 'helpers-blog'
 require 'version'
 
 ###
@@ -143,8 +142,10 @@ class RuneBlog
     result
   end
 
-  def create_new_post(title, testing = false)
-    post = RuneBlog::Post.new(title, @view.to_s)
+  def create_new_post(title, testing = false, teaser = nil, remainder = nil)
+    teaser ||= "Teaser goes here."
+    remainder ||= "Remainder of post goes here."
+    post = RuneBlog::Post.new(title, @view.to_s, teaser, remainder)
     post.edit unless testing
     post.publish
     post.num
@@ -279,6 +280,8 @@ class RuneBlog
     [postnum, "#{num}-#{slug}"]
   end
 
+  private
+
   def subdirs(dir)
     dirs = Dir.entries(dir) - %w[. ..]
     dirs.reject! {|x| ! File.directory?("#@root/views/#{x}") }
@@ -290,6 +293,23 @@ class RuneBlog
     files.map! {|f| File.basename(f) }
     files = files.sort.reverse
     files
+  end
+
+  def create_dir(dir)
+    cmd = "mkdir -p #{dir} >/dev/null 2>&1"
+    result = system(cmd) 
+    raise "Can't create #{dir}" unless result
+  end
+
+  def interpolate(str)
+    wrap = "<<-EOS\n#{str}\nEOS"
+    eval wrap
+  end
+
+  def error(err)  # Hmm, this is duplicated
+    str = "\n  Error: #{err}"
+    puts str
+    puts err.backtrace
   end
 
 end

@@ -3,7 +3,14 @@
 require 'runeblog'
 
 lib = RuneBlog::Path
-puts "path is: #{lib}"
+
+files = Dir["lib/*.rb"]
+result = true
+files.each do |f|
+  result &&= system("ruby -c #{f}")
+end
+
+exit unless result
 
 system("cp lib/* #{lib}/")
 

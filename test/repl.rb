@@ -9,7 +9,10 @@ class TestREPL < Minitest::Test
 
   def setup
     @blog = RuneBlog.new
+    # unpack a tarball here?? data_test
   end
+
+  # Note: "Bang" methods depend on the data_test subtree
 
   def test_001_cmd_help
     out = cmd_help(nil)
@@ -26,27 +29,27 @@ class TestREPL < Minitest::Test
            "Couldn't find version number"
   end
 
-  def test_003_list_views
+  def test_003_list_views!
     out = cmd_list_views(nil)
     assert out.is_a?(String), "Expected a string returned"
     lines = out.split("\n").length 
     assert lines >= 2, "Expecting at least 2 lines"
   end
 
-  def test_004_change_view
+  def test_004_change_view!
     out = cmd_change_view(nil)  # no param
     assert out.is_a?(String), "Expected a string; got: #{out.inspect}"
     assert out =~ /view1/m, "Expecting 'view1' as default; got: #{out.inspect}"
   end
 
-  def test_005_lsd
+  def test_005_lsd!
     out = cmd_list_drafts(nil)
     assert out.is_a?(String), "Expected a string returned"
     lines = out.split("\n").length 
     assert lines >= 2, "Expecting more lines; got: #{out.inspect}"
   end
 
-  def test_006_lsp
+  def test_006_lsp!
     out = cmd_list_posts(nil)
     assert out.is_a?(String), "Expected a string returned; got: #{out.inspect}"
     lines = out.split("\n").length 
@@ -99,21 +102,21 @@ class TestREPL < Minitest::Test
     end
   end
 
-  def test_008_current_view
+  def test_008_current_view!
     assert @blog.view.to_s == "view1", "Current view seems wrong (#{@blog.view}, not view1)"
   end
 
-  def test_009_change_view
+  def test_009_change_view!
     assert @blog.change_view("view2")
     assert @blog.view.to_s == "view2", "Current view seems wrong (#{@blog.view}, not view2)"
   end
 
-  def test_010_accessors
+  def test_010_accessors!
     sorted_views = @blog.views.map(&:to_s).sort
     assert sorted_views == ["view1", "view2"], "Got: #{sorted_views.inspect}"
   end
 
-  def test_011_create_delete_view
+  def test_011_create_delete_view!
     @blog.create_view("anotherview")
     sorted_views = @blog.views.map(&:to_s).sort
     assert sorted_views == ["anotherview", "view1", "view2"], "After create: #{sorted_views.inspect}"
@@ -122,7 +125,7 @@ class TestREPL < Minitest::Test
     assert sorted_views == ["view1", "view2"], "After delete: #{sorted_views.inspect}"
   end
 
-  def test_012_create_remove_post   # FIXME - several problems here
+  def test_012_create_remove_post!   # FIXME - several problems here
     @blog.change_view("view2")
     assert @blog.view.to_s == "view2", "Expected view2"
     before = @blog.posts.size 

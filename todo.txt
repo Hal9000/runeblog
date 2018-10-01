@@ -1,57 +1,70 @@
-  - should there be a Post class?
+* - deployment
+* - error-checking on params
+  - hash into create_post
+  - hash same as metadata??
+  - possibly change: relink, rebuild, etc.?
   - remove/kill should be aware of views??
-  - Make a View class?
+  - test make_slug to death
+  - better data_test environment (and more views/posts)
+  - more sanity checking!
+  - more tests!
+  - maybe add (default) deployment info to config?
+  - commands to edit templates?
+  - commands to edit config/etc.?
+  - shorten commands?
+  - undo last post?
+  - store in trash instead of deleting?
+  - "undelete" from trash
+  - deal with assets?
+  - distinguish unpublished?
+  - add body, teaser to post subdir
+  - get rid of YAML dependency
+  - fix/improve config file path handling
+  - snippets for templates?
+  - "pinned" or favorite posts?
+  - permalinks??
+  - allow templates to be .lt3 files
+  - back-sync with remote?
+  - explicitly document use of ssh/scp
+  - deal with CSS??
+  - update docs
+
+  - true command line options?
+  - special view 'all'?
+  - other vars in .blog?
+  - out-of-the-box workflow
+  - let main blog be named? call 'data' something else?
+  - video tutorial
+  - figure out linked-list dependencies?
+  - curses interface??
+
+x - should there be a Post class?
+x - Make a View class?
 x - coupling between runeblog and repl
 x - large testbed!
-  - rebuild
-  - relink
-  - deployment
-  - error-checking on params
-  - back-sync with remote
-
-   maybe add deployment info to config?
-   possibly change: relink, rebuild, etc.?
-   shorten commands?
-   true command line options?
-   special view 'all'
-   other vars in .blog?
-   out-of-the-box workflow
-   make templates .lt3 files?
-   edit templates?
-   snippets for templates?
-   let main blog be named? call 'data' something else?
-   
-   update docs
-   video tutorial
-
-   undo last post?
-   store in trash instead of deleting?
-   figure out linked-list dependencies?
-   
-   distinguish unpublished?
-
- x fix post template problem
- x remove post
- x cv without param?
- x append onto VERSION when creating blog
- x default view in .blog
- x current view (all views?) into new post
- x fix deployment
- x Bug: deployed post is still mangled
- x open remote/local?
- x detect dirty files for deployment
- x single template for post?
- x get rid of #readmore
- x Bug: make sure teaser goes into body of post
- x runeblog dependency on livetext
- x improve class structure!
- x edit post
- x auto-rebuild after post edit?
- x error checking!
- x Bug: views are not working properly
- x Figure out links
- x allow abbreviating view names
- x delete multiple posts
- x Figure out assets
- x $$asset function 
+x - rebuild
+x - fix post template problem
+x - remove post
+x - cv without param?
+x - append onto VERSION when creating blog
+x - default view in .blog
+x - current view (all views?) into new post
+x - fix deployment
+x - Bug: deployed post is still mangled
+x - open remote/local?
+x - detect dirty files for deployment
+x - single template for post?
+x - get rid of #readmore
+x - Bug: make sure teaser goes into body of post
+x - runeblog dependency on livetext
+x - improve class structure!
+x - edit post
+x - auto-rebuild after post edit?
+x - error checking!
+x - Bug: views are not working properly
+x - Figure out links
+x - allow abbreviating view names
+x - delete multiple posts
+x - Figure out assets
+x - $$asset function 
 
