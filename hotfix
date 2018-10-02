@@ -5,12 +5,20 @@ require 'runeblog'
 lib = RuneBlog::Path
 
 files = Dir["lib/*.rb"]
-result = true
+bad = false
 files.each do |f|
-  result &&= system("ruby -c #{f}")
+  msg = `ruby -c #{f} 2>&1`
+  if msg !~ /Syntax OK/
+    bad = true
+    err = msg.split("\n")[0]
+    puts "#{err}   (Press return to edit)"
+    STDIN.gets
+    file, line, * = err.split(":")
+    system("vi #{file} +#{line}")
+  end
 end
 
-exit unless result
+abort "\nYou'll need to re-run\n " if bad
 
 system("cp lib/* #{lib}/")
 

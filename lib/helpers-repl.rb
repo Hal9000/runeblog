@@ -5,10 +5,8 @@ module RuneBlog::REPL
   Patterns = 
     {"help"              => :cmd_help, 
      "h"                 => :cmd_help,
-
      "version"           => :cmd_version,
      "v"                 => :cmd_version,
-
      "list views"        => :cmd_list_views, 
      "lsv"               => :cmd_list_views, 
 
@@ -67,7 +65,7 @@ module RuneBlog::REPL
   def self.choose_method(cmd)
     cmd = cmd.strip
     found = nil
-    params = []
+    params = nil
     Regexes.each_pair do |rx, meth|
       m = cmd.match(rx)
 # puts "#{rx} =~ #{cmd.inspect}  --> #{m.to_a.inspect}"

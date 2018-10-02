@@ -8,8 +8,9 @@ class TestREPL < Minitest::Test
   include RuneBlog::REPL
 
   def setup
+    system("rm -rf data_test")
+    system("tar xvf data_test.tar 2>/dev/null")
     @blog = RuneBlog.new
-    # unpack a tarball here?? data_test
   end
 
   # Note: "Bang" methods depend on the data_test subtree
@@ -39,7 +40,7 @@ class TestREPL < Minitest::Test
   def test_004_change_view!
     out = cmd_change_view(nil)  # no param
     assert out.is_a?(String), "Expected a string; got: #{out.inspect}"
-    assert out =~ /view1/m, "Expecting 'view1' as default; got: #{out.inspect}"
+    assert out =~ /alpha_view/m, "Expecting 'alpha_view' as default; got: #{out.inspect}"
   end
 
   def test_005_lsd!
@@ -73,7 +74,7 @@ class TestREPL < Minitest::Test
       "new post"          => [:cmd_new_post, nil],
       "p"                 => [:cmd_new_post, nil],
       "post"              => [:cmd_new_post, nil],
-      "change view view2" => [:cmd_change_view, "view2"],
+      "change view beta_view" => [:cmd_change_view, "beta_view"],
       "cv"                => [:cmd_change_view, nil], # 0-arity 
       "cv myview"         => [:cmd_change_view, "myview"],
       "list posts"        => [:cmd_list_posts, nil],
@@ -103,31 +104,34 @@ class TestREPL < Minitest::Test
   end
 
   def test_008_current_view!
-    assert @blog.view.to_s == "view1", "Current view seems wrong (#{@blog.view}, not view1)"
+    assert @blog.view.to_s == "alpha_view", "Current view seems wrong (#{@blog.view}, not alpha_view)"
   end
 
   def test_009_change_view!
-    assert @blog.change_view("view2")
-    assert @blog.view.to_s == "view2", "Current view seems wrong (#{@blog.view}, not view2)"
+    assert @blog.change_view("beta_view")
+    assert @blog.view.to_s == "beta_view", "Current view seems wrong (#{@blog.view}, not beta_view)"
   end
 
   def test_010_accessors!
     sorted_views = @blog.views.map(&:to_s).sort
-    assert sorted_views == ["view1", "view2"], "Got: #{sorted_views.inspect}"
+    assert sorted_views == ["alpha_view", "beta_view", "gamma_view"], 
+           "Got: #{sorted_views.inspect}"
   end
 
   def test_011_create_delete_view!
     @blog.create_view("anotherview")
     sorted_views = @blog.views.map(&:to_s).sort
-    assert sorted_views == ["anotherview", "view1", "view2"], "After create: #{sorted_views.inspect}"
+    assert sorted_views == ["alpha_view", "anotherview", "beta_view", "gamma_view"], 
+           "After create: #{sorted_views.inspect}"
     @blog.delete_view("anotherview", true)
     sorted_views = @blog.views.map(&:to_s).sort 
-    assert sorted_views == ["view1", "view2"], "After delete: #{sorted_views.inspect}"
+    assert sorted_views == ["alpha_view", "beta_view", "gamma_view"], 
+           "After delete: #{sorted_views.inspect}"
   end
 
   def test_012_create_remove_post!   # FIXME - several problems here
-    @blog.change_view("view2")
-    assert @blog.view.to_s == "view2", "Expected view2"
+    @blog.change_view("beta_view")
+    assert @blog.view.to_s == "beta_view", "Expected beta_view"
     before = @blog.posts.size 
     num = @blog.create_new_post("Uninteresting title", true)
     assert @blog.posts.size == before + 1, "Don't see new post"

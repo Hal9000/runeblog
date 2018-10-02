@@ -23,7 +23,7 @@ cmd, arg = get_argv
 
 @blog = RuneBlog.new
 
-puts red("\n  RuneBlog v #{RuneBlog::VERSION}")
+print red("\n  RuneBlog v #{RuneBlog::VERSION}")
 
 if cmd.nil?   # REPL
   puts

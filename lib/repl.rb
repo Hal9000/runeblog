@@ -142,7 +142,7 @@ module RuneBlog::REPL
     else
       if @blog.view?(arg)
         @blog.view = arg
-        output! "View: #{@blog.view}\n"
+        output! "View: #{@blog.view}"
       end
     end
     @out
@@ -153,8 +153,7 @@ module RuneBlog::REPL
   def cmd_new_view(arg)
     reset_output
     @blog.create_view(arg)
-    depl = get_deployment_info
-    @blog.view(arg).deploy = depl
+    @blog.view.read_config   # was: get_deployment_info
     nil
   rescue => err
     error(err)
@@ -163,7 +162,7 @@ module RuneBlog::REPL
   def cmd_new_post(arg)
     reset_output
     check_empty(arg)
-    title = ask("Title: ")
+    title = ask("\nTitle: ")
     @blog.create_new_post(title)
     nil
   rescue => err
@@ -248,10 +247,11 @@ module RuneBlog::REPL
     check_empty(arg)
     reset_output
     posts = @blog.posts  # current view
-    output @blog.view.name + ":\n"
+    output bold(@blog.view.name) + ":"
     if posts.empty?
-      output! "No posts\n"
+      output! bold("No posts")
     else
+      output_newline
       posts.each {|post| outstr "  #{colored_slug(post)}\n" }
     end
     @out
@@ -262,12 +262,12 @@ module RuneBlog::REPL
   def cmd_list_drafts(arg)
     check_empty(arg)
     reset_output
-    output_newline
     drafts = @blog.drafts  # current view
     if drafts.empty?
       output! "No drafts"
       return @out
     else
+      output_newline
       drafts.each do |draft| 
         outstr "  #{colored_slug(draft.sub(/.lt3$/, ""))}\n" 
       end
