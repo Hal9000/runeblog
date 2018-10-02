@@ -34,6 +34,9 @@ if gs =~ /not staged for commit/
       exit
   end
 else
+  print "Commit message = "
+  msg = gets.chomp
+  system("git commit -m '#{msg}' && git push")
 end
 
 update = <<-EOF
