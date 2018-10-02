@@ -1,8 +1,10 @@
 * - deployment
 * - error-checking on params
-  - hash into create_post
+  - code for recreating data_test
+  - resolve issues: draft vs post, kill, etc.
+x - hash into create_post
   - hash same as metadata??
-  - use Readline
+x - use Readline
   - Readline completion for views
   - Readline completion for commands?
   - possibly change: relink, rebuild, etc.?

@@ -137,12 +137,12 @@ module RuneBlog::REPL
     reset_output
     # Simplify this
     if arg.nil?
-      output "#{@blog.view}"
+      output bold(@blog.view)
       return @out
     else
       if @blog.view?(arg)
         @blog.view = arg
-        output! "View: #{@blog.view}"
+        output red("View: ") + bold(@blog.view)
       end
     end
     @out
@@ -163,7 +163,9 @@ module RuneBlog::REPL
     reset_output
     check_empty(arg)
     title = ask("\nTitle: ")
-    @blog.create_new_post(title)
+    meta = OpenStruct.new
+    meta.title = title
+    @blog.create_new_post(meta)
     nil
   rescue => err
     error(err)
@@ -172,7 +174,10 @@ module RuneBlog::REPL
   def cmd_kill(arg)
     reset_output
     args = arg.split
-    args.each {|x| cmd_remove_post(x, false) }
+    args.each do |x| 
+      # FIXME
+      cmd_remove_post(x, false)
+    end
     nil
   rescue => err
     error(err)
@@ -182,31 +187,13 @@ module RuneBlog::REPL
   #-- FIXME affects linking, building, deployment...
 
   def cmd_remove_post(arg, safe=true)
+    # FIXME - 'safe' is no longer a thing
     reset_output
     id = get_integer(arg)
-    files = @blog.post_exists?(id)
-    if files.nil?
+    result = @blog.remove_post(id)
+    if result.nil?
       output! "No such post found (#{id})"
       return @out
-    end
-
-    if safe
-      output_newline
-      files.each {|f| outstr "  #{f}\n" }
-      reset_output
-      ques = "\n  Delete?\n "
-      ques.sub!(/\?/, " all these?") if files.size > 1
-      yes = yesno red(ques)
-      if yes
-        @blog.remove_post(id)
-        output! "Deleted\n"
-      else
-        output! "No action taken\n"
-      end
-    else
-      @blog.remove_post(id)
-      output! "Deleted:\n"
-      files.each {|f| output "    #{f}\n" }
     end
     @out
   rescue ArgumentError => err

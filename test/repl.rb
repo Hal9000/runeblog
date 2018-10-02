@@ -47,14 +47,14 @@ class TestREPL < Minitest::Test
     out = cmd_list_drafts(nil)
     assert out.is_a?(String), "Expected a string returned"
     lines = out.split("\n").length 
-    assert lines >= 2, "Expecting more lines; got: #{out.inspect}"
+    assert lines == 7, "Expecting more lines; got: #{out.inspect}"
   end
 
   def test_006_lsp!
     out = cmd_list_posts(nil)
     assert out.is_a?(String), "Expected a string returned; got: #{out.inspect}"
     lines = out.split("\n").length 
-    assert lines >= 2, "Expecting more lines; got: #{out.inspect}"
+    assert lines == 6, "Expecting more lines; got: #{out.inspect}"
   end
 
   def test_007_parser
@@ -129,14 +129,19 @@ class TestREPL < Minitest::Test
            "After delete: #{sorted_views.inspect}"
   end
 
-  def test_012_create_remove_post!   # FIXME - several problems here
+  def test_012_create_remove_post!
     @blog.change_view("beta_view")
     assert @blog.view.to_s == "beta_view", "Expected beta_view"
     before = @blog.posts.size 
-    num = @blog.create_new_post("Uninteresting title", true)
+    meta = OpenStruct.new
+    meta.title = "Uninteresting title"
+    num = @blog.create_new_post(meta, true)
     assert @blog.posts.size == before + 1, "Don't see new post"
     @blog.remove_post(num)
     assert @blog.posts.size == before, "Failed to delete post"
+  end
+
+  def test_013_kill_posts!
   end
 end
 

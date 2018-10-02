@@ -2,6 +2,8 @@
 
 $: << "./lib"
 
+require 'readline'
+
 require 'repl'
 
 trap("INT") { }
@@ -28,9 +30,11 @@ print red("\n  RuneBlog v #{RuneBlog::VERSION}")
 if cmd.nil?   # REPL
   puts
   loop do
-    print red("\nblog> ")
-    cmd = gets
-    cmd_quit([]) if cmd.nil?   # ^D
+#   print red("\nblog> ")
+#   cmd = gets
+    cmd = Readline.readline(red("\nblog> "), true)
+
+    cmd_quit(nil) if cmd.nil?   # ^D
     cmd.chomp!
     next if cmd.empty?   # CR does nothing
     meth, params = RuneBlog::REPL.choose_method(cmd)

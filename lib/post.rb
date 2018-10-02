@@ -11,26 +11,25 @@ class RuneBlog::Post
     result
   end
   
-  def initialize(title, view_name, 
-                 teaser = "Teaser goes here.",
-                 remainder = "Remainder of post goes here.")
+  def initialize(meta, view_name)
+    # FIXME weird logic here
     raise "RuneBlog.blog is not set!" if RuneBlog.blog.nil?
     @blog = RuneBlog.blog
-    @title = title
+    @title = meta.title
     @view = @blog.str2view(view_name)
     @num, @slug = make_slug
     date = Time.now.strftime("%Y-%m-%d")
     template = <<-EOS.gsub(/^ */, "")
       .mixin liveblog
  
-      .title #{title}
+      .title #@title
       .pubdate #{date}
       .views #@view
  
       .teaser
-      #{teaser}
+      #{meta.teaser}
       .end
-      #{remainder}
+      #{meta.remainder}
     EOS
  
     @draft = "#{@blog.root}/src/#@slug.lt3"
@@ -71,6 +70,8 @@ class RuneBlog::Post
   def create_post_subtree(vdir)
     create_dir("assets") 
     File.write("metadata.yaml", @meta.to_yaml)
+    File.write("teaser.txt", @meta.teaser)
+    File.write("remainder.txt", @meta.remainder)
     template = File.read(vdir + "/custom/post_template.html")
     text = interpolate(template)
     File.write("index.html", text)

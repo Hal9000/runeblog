@@ -136,16 +136,17 @@ class RuneBlog
   end
 
   def files_by_id(id)
-    files = Find.find(self.root).to_a
+    files = Find.find(self.view.dir).to_a
     tag = "#{'%04d' % id}"
     result = files.grep(/#{tag}-/)
     result
   end
 
-  def create_new_post(title, testing = false, teaser = nil, remainder = nil)
-    teaser ||= "Teaser goes here."
-    remainder ||= "Remainder of post goes here."
-    post = RuneBlog::Post.new(title, @view.to_s, teaser, remainder)
+# def create_new_post(title, testing = false, teaser = nil, remainder = nil)
+  def create_new_post(meta, testing = false)
+    meta.teaser ||= "Teaser goes here."
+    meta.remainder ||= "Remainder of post goes here."
+    post = RuneBlog::Post.new(meta, @view.to_s)
     post.edit unless testing
     post.publish
     post.num
@@ -263,6 +264,7 @@ class RuneBlog
 
   def remove_post(num)
     list = files_by_id(num)
+    return nil if list.empty?
     result = system("rm -rf #{list.join(' ')}")
     error_cant_delete(files) unless result
     # FIXME - update index/etc
