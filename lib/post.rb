@@ -72,7 +72,7 @@ class RuneBlog::Post
     File.write("metadata.yaml", @meta.to_yaml)
     File.write("teaser.txt", @meta.teaser)
     File.write("remainder.txt", @meta.remainder)
-    template = File.read(vdir + "/custom/post_template.html")
+    template = File.read(@blog.root + "/_default/custom/post_template.html")
     text = interpolate(template)
     File.write("index.html", text)
   end

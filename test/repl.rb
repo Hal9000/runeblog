@@ -7,10 +7,46 @@ require 'lib/repl'
 class TestREPL < Minitest::Test
   include RuneBlog::REPL
 
+  def make_post(x, title)
+    meta = OpenStruct.new
+    meta.title = title
+    num = x.create_new_post(meta, true)
+  end
+
+  def show_lines(text)
+    lines = text.split("\n")
+    str = "#{lines.size} lines\n"
+    lines.each {|line| str << "  #{line.inspect}\n" }
+    str
+  end
+
   def setup
     system("rm -rf data_test")
-    system("tar xvf data_test.tar 2>/dev/null")
-    @blog = RuneBlog.new
+#   system("tar xvf data_test.tar 2>/dev/null")
+    RuneBlog.create_new_blog(Dir.pwd + "/data_test")
+    x = RuneBlog.new
+    x.create_view("alpha_view")
+    x.create_view("beta_view")
+    x.create_view("gamma_view")
+
+    x.change_view("alpha_view")    # 1 2 7 8 9 
+    make_post(x, "Post number 1")
+    make_post(x, "Post number 2")
+    x.change_view("beta_view")     # 3 5 6
+    make_post(x, "Post number 3")
+    x.change_view("gamma_view")    # 4 10
+    make_post(x, "Post number 4")
+    x.change_view("beta_view")
+    make_post(x, "Post number 5")
+    make_post(x, "Post number 6")
+    x.change_view("alpha_view")
+    make_post(x, "Post number 7")
+    make_post(x, "Post number 8")
+    make_post(x, "Post number 9")
+    x.change_view("gamma_view")
+    make_post(x, "Post number 10")
+    x.change_view("alpha_view")
+    @blog = x
   end
 
   # Note: "Bang" methods depend on the data_test subtree
@@ -47,14 +83,14 @@ class TestREPL < Minitest::Test
     out = cmd_list_drafts(nil)
     assert out.is_a?(String), "Expected a string returned"
     lines = out.split("\n").length 
-    assert lines == 7, "Expecting more lines; got: #{out.inspect}"
+    assert lines == 11, "Expecting 11 lines; got #{show_lines(out)}"
   end
 
   def test_006_lsp!
     out = cmd_list_posts(nil)
     assert out.is_a?(String), "Expected a string returned; got: #{out.inspect}"
     lines = out.split("\n").length 
-    assert lines == 6, "Expecting more lines; got: #{out.inspect}"
+    assert lines == 7, "Expecting 7 lines; got #{show_lines(out)}"
   end
 
   def test_007_parser

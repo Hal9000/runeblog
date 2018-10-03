@@ -28,16 +28,21 @@ class RuneBlog
   attr_reader :root, :views, :sequence
   attr_accessor :view  # overridden
 
-  def self.create_new_blog
-    #-- what if data already exists?
-    result = system("cp -r #{RuneBlog::DefaultData} .")
-    raise "Error copying default data" unless result
+  def self.create_new_blog(dir = "data")
+    File.write(".blog", "#{dir}\nno_default\n")
+    # .blog lives above the entire subtree
+    Dir.mkdir(dir)   #-- what if dir already exists?
+    Dir.chdir(dir) do
+      create_dir("views")
+      create_dir("assets")
+      create_dir("src")
+      File.write("sequence", 0)
 
-    File.open(".blog", "w") do |f| 
-      f.puts "data" 
-      f.puts "no_default"
+      result = system("cp -r #{RuneBlog::DefaultData} .")
+      raise "Error copying default data" unless result
+
+      File.write("VERSION", "#{RuneBlog::VERSION}\nBlog created: " + Time.now.to_s )
     end
-    File.open("data/VERSION", "a") {|f| f.puts "\nBlog created: " + Time.now.to_s }
   end
 
   def get_config(file)
@@ -100,11 +105,11 @@ class RuneBlog
     names = self.views.map(&:to_s)
     raise "view #{arg} already exists" if names.include?(arg)
 
-    dir = @root + "/views/" + arg + "/"
+    dir = "#@root/views/#{arg}/"
+    create_dir(dir)
     create_dir(dir + 'custom')
     create_dir(dir + 'assets')
-    File.open(dir + "deploy", "w") { }  # FIXME
-
+    File.write(dir + "deploy", "")
     File.write(dir + "custom/blog_header.html",  RuneBlog::BlogHeader)
     File.write(dir + "custom/blog_trailer.html", RuneBlog::BlogTrailer)
     File.write(dir + "custom/post_template.html", RuneBlog::PostTemplate)
@@ -151,6 +156,7 @@ class RuneBlog
     post.publish
     post.num
   rescue => err
+p :ERROR
     puts err # error(err)
   end
 
@@ -288,6 +294,8 @@ class RuneBlog
     dirs = Dir.entries(dir) - %w[. ..]
     dirs.reject! {|x| ! File.directory?("#@root/views/#{x}") }
     dirs
+  rescue => err
+    p err
   end
 
   def find_src_slugs

@@ -1,16 +1,12 @@
 * - deployment
 * - error-checking on params
-  - code for recreating data_test
   - resolve issues: draft vs post, kill, etc.
-x - hash into create_post
   - hash same as metadata??
-x - use Readline
   - Readline completion for views
   - Readline completion for commands?
   - possibly change: relink, rebuild, etc.?
   - remove/kill should be aware of views??
   - test make_slug to death
-  - better data_test environment (and more views/posts)
   - more sanity checking!
   - more tests!
   - maybe add (default) deployment info to config?
@@ -43,6 +39,10 @@ x - use Readline
   - figure out linked-list dependencies?
   - curses interface??
 
+x - better data_test environment (and more views/posts)
+x - code for recreating data_test
+x - hash into create_post
+x - use Readline
 x - should there be a Post class?
 x - Make a View class?
 x - coupling between runeblog and repl
