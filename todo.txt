@@ -1,5 +1,6 @@
 * - deployment
 * - error-checking on params
+  - add delete_draft
   - get rid of "data" tree
   - get rid of silly BlogHeader (etc.) constants
   - a "real" default view?

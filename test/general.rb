@@ -111,12 +111,14 @@ class TestREPL < Minitest::Test
   end
 
   def test_008_current_view!
-    assert @blog.view.to_s == "alpha_view", "Current view seems wrong (#{@blog.view}, not alpha_view)"
+    assert @blog.view.to_s == "alpha_view", "Current view wrong (#{@blog.view}, not alpha_view)"
   end
 
   def test_009_change_view!
     assert @blog.change_view("beta_view")
-    assert @blog.view.to_s == "beta_view", "Current view seems wrong (#{@blog.view}, not beta_view)"
+    assert @blog.view.to_s == "beta_view", "Current view wrong (#{@blog.view}, not beta_view)"
+    assert @blog.change_view("alpha_view")
+    assert @blog.view.to_s == "alpha_view", "Current view wrong (#{@blog.view}, not alpha_view)"
   end
 
   def test_010_accessors!
@@ -145,7 +147,9 @@ class TestREPL < Minitest::Test
     num = @blog.create_new_post(meta, true)
     assert @blog.posts.size == before + 1, "Don't see new post"
     @blog.remove_post(num)
+    @blog.delete_draft(num)  # Hmm
     assert @blog.posts.size == before, "Failed to delete post"
+    @blog.change_view("alpha_view")
   end
 
   def test_013_kill_posts!

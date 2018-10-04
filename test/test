@@ -1,2 +1,3 @@
+rm -rf data_test
 ruby test/make_blog.rb
 ruby test/general.rb

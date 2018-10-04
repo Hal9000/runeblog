@@ -277,6 +277,11 @@ class RuneBlog
     true
   end
 
+  def delete_draft(num)
+    tag = "#{'%04d' % num.to_i}"
+    system("rm -rf #@root/src/#{tag}-*")
+  end
+
   def post_exists?(num)
     list = files_by_id(num)
     list.empty? ? nil : list
