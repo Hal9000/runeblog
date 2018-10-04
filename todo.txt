@@ -1,5 +1,8 @@
 * - deployment
 * - error-checking on params
+  - get rid of "data" tree
+  - get rid of silly BlogHeader (etc.) constants
+  - a "real" default view?
   - resolve issues: draft vs post, kill, etc.
   - hash same as metadata??
   - Readline completion for views

@@ -192,7 +192,7 @@ module RuneBlog::REPL
     id = get_integer(arg)
     result = @blog.remove_post(id)
     if result.nil?
-      output! "No such post found (#{id})"
+      output! "Post #{id} not found"
       return @out
     end
     @out
@@ -218,7 +218,7 @@ module RuneBlog::REPL
     files = files.grep(/#{tag}-/)
     files = files.map {|f| File.basename(f) }
     return red("Multiple files: #{files}") if files.size > 1
-    return red("\n  No such post found (#{id})") if files.empty?
+    return red("\n  Can't edit post #{id}") if files.empty?
 
     file = files.first
     result = system("vi #{@blog.root}/src/#{file}")

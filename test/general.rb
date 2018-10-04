@@ -7,12 +7,6 @@ require 'lib/repl'
 class TestREPL < Minitest::Test
   include RuneBlog::REPL
 
-  def make_post(x, title)
-    meta = OpenStruct.new
-    meta.title = title
-    num = x.create_new_post(meta, true)
-  end
-
   def show_lines(text)
     lines = text.split("\n")
     str = "#{lines.size} lines\n"
@@ -21,32 +15,9 @@ class TestREPL < Minitest::Test
   end
 
   def setup
-    system("rm -rf data_test")
-#   system("tar xvf data_test.tar 2>/dev/null")
-    RuneBlog.create_new_blog(Dir.pwd + "/data_test")
-    x = RuneBlog.new
-    x.create_view("alpha_view")
-    x.create_view("beta_view")
-    x.create_view("gamma_view")
-
-    x.change_view("alpha_view")    # 1 2 7 8 9 
-    make_post(x, "Post number 1")
-    make_post(x, "Post number 2")
-    x.change_view("beta_view")     # 3 5 6
-    make_post(x, "Post number 3")
-    x.change_view("gamma_view")    # 4 10
-    make_post(x, "Post number 4")
-    x.change_view("beta_view")
-    make_post(x, "Post number 5")
-    make_post(x, "Post number 6")
-    x.change_view("alpha_view")
-    make_post(x, "Post number 7")
-    make_post(x, "Post number 8")
-    make_post(x, "Post number 9")
-    x.change_view("gamma_view")
-    make_post(x, "Post number 10")
-    x.change_view("alpha_view")
-    @blog = x
+    # To be strictly correct in testing (though slower),
+    #   run make_blog here.
+    @blog = RuneBlog.new
   end
 
   # Note: "Bang" methods depend on the data_test subtree
@@ -178,6 +149,7 @@ class TestREPL < Minitest::Test
   end
 
   def test_013_kill_posts!
+    # Must think about this.
   end
 end
 

@@ -31,7 +31,7 @@ class RuneBlog
   def self.create_new_blog(dir = "data")
     File.write(".blog", "#{dir}\nno_default\n")
     # .blog lives above the entire subtree
-    Dir.mkdir(dir)   #-- what if dir already exists?
+    create_dir(dir)
     Dir.chdir(dir) do
       create_dir("views")
       create_dir("assets")
@@ -156,7 +156,6 @@ class RuneBlog
     post.publish
     post.num
   rescue => err
-p :ERROR
     puts err # error(err)
   end
 
@@ -180,6 +179,7 @@ p :ERROR
   end
 
   def change_view(view)
+    File.write(".blog", "#@root\n#{view}\n")
     self.view = view   # error checking?
   end
 
@@ -274,6 +274,7 @@ p :ERROR
     result = system("rm -rf #{list.join(' ')}")
     error_cant_delete(files) unless result
     # FIXME - update index/etc
+    true
   end
 
   def post_exists?(num)
@@ -306,6 +307,7 @@ p :ERROR
   end
 
   def create_dir(dir)
+    return if File.exist?(dir) && File.directory?(dir)
     cmd = "mkdir -p #{dir} >/dev/null 2>&1"
     result = system(cmd) 
     raise "Can't create #{dir}" unless result
