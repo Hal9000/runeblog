@@ -141,19 +141,74 @@ class TestREPL < Minitest::Test
   def test_012_create_remove_post!
     @blog.change_view("beta_view")
     assert @blog.view.to_s == "beta_view", "Expected beta_view"
-    before = @blog.posts.size 
+    nposts = @blog.posts.size 
+    ndrafts = @blog.drafts.size 
     meta = OpenStruct.new
     meta.title = "Uninteresting title"
     num = @blog.create_new_post(meta, true)
-    assert @blog.posts.size == before + 1, "Don't see new post"
+
+    assert @blog.posts.size == nposts + 1, "Don't see new post"
     @blog.remove_post(num)
-    @blog.delete_draft(num)  # Hmm
-    assert @blog.posts.size == before, "Failed to delete post"
+    assert @blog.posts.size == nposts, "Failed to delete post"
+
+    assert @blog.drafts.size == ndrafts + 1, "Don't see new draft"
+    @blog.delete_draft(num)
+    assert @blog.drafts.size == ndrafts, "Failed to delete draft"
     @blog.change_view("alpha_view")
   end
 
-  def test_013_kill_posts!
-    # Must think about this.
+  def test_013_slug_tests
+    hash = { "abcxyz"      => "abcxyz",      # 0-based
+             "abc'xyz"     => "abcxyz",
+             'abc"xyz'     => "abcxyz",
+             '7%sol'       => "7sol",
+             "only a test" => "only-a-test",
+             "abc  xyz"    => "abc--xyz",    # change this behavior?
+             "ABCxyZ"      => "abcxyz",
+           }
+    hash.each_pair.with_index do |keys, i|
+      real, fixed = *keys
+      result = @blog.make_slug(real)[1][5..-1]  # weird? returns [99, "0099-whatever"]
+      assert result == fixed, "Case #{i}: expected: #{fixed.inspect}, got #{result.inspect}"
+    end
   end
+
+  def test_014_remove_nonexistent_post!
+    @blog.change_view("alpha_view")
+    out = cmd_remove_post(99)
+    assert out =~ /Post 99 not found/, "Expected error about nonexistent post, got: #{out}"
+  end
+
+  def test_015_kill_multiple_posts!
+    @blog.change_view("alpha_view")
+    out = cmd_list_posts(nil)
+    before = out.split("\n").length 
+    out = cmd_kill("1  2 7")
+    out = cmd_list_posts(nil)
+    after = out.split("\n").length 
+    assert after == before - 3, "list_posts saw #{before} posts, now #{after} (not #{before-3})"
+    system("ruby test/make_blog.rb")   # This is hellish, I admit
+  end
+
+  def test_016_can_deploy
+    dep = RuneBlog::Deployment.new("root", "rubyhacker.com", "/var/www", "whatever")
+    result = dep.remote_login?
+    assert result == true, "Valid login doesn't work"
+    result = dep.remote_permissions?
+    assert result == true, "Valid mkdir doesn't work"
+  end
+
+  def test_017_cannot_deploy_wrong_user
+    dep = RuneBlog::Deployment.new("bad_user", "rubyhacker.com", "/var/www", "whatever")
+    result = dep.remote_login?
+    assert result.nil?, "Expected to detect login error (bad user)"
+  end
+
+  def test_018_cannot_deploy_bad_server
+    dep = RuneBlog::Deployment.new("root", "nonexistent123.com", "/var/www", "whatever")
+    result = dep.remote_login?
+    assert result.nil?, "Expected to detect login error (bad server)"
+  end
+
 end
 

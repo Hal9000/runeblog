@@ -124,13 +124,6 @@ class RuneBlog
     end
   end
 
-  def deployment_url
-    return nil unless @deploy[@view]
-    lines = @deploy[@view]
-    user, server, sroot, spath = *@deploy[@view]
-    url = "http://#{server}/#{spath}"
-  end
-
   def view_files
     vdir = @blog.viewdir(@view)
     # meh
@@ -169,13 +162,13 @@ class RuneBlog
 
   def posts
     dir = self.view.dir
-    posts = Dir.entries(dir).grep(/^0.*/)
+    posts = Dir.entries(dir).grep(/^\d{4}/)
     posts
   end
 
   def drafts
     dir = "#@root/src"
-    drafts = Dir.entries(dir).grep(/^0.*.lt3/)
+    drafts = Dir.entries(dir).grep(/^\d{4}.*/)
   end
 
   def change_view(view)

@@ -19,8 +19,9 @@ module RuneBlog::REPL
   def cmd_browse
     reset_output
     check_empty(arg)
-    url = @blog.deployment_url
-    if url.nil?
+    url = @blog.view.deployer.url
+    # FIXME Bad logic here.
+    if url.nil?   
       output! "Deploy first."
       return @out
     end
@@ -172,13 +173,14 @@ module RuneBlog::REPL
   end
 
   def cmd_kill(arg)
-    reset_output
+    reset_output "\n"
     args = arg.split
     args.each do |x| 
       # FIXME
-      cmd_remove_post(x, false)
+      ret = cmd_remove_post(x.to_i, false)
+      output ret
     end
-    nil
+    @out
   rescue => err
     error(err)
     puts err.backtrace
