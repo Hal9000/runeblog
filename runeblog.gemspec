@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
          Find.find("lib").to_a + 
          Find.find("data").to_a
 
-  misc = %w[./README.lt3 ./README.md runeblog.gemspec]
+  misc = %w[./README.lt3 ./README.md ./runeblog.gemspec]
   test = Find.find("test").to_a
 
   s.files       =  main + misc + test
