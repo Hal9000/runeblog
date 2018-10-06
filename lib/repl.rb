@@ -142,7 +142,7 @@ module RuneBlog::REPL
       return @out
     else
       if @blog.view?(arg)
-        @blog.view = arg
+        @blog.view = arg  # reads config
         output red("View: ") + bold(@blog.view)
       end
     end
@@ -154,6 +154,9 @@ module RuneBlog::REPL
   def cmd_new_view(arg)
     reset_output
     @blog.create_view(arg)
+    resp = yesno("Add deployment info now? ")
+    @blog.view.deployer = ask_deployment_info
+    @blog.view.write_config  # change this?
     @blog.view.read_config   # was: get_deployment_info
     nil
   rescue => err

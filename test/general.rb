@@ -210,5 +210,9 @@ class TestREPL < Minitest::Test
     assert result.nil?, "Expected to detect login error (bad server)"
   end
 
+  # later tests...
+  # new view asks for deployment info and writes it
+  #   (how to mimic user input? test some other way?)
+
 end
 

@@ -75,10 +75,12 @@ class RuneBlog
     case arg
       when RuneBlog::View
         @view = arg
+        @view.read_config
       when String
         new_view = str2view(arg)
         raise "Can't find view #{arg}" if new_view.nil?
         @view = new_view
+        @view.read_config
       else 
         raise "#{arg.inspect} was not a View or a String"
     end

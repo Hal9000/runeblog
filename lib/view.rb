@@ -3,7 +3,7 @@ require 'runeblog'
 
 class RuneBlog::View
   attr_reader :name, :state
-  attr_accessor :deploy
+  attr_accessor :deployer
 
   def initialize(name)
     raise "RuneBlog.blog is not set!" if RuneBlog.blog.nil?
@@ -57,7 +57,7 @@ class RuneBlog::View
 
   def write_config
     file = @blog.view.dir + "/deploy"
-    File.open(file) {|f| f.puts [@user, @server, @root, @path, @proto] }
+    File.open(file, "w") {|f| f.puts [@user, @server, @root, @path, @proto] }
   end
 end
 
