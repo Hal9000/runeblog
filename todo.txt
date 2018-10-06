@@ -1,7 +1,5 @@
 * - deployment
 * - error-checking on params
-  - get rid of "data" tree
-  - get rid of silly BlogHeader (etc.) constants
   - a "real" default view?
   - resolve issues: draft vs post, kill, etc.
   - hash same as metadata??
@@ -41,6 +39,8 @@
   - figure out linked-list dependencies?
   - curses interface??
 
+x - get rid of "data" tree
+x - get rid of silly BlogHeader (etc.) constants
 x - add delete_draft
 x - remove/kill should be aware of views??
 x - better data_test environment (and more views/posts)

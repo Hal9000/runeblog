@@ -2,6 +2,7 @@ require 'find'
 require 'yaml'   # get rid of YAML later
 require 'livetext'
 require 'skeleton'
+require 'default'
 require 'view'
 require 'deploy'
 require 'post'
@@ -15,32 +16,17 @@ class RuneBlog
     attr_accessor :blog
   end
 
-  DefaultData = Path + "/../data/views/_default"
-
-  BlogHeaderPath   = DefaultData + "/custom/blog_header.html"
-  BlogTrailerPath  = DefaultData + "/custom/blog_trailer.html"
-  PostTemplatePath = DefaultData + "/custom/post_template.html"
-
-  BlogHeader   = File.read(BlogHeaderPath)  rescue "not found"
-  BlogTrailer  = File.read(BlogTrailerPath) rescue "not found"
-  PostTemplate = File.read(PostTemplatePath) rescue "not found"
-
   attr_reader :root, :views, :sequence
   attr_accessor :view  # overridden
 
   def self.create_new_blog(dir = "data")
-    File.write(".blog", "#{dir}\nno_default\n")
-    # .blog lives above the entire subtree
+    File.write(".blog", "#{dir}\nno_default\n")  # .blog lives above subtree
     create_dir(dir)
     Dir.chdir(dir) do
       create_dir("views")
       create_dir("assets")
       create_dir("src")
       File.write("sequence", 0)
-
-      result = system("cp -r #{RuneBlog::DefaultData} .")
-      raise "Error copying default data" unless result
-
       File.write("VERSION", "#{RuneBlog::VERSION}\nBlog created: " + Time.now.to_s )
     end
   end
@@ -109,13 +95,20 @@ class RuneBlog
 
     dir = "#@root/views/#{arg}/"
     create_dir(dir)
-    create_dir(dir + 'custom')
-    create_dir(dir + 'assets')
-    File.write(dir + "deploy", "")
-    File.write(dir + "custom/blog_header.html",  RuneBlog::BlogHeader)
-    File.write(dir + "custom/blog_trailer.html", RuneBlog::BlogTrailer)
-    File.write(dir + "custom/post_template.html", RuneBlog::PostTemplate)
-    File.write(dir + "last_deployed", "Initial creation")
+    up = Dir.pwd
+    Dir.chdir(dir)
+    create_dir('custom')
+    create_dir('assets')
+    File.write("deploy", "")
+    File.write("custom/blog_header.html",  
+               RuneBlog::Default::BlogHeader)
+    File.write("custom/blog_trailer.html", 
+               RuneBlog::Default::BlogTrailer)
+    File.write("custom/post_template.html", 
+               RuneBlog::Default::PostTemplate)
+    File.write("last_deployed", 
+               "Initial creation")
+    Dir.chdir(up)
     @views << RuneBlog::View.new(arg)
   end
 
@@ -221,8 +214,11 @@ class RuneBlog
     posts = posts.sort.reverse
 
     # Add view header/trailer
-    head = File.read("#{vdir}/custom/blog_header.html") rescue RuneBlog::BlogHeader
-    tail = File.read("#{vdir}/custom/blog_trailer.html") rescue RuneBlog::BlogTrailer
+    head = tail = nil
+    Dir.chdir(vdir) do 
+      head = File.read("custom/blog_header.html")
+      tail = File.read("custom/blog_trailer.html")
+    end
     @bloghead = interpolate(head)
     @blogtail = interpolate(tail)
 

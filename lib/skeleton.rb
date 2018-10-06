@@ -1,6 +1,9 @@
 # skeleton
 
 class RuneBlog
+  class Default
+  end
+
   class View
   end
 

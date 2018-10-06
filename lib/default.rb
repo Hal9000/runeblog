@@ -1,6 +1,42 @@
+class RuneBlog::Default
+
+# This will all become much more generic later.
+
+BlogHeader = <<-TEXT
+<html>
+<body>
+
+<title>Ruby, Elixir, and More</title>
+
+<table>
+  <tr>
+    <td>
+        <img src=blog3a.jpg width=400 height=300>
+    </td>
+    <td>
+      <h3>Yet another blog by Hal Fulton</h3>
+      <br>
+      <br>
+      <b>Note</b>: I can never find a blogging engine I like! <br>
+      For now, this will just be a set of static pages.
+      <br>
+      <br>
+      If you want to comment, just <a href=mailto:rubyhacker@gmail.com>email me</a>.
+    </td>
+  </tr>
+</table>
+
+<hr>
+TEXT
+
+BlogTrailer = <<-TEXT
+<!-- no trailer -->
+TEXT
+
+PostTemplate = <<-'TEXT'
 <html>
 
-<body background='speckle-texture-vector.jpg'>
+<body>
 
 <script>
   window.fbAsyncInit = function() {
@@ -69,3 +105,6 @@
 <hr>
 <a href="http://rubyhacker.com/blog2" style="text-decoration: none">Back</a> 
 <a href="http://rubyhacker.com" style="text-decoration: none">Home</a>
+TEXT
+
+end

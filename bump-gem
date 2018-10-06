@@ -11,10 +11,8 @@ require "version"
 today = Date.today.strftime("%Y-%m-%d")
 version = RuneBlog::VERSION
 
-File.write("data/VERSION", "RuneBlog v #{version}   #{today}")
-  
 system("git pull")
-system("git add data/VERSION lib/version.rb")
+system("git add lib/version.rb")
 gs = `git status 2>&1`
 
 if gs =~ /not staged for commit/
