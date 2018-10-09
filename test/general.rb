@@ -191,7 +191,10 @@ class TestREPL < Minitest::Test
   end
 
   def test_016_can_deploy
-    dep = RuneBlog::Deployment.new("root", "rubyhacker.com", "/var/www", "whatever")
+    x = OpenStruct.new
+    x.user, x.server, x.docroot, x.docroot, x.path, x.proto = 
+      "root", "rubyhacker.com", "/var/www", "whatever", "http"
+    dep = RuneBlog::Deployment.new(x)
     result = dep.remote_login?
     assert result == true, "Valid login doesn't work"
     result = dep.remote_permissions?
@@ -199,13 +202,19 @@ class TestREPL < Minitest::Test
   end
 
   def test_017_cannot_deploy_wrong_user
-    dep = RuneBlog::Deployment.new("bad_user", "rubyhacker.com", "/var/www", "whatever")
+    x = OpenStruct.new
+    x.user, x.server, x.docroot, x.docroot, x.path, x.proto = 
+      "bad_user", "rubyhacker.com", "/var/www", "whatever", "http"
+    dep = RuneBlog::Deployment.new(x)
     result = dep.remote_login?
     assert result.nil?, "Expected to detect login error (bad user)"
   end
 
   def test_018_cannot_deploy_bad_server
-    dep = RuneBlog::Deployment.new("root", "nonexistent123.com", "/var/www", "whatever")
+    x = OpenStruct.new
+    x.user, x.server, x.docroot, x.docroot, x.path, x.proto = 
+      "root", "nonexistent123.com", "/var/www", "whatever", "http"
+    dep = RuneBlog::Deployment.new(x)
     result = dep.remote_login?
     assert result.nil?, "Expected to detect login error (bad server)"
   end

@@ -72,36 +72,6 @@ module RuneBlog::REPL
     error(err)
   end
 
-  def old_cmd_deploy(arg)  # FIXME non-string return expected in caller?
-    # TBD clunky FIXME 
-    reset_output
-    check_empty(arg)
-    user, server, sroot, spath = *@deploy[@blog.view]
-    if files.empty?    # FIXME  baloney
-      output! "No files to deploy"
-      return @out
-    end
-
-    output "Files:"
-    files.each {|f| output "    #{f}\n" }
-    output_newline
-    dir = "#{sroot}/#{spath}"
-    # FIXME - may or may not already exist
-    result = system("ssh root@#{server} mkdir #{dir}") 
-    # ^ needs -c?? 
-
-    cmd = "scp -r #{files.join(' ')} root@#{server}:#{dir} >/dev/null 2>&1"
-    output! "Deploying #{files.size} files...\n"
-    result = system(cmd)
-    raise "Problem occurred in deployment" unless result
-
-    File.write("#{vdir}/last_deployed", files)
-    output! "...finished.\n"
-    @out
-  rescue => err
-    error(err)
-  end
-
   def cmd_rebuild(arg)
     reset_output
     check_empty(arg)
@@ -156,8 +126,8 @@ module RuneBlog::REPL
     @blog.create_view(arg)
     resp = yesno("Add deployment info now? ")
     @blog.view.deployer = ask_deployment_info
-    @blog.view.write_config  # change this?
-    @blog.view.read_config   # was: get_deployment_info
+    write_config(@blog.view.deployer,  @blog.view.dir + "/deploy")  # change this?
+#   read_config(@blog.view.dir + "/deploy")  # unnessary?
     nil
   rescue => err
     error(err)

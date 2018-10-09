@@ -1,7 +1,10 @@
+require 'pp'
+
 require 'find'
 require 'yaml'   # get rid of YAML later
 require 'livetext'
 require 'skeleton'
+require 'helpers-blog'
 require 'default'
 require 'view'
 require 'deploy'
@@ -20,7 +23,9 @@ class RuneBlog
   attr_accessor :view  # overridden
 
   def self.create_new_blog(dir = "data")
-    File.write(".blog", "#{dir}\nno_default\n")  # .blog lives above subtree
+    x = OpenStruct.new
+    x.root, x.current_view, x.editor = dir, "no_default", "vi"
+    write_config(x, ".blog")
     create_dir(dir)
     Dir.chdir(dir) do
       create_dir("views")
@@ -31,15 +36,12 @@ class RuneBlog
     end
   end
 
-  def get_config(file)
-    lines = File.readlines(file).map(&:chomp)
-    root, view_name = *lines
-  end
-
   def initialize(cfg_file = ".blog")   # assumes existing blog
     # Crude - FIXME later - What views are there? Deployment, etc.
     self.class.blog = self   # Weird. Like a singleton - dumbass circular dependency?
-    @root, view_name = get_config(cfg_file)
+    obj = read_config(cfg_file)
+    vals = obj.to_h.values_at(:root, :current_view, :editor)
+    @root, view_name, @editor = *vals
     @views = subdirs("#@root/views/").sort.map {|name| RuneBlog::View.new(name) }
     @view = str2view(view_name)
     @sequence = get_sequence
@@ -61,12 +63,13 @@ class RuneBlog
     case arg
       when RuneBlog::View
         @view = arg
+        raise "Problem here?"
         @view.read_config
       when String
         new_view = str2view(arg)
         raise "Can't find view #{arg}" if new_view.nil?
         @view = new_view
-        @view.read_config
+        @view.deployer = read_config(@view.dir + "/deploy")
       else 
         raise "#{arg.inspect} was not a View or a String"
     end
@@ -123,7 +126,7 @@ class RuneBlog
     vdir = @blog.viewdir(@view)
     # meh
     files = ["#{vdir}/index.html"]
-    files += Dir.entries(vdir).grep(/^\d\d\d\d/).map {|x| "#{vdir}/#{x}" }
+    files += Dir.entries(vdir).grep(/^\d{4}/).map {|x| "#{vdir}/#{x}" }
     # Huh? 
     files.reject! {|f| File.mtime(f) < File.mtime("#{vdir}/last_deployed") }
   end
@@ -148,7 +151,7 @@ class RuneBlog
   end
 
   def edit_initial_post(file)
-    result = system("vi #@root/src/#{file} +8 ")
+    result = system("#@editor #@root/src/#{file} +8")
     raise "Problem editing #@root/src/#{file}" unless result
     nil
   rescue => err
@@ -167,7 +170,9 @@ class RuneBlog
   end
 
   def change_view(view)
-    File.write(".blog", "#@root\n#{view}\n")
+    x = OpenStruct.new
+    x.root, x.current_view, x.editor = @root, view, @editor   # dumb - FIXME later
+    write_config(x, ".blog")
     self.view = view   # error checking?
   end
 
@@ -210,7 +215,7 @@ class RuneBlog
   def generate_index(view)
     # Gather all posts, create list
     vdir = "#@root/views/#{view}"
-    posts = Dir.entries(vdir).grep /^\d\d\d\d/
+    posts = Dir.entries(vdir).grep /^\d{4}/
     posts = posts.sort.reverse
 
     # Add view header/trailer
@@ -262,8 +267,11 @@ class RuneBlog
   def remove_post(num)
     list = files_by_id(num)
     return nil if list.empty?
-    result = system("rm -rf #{list.join(' ')}")
-    error_cant_delete(files) unless result
+    dest = list.map {|f| f.sub(/(?<num>\d{4}-)/, "_\\k<num>") }
+    list.each.with_index do |src, i| 
+      cmd = "mv #{src} #{dest[i]} 2>/dev/null"
+      system(cmd)
+    end
     # FIXME - update index/etc
     true
   end
@@ -288,6 +296,7 @@ class RuneBlog
   private
 
   def subdirs(dir)
+raise Exception.new("hell") if dir == "/views/"
     dirs = Dir.entries(dir) - %w[. ..]
     dirs.reject! {|x| ! File.directory?("#@root/views/#{x}") }
     dirs
@@ -296,7 +305,7 @@ class RuneBlog
   end
 
   def find_src_slugs
-    files = Dir.entries("#@root/src/").grep /\d\d\d\d.*.lt3$/
+    files = Dir.entries("#@root/src/").grep /\d{4}.*.lt3$/
     files.map! {|f| File.basename(f) }
     files = files.sort.reverse
     files

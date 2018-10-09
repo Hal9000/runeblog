@@ -2,15 +2,27 @@ require 'helpers-blog'
 require 'runeblog'
 
 class RuneBlog::Deployment
-  attr_reader :user, :server, :root, :path
+  attr_reader :user, :server, :docroot, :path
 
   BadRemoteLogin = Exception.new("Can't login remotely")
   BadRemotePerms = Exception.new("Bad remote permissions")
 
-  def initialize(user, server, root, path, protocol = "http")
+  def initialize(*params)
     @blog = RuneBlog.blog
-    @user, @server, @root, @path = 
-      user, server, root, path
+    # Clunky...
+    if params.size == 1 && params[0].is_a?(OpenStruct)
+      obj = params[0]
+      array = obj.to_h.values_at(:user, :server, :docroot, 
+                                 :path, :proto)
+      @user, @server, @docroot, @path, @proto = *array
+    else
+      @user, @server, @docroot, @path, @proto = *obj
+    end
+  end
+
+  def to_h
+    {user: @user, server: @server, docroot: @docroot,
+     path: @path, proto: @proto}
   end
 
   def url
@@ -19,7 +31,7 @@ class RuneBlog::Deployment
  
   def deploy(files)
     reset_output
-    dir = "#@root/#@path"
+    dir = "#@docroot/#@path"
     result = system("ssh #@user@#@server -x mkdir #{dir}") 
     list = files.join(' ')
     cmd = "scp -r #{list} #@user@##server:#{dir} >/dev/null 2>&1"
@@ -40,11 +52,11 @@ class RuneBlog::Deployment
   end
 
   def remote_permissions?
-    dir = "#@root/#@path"
+    dir = "#@docroot/#@path"
     temp = "#@path/__only_testing" 
-    try1 = system("ssh -o BatchMode=yes -o ConnectTimeout=2 #@user@#@server -x mkdir -p #{temp} >/dev/null 2>&1")
+    try1 = system("ssh -o BatchMode=yes -o ConnectTimeout=1 #@user@#@server -x mkdir -p #{temp} >/dev/null 2>&1")
     return nil unless try1
-    try2 = system("ssh -o BatchMode=yes -o ConnectTimeout=2 #@user@#@server -x rmdir #{temp} >/dev/null 2>&1")
+    try2 = system("ssh -o BatchMode=yes -o ConnectTimeout=1 #@user@#@server -x rmdir #{temp} >/dev/null 2>&1")
     return nil unless try2
     true
   end

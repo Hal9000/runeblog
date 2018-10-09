@@ -1,7 +1,11 @@
 * - deployment
 * - error-checking on params
+  - editor variable?
+  - smoother config files?
+  - distinguish post template and index template
   - a "real" default view?
   - resolve issues: draft vs post, kill, etc.
+  - Fix/rewrite asset handling
   - hash same as metadata??
   - Readline completion for views
   - Readline completion for commands?
@@ -14,16 +18,16 @@
   - commands to edit config/etc.?
   - shorten commands?
   - undo last post?
-  - store in trash instead of deleting?
   - "undelete" from trash
-  - deal with assets?
+  - deal with assets? .asset and .asset! tags?
   - distinguish unpublished?
   - add body, teaser to post subdir
   - get rid of YAML dependency
   - fix/improve config file path handling
   - snippets for templates?
-  - "pinned" or favorite posts?
+  - "pinned" or favorite posts? ("best" tag)
   - permalinks??
+  - use a database???
   - allow templates to be .lt3 files
   - back-sync with remote?
   - explicitly document use of ssh/scp
@@ -39,6 +43,7 @@
   - figure out linked-list dependencies?
   - curses interface??
 
+x - store in trash instead of deleting? (underscore)
 x - get rid of "data" tree
 x - get rid of silly BlogHeader (etc.) constants
 x - add delete_draft
@@ -76,4 +81,3 @@ x - allow abbreviating view names
 x - delete multiple posts
 x - Figure out assets
 x - $$asset function 
-

@@ -30,10 +30,25 @@ BlogHeader = <<-TEXT
 TEXT
 
 BlogTrailer = <<-TEXT
-<!-- no trailer -->
+<!-- no blog trailer -->
 TEXT
 
-PostTemplate = <<-'TEXT'
+PostTemplate = <<-'TEXT'  # interpolate later
+.mixin liveblog
+ 
+.title #@title
+.pubdate #@date
+.views #@view
+.tags 
+ 
+.teaser
+#{@meta.teaser}
+.end
+#{@meta.remainder}
+TEXT
+
+
+TeaserTemplate = <<-'TEXT'  # interpolate later
 <html>
 
 <body>

@@ -18,22 +18,12 @@ class RuneBlog::Post
     @title = meta.title
     @view = @blog.str2view(view_name)
     @num, @slug = make_slug
-    date = Time.now.strftime("%Y-%m-%d")
-    template = <<-EOS.gsub(/^ */, "")
-      .mixin liveblog
- 
-      .title #@title
-      .pubdate #{date}
-      .views #@view
- 
-      .teaser
-      #{meta.teaser}
-      .end
-      #{meta.remainder}
-    EOS
- 
+    @date = Time.now.strftime("%Y-%m-%d")
+    template = RuneBlog::Default::PostTemplate
+    @meta = meta
+    html = interpolate(template)
     @draft = "#{@blog.root}/src/#@slug.lt3"
-    File.write(@draft, template)
+    File.write(@draft, html)
   end
 
   def edit
@@ -72,7 +62,7 @@ class RuneBlog::Post
     File.write("metadata.yaml", @meta.to_yaml)
     File.write("teaser.txt", @meta.teaser)
     File.write("remainder.txt", @meta.remainder)
-    template = RuneBlog::Default::PostTemplate
+    template = RuneBlog::Default::TeaserTemplate
     text = interpolate(template)
     File.write("index.html", text)
   end

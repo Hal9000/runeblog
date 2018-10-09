@@ -6,6 +6,7 @@ def make_post(x, title)
   meta = OpenStruct.new
   meta.title = title
   num = x.create_new_post(meta, true)
+  num
 end
 
 def show_lines(text)
