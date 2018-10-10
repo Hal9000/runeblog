@@ -5,6 +5,8 @@ class RuneBlog::View
   attr_reader :name, :state
   attr_accessor :deployer
 
+  include RuneBlog::Helpers
+
   def initialize(name)
     raise "RuneBlog.blog is not set!" if RuneBlog.blog.nil?
     @blog = RuneBlog.blog

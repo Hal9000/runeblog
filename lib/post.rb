@@ -5,6 +5,8 @@ class RuneBlog::Post
 
   attr_reader :id, :title, :date, :views, :num, :slug
 
+  include RuneBlog::Helpers
+
   def self.files(num, root)
     files = Find.find(root).to_a
     result = files.grep(/#{tag(num)}-/)

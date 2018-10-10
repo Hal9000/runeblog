@@ -1,6 +1,9 @@
 # skeleton
 
 class RuneBlog
+  module Helpers
+  end
+
   class Default
   end
 

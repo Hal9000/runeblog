@@ -1,5 +1,3 @@
-require 'pp'
-
 require 'find'
 require 'yaml'   # get rid of YAML later
 require 'livetext'
@@ -14,36 +12,38 @@ require 'version'
 ###
 
 class RuneBlog
+ 
+  DotFile = ".blog"
 
   class << self
     attr_accessor :blog
+    include Helpers
   end
 
   attr_reader :root, :views, :sequence
   attr_accessor :view  # overridden
 
+  include Helpers
+
   def self.create_new_blog(dir = "data")
-    x = OpenStruct.new
-    x.root, x.current_view, x.editor = dir, "no_default", "vi"
-    write_config(x, ".blog")
+    new_dotfile(root: dir)
     create_dir(dir)
     Dir.chdir(dir) do
       create_dir("views")
       create_dir("assets")
       create_dir("src")
-      File.write("sequence", 0)
-      File.write("VERSION", "#{RuneBlog::VERSION}\nBlog created: " + Time.now.to_s )
+      new_sequence
     end
   end
 
-  def initialize(cfg_file = ".blog")   # assumes existing blog
-    # Crude - FIXME later - What views are there? Deployment, etc.
+  def initialize   # assumes existing blog
+    # Crude - FIXME later - 
+    # What views are there? Deployment, etc.
     self.class.blog = self   # Weird. Like a singleton - dumbass circular dependency?
-    obj = read_config(cfg_file)
-    vals = obj.to_h.values_at(:root, :current_view, :editor)
-    @root, view_name, @editor = *vals
-    @views = subdirs("#@root/views/").sort.map {|name| RuneBlog::View.new(name) }
-    @view = str2view(view_name)
+    @root, @view_name, @editor = 
+      read_config(DotFile, :root, :current_view, :editor)
+    @views = get_views
+    @view = str2view(@view_name)
     @sequence = get_sequence
   end
 
@@ -89,7 +89,7 @@ class RuneBlog
   end
 
   def self.exist?
-    File.exist?(".blog")
+    File.exist?(DotFile)
   end
 
   def create_view(arg)
@@ -172,7 +172,7 @@ class RuneBlog
   def change_view(view)
     x = OpenStruct.new
     x.root, x.current_view, x.editor = @root, view, @editor   # dumb - FIXME later
-    write_config(x, ".blog")
+    write_config(x, DotFile)
     self.view = view   # error checking?
   end
 
@@ -294,40 +294,6 @@ class RuneBlog
   end
 
   private
-
-  def subdirs(dir)
-raise Exception.new("hell") if dir == "/views/"
-    dirs = Dir.entries(dir) - %w[. ..]
-    dirs.reject! {|x| ! File.directory?("#@root/views/#{x}") }
-    dirs
-  rescue => err
-    p err
-  end
-
-  def find_src_slugs
-    files = Dir.entries("#@root/src/").grep /\d{4}.*.lt3$/
-    files.map! {|f| File.basename(f) }
-    files = files.sort.reverse
-    files
-  end
-
-  def create_dir(dir)
-    return if File.exist?(dir) && File.directory?(dir)
-    cmd = "mkdir -p #{dir} >/dev/null 2>&1"
-    result = system(cmd) 
-    raise "Can't create #{dir}" unless result
-  end
-
-  def interpolate(str)
-    wrap = "<<-EOS\n#{str}\nEOS"
-    eval wrap
-  end
-
-  def error(err)  # Hmm, this is duplicated
-    str = "\n  Error: #{err}"
-    puts str
-    puts err.backtrace
-  end
 
 end
 
