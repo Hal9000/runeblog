@@ -16,8 +16,8 @@ def show_lines(text)
   str
 end
 
-system("rm -rf data_test")
-RuneBlog.create_new_blog(Dir.pwd + "/data_test")
+system("rm -rf .blog")
+RuneBlog.create_new_blog(".blog/data_test")
 x = RuneBlog.new
 x.create_view("alpha_view")
 x.create_view("beta_view")

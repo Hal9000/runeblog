@@ -6,6 +6,7 @@ module RuneBlog::REPL
 
   def cmd_quit(arg)
     check_empty(arg)
+    system("tput rmcup")
     abort "\n "
   end
 
@@ -127,7 +128,6 @@ module RuneBlog::REPL
     resp = yesno("Add deployment info now? ")
     @blog.view.deployer = ask_deployment_info
     write_config(@blog.view.deployer,  @blog.view.dir + "/deploy")  # change this?
-#   read_config(@blog.view.dir + "/deploy")  # unnessary?
     nil
   rescue => err
     error(err)

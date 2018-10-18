@@ -13,7 +13,7 @@ require 'version'
 
 class RuneBlog
  
-  DotFile = ".blog"
+  DotDir = ".blog"
 
   class << self
     attr_accessor :blog
@@ -25,8 +25,8 @@ class RuneBlog
 
   include Helpers
 
-  def self.create_new_blog(dir = "data")
-    new_dotfile(root: dir)
+  def self.create_new_blog(dir)
+    new_dotfile(root: Dir.pwd + "/" + dir)
     create_dir(dir)
     Dir.chdir(dir) do
       create_dir("views")
@@ -34,6 +34,9 @@ class RuneBlog
       create_dir("src")
       new_sequence
     end
+  rescue => err
+    puts "Can't create blog: '#{dir}' - #{err}"
+    puts err.backtrace
   end
 
   def initialize   # assumes existing blog
@@ -41,7 +44,7 @@ class RuneBlog
     # What views are there? Deployment, etc.
     self.class.blog = self   # Weird. Like a singleton - dumbass circular dependency?
     @root, @view_name, @editor = 
-      read_config(DotFile, :root, :current_view, :editor)
+      read_config(DotDir + "/config", :root, :current_view, :editor)
     @views = get_views
     @view = str2view(@view_name)
     @sequence = get_sequence
@@ -63,8 +66,7 @@ class RuneBlog
     case arg
       when RuneBlog::View
         @view = arg
-        raise "Problem here?"
-        @view.read_config
+        @view.deployer = read_config(@view.dir + "/deploy")
       when String
         new_view = str2view(arg)
         raise "Can't find view #{arg}" if new_view.nil?
@@ -89,7 +91,9 @@ class RuneBlog
   end
 
   def self.exist?
-    File.exist?(DotFile)
+    File.exist?(DotDir) && 
+    File.directory?(DotDir) &&
+    File.exist?(DotDir + "/config")
   end
 
   def create_view(arg)
@@ -172,7 +176,7 @@ class RuneBlog
   def change_view(view)
     x = OpenStruct.new
     x.root, x.current_view, x.editor = @root, view, @editor   # dumb - FIXME later
-    write_config(x, DotFile)
+    write_config(x, DotDir + "/config")
     self.view = view   # error checking?
   end
 

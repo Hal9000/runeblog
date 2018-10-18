@@ -4,30 +4,19 @@ module RuneBlog::Helpers
     lines = File.readlines(file).map(&:chomp)
     obj = OpenStruct.new
     lines.each do |line|
+      next if line == "\n" || line[0] == "#"
       key, val = line.split(" ", 2)
       key = key[0..-2] # remove colon
       obj.send(key+"=", val)
     end
     return obj if syms.empty?
     vals = []
-    syms.each {|sym| vals << obj.send(sym) }
-    return vals
-  rescue => err
-    puts "Something hit the fan: #{err}"
-    puts err.backtrace
-    exit
-  end
-
-  def huh_read_config(file, *syms)
-    lines = File.readlines(file).map(&:chomp)
-    obj = OpenStruct.new
-    lines.each do |line|
-      key, val = line.split(" ", 2)
-      key = key[0..-2] # remove colon
-      obj.send(key+"=", val)
+    if syms.empty?
+      vals = obj.to_hash.values
+    else
+      syms.each {|sym| vals << obj.send(sym) }
     end
-    @deployer = RuneBlog::Deployment.new(obj)
-    obj
+    return vals
   rescue => err
     puts "Something hit the fan: #{err}"
     puts err.backtrace
@@ -49,9 +38,11 @@ module RuneBlog::Helpers
   end
 
   def new_dotfile(root: "data", current_view: "no_default", editor: "vi")
+    raise "Blog already exists" if Dir.exist?(".blog")
+    Dir.mkdir(".blog")
     x = OpenStruct.new
     x.root, x.current_view, x.editor = root, current_view, editor
-    write_config(x, RuneBlog::DotFile)
+    write_config(x, RuneBlog::DotDir + "/config")
   end
 
   def new_sequence
@@ -64,6 +55,9 @@ module RuneBlog::Helpers
     dirs = Dir.entries(dir) - %w[. ..]
     dirs.reject! {|x| ! File.directory?("#@root/views/#{x}") }
     dirs
+  rescue
+    STDERR.puts "Can't find dir '#{dir}'"
+    exit
   end
 
   def find_src_slugs
@@ -74,7 +68,7 @@ module RuneBlog::Helpers
   end
 
   def create_dir(dir)
-    return if File.exist?(dir) && File.directory?(dir)
+    return if Dir.exist?(dir)  #  && File.directory?(dir)
     cmd = "mkdir -p #{dir} >/dev/null 2>&1"
     result = system(cmd) 
     raise "Can't create #{dir}" unless result

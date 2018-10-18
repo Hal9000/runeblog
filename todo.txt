@@ -1,48 +1,64 @@
-* - deployment
-* - error-checking on params
-  - editor variable?
-  - smoother config files?
-  - distinguish post template and index template
-  - a "real" default view?
-  - resolve issues: draft vs post, kill, etc.
-  - Fix/rewrite asset handling
-  - hash same as metadata??
-  - Readline completion for views
-  - Readline completion for commands?
-  - possibly change: relink, rebuild, etc.?
-* - test make_slug to death
-  - more sanity checking!
-  - more tests!
-  - maybe add (default) deployment info to config?
-  - commands to edit templates?
-  - commands to edit config/etc.?
-  - shorten commands?
-  - undo last post?
-  - "undelete" from trash
-  - deal with assets? .asset and .asset! tags?
-  - distinguish unpublished?
-  - add body, teaser to post subdir
-  - get rid of YAML dependency
-  - fix/improve config file path handling
-  - snippets for templates?
-  - "pinned" or favorite posts? ("best" tag)
-  - permalinks??
-  - use a database???
-  - allow templates to be .lt3 files
-  - back-sync with remote?
-  - explicitly document use of ssh/scp
-  - deal with CSS??
-  - update docs
+* 6 4 - work on deployment
+* 5 2 - params checking on method entry
+  5 2 - occasional sanity checking?
+  6 4 - more tests!
+  6 6 - resolve issues: draft vs post, kill, etc.
 
-  - true command line options?
-  - special view 'all'?
-  - other vars in .blog?
-  - out-of-the-box workflow
-  - let main blog be named? call 'data' something else?
-  - video tutorial
-  - figure out linked-list dependencies?
-  - curses interface??
+  4 1 - search for .blog under cwd, home
 
+  4 3 - distinguish view and view_name
+  4 3 - test credentials for deployment?
+
+  3 2 - fix cmdline args
+  4 3 - commands to edit templates?
+  4 2 - commands to edit config/etc.?
+  4 2 - maybe add (default) deployment info to config?
+  2 5 - shorten commands?
+  3 2 - undo last post?
+  4 2 - "undelete" from trash
+
+  4 4 - a "real" default view?
+  5 5 - add body, teaser to post subdir
+  5 5 - get rid of YAML dependency
+
+  3 3 - config files: blank lines, comments (persistent?)
+
+  6 7 - change interaction of liveblog and process_file (arbitrary ostruct?)
+  4 3 - hash same as metadata??
+  6 7 - allow templates to be .lt3 files?
+  6 5 - snippets for templates?
+  6 5 - facebook/twitter as snippets?
+  6 5 - changes in liveblog for snippets??
+
+  7 7 - Fix/rewrite asset handling? .asset and .asset! tags?
+  6 6 - Command to import asset(s)?
+  5 3 - Readline completion for views
+  5 3 - Readline completion for commands?
+  6 6 - possibly change: relink, rebuild, etc.?
+  4 8 - curses integration?
+  3 6 - distinguish unpublished?
+  7 5 - "pinned" or favorite posts? ("best" tag? or dot-command that understands views?)
+  7 4 - permalinks??
+  5 8 - use a database???
+  4 8 - back-sync with remote?
+  7 7 - explicitly document use of ssh/scp
+  5 9 - deal with CSS??
+  5 9 - update docs
+
+  5 9 - true command line options?
+  4 7 - special view 'all'?
+  4 4 - other vars in .blog?
+  7 6 - out-of-the-box workflow
+  6 3 - let main blog be named? call 'data' something else?
+  8 9 - video tutorial
+  7 8 - figure out linked-list dependencies?
+
+x 4 2 - consolidate under .blog
+x - test make_slug to death
+x - fix/improve config file path handling
+x - editor variable?
+x - smoother config files?
+x - distinguish post template and index template
 x - store in trash instead of deleting? (underscore)
 x - get rid of "data" tree
 x - get rid of silly BlogHeader (etc.) constants

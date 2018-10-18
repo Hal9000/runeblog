@@ -23,6 +23,8 @@ STDOUT.sync = true
 
 cmd, arg = get_argv
 
+system("tput smcup")  # see: tput rmcup in cmd_quit
+
 if ! RuneBlog.exist?
   print "No blog found. Create new one? (y/n) "
   resp = gets.chomp
@@ -59,3 +61,4 @@ else  # one command
   parse_cmd(ARGV.join(" "))
   execute_command
 end
+
