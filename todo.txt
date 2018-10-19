@@ -4,6 +4,9 @@
   6 4 - more tests!
   6 6 - resolve issues: draft vs post, kill, etc.
 
+  3 3 - methods such as get_post_template
+  3 3 - rethink publish/deploy and other verbs
+
   4 1 - search for .blog under cwd, home
 
   4 3 - distinguish view and view_name

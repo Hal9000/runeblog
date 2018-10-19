@@ -66,7 +66,7 @@ module RuneBlog::REPL
     result = system(cmd)
     raise "Problem occurred in deployment" unless result
 
-    File.write("#{vdir}/last_deployed", files)
+    dump(files, "#{vdir}/last_deployed")
     output! "...finished.\n"
     @out
   rescue => err

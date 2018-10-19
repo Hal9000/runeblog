@@ -25,7 +25,7 @@ class RuneBlog::Post
     @meta = meta
     html = interpolate(template)
     @draft = "#{@blog.root}/src/#@slug.lt3"
-    File.write(@draft, html)
+    dump(html, @draft)
   end
 
   def edit
@@ -61,12 +61,12 @@ class RuneBlog::Post
 
   def create_post_subtree(vdir)
     create_dir("assets") 
-    File.write("metadata.yaml", @meta.to_yaml)
-    File.write("teaser.txt", @meta.teaser)
-    File.write("remainder.txt", @meta.remainder)
-    template = RuneBlog::Default::TeaserTemplate
+    dump(@meta.to_yaml, "metadata.yaml")
+    dump(@meta.teaser, "teaser.txt")
+    dump(@meta.remainder, "remainder.txt")
+    template = RuneBlog::Default::TeaserTemplate   # FIXME template into custom dir?
     text = interpolate(template)
-    File.write("index.html", text)
+    dump(text, "index.html")   # FIXME write_index ?
   end
 
   def make_slug(postnum = nil)

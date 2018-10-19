@@ -46,9 +46,9 @@ module RuneBlog::Helpers
   end
 
   def new_sequence
-    File.write("sequence", 0)
-    File.write("VERSION", "#{RuneBlog::VERSION}\n" + 
-                          "Blog created: " + Time.now.to_s)
+    dump(0, "sequence")
+    version_info = "#{RuneBlog::VERSION}\nBlog created: #{Time.now.to_s}"
+    dump(version_info, "VERSION")
   end
 
   def subdirs(dir)
@@ -83,6 +83,10 @@ module RuneBlog::Helpers
     str = "\n  Error: #{err}"
     puts str
     puts err.backtrace
+  end
+
+  def dump(obj, name)
+    File.write(name, obj)
   end
 
 end

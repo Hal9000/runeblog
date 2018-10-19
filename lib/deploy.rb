@@ -39,7 +39,7 @@ class RuneBlog::Deployment
     result = system(cmd)
     raise "Problem occurred in deployment" unless result
 
-    File.write("#{@blog.view.dir}/last_deployed", files)
+    dump(files, "#{@blog.view.dir}/last_deployed")
     output! "...finished.\n"
     @out
   end

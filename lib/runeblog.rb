@@ -14,6 +14,7 @@ require 'version'
 class RuneBlog
  
   DotDir = ".blog"
+  ConfigFile = "#{DotDir}/config"
 
   class << self
     attr_accessor :blog
@@ -44,7 +45,7 @@ class RuneBlog
     # What views are there? Deployment, etc.
     self.class.blog = self   # Weird. Like a singleton - dumbass circular dependency?
     @root, @view_name, @editor = 
-      read_config(DotDir + "/config", :root, :current_view, :editor)
+      read_config(ConfigFile, :root, :current_view, :editor)
     @views = get_views
     @view = str2view(@view_name)
     @sequence = get_sequence
@@ -82,18 +83,17 @@ class RuneBlog
   end
 
   def next_sequence
-    File.write("#@root/sequence", @sequence += 1)
+    dump(@sequence += 1, "#@root/sequence")
     @sequence
   end
 
-  def viewdir(v)
+  def viewdir(v = nil)
+    v ||= @view
     @root + "/views/#{v}/"
   end
 
   def self.exist?
-    File.exist?(DotDir) && 
-    File.directory?(DotDir) &&
-    File.exist?(DotDir + "/config")
+    Dir.exist?(DotDir) && File.exist?(ConfigFile)
   end
 
   def create_view(arg)
@@ -104,17 +104,15 @@ class RuneBlog
     create_dir(dir)
     up = Dir.pwd
     Dir.chdir(dir)
+    x = RuneBlog::Default
     create_dir('custom')
     create_dir('assets')
-    File.write("deploy", "")
-    File.write("custom/blog_header.html",  
-               RuneBlog::Default::BlogHeader)
-    File.write("custom/blog_trailer.html", 
-               RuneBlog::Default::BlogTrailer)
-    File.write("custom/post_template.html", 
-               RuneBlog::Default::PostTemplate)
-    File.write("last_deployed", 
-               "Initial creation")
+    # FIXME dump method??
+    dump("", "deploy")
+    dump(x::BlogHeader, "custom/blog_header.html")
+    dump(x::BlogTrailer, "custom/blog_trailer.html")
+    dump(x::PostTemplate, "custom/post_template.html")
+    dump("Initial creation", "last_deployed")
     Dir.chdir(up)
     @views << RuneBlog::View.new(arg)
   end
@@ -127,10 +125,9 @@ class RuneBlog
   end
 
   def view_files
-    vdir = @blog.viewdir(@view)
-    # meh
+    vdir = @blog.viewdir
     files = ["#{vdir}/index.html"]
-    files += Dir.entries(vdir).grep(/^\d{4}/).map {|x| "#{vdir}/#{x}" }
+    files += posts.map {|x| "#{vdir}/#{x}" }
     # Huh? 
     files.reject! {|f| File.mtime(f) < File.mtime("#{vdir}/last_deployed") }
   end
@@ -207,10 +204,13 @@ class RuneBlog
     vdir = self.viewdir(view)
     dir = vdir + @meta.slug + "/"
     create_dir(dir + "assets") 
-    File.write("#{dir}/metadata.yaml", @meta.to_yaml)
-    template = File.read(vdir + "custom/post_template.html")
-    post = interpolate(template)
-    File.write(dir + "index.html", post)
+    Dir.chdir(dir) do
+      dump(@meta.to_yaml, "metadata.yaml")
+      # FIXME make get_post_template method
+      template = File.read("#{vdir}/custom/post_template.html")
+      post = interpolate(template)
+      dump(post, "index.html")
+    end
     generate_index(view)
   rescue => err
     error(err)
