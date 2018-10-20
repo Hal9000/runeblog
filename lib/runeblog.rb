@@ -27,7 +27,10 @@ class RuneBlog
   include Helpers
 
   def self.create_new_blog(dir)
-    new_dotfile(root: Dir.pwd + "/" + dir)
+    raise ArgumentError unless dir.is_a?(String) && ! dir.empty?
+    root_dir = Dir.pwd + "/" + dir
+    raise "Already exists" if Dir.exist?(root_dir)
+    new_dotfile(root: root_dir)
     create_dir(dir)
     Dir.chdir(dir) do
       create_dir("views")
@@ -52,14 +55,17 @@ class RuneBlog
   end
 
   def view?(name)
+    raise ArgumentError unless name.is_a?(String) && ! name.empty?
     views.any? {|x| x.name == name }
   end
 
   def view(name = nil)
+    raise ArgumentError unless name.nil? || (name.is_a?(String) && ! name.empty?)
     name.nil? ? @view : str2view(name)
   end
 
   def str2view(str)
+    raise ArgumentError unless str.is_a?(String) && ! str.empty?
     @views.find {|x| x.name == str }
   end
 
@@ -88,6 +94,7 @@ class RuneBlog
   end
 
   def viewdir(v = nil)
+    raise ArgumentError unless v.nil? || v.is_a?(RuneBlog::View)
     v ||= @view
     @root + "/views/#{v}/"
   end
@@ -97,10 +104,12 @@ class RuneBlog
   end
 
   def create_view(arg)
+    raise ArgumentError unless arg.is_a?(String) && ! arg.empty?
     names = self.views.map(&:to_s)
     raise "view #{arg} already exists" if names.include?(arg)
 
     dir = "#@root/views/#{arg}/"
+    raise "Can't happen: #{fir} exists already" if Dir.exist?(dir)
     create_dir(dir)
     up = Dir.pwd
     Dir.chdir(dir)
@@ -118,6 +127,7 @@ class RuneBlog
   end
 
   def delete_view(name, force = false)
+    raise ArgumentError unless name.is_a?(String) && ! name.empty?
     if force
       system("rm -rf #@root/views/#{name}") 
       @views -= [str2view(name)]
@@ -133,6 +143,7 @@ class RuneBlog
   end
 
   def files_by_id(id)
+    raise ArgumentError unless id.is_a?(Integer)
     files = Find.find(self.view.dir).to_a
     tag = "#{'%04d' % id}"
     result = files.grep(/#{tag}-/)
@@ -171,14 +182,17 @@ class RuneBlog
   end
 
   def change_view(view)
+    raise ArgumentError unless view.is_a?(String) || view.is_a?(RuneBlog::View)
     x = OpenStruct.new
-    x.root, x.current_view, x.editor = @root, view, @editor   # dumb - FIXME later
-    write_config(x, DotDir + "/config")
+    x.root, x.current_view, x.editor = @root, view.to_s, @editor   # dumb - FIXME later
+    write_config(x, ConfigFile)
     self.view = view   # error checking?
   end
 
   def process_post(file)
+    raise ArgumentError unless file.is_a?(String)
     path = @root + "/src/#{file}"
+    raise "File not found: #{path}" unless File.exist?(path)
     livetext = Livetext.new(STDOUT) # (nil)
     @meta = livetext.process_file(path, binding)
     raise "process_file returned nil" if @meta.nil?
@@ -200,6 +214,7 @@ class RuneBlog
   end
 
   def link_post_view(view)
+    raise ArgumentError unless view.is_a?(String) || view.is_a?(RuneBlog::View)
     # Create dir using slug (index.html, metadata?)
     vdir = self.viewdir(view)
     dir = vdir + @meta.slug + "/"
@@ -217,6 +232,7 @@ class RuneBlog
   end
 
   def generate_index(view)
+    raise ArgumentError unless view.is_a?(String) || view.is_a?(RuneBlog::View)
     # Gather all posts, create list
     vdir = "#@root/views/#{view}"
     posts = Dir.entries(vdir).grep /^\d{4}/
@@ -247,6 +263,7 @@ class RuneBlog
   end
 
   def index_entry(view, meta)
+    raise ArgumentError unless view.is_a?(String) || view.is_a?(RuneBlog::View)
     # FIXME clean up and generalize
     ref = "#{view}/#{meta.slug}/index.html"
     <<-HTML
@@ -262,6 +279,7 @@ class RuneBlog
   end
 
   def rebuild_post(file)
+    raise ArgumentError unless file.is_a?(String)
     @meta = process_post(file)
     publish_post(@meta)       # FIXME ??
   rescue => err
@@ -269,6 +287,7 @@ class RuneBlog
   end
 
   def remove_post(num)
+    raise ArgumentError unless num.is_a?(Integer)
     list = files_by_id(num)
     return nil if list.empty?
     dest = list.map {|f| f.sub(/(?<num>\d{4}-)/, "_\\k<num>") }
@@ -281,23 +300,24 @@ class RuneBlog
   end
 
   def delete_draft(num)
+    raise ArgumentError unless num.is_a?(Integer)
     tag = "#{'%04d' % num.to_i}"
     system("rm -rf #@root/src/#{tag}-*")
   end
 
   def post_exists?(num)
+    raise ArgumentError unless num.is_a?(Integer)
     list = files_by_id(num)
     list.empty? ? nil : list
   end
 
   def make_slug(title, postnum = nil)
+    raise ArgumentError unless title.is_a?(String)
     postnum ||= self.next_sequence
     num = '%04d' % postnum   # FIXME can do better
     slug = title.downcase.strip.gsub(' ', '-').gsub(/[^\w-]/, '')
     [postnum, "#{num}-#{slug}"]
   end
-
-  private
 
 end
 

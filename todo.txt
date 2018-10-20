@@ -1,30 +1,38 @@
 * 6 4 - work on deployment
-* 5 2 - params checking on method entry
-  5 2 - occasional sanity checking?
   6 4 - more tests!
   6 6 - resolve issues: draft vs post, kill, etc.
 
   3 3 - methods such as get_post_template
+* 2 2 - remove explicit tag formatting
+  4 2 - rethink helper libs?
+  4 2 - improve gemspec
+
   3 3 - rethink publish/deploy and other verbs
 
-  4 1 - search for .blog under cwd, home
+  4 2 - search for .blog under cwd, home
+
+  4 8 - custom curses menu
 
   4 3 - distinguish view and view_name
-  4 3 - test credentials for deployment?
+  4 4 - start using keyword parameters as needed
+  5 3 - test credentials for deployment?
+
+  4 6 - move some logic into liveblog?
 
   3 2 - fix cmdline args
-  4 3 - commands to edit templates?
-  4 2 - commands to edit config/etc.?
+  4 4 - commands to edit templates, config, etc.? ('config' command?)
   4 2 - maybe add (default) deployment info to config?
   2 5 - shorten commands?
   3 2 - undo last post?
   4 2 - "undelete" from trash
 
-  4 4 - a "real" default view?
-  5 5 - add body, teaser to post subdir
-  5 5 - get rid of YAML dependency
+  6 4 - a "real" default view?
+* 5 5 - add body, teaser to post subdir
+* 5 5 - get rid of YAML dependency
 
-  3 3 - config files: blank lines, comments (persistent?)
+  6 9 - code coverage analysis
+
+  3 2 - config files: persistent comments?
 
   6 7 - change interaction of liveblog and process_file (arbitrary ostruct?)
   4 3 - hash same as metadata??
@@ -35,13 +43,13 @@
 
   7 7 - Fix/rewrite asset handling? .asset and .asset! tags?
   6 6 - Command to import asset(s)?
-  5 3 - Readline completion for views
-  5 3 - Readline completion for commands?
+  4 4 - Readline completion for views
+  4 4 - Readline completion for commands?
   6 6 - possibly change: relink, rebuild, etc.?
   4 8 - curses integration?
   3 6 - distinguish unpublished?
-  7 5 - "pinned" or favorite posts? ("best" tag? or dot-command that understands views?)
-  7 4 - permalinks??
+  7 6 - "pinned" or favorite posts? ("best" tag? or dot-command that understands views?)
+  5 4 - permalinks??
   5 8 - use a database???
   4 8 - back-sync with remote?
   7 7 - explicitly document use of ssh/scp
@@ -52,10 +60,16 @@
   4 7 - special view 'all'?
   4 4 - other vars in .blog?
   7 6 - out-of-the-box workflow
-  6 3 - let main blog be named? call 'data' something else?
   8 9 - video tutorial
   7 8 - figure out linked-list dependencies?
 
+  8 8 - docs: getting started
+  8 8 - docs: how-to
+
+x 6 3 - let main blog be named? call 'data' something else?
+x 5 2 - params checking on method entry
+x 5 2 - occasional sanity checking?
+x 3 3 - config files: blank lines, comments (persistent?)
 x 4 2 - consolidate under .blog
 x - test make_slug to death
 x - fix/improve config file path handling
