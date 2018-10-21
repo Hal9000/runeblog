@@ -8,8 +8,8 @@
   4 2 - improve gemspec
 
   3 3 - rethink publish/deploy and other verbs
-
-  4 2 - search for .blog under cwd, home
+  4 6 - safe way to delete a view?
+  4 7 - modifiable global defaults for deployment info/etc.?
 
   4 8 - custom curses menu
 
@@ -19,14 +19,12 @@
 
   4 6 - move some logic into liveblog?
 
-  3 2 - fix cmdline args
   4 4 - commands to edit templates, config, etc.? ('config' command?)
   4 2 - maybe add (default) deployment info to config?
   2 5 - shorten commands?
   3 2 - undo last post?
   4 2 - "undelete" from trash
 
-  6 4 - a "real" default view?
 * 5 5 - add body, teaser to post subdir
 * 5 5 - get rid of YAML dependency
 
@@ -49,7 +47,7 @@
   4 8 - curses integration?
   3 6 - distinguish unpublished?
   7 6 - "pinned" or favorite posts? ("best" tag? or dot-command that understands views?)
-  5 4 - permalinks??
+  3 4 - permalinks??
   5 8 - use a database???
   4 8 - back-sync with remote?
   7 7 - explicitly document use of ssh/scp
@@ -66,6 +64,9 @@
   8 8 - docs: getting started
   8 8 - docs: how-to
 
+x 3 2 - fix cmdline args
+x?4 2 - search for .blog under cwd, home
+x 6 4 - a "real" default view?
 x 6 3 - let main blog be named? call 'data' something else?
 x 5 2 - params checking on method entry
 x 5 2 - occasional sanity checking?

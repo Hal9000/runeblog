@@ -26,11 +26,11 @@ class RuneBlog
 
   include Helpers
 
-  def self.create_new_blog(dir)
+  def self.create_new_blog(dir = ".blog")
     raise ArgumentError unless dir.is_a?(String) && ! dir.empty?
     root_dir = Dir.pwd + "/" + dir
     raise "Already exists" if Dir.exist?(root_dir)
-    new_dotfile(root: root_dir)
+    new_dotfile(root: root_dir, current_view: "test_view")
     create_dir(dir)
     Dir.chdir(dir) do
       create_dir("views")
@@ -38,6 +38,8 @@ class RuneBlog
       create_dir("src")
       new_sequence
     end
+    blog = self.new
+    blog.create_view("test_view")
   rescue => err
     puts "Can't create blog: '#{dir}' - #{err}"
     puts err.backtrace

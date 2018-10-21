@@ -123,18 +123,18 @@ class TestREPL < Minitest::Test
 
   def test_010_accessors!
     sorted_views = @blog.views.map(&:to_s).sort
-    assert sorted_views == ["alpha_view", "beta_view", "gamma_view"], 
+    assert sorted_views == ["alpha_view", "beta_view", "gamma_view", "test_view"], 
            "Got: #{sorted_views.inspect}"
   end
 
   def test_011_create_delete_view!
     @blog.create_view("anotherview")
     sorted_views = @blog.views.map(&:to_s).sort
-    assert sorted_views == ["alpha_view", "anotherview", "beta_view", "gamma_view"], 
+    assert sorted_views == ["alpha_view", "anotherview", "beta_view", "gamma_view", "test_view"], 
            "After create: #{sorted_views.inspect}"
     @blog.delete_view("anotherview", true)
     sorted_views = @blog.views.map(&:to_s).sort 
-    assert sorted_views == ["alpha_view", "beta_view", "gamma_view"], 
+    assert sorted_views == ["alpha_view", "beta_view", "gamma_view", "test_view"], 
            "After delete: #{sorted_views.inspect}"
   end
 

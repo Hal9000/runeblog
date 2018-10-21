@@ -23,8 +23,6 @@ STDOUT.sync = true
 
 cmd, arg = get_argv
 
-system("tput smcup")  # see: tput rmcup in cmd_quit
-
 if ! RuneBlog.exist?
   print "No blog found. Create new one? (y/n) "
   resp = gets.chomp
@@ -37,13 +35,11 @@ end
 
 @blog = RuneBlog.new
 
-print red("\n  RuneBlog v #{RuneBlog::VERSION}")
-
 if cmd.nil?   # REPL
-  puts
+  system("tput smcup")  # see: tput rmcup in cmd_quit
+
+  puts red("\n  RuneBlog v #{RuneBlog::VERSION}")
   loop do
-#   print red("\nblog> ")
-#   cmd = gets
     cmd = Readline.readline(red("\nblog> "), true)
 
     cmd_quit(nil) if cmd.nil?   # ^D
@@ -54,11 +50,12 @@ if cmd.nil?   # REPL
     puts str unless str.nil?
   end
 else  # one command
-  raise "Not working right now"
   file = File.open("/dev/tty")
   STDIN.reopen(file)    # avoid ARGF dumbness
-  meth, params = RuneBlog::Command.choose_method(cmd)
-  parse_cmd(ARGV.join(" "))
-  execute_command
+  cmd = ARGV.join(" ")
+  meth, params = RuneBlog::REPL.choose_method(cmd)
+  str = send(meth, params)
+  puts str unless str.nil?
+  puts
 end
 
