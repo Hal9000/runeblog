@@ -186,8 +186,11 @@ class TestREPL < Minitest::Test
     out = cmd_kill("1  2 7")
     out = cmd_list_posts(nil)
     after = out.split("\n").length 
-    assert after == before - 3, "list_posts saw #{before} posts, now #{after} (not #{before-3})"
-    system("ruby test/make_blog.rb")   # This is hellish, I admit
+    expecting = before - 2
+    assert after == expecting, "list_posts saw #{before} posts, now #{after} (not #{expecting})"
+    @blog.undelete_post(1)
+    @blog.undelete_post(2)
+    @blog.undelete_post(7)
   end
 
 if File.exist?("testing.deploy")

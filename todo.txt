@@ -7,6 +7,8 @@
   4 2 - rethink helper libs?
   4 2 - improve gemspec
 
+  6 2 - delete/undelete from view, not file list
+  5 1 - "undelete" from trash
   8 3 - Fix the bad rescues!!
 
   8 4 - run "unyaml" everywhere (incl my instance!)
@@ -27,7 +29,6 @@
   4 2 - maybe add (default) deployment info to config?
   2 5 - shorten commands?
   3 2 - undo last post?
-  4 2 - "undelete" from trash
 
 
   6 9 - code coverage analysis

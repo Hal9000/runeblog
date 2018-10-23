@@ -96,6 +96,7 @@ class RuneBlog
   end
 
   def viewdir(v = nil)
+    v = str2view(v) if v.is_a?(String)
     raise ArgumentError unless v.nil? || v.is_a?(RuneBlog::View)
     v ||= @view
     @root + "/views/#{v}/"
@@ -144,7 +145,7 @@ class RuneBlog
     files.reject! {|f| File.mtime(f) < File.mtime("#{vdir}/last_deployed") }
   end
 
-  def files_by_id(id)
+  def files_by_id(id)   # FIXME get rid of this later
     raise ArgumentError unless id.is_a?(Integer)
     files = Find.find(self.view.dir).to_a
     tag = "#{'%04d' % id}"
@@ -304,9 +305,26 @@ class RuneBlog
 
   def remove_post(num)
     raise ArgumentError unless num.is_a?(Integer)
-    list = files_by_id(num)
+    files = Find.find("#@root/views/").to_a
+    tag = "#{'%04d' % num.to_i}"
+    list = files.select {|x| File.directory?(x) and x =~ /#{tag}/ }
     return nil if list.empty?
     dest = list.map {|f| f.sub(/(?<num>\d{4}-)/, "_\\k<num>") }
+    list.each.with_index do |src, i| 
+      cmd = "mv #{src} #{dest[i]} 2>/dev/null"
+      system(cmd)
+    end
+    # FIXME - update index/etc
+    true
+  end
+
+  def undelete_post(num)
+    raise ArgumentError unless num.is_a?(Integer)
+    files = Find.find("#@root/views/").to_a
+    tag = "#{'%04d' % num.to_i}"
+    list = files.select {|x| File.directory?(x) and x =~ /_#{tag}/ }
+    return nil if list.empty?
+    dest = list.map {|f| f.sub(/_(?<num>\d{4}-)/, "\\k<num>") }
     list.each.with_index do |src, i| 
       cmd = "mv #{src} #{dest[i]} 2>/dev/null"
       system(cmd)
@@ -323,7 +341,7 @@ class RuneBlog
 
   def post_exists?(num)
     raise ArgumentError unless num.is_a?(Integer)
-    list = files_by_id(num)
+    list = files_by_id(num)  # FIXME search under view dirs
     list.empty? ? nil : list
   end
 
