@@ -13,6 +13,22 @@ class RuneBlog::Post
     result
   end
   
+  def self.load(post)
+    # FIXME weird logic here
+    raise "RuneBlog.blog is not set!" if RuneBlog.blog.nil?
+    pdir = RuneBlog.blog.view.dir + "/" + post
+    meta = nil
+    Dir.chdir(pdir) do
+      meta = read_config("metadata.txt")
+      meta.date = Date.parse(meta.date)
+      meta.views = meta.views.split
+      meta.tags = meta.tags.split
+      meta.teaser = File.read("teaser.txt")
+      meta.body = File.read("body.txt")
+    end
+    meta
+  end
+
   def initialize(meta, view_name)
     # FIXME weird logic here
     raise "RuneBlog.blog is not set!" if RuneBlog.blog.nil?
@@ -53,17 +69,15 @@ class RuneBlog::Post
     end
   rescue => err
     p err
-    err.backtrace.each {|x| puts x }
-    # error(err)
+    puts err.backtrace
   end
 
   private
 
   def create_post_subtree(vdir)
     create_dir("assets") 
-    dump(@meta.to_yaml, "metadata.yaml")
-    dump(@meta.teaser, "teaser.txt")
-    dump(@meta.remainder, "remainder.txt")
+#   dump(@meta.to_yaml, "metadata.yaml")
+    write_metadata(@meta)
     template = RuneBlog::Default::TeaserTemplate   # FIXME template into custom dir?
     text = interpolate(template)
     dump(text, "index.html")   # FIXME write_index ?
@@ -79,4 +93,26 @@ class RuneBlog::Post
   def tag(num)
     "#{'%04d' % num}"
   end
+
+def write_metadata(meta)
+  fname2 = "metadata.txt"
+  hash = meta.to_h
+  
+  File.write("teaser.txt", hash[:teaser])
+  File.write("body.txt", hash[:body])
+  hash.delete(:teaser)
+  hash.delete(:body)
+  
+  hash[:views] = hash[:views].join(" ")
+  hash[:tags]  = hash[:tags].join(" ")
+  
+  fields = [:title, :date, :pubdate, :views, :tags]
+  
+  f2 = File.new(fname2, "w")
+  fields.each do |fld|
+    f2.puts "#{fld}: #{hash[fld]}"
+  end
+  f2.close
+end
+
 end

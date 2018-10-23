@@ -44,7 +44,7 @@ PostTemplate = <<-'TEXT'  # interpolate later
 .teaser
 #{@meta.teaser}
 .end
-#{@meta.remainder}
+#{@meta.body}
 TEXT
 
 

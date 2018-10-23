@@ -152,10 +152,10 @@ class RuneBlog
     result
   end
 
-# def create_new_post(title, testing = false, teaser = nil, remainder = nil)
+# def create_new_post(title, testing = false, teaser = nil, body = nil)
   def create_new_post(meta, testing = false)
     meta.teaser ||= "Teaser goes here."
-    meta.remainder ||= "Remainder of post goes here."
+    meta.body ||= "Remainder of post goes here."
     post = RuneBlog::Post.new(meta, @view.to_s)
     post.edit unless testing
     post.publish
@@ -222,7 +222,9 @@ class RuneBlog
     dir = vdir + @meta.slug + "/"
     create_dir(dir + "assets") 
     Dir.chdir(dir) do
-      dump(@meta.to_yaml, "metadata.yaml")
+#?    dump(@meta.to_yaml, "metadata.yaml")
+      dump(@meta.teaser, "teaser.txt")
+      dump(@meta.body, "body.txt")
       # FIXME make get_post_template method
       template = File.read("#{vdir}/custom/post_template.html")
       post = interpolate(template)
@@ -250,7 +252,17 @@ class RuneBlog
     @blogtail = interpolate(tail)
 
     # Output view
-    posts.map! {|post| YAML.load(File.read("#{vdir}/#{post}/metadata.yaml")) }
+#?  posts.map! {|post| YAML.load(File.read("#{vdir}/#{post}/metadata.yaml")) }
+    posts.map! do |post|
+      meta = nil
+      pdir = vdir + "/" + post
+      Dir.chdir(pdir) do
+        meta = read_config("metadata.txt")
+        meta.teaser = File.read("teaser.txt")
+        meta.body = File.read("body.txt")
+      end
+      meta  # block return
+    end
     File.open("#{vdir}/index.html", "w") do |f|
       f.puts @bloghead
       posts.each {|post| f.puts index_entry(view, post) }
@@ -258,6 +270,7 @@ class RuneBlog
     end
   rescue => err
     error(err)
+    exit
   end
 
   def relink
@@ -266,6 +279,7 @@ class RuneBlog
 
   def index_entry(view, meta)
     raise ArgumentError unless view.is_a?(String) || view.is_a?(RuneBlog::View)
+    meta.slug ||= make_slug(meta.title)
     # FIXME clean up and generalize
     ref = "#{view}/#{meta.slug}/index.html"
     <<-HTML

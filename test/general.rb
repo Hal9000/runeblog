@@ -190,6 +190,8 @@ class TestREPL < Minitest::Test
     system("ruby test/make_blog.rb")   # This is hellish, I admit
   end
 
+if File.exist?("testing.deploy")
+
   def test_016_can_deploy
     x = OpenStruct.new
     x.user, x.server, x.docroot, x.docroot, x.path, x.proto = 
@@ -218,6 +220,8 @@ class TestREPL < Minitest::Test
     result = dep.remote_login?
     assert result.nil?, "Expected to detect login error (bad server)"
   end
+
+end
 
   # later tests...
   # new view asks for deployment info and writes it

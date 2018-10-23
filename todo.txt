@@ -7,6 +7,10 @@
   4 2 - rethink helper libs?
   4 2 - improve gemspec
 
+  8 3 - Fix the bad rescues!!
+
+  8 4 - run "unyaml" everywhere (incl my instance!)
+
   3 3 - rethink publish/deploy and other verbs
   4 6 - safe way to delete a view?
   4 7 - modifiable global defaults for deployment info/etc.?
@@ -25,8 +29,6 @@
   3 2 - undo last post?
   4 2 - "undelete" from trash
 
-* 5 5 - add body, teaser to post subdir
-* 5 5 - get rid of YAML dependency
 
   6 9 - code coverage analysis
 
@@ -64,6 +66,10 @@
   8 8 - docs: getting started
   8 8 - docs: how-to
 
+x 8 3 - Fix dumping of metadata.yaml => .txt
+x 7 2 - change "remainder"
+x 5 5 - get rid of YAML dependency
+x 5 5 - add body, teaser to post subdir
 x 3 2 - fix cmdline args
 x?4 2 - search for .blog under cwd, home
 x 6 4 - a "real" default view?
