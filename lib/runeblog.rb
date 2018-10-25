@@ -1,5 +1,5 @@
 require 'find'
-require 'yaml'   # get rid of YAML later
+# require 'yaml'   # get rid of YAML later
 require 'livetext'
 require 'skeleton'
 require 'helpers-blog'
@@ -9,12 +9,29 @@ require 'deploy'
 require 'post'
 require 'version'
 
+def make_exception(sym, str)
+  Object.const_set(sym, StandardError.dup)
+  define_method(sym) do |*args|
+    msg = str
+    args.each.with_index {|arg, i| msg.sub!("$#{i+1}", arg) }
+    Object.class_eval(sym.to_s).new(msg)
+  end
+end
+
+
 ###
 
 class RuneBlog
  
   DotDir = ".blog"
   ConfigFile = "#{DotDir}/config"
+
+  make_exception(:FileNotFound,      "File $1 was not found")
+  make_exception(:BlogAlreadyExists, "Blog $1 already exists")
+  make_exception(:CantAssignView,    "$1 is not a view")
+  make_exception(:ViewAlreadyExists, "View $1 already exists")
+  make_exception(:EditorProblem,     "Could not edit $1")
+  make_exception(:NoSuchView,        "No such view: $1")
 
   class << self
     attr_accessor :blog
@@ -29,7 +46,7 @@ class RuneBlog
   def self.create_new_blog(dir = ".blog")
     raise ArgumentError unless dir.is_a?(String) && ! dir.empty?
     root_dir = Dir.pwd + "/" + dir
-    raise "Already exists" if Dir.exist?(root_dir)
+    raise BlogAlreadyExists if Dir.exist?(root_dir)
     new_dotfile(root: root_dir, current_view: "test_view")
     create_dir(dir)
     Dir.chdir(dir) do
@@ -78,11 +95,11 @@ class RuneBlog
         @view.deployer = read_config(@view.dir + "/deploy")
       when String
         new_view = str2view(arg)
-        raise "Can't find view #{arg}" if new_view.nil?
+        raise NoSuchView(arg) if new_view.nil?
         @view = new_view
         @view.deployer = read_config(@view.dir + "/deploy")
       else 
-        raise "#{arg.inspect} was not a View or a String"
+        raise CantAssignView(arg.class.to_s)
     end
   end
 
@@ -109,10 +126,10 @@ class RuneBlog
   def create_view(arg)
     raise ArgumentError unless arg.is_a?(String) && ! arg.empty?
     names = self.views.map(&:to_s)
-    raise "view #{arg} already exists" if names.include?(arg)
+    raise ViewAlreadyExists(arg) if names.include?(arg)
 
     dir = "#@root/views/#{arg}/"
-    raise "Can't happen: #{fir} exists already" if Dir.exist?(dir)
+    raise "Can't happen: #{dir} exists already" if Dir.exist?(dir)
     create_dir(dir)
     up = Dir.pwd
     Dir.chdir(dir)
@@ -166,8 +183,9 @@ class RuneBlog
   end
 
   def edit_initial_post(file)
-    result = system("#@editor #@root/src/#{file} +8")
-    raise "Problem editing #@root/src/#{file}" unless result
+    sourcefile "#@root/src/#{file}"
+    result = system("#@editor #{sourcefile} +8")
+    raise EditorProblem(sourcefile) unless result
     nil
   rescue => err
     error(err)
