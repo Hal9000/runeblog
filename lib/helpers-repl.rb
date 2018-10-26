@@ -1,6 +1,11 @@
 
 # Reopening...
 
+make_exception(:CantOpen,        "Can't open '$1'")
+make_exception(:CantDelete,      "Can't open '$1'")
+make_exception(:InternalError,   "Glitch: $1 got arg '$2'")
+make_exception(:CantCopy,        "Can't copy $1 to $2")
+
 module RuneBlog::REPL
   Patterns = 
     {"help"              => :cmd_help, 
@@ -128,12 +133,9 @@ module RuneBlog::REPL
     n.times { @out << "\n" }
   end
 
-  FileNotFound = StandardError.dup
-  CantOpen     = StandardError.dup
-  CantDelete   = StandardError.dup 
 
   def check_empty(arg)
-    raise "Glitch: #{caller[0]} got arg #{arg.inspect}" unless arg.nil?
+    raise InternalError(caller[0], arg.inspect)  unless arg.nil?
   end
 
   def get_integer(arg)
@@ -186,7 +188,7 @@ module RuneBlog::REPL
     @slug = @blog.make_slug(@title)
     @fname = @slug + ".lt3"
     result = system("cp #{name} #@root/src/#@fname")
-    raise "Could not copy #{name} to #@root/src/#@fname" unless result
+    raise CantCopy(name, "#@root/src/#@fname") unless result
 
     edit_initial_post(@fname)
     process_post(@fname)

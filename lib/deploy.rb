@@ -37,7 +37,7 @@ class RuneBlog::Deployment
     cmd = "scp -r #{list} #@user@##server:#{dir} >/dev/null 2>&1"
     output! "Deploying #{files.size} files...\n"
     result = system(cmd)
-    raise "Problem occurred in deployment" unless result
+    raise DeploymentError unless result
 
     dump(files, "#{@blog.view.dir}/last_deployed")
     output! "...finished.\n"

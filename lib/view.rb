@@ -8,7 +8,7 @@ class RuneBlog::View
   include RuneBlog::Helpers
 
   def initialize(name)
-    raise "RuneBlog.blog is not set!" if RuneBlog.blog.nil?
+    raise NoBlogAccessor if RuneBlog.blog.nil?
     @blog = RuneBlog.blog
     @name = name
     dep_file = @blog.root + "/views/#@name/deploy"

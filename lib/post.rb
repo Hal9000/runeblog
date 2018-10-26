@@ -1,6 +1,8 @@
 require 'helpers-blog'
 require 'runeblog'
 
+make_exception(:NoBlogAccessor, "Runeblog.blog is not set")
+
 class RuneBlog::Post
 
   attr_reader :id, :title, :date, :views, :num, :slug
@@ -15,7 +17,7 @@ class RuneBlog::Post
   
   def self.load(post)
     # FIXME weird logic here
-    raise "RuneBlog.blog is not set!" if RuneBlog.blog.nil?
+    raise NoBlogAccessor if RuneBlog.blog.nil?
     pdir = RuneBlog.blog.view.dir + "/" + post
     meta = nil
     Dir.chdir(pdir) do
@@ -31,7 +33,7 @@ class RuneBlog::Post
 
   def initialize(meta, view_name)
     # FIXME weird logic here
-    raise "RuneBlog.blog is not set!" if RuneBlog.blog.nil?
+    raise NoBlogAccessor if RuneBlog.blog.nil?
     @blog = RuneBlog.blog
     @title = meta.title
     @view = @blog.str2view(view_name)
@@ -46,7 +48,7 @@ class RuneBlog::Post
 
   def edit
     result = system("vi #@draft +8")
-    raise "Problem editing #@draft" unless result
+    raise EditorProblem(draft) unless result
     nil
   rescue => err
     error(err)
@@ -55,7 +57,7 @@ class RuneBlog::Post
   def publish
     livetext = Livetext.new(STDOUT)
     @meta = livetext.process_file(@draft, binding)
-    raise "process_file returned nil" if @meta.nil?
+    raise LivetextError(@draft) if @meta.nil?
 
     @meta.views.each do |view_name|   # Create dir using slug (index.html, metadata?)
       view = @blog.str2view(view_name)
@@ -76,7 +78,6 @@ class RuneBlog::Post
 
   def create_post_subtree(vdir)
     create_dir("assets") 
-#   dump(@meta.to_yaml, "metadata.yaml")
     write_metadata(@meta)
     template = RuneBlog::Default::TeaserTemplate   # FIXME template into custom dir?
     text = interpolate(template)

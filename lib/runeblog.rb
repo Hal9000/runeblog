@@ -1,5 +1,4 @@
 require 'find'
-# require 'yaml'   # get rid of YAML later
 require 'livetext'
 require 'skeleton'
 require 'helpers-blog'
@@ -8,15 +7,6 @@ require 'view'
 require 'deploy'
 require 'post'
 require 'version'
-
-def make_exception(sym, str)
-  Object.const_set(sym, StandardError.dup)
-  define_method(sym) do |*args|
-    msg = str
-    args.each.with_index {|arg, i| msg.sub!("$#{i+1}", arg) }
-    Object.class_eval(sym.to_s).new(msg)
-  end
-end
 
 
 ###
@@ -30,9 +20,12 @@ class RuneBlog
   make_exception(:BlogAlreadyExists, "Blog $1 already exists")
   make_exception(:CantAssignView,    "$1 is not a view")
   make_exception(:ViewAlreadyExists, "View $1 already exists")
+  make_exception(:DirAlreadyExists,  "Directory $1 already exists")
+  make_exception(:CantCreateDir,     "Can't create directory $1")
   make_exception(:EditorProblem,     "Could not edit $1")
   make_exception(:NoSuchView,        "No such view: $1")
-
+  make_exception(:LivetextError,     "Livetext#process_file returned nil for $1")
+  
   class << self
     attr_accessor :blog
     include Helpers
@@ -129,7 +122,7 @@ class RuneBlog
     raise ViewAlreadyExists(arg) if names.include?(arg)
 
     dir = "#@root/views/#{arg}/"
-    raise "Can't happen: #{dir} exists already" if Dir.exist?(dir)
+    raise DirAlreadyExists(dir) if Dir.exist?(dir)
     create_dir(dir)
     up = Dir.pwd
     Dir.chdir(dir)
@@ -213,10 +206,10 @@ class RuneBlog
   def process_post(file)
     raise ArgumentError unless file.is_a?(String)
     path = @root + "/src/#{file}"
-    raise "File not found: #{path}" unless File.exist?(path)
+    raise FileNotFound(path) unless File.exist?(path)
     livetext = Livetext.new(STDOUT) # (nil)
     @meta = livetext.process_file(path, binding)
-    raise "process_file returned nil" if @meta.nil?
+    raise LivetextError(path) if @meta.nil?
 
     num, slug = self.make_slug(@meta.title, self.sequence)
     slug = file.sub(/.lt3$/, "")
@@ -241,7 +234,6 @@ class RuneBlog
     dir = vdir + @meta.slug + "/"
     create_dir(dir + "assets") 
     Dir.chdir(dir) do
-#?    dump(@meta.to_yaml, "metadata.yaml")
       dump(@meta.teaser, "teaser.txt")
       dump(@meta.body, "body.txt")
       # FIXME make get_post_template method
@@ -271,7 +263,6 @@ class RuneBlog
     @blogtail = interpolate(tail)
 
     # Output view
-#?  posts.map! {|post| YAML.load(File.read("#{vdir}/#{post}/metadata.yaml")) }
     posts.map! do |post|
       meta = nil
       pdir = vdir + "/" + post

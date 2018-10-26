@@ -2,6 +2,9 @@ require 'runeblog'
 require 'ostruct'
 require 'helpers-repl'  # FIXME structure
 
+make_exception(:DeploymentError, "Error during deployment")
+make_exception(:EditorProblem,   "Could not edit $1")
+
 module RuneBlog::REPL
 
   def cmd_quit(arg)
@@ -64,7 +67,7 @@ module RuneBlog::REPL
     cmd = "scp -r #{files.join(' ')} root@#{server}:#{dir} >/dev/null 2>&1"
     output! "Deploying #{files.size} files...\n"
     result = system(cmd)
-    raise "Problem occurred in deployment" unless result
+    raise DeploymentError unless result
 
     dump(files, "#{vdir}/last_deployed")
     output! "...finished.\n"
@@ -197,7 +200,7 @@ module RuneBlog::REPL
 
     file = files.first
     result = system("vi #{@blog.root}/src/#{file}")
-    raise "Problem editing #{file}" unless result
+    raise EditorProblem(file) unless result
 
     @blog.rebuild_post(file)
     nil

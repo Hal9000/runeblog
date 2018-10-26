@@ -38,7 +38,7 @@ module RuneBlog::Helpers
   end
 
   def new_dotfile(root: "data", current_view: "no_default", editor: "vi")
-    raise "Blog already exists" if Dir.exist?(".blog")
+    raise BlogAlreadyExists if Dir.exist?(".blog")
     Dir.mkdir(".blog")
     x = OpenStruct.new
     x.root, x.current_view, x.editor = root, current_view, editor
@@ -71,7 +71,7 @@ module RuneBlog::Helpers
     return if Dir.exist?(dir)  #  && File.directory?(dir)
     cmd = "mkdir -p #{dir} >/dev/null 2>&1"
     result = system(cmd) 
-    raise "Can't create #{dir}" unless result
+    raise CantCreateDir(dir) unless result
   end
 
   def interpolate(str)
