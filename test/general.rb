@@ -43,7 +43,7 @@ class TestREPL < Minitest::Test
     lines = out.split("\n").length 
     assert lines >= 2, "Expecting at least 2 lines"
   end
-
+ 
   def test_004_change_view!
     out = cmd_change_view(nil)  # no param
     assert out.is_a?(String), "Expected a string; got: #{out.inspect}"
@@ -224,7 +224,45 @@ if File.exist?("testing.deploy")
     assert result.nil?, "Expected to detect login error (bad server)"
   end
 
-end
+end  # conditional tests
+
+  def test_019_exception_existing_blog
+    assert_raises(BlogAlreadyExists) { RuneBlog.create_new_blog }
+  end
+
+  def test_020_exception_missing_blog_accessor
+    save = RuneBlog.blog
+    RuneBlog.blog = nil
+    assert_raises(NoBlogAccessor) { RuneBlog::Post.load(1) }
+    RuneBlog.blog = save
+  end
+
+  def test_021_exception_cant_assign_view
+    assert_raises(CantAssignView) { @blog.view = 99 }
+  end
+
+  def test_022_exception_no_such_view
+    assert_raises(NoSuchView) { @blog.view = 'not_a_view_name' }
+  end
+
+  def test_023_exception_view_already_exists
+    assert_raises(ViewAlreadyExists) { @blog.view = 'alpha_view' }
+  end
+
+  def test_024_exception_cant_edit_file
+    assert_raises(EditorProblem) { @blog.edit_initial_post(999) }
+  end
+
+  def xtest_025_exception_livetext_error   # FIXME Doesn't work! Change Livetext
+    testfile = "testfile.lt3"
+    path = @blog.root + "/src/" + testfile
+    cmd = "echo .no_such_command > #{path}"
+    p cmd
+    system(cmd)
+    system("ls -l #{path}")
+    assert_raises(LivetextError) { @blog.process_post(testfile) }
+    File.rm(path)
+  end
 
   # later tests...
   # new view asks for deployment info and writes it

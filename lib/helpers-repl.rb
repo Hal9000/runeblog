@@ -145,15 +145,15 @@ module RuneBlog::REPL
   end
 
   def check_file_exists(file)
-    raise FileNotFound, file unless File.exist?(file)
+    raise FileNotFound(file) unless File.exist?(file)
   end
 
   def error_cant_delete(files)
     case files
       when String
-        raise CantDelete, "Error deleting #{files}"
+        raise CantDelete(files)
       when Array
-        raise CantDelete, "Error deleting: \n#{files.join("\n")}"
+        raise CantDelete(files.join("\n"))
     end
   end
 

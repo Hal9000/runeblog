@@ -30,7 +30,7 @@ module RuneBlog::REPL
       return @out
     end
     result = system("open '#{url}'")
-    raise CantOpen, url unless result
+    raise CantOpen(url) unless result
     nil
   rescue => err
     error(err)
@@ -41,7 +41,7 @@ module RuneBlog::REPL
     check_empty(arg)
     local = @blog.view.index
     result = system("open #{local}")
-    raise CantOpen, local unless result
+    raise CantOpen(local) unless result
   rescue => err
     error(err)
   end
