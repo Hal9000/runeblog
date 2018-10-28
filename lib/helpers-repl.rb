@@ -32,6 +32,7 @@ module RuneBlog::REPL
      "lsd"               => :cmd_list_drafts,
 
      "rm $postid"        => :cmd_remove_post,
+     "undel $postid"     => :cmd_undelete_post,
 
      "kill >postid"      => :cmd_kill, 
 
@@ -179,7 +180,7 @@ module RuneBlog::REPL
 
   def import(arg = nil)
 #   open_blog unless @blog
-
+    raise "Not implemented at present..."
     arg = nil if arg == ""
     arg ||= ask("Filename: ")  # check validity later
     name = arg

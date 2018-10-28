@@ -27,3 +27,7 @@ def make_exception(sym, str)
   end
 end
 
+def prefix(num)
+  "#{'%04d' % num.to_i}"
+end
+

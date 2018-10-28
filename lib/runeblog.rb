@@ -1,6 +1,6 @@
 require 'find'
 require 'livetext'
-require 'skeleton'
+require 'global'
 require 'helpers-blog'
 require 'default'
 require 'view'
@@ -158,7 +158,7 @@ class RuneBlog
   def files_by_id(id)   # FIXME get rid of this later
     raise ArgumentError unless id.is_a?(Integer)
     files = Find.find(self.view.dir).to_a
-    tag = "#{'%04d' % id}"
+    tag = prefix(id)
     result = files.grep(/#{tag}-/)
     result
   end
@@ -175,9 +175,9 @@ class RuneBlog
     puts err # error(err)
   end
 
-  def edit_initial_post(file)
-    sourcefile "#@root/src/#{file}"
-    result = system("#@editor #{sourcefile} +8")
+  def edit_initial_post(file, testing = false)
+    sourcefile = "#@root/src/#{file}"
+    result = system("#@editor #{sourcefile} +8") unless testing
     raise EditorProblem(sourcefile) unless result
     nil
   rescue => err
@@ -314,8 +314,8 @@ class RuneBlog
 
   def remove_post(num)
     raise ArgumentError unless num.is_a?(Integer)
-    files = Find.find("#@root/views/").to_a
-    tag = "#{'%04d' % num.to_i}"
+    tag = prefix(num)
+    files = Find.find(self.view.dir).to_a
     list = files.select {|x| File.directory?(x) and x =~ /#{tag}/ }
     return nil if list.empty?
     dest = list.map {|f| f.sub(/(?<num>\d{4}-)/, "_\\k<num>") }
@@ -330,7 +330,7 @@ class RuneBlog
   def undelete_post(num)
     raise ArgumentError unless num.is_a?(Integer)
     files = Find.find("#@root/views/").to_a
-    tag = "#{'%04d' % num.to_i}"
+    tag = prefix(num)
     list = files.select {|x| File.directory?(x) and x =~ /_#{tag}/ }
     return nil if list.empty?
     dest = list.map {|f| f.sub(/_(?<num>\d{4}-)/, "\\k<num>") }
@@ -344,7 +344,7 @@ class RuneBlog
 
   def delete_draft(num)
     raise ArgumentError unless num.is_a?(Integer)
-    tag = "#{'%04d' % num.to_i}"
+    tag = prefix(num)
     system("rm -rf #@root/src/#{tag}-*")
   end
 

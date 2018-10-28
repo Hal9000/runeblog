@@ -11,7 +11,7 @@ class RuneBlog::Post
 
   def self.files(num, root)
     files = Find.find(root).to_a
-    result = files.grep(/#{tag(num)}-/)
+    result = files.grep(/#{prefix(num)}-/)
     result
   end
   
@@ -86,34 +86,30 @@ class RuneBlog::Post
 
   def make_slug(postnum = nil)
     postnum ||= @blog.next_sequence
-    num = tag(postnum)   # FIXME can do better
+    num = prefix(postnum)   # FIXME can do better
     slug = @title.downcase.strip.gsub(' ', '-').gsub(/[^\w-]/, '')
     [postnum, "#{num}-#{slug}"]
   end
 
-  def tag(num)
-    "#{'%04d' % num}"
+  def write_metadata(meta)
+    fname2 = "metadata.txt"
+    hash = meta.to_h
+    
+    File.write("teaser.txt", hash[:teaser])
+    File.write("body.txt", hash[:body])
+    hash.delete(:teaser)
+    hash.delete(:body)
+    
+    hash[:views] = hash[:views].join(" ")
+    hash[:tags]  = hash[:tags].join(" ")
+    
+    fields = [:title, :date, :pubdate, :views, :tags]
+    
+    f2 = File.new(fname2, "w")
+    fields.each do |fld|
+      f2.puts "#{fld}: #{hash[fld]}"
+    end
+    f2.close
   end
-
-def write_metadata(meta)
-  fname2 = "metadata.txt"
-  hash = meta.to_h
-  
-  File.write("teaser.txt", hash[:teaser])
-  File.write("body.txt", hash[:body])
-  hash.delete(:teaser)
-  hash.delete(:body)
-  
-  hash[:views] = hash[:views].join(" ")
-  hash[:tags]  = hash[:tags].join(" ")
-  
-  fields = [:title, :date, :pubdate, :views, :tags]
-  
-  f2 = File.new(fname2, "w")
-  fields.each do |fld|
-    f2.puts "#{fld}: #{hash[fld]}"
-  end
-  f2.close
-end
 
 end

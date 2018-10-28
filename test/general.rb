@@ -246,14 +246,10 @@ end  # conditional tests
   end
 
   def test_023_exception_view_already_exists
-    assert_raises(ViewAlreadyExists) { @blog.view = 'alpha_view' }
+    assert_raises(ViewAlreadyExists) { @blog.create_view('alpha_view') }
   end
 
-  def test_024_exception_cant_edit_file
-    assert_raises(EditorProblem) { @blog.edit_initial_post(999) }
-  end
-
-  def xtest_025_exception_livetext_error   # FIXME Doesn't work! Change Livetext
+  def xtest_024_exception_livetext_error   # FIXME Doesn't work! Change Livetext
     testfile = "testfile.lt3"
     path = @blog.root + "/src/" + testfile
     cmd = "echo .no_such_command > #{path}"

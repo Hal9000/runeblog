@@ -7,11 +7,7 @@
   4 2 - rethink helper libs?
   4 2 - improve gemspec
 
-  6 2 - delete/undelete from view, not file list
-  5 1 - "undelete" from trash
-  8 3 - Fix the bad rescues!!
-
-  8 4 - run "unyaml" everywhere (incl my instance!)
+  6 3 - rescue errors only in main REPL?
 
   3 3 - rethink publish/deploy and other verbs
   4 6 - safe way to delete a view?
@@ -29,7 +25,6 @@
   4 2 - maybe add (default) deployment info to config?
   2 5 - shorten commands?
   3 2 - undo last post?
-
 
   6 9 - code coverage analysis
 
@@ -67,6 +62,10 @@
   8 8 - docs: getting started
   8 8 - docs: how-to
 
+x 8 4 - run "unyaml" everywhere (incl my instance!)
+x 6 2 - delete/undelete from view, not file list
+x 5 1 - "undelete" from trash
+x 8 3 - Fix the bad rescues!!
 x 8 3 - Fix dumping of metadata.yaml => .txt
 x 7 2 - change "remainder"
 x 5 5 - get rid of YAML dependency

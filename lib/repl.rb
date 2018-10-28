@@ -274,6 +274,7 @@ module RuneBlog::REPL
   
        #{red('rm ID            ')} Remove a post
        #{red('kill ID ID ID... ')} Remove multiple posts
+       #{red('undelete ID      ')} Undelete a post
        #{red('edit ID          ')} Edit a post
   
        #{red('preview          ')} Look at current (local) view in browser
