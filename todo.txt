@@ -3,11 +3,10 @@
   6 6 - resolve issues: draft vs post, kill, etc.
 
   3 3 - methods such as get_post_template
-* 2 2 - remove explicit tag formatting
   4 2 - rethink helper libs?
   4 2 - improve gemspec
 
-  6 3 - rescue errors only in main REPL?
+  6 5 - handle larger output for lsp, lsd
 
   3 3 - rethink publish/deploy and other verbs
   4 6 - safe way to delete a view?
@@ -62,6 +61,8 @@
   8 8 - docs: getting started
   8 8 - docs: how-to
 
+x 2 2 - remove explicit tag formatting
+x 6 3 - rescue errors only in main REPL?
 x 8 4 - run "unyaml" everywhere (incl my instance!)
 x 6 2 - delete/undelete from view, not file list
 x 5 1 - "undelete" from trash

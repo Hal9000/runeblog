@@ -32,8 +32,6 @@ module RuneBlog::REPL
     result = system("open '#{url}'")
     raise CantOpen(url) unless result
     nil
-  rescue => err
-    error(err)
   end
 
   def cmd_preview(arg)
@@ -42,8 +40,6 @@ module RuneBlog::REPL
     local = @blog.view.index
     result = system("open #{local}")
     raise CantOpen(local) unless result
-  rescue => err
-    error(err)
   end
 
   def cmd_deploy(arg)  # FIXME non-string return expected in caller?
@@ -72,8 +68,6 @@ module RuneBlog::REPL
     dump(files, "#{vdir}/last_deployed")
     output! "...finished.\n"
     @out
-  rescue => err
-    error(err)
   end
 
   def cmd_rebuild(arg)
@@ -83,8 +77,6 @@ module RuneBlog::REPL
     files = @blog.find_src_slugs
     files.each {|file| @blog.rebuild_post(file) }
     nil
-  rescue => err
-    error(err)
   end
 
   def cmd_relink(arg)
@@ -92,8 +84,6 @@ module RuneBlog::REPL
     check_empty(arg)
     @blog.relink
     nil
-  rescue => err
-   error(err)
   end
 
   def cmd_list_views(arg)
@@ -104,8 +94,6 @@ module RuneBlog::REPL
       outstr "  #{v}\n"
     end
     @out
-  rescue => err
-    error(err)
   end
 
   def cmd_change_view(arg)
@@ -121,8 +109,6 @@ module RuneBlog::REPL
       end
     end
     @out
-  rescue => err
-    error(err)
   end
 
   def cmd_new_view(arg)
@@ -132,8 +118,6 @@ module RuneBlog::REPL
     @blog.view.deployer = ask_deployment_info
     write_config(@blog.view.deployer,  @blog.view.dir + "/deploy")  # change this?
     nil
-  rescue => err
-    error(err)
   end
 
   def cmd_new_post(arg)
@@ -144,8 +128,6 @@ module RuneBlog::REPL
     meta.title = title
     @blog.create_new_post(meta)
     nil
-  rescue => err
-    error(err)
   end
 
   def cmd_kill(arg)
@@ -157,9 +139,6 @@ module RuneBlog::REPL
       output ret
     end
     @out
-  rescue => err
-    error(err)
-    puts err.backtrace
   end
 
   #-- FIXME affects linking, building, deployment...
@@ -174,15 +153,6 @@ module RuneBlog::REPL
       return @out
     end
     @out
-  rescue ArgumentError => err
-    puts err
-    puts err.backtrace
-  rescue CantDelete => err
-    puts err
-    puts err.backtrace
-  rescue => err
-    error(err)
-    puts err.backtrace
   end
 
   #-- FIXME affects linking, building, deployment...
@@ -204,8 +174,6 @@ module RuneBlog::REPL
 
     @blog.rebuild_post(file)
     nil
-  rescue => err
-    error(err)
   end
 
   def cmd_list_posts(arg)
@@ -220,8 +188,6 @@ module RuneBlog::REPL
       posts.each {|post| outstr "  #{colored_slug(post)}\n" }
     end
     @out
-  rescue => err
-    error(err)
   end
 
   def cmd_list_drafts(arg)
@@ -238,8 +204,6 @@ module RuneBlog::REPL
       end
     end
     @out
-  rescue => err
-    error(err)
   end
 
   def cmd_INVALID(arg)

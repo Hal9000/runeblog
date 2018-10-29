@@ -33,22 +33,25 @@ if ! RuneBlog.exist?
   end
 end
 
+def mainloop
+  cmd = Readline.readline(red("\nblog> "), true)
+  cmd_quit(nil) if cmd.nil?   # ^D
+  cmd.chomp!
+  return if cmd.empty?   # CR does nothing
+  meth, params = RuneBlog::REPL.choose_method(cmd)
+  str = send(meth, params)
+  puts str unless str.nil?
+rescue => err
+  puts err
+end
+
 @blog = RuneBlog.new
 
 if cmd.nil?   # REPL
   system("tput smcup")  # see: tput rmcup in cmd_quit
 
   puts red("\n  RuneBlog v #{RuneBlog::VERSION}")
-  loop do
-    cmd = Readline.readline(red("\nblog> "), true)
-
-    cmd_quit(nil) if cmd.nil?   # ^D
-    cmd.chomp!
-    next if cmd.empty?   # CR does nothing
-    meth, params = RuneBlog::REPL.choose_method(cmd)
-    str = send(meth, params)
-    puts str unless str.nil?
-  end
+  loop { mainloop }
 else  # one command
   file = File.open("/dev/tty")
   STDIN.reopen(file)    # avoid ARGF dumbness
