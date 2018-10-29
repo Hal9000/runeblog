@@ -54,7 +54,7 @@ class RuneBlog::Post
     error(err)
   end 
 
-  def publish
+  def build
     livetext = Livetext.new(STDOUT)
     @meta = livetext.process_file(@draft, binding)
     raise LivetextError(@draft) if @meta.nil?

@@ -3,7 +3,7 @@ require 'runeblog'
 
 class RuneBlog::View
   attr_reader :name, :state
-  attr_accessor :deployer
+  attr_accessor :publisher
 
   include RuneBlog::Helpers
 
@@ -11,8 +11,8 @@ class RuneBlog::View
     raise NoBlogAccessor if RuneBlog.blog.nil?
     @blog = RuneBlog.blog
     @name = name
-    dep_file = @blog.root + "/views/#@name/deploy"
-    @deployer = read_config(dep_file)
+    dep_file = @blog.root + "/views/#@name/publish"
+    @publisher = read_config(dep_file)
   end
 
   def dir
@@ -36,19 +36,19 @@ class RuneBlog::View
     files
   end
 
-  def deploy
-    # ?? @blog.view.deployment.deploy
+  def publish
+    # ?? @blog.view.publisher.publish
     # output "Files:"
     # files.each {|f| output "    #{f}\n" }
     output_newline
     list = files(true)
-    @deployer.deploy(list)
+    @publisher.publish(list)
   rescue => err
     error(err)
   end
 
   def recent?(file)
-    File.mtime(file) < File.mtime("#{dir()}/last_deployed")
+    File.mtime(file) < File.mtime("#{dir()}/last_published")
   end
 
 end

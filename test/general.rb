@@ -98,7 +98,7 @@ class TestREPL < Minitest::Test
       "browse"            => [:cmd_browse, nil],
       "relink"            => [:cmd_relink, nil],
       "rebuild"           => [:cmd_rebuild, nil],
-      "deploy"            => [:cmd_deploy, nil],
+      "publish"           => [:cmd_publish, nil],
       "q"                 => [:cmd_quit, nil],
       "quit"              => [:cmd_quit, nil]
       # Later: too many/few params
@@ -193,33 +193,33 @@ class TestREPL < Minitest::Test
     @blog.undelete_post(7)
   end
 
-if File.exist?("testing.deploy")
+if File.exist?("testing.publish")
 
-  def test_016_can_deploy
+  def test_016_can_publish
     x = OpenStruct.new
     x.user, x.server, x.docroot, x.docroot, x.path, x.proto = 
       "root", "rubyhacker.com", "/var/www", "whatever", "http"
-    dep = RuneBlog::Deployment.new(x)
+    dep = RuneBlog::Publishing.new(x)
     result = dep.remote_login?
     assert result == true, "Valid login doesn't work"
     result = dep.remote_permissions?
     assert result == true, "Valid mkdir doesn't work"
   end
 
-  def test_017_cannot_deploy_wrong_user
+  def test_017_cannot_publish_wrong_user
     x = OpenStruct.new
     x.user, x.server, x.docroot, x.docroot, x.path, x.proto = 
       "bad_user", "rubyhacker.com", "/var/www", "whatever", "http"
-    dep = RuneBlog::Deployment.new(x)
+    dep = RuneBlog::Publishing.new(x)
     result = dep.remote_login?
     assert result.nil?, "Expected to detect login error (bad user)"
   end
 
-  def test_018_cannot_deploy_bad_server
+  def test_018_cannot_publish_bad_server
     x = OpenStruct.new
     x.user, x.server, x.docroot, x.docroot, x.path, x.proto = 
       "root", "nonexistent123.com", "/var/www", "whatever", "http"
-    dep = RuneBlog::Deployment.new(x)
+    dep = RuneBlog::Publishing.new(x)
     result = dep.remote_login?
     assert result.nil?, "Expected to detect login error (bad server)"
   end
@@ -261,7 +261,7 @@ end  # conditional tests
   end
 
   # later tests...
-  # new view asks for deployment info and writes it
+  # new view asks for publishing info and writes it
   #   (how to mimic user input? test some other way?)
 
 end

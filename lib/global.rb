@@ -10,7 +10,7 @@ class RuneBlog
   class View
   end
 
-  class Deployment
+  class Publishing
   end
 
   class Post

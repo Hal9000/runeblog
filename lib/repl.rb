@@ -2,7 +2,7 @@ require 'runeblog'
 require 'ostruct'
 require 'helpers-repl'  # FIXME structure
 
-make_exception(:DeploymentError, "Error during deployment")
+make_exception(:PublishError, "Error during publishing")
 make_exception(:EditorProblem,   "Could not edit $1")
 
 module RuneBlog::REPL
@@ -23,10 +23,10 @@ module RuneBlog::REPL
   def cmd_browse
     reset_output
     check_empty(arg)
-    url = @blog.view.deployer.url
+    url = @blog.view.publisher.url
     # FIXME Bad logic here.
     if url.nil?   
-      output! "Deploy first."
+      output! "Publish first."
       return @out
     end
     result = system("open '#{url}'")
@@ -42,13 +42,13 @@ module RuneBlog::REPL
     raise CantOpen(local) unless result
   end
 
-  def cmd_deploy(arg)  # FIXME non-string return expected in caller?
+  def cmd_publish(arg)  # FIXME non-string return expected in caller?
     reset_output
     check_empty(arg)
-    @blog.view.deploy
-    user, server, sroot, spath = *@deploy[@blog.view]
+    @blog.view.publish
+    user, server, sroot, spath = *@publish[@blog.view]
     if files.empty?    # FIXME  baloney
-      output! "No files to deploy"
+      output! "No files to publish"
       return @out
     end
 
@@ -61,11 +61,11 @@ module RuneBlog::REPL
     # ^ needs -c?? 
 
     cmd = "scp -r #{files.join(' ')} root@#{server}:#{dir} >/dev/null 2>&1"
-    output! "Deploying #{files.size} files...\n"
+    output! "Publishing #{files.size} files...\n"
     result = system(cmd)
-    raise DeploymentError unless result
+    raise PublishError unless result
 
-    dump(files, "#{vdir}/last_deployed")
+    dump(files, "#{vdir}/last_published")
     output! "...finished.\n"
     @out
   end
@@ -114,9 +114,9 @@ module RuneBlog::REPL
   def cmd_new_view(arg)
     reset_output
     @blog.create_view(arg)
-    resp = yesno("Add deployment info now? ")
-    @blog.view.deployer = ask_deployment_info
-    write_config(@blog.view.deployer,  @blog.view.dir + "/deploy")  # change this?
+    resp = yesno("Add publishing info now? ")
+    @blog.view.publisher = ask_publishing_info
+    write_config(@blog.view.publisher,  @blog.view.dir + "/publish")  # change this?
     nil
   end
 
@@ -141,7 +141,7 @@ module RuneBlog::REPL
     @out
   end
 
-  #-- FIXME affects linking, building, deployment...
+  #-- FIXME affects linking, building, publishing...
 
   def cmd_remove_post(arg, safe=true)
     # FIXME - 'safe' is no longer a thing
@@ -155,7 +155,7 @@ module RuneBlog::REPL
     @out
   end
 
-  #-- FIXME affects linking, building, deployment...
+  #-- FIXME affects linking, building, publishing...
 
   def cmd_edit_post(arg)
     reset_output
@@ -242,10 +242,10 @@ module RuneBlog::REPL
        #{red('edit ID          ')} Edit a post
   
        #{red('preview          ')} Look at current (local) view in browser
-       #{red('browse           ')} Look at current (deployed) view in browser
+       #{red('browse           ')} Look at current (published) view in browser
        #{red('relink           ')} Regenerate index for all views
        #{red('rebuild          ')} Regenerate all posts and relink
-       #{red('deploy           ')} Deploy (current view)
+       #{red('publish          ')} Publish (current view)
     EOS
     @out
   end

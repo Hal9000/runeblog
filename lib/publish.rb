@@ -1,7 +1,7 @@
 require 'helpers-blog'
 require 'runeblog'
 
-class RuneBlog::Deployment
+class RuneBlog::Publishing
   attr_reader :user, :server, :docroot, :path
 
   BadRemoteLogin = Exception.new("Can't login remotely")
@@ -29,17 +29,17 @@ class RuneBlog::Deployment
     url = "#{protocol}://#{@server}/#{@path}"
   end
  
-  def deploy(files)
+  def publish(files)
     reset_output
     dir = "#@docroot/#@path"
     result = system("ssh #@user@#@server -x mkdir #{dir}") 
     list = files.join(' ')
     cmd = "scp -r #{list} #@user@##server:#{dir} >/dev/null 2>&1"
-    output! "Deploying #{files.size} files...\n"
+    output! "Publishing #{files.size} files...\n"
     result = system(cmd)
-    raise DeploymentError unless result
+    raise PublishError unless result
 
-    dump(files, "#{@blog.view.dir}/last_deployed")
+    dump(files, "#{@blog.view.dir}/last_published")
     output! "...finished.\n"
     @out
   end

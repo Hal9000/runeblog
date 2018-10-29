@@ -4,7 +4,7 @@ require 'global'
 require 'helpers-blog'
 require 'default'
 require 'view'
-require 'deploy'
+require 'publish'
 require 'post'
 require 'version'
 
@@ -57,7 +57,7 @@ class RuneBlog
 
   def initialize   # assumes existing blog
     # Crude - FIXME later - 
-    # What views are there? Deployment, etc.
+    # What views are there? Publishing, etc.
     self.class.blog = self   # Weird. Like a singleton - dumbass circular dependency?
     @root, @view_name, @editor = 
       read_config(ConfigFile, :root, :current_view, :editor)
@@ -85,12 +85,12 @@ class RuneBlog
     case arg
       when RuneBlog::View
         @view = arg
-        @view.deployer = read_config(@view.dir + "/deploy")
+        @view.publisher = read_config(@view.dir + "/publish")
       when String
         new_view = str2view(arg)
         raise NoSuchView(arg) if new_view.nil?
         @view = new_view
-        @view.deployer = read_config(@view.dir + "/deploy")
+        @view.publisher = read_config(@view.dir + "/publish")
       else 
         raise CantAssignView(arg.class.to_s)
     end
@@ -130,11 +130,11 @@ class RuneBlog
     create_dir('custom')
     create_dir('assets')
     # FIXME dump method??
-    dump("", "deploy")
+    dump("", "publish")
     dump(x::BlogHeader, "custom/blog_header.html")
     dump(x::BlogTrailer, "custom/blog_trailer.html")
     dump(x::PostTemplate, "custom/post_template.html")
-    dump("Initial creation", "last_deployed")
+    dump("Initial creation", "last_published")
     Dir.chdir(up)
     @views << RuneBlog::View.new(arg)
   end
@@ -152,7 +152,7 @@ class RuneBlog
     files = ["#{vdir}/index.html"]
     files += posts.map {|x| "#{vdir}/#{x}" }
     # Huh? 
-    files.reject! {|f| File.mtime(f) < File.mtime("#{vdir}/last_deployed") }
+    files.reject! {|f| File.mtime(f) < File.mtime("#{vdir}/last_published") }
   end
 
   def files_by_id(id)   # FIXME get rid of this later
@@ -169,7 +169,7 @@ class RuneBlog
     meta.body ||= "Remainder of post goes here."
     post = RuneBlog::Post.new(meta, @view.to_s)
     post.edit unless testing
-    post.publish
+    post.build
     post.num
   rescue => err
     puts err # error(err)
@@ -219,7 +219,7 @@ class RuneBlog
     error(err)
   end
 
-  def publish_post(meta)
+  def link_post_all_views(meta)
     meta.views.each {|view| link_post_view(view) }
 #   assets = find_all_assets(@meta.assets, views)
     nil
@@ -230,7 +230,7 @@ class RuneBlog
   def link_post_view(view)
     raise ArgumentError unless view.is_a?(String) || view.is_a?(RuneBlog::View)
     # Create dir using slug (index.html, metadata?)
-    vdir = self.viewdir(view)
+    vdir = self.viewdir(view) # FIXME
     dir = vdir + @meta.slug + "/"
     create_dir(dir + "assets") 
     Dir.chdir(dir) do
@@ -307,7 +307,7 @@ class RuneBlog
   def rebuild_post(file)
     raise ArgumentError unless file.is_a?(String)
     @meta = process_post(file)
-    publish_post(@meta)       # FIXME ??
+    link_post_all_views(@meta)       # FIXME ??
   rescue => err
     error(err)
   end

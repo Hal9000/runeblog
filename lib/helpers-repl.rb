@@ -50,7 +50,7 @@ module RuneBlog::REPL
 
      "rebuild"           => :cmd_rebuild,
 
-     "deploy"            => :cmd_deploy,
+     "publish"           => :cmd_publish,
 
      "q"                 => :cmd_quit,
      "quit"              => :cmd_quit
@@ -193,14 +193,14 @@ module RuneBlog::REPL
 
     edit_initial_post(@fname)
     process_post(@fname)
-    publish_post(@meta) # if publish?
+    link_post_all_views(@meta)
   rescue => err
     error(err)
   end
 
-  def ask_deployment_info   # returns Deployment object
+  def ask_publishing_info   # returns Publishing object
     # user, server, root, path, protocol = "http"
-    puts "Please enter deployment data for view #{@blog.view}..."
+    puts "Please enter publishing data for view #{@blog.view}..."
     user = ask("User: ")
     root = ask("Doc root: ")
     server = ask("Server: ")
@@ -208,7 +208,7 @@ module RuneBlog::REPL
     proto = ask("Protocol (ENTER for http): ")
     [user, root, server, path, proto].each {|x| x.chomp! }
     proto = "http" if proto.empty?
-    RuneBlog::Deployment.new(user, server, root, path, proto)
+    RuneBlog::Publishing.new(user, server, root, path, proto)
   end
 
   ### find_asset
