@@ -211,6 +211,27 @@ module RuneBlog::REPL
     RuneBlog::Publishing.new(user, server, root, path, proto)
   end
 
+  def dumb_menu(hash)
+    # { string => :meth, ... }
+    max = hash.size
+    puts "\n  Select from:"
+    hash.each_pair.with_index do |pair, i|
+      string, meth = *pair
+      puts "   #{red('%2d' % (i+1))} #{string}"
+    end
+    loop do
+      print red("> ")
+      num = gets.to_i
+      if num.between?(1, max)
+        picked = hash.values[num-1]
+        puts "Calling number #{num} (#{picked})..."
+        break
+      else
+        puts "Huh? Must be 1 to #{max}"
+      end
+    end
+  end
+
   ### find_asset
 
 #   def find_asset(asset)    # , views)
