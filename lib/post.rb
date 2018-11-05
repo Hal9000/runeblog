@@ -70,8 +70,8 @@ class RuneBlog::Post
       end
     end
   rescue => err
-    p err
-    puts err.backtrace
+    p err  # CHANGE_FOR_CURSES?
+    puts err.backtrace  # CHANGE_FOR_CURSES?
   end
 
   private

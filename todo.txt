@@ -64,6 +64,8 @@
 
   8 8 - docs: getting started
   8 8 - docs: how-to
+  8 7 - docs: how to write templates (incl main one)
+  8 6 - docs: overview of Livetext
 
 x 3 3 - rethink publish/deploy 
 x 2 2 - remove explicit tag formatting

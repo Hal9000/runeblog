@@ -51,8 +51,8 @@ class RuneBlog
     blog = self.new
     blog.create_view("test_view")
   rescue => err
-    puts "Can't create blog: '#{dir}' - #{err}"
-    puts err.backtrace
+    puts "Can't create blog: '#{dir}' - #{err}"  # CHANGE_FOR_CURSES?
+    puts err.backtrace  # CHANGE_FOR_CURSES?
   end
 
   def initialize   # assumes existing blog
@@ -172,7 +172,7 @@ class RuneBlog
     post.build
     post.num
   rescue => err
-    puts err # error(err)
+    puts err # error(err)  # CHANGE_FOR_CURSES?
   end
 
   def edit_initial_post(file, testing = false)

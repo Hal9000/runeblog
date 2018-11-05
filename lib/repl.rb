@@ -73,7 +73,7 @@ module RuneBlog::REPL
   def cmd_rebuild(arg)
     reset_output
     check_empty(arg)
-    puts
+    puts  # CHANGE_FOR_CURSES?
     files = @blog.find_src_slugs
     files.each {|file| @blog.rebuild_post(file) }
     nil

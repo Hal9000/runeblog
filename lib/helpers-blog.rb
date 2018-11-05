@@ -18,8 +18,8 @@ module RuneBlog::Helpers
     end
     return vals
   rescue => err
-    puts "Something hit the fan: #{err}"
-    puts err.backtrace
+    puts "Something hit the fan: #{err}"  # CHANGE_FOR_CURSES?
+    puts err.backtrace  # CHANGE_FOR_CURSES?
     exit
   end
 
@@ -56,7 +56,7 @@ module RuneBlog::Helpers
     dirs.reject! {|x| ! File.directory?("#@root/views/#{x}") }
     dirs
   rescue
-    STDERR.puts "Can't find dir '#{dir}'"
+    STDERR.puts "Can't find dir '#{dir}'"  # CHANGE_FOR_CURSES?
     exit
   end
 
@@ -81,8 +81,8 @@ module RuneBlog::Helpers
 
   def error(err)  # Hmm, this is duplicated
     str = "\n  Error: #{err}"
-    puts str
-    puts err.backtrace
+    puts str  # CHANGE_FOR_CURSES?
+    puts err.backtrace  # CHANGE_FOR_CURSES?
   end
 
   def dump(obj, name)

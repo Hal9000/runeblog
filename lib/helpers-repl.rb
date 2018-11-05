@@ -87,8 +87,8 @@ module RuneBlog::REPL
 
   def error(err)
     str = "\n  Error: #{red(err)}"
-    puts str
-    puts err.backtrace[0]
+    puts str  # CHANGE_FOR_CURSES?
+    puts err.backtrace[0]  # CHANGE_FOR_CURSES?
   end
 
   def ask(prompt, meth = :to_s)
@@ -110,7 +110,7 @@ module RuneBlog::REPL
 
   def flush_output(initial = "")
     @out ||= ""
-    puts @out
+    puts @out  # CHANGE_FOR_CURSES?
     reset_output
   end
 
@@ -159,23 +159,23 @@ module RuneBlog::REPL
   end
 
   def clear
-    puts "\e[H\e[2J"  # clear screen
+    puts "\e[H\e[2J"  # clear screen  # CHANGE_FOR_CURSES?
   end
 
   def red(text)
-    "\e[31m#{text}\e[0m"
+    "\e[31m#{text}\e[0m"  # CHANGE_FOR_CURSES?
   end
 
   def blue(text)
-    "\e[34m#{text}\e[0m"
+    "\e[34m#{text}\e[0m"  # CHANGE_FOR_CURSES?
   end
 
   def bold(str)
-    "\e[1m#{str}\e[22m"
+    "\e[1m#{str}\e[22m"  # CHANGE_FOR_CURSES?
   end
 
   def colored_slug(slug)
-    red(slug[0..3])+blue(slug[4..-1])
+    red(slug[0..3])+blue(slug[4..-1])  # CHANGE_FOR_CURSES?
   end
 
   def import(arg = nil)
@@ -214,20 +214,20 @@ module RuneBlog::REPL
   def dumb_menu(hash)
     # { string => :meth, ... }
     max = hash.size
-    puts "\n  Select from:"
+    puts "\n  Select from:"  # CHANGE_FOR_CURSES?
     hash.each_pair.with_index do |pair, i|
       string, meth = *pair
-      puts "   #{red('%2d' % (i+1))} #{string}"
+      puts "   #{red('%2d' % (i+1))} #{string}"  # CHANGE_FOR_CURSES?
     end
     loop do
-      print red("> ")
+      print red("> ")  # CHANGE_FOR_CURSES?
       num = gets.to_i
       if num.between?(1, max)
         picked = hash.values[num-1]
-        puts "Calling number #{num} (#{picked})..."
+        puts "Calling number #{num} (#{picked})..."  # CHANGE_FOR_CURSES?
         break
       else
-        puts "Huh? Must be 1 to #{max}"
+        puts "Huh? Must be 1 to #{max}"  # CHANGE_FOR_CURSES?
       end
     end
   end
