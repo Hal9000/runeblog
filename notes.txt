@@ -1,3 +1,10 @@
+config command (?)
+--------------
+edit .blog/config? view/publish
+edit view/custom/*
+ssh keys??
+
+
 Creating a view:
 ----------------
 *Ideally: enter deployment info up front

@@ -2,13 +2,16 @@
   6 4 - more tests!
   6 6 - resolve issues: draft vs post, kill, etc.
 
-  3 3 - dumb_menu method
-  6 3 - config command
+  6 3 - config command (See notes.txt)
   7 6 - add post template capability
+
+  6 4 - work on: rebuild, relink, link_post, generate, ...
 
   3 3 - methods such as get_post_template
   4 2 - rethink helper libs?
   4 2 - improve gemspec
+  6 2 - remember runeblog fixes
+  6 2 - weaponize rubytext (gemspec, etc.)
 
   6 5 - handle larger output for lsp, lsd
 
@@ -24,7 +27,7 @@
 
   4 6 - move some logic into liveblog?
 
-  4 4 - commands to edit templates, config, etc.? ('config' command?)
+  4 4 - commands to edit templates, config, etc.? ('config' command?) (See notes.txt)
   4 2 - maybe add (default) publishing info to config?
   2 5 - shorten commands?
   3 2 - undo last post?
@@ -67,6 +70,7 @@
   8 7 - docs: how to write templates (incl main one)
   8 6 - docs: overview of Livetext
 
+x 3 3 - dumb_menu method
 x 3 3 - rethink publish/deploy 
 x 2 2 - remove explicit tag formatting
 x 6 3 - rescue errors only in main REPL?

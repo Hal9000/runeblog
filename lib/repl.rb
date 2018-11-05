@@ -20,7 +20,19 @@ module RuneBlog::REPL
     return @out
   end
 
-  def cmd_browse
+  def cmd_config(arg)
+    check_empty(arg)
+    dir = @blog.view.dir
+    items = ["publish", 
+             "custom/blog_header.html", 
+             "custom/blog_trailer.html", 
+             "custom/post_template.html"] 
+    puts "\nEdit which file?"  # FIXME use @out for testing later
+    fname = dumb_menu(items)
+    system("#{@blog.editor} #{dir}/#{fname}")
+  end
+
+  def cmd_browse(arg)
     reset_output
     check_empty(arg)
     url = @blog.view.publisher.url

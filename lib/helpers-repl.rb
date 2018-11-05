@@ -25,6 +25,8 @@ module RuneBlog::REPL
      "cv $name"          => :cmd_change_view,
      "cv"                => :cmd_change_view,  # 0-arity must come second
 
+     "config"            => :cmd_config,
+
      "list posts"        => :cmd_list_posts,
      "lsp"               => :cmd_list_posts,
 
@@ -211,25 +213,25 @@ module RuneBlog::REPL
     RuneBlog::Publishing.new(user, server, root, path, proto)
   end
 
-  def dumb_menu(hash)
+  def dumb_menu(array)
     # { string => :meth, ... }
-    max = hash.size
+    max = array.size
     puts "\n  Select from:"  # CHANGE_FOR_CURSES?
-    hash.each_pair.with_index do |pair, i|
-      string, meth = *pair
+    array.each.with_index do |string, i|
       puts "   #{red('%2d' % (i+1))} #{string}"  # CHANGE_FOR_CURSES?
     end
+    picked = nil
     loop do
       print red("> ")  # CHANGE_FOR_CURSES?
       num = gets.to_i
       if num.between?(1, max)
-        picked = hash.values[num-1]
-        puts "Calling number #{num} (#{picked})..."  # CHANGE_FOR_CURSES?
+        picked = array[num-1]
         break
       else
         puts "Huh? Must be 1 to #{max}"  # CHANGE_FOR_CURSES?
       end
     end
+    picked
   end
 
   ### find_asset
