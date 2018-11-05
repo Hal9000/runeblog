@@ -219,16 +219,7 @@ class RuneBlog
     error(err)
   end
 
-  def link_post_all_views(meta)
-    meta.views.each {|view| link_post_view(view) }
-#   assets = find_all_assets(@meta.assets, views)
-    nil
-  rescue => err
-    error(err)
-  end
-
-  def link_post_view(view)
-    raise ArgumentError unless view.is_a?(String) || view.is_a?(RuneBlog::View)
+  def build_post_view(view)
     # Create dir using slug (index.html, metadata?)
     vdir = self.viewdir(view) # FIXME
     dir = vdir + @meta.slug + "/"
@@ -307,7 +298,9 @@ class RuneBlog
   def rebuild_post(file)
     raise ArgumentError unless file.is_a?(String)
     @meta = process_post(file)
-    link_post_all_views(@meta)       # FIXME ??
+    @meta.views.each do |view| 
+      build_post_view(view)
+    end
   rescue => err
     error(err)
   end

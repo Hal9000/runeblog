@@ -5,7 +5,9 @@
   6 3 - config command (See notes.txt)
   7 6 - add post template capability
 
-  6 4 - work on: rebuild, relink, link_post, generate, ...
+* 6 4 - work on: rebuild, relink, link_post, generate, ...
+
+  4 2 - allow for post title changing
 
   3 3 - methods such as get_post_template
   4 2 - rethink helper libs?
@@ -15,7 +17,7 @@
 
   6 5 - handle larger output for lsp, lsd
 
-  3 2 - rething remove/delete/kill and other verbs
+  3 2 - rethink remove/delete/kill and other verbs
   4 6 - safe way to delete a view?
   4 7 - modifiable global defaults for publishing info/etc.?
 

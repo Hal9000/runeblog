@@ -59,6 +59,8 @@ class RuneBlog::Post
     @meta = livetext.process_file(@draft, binding)
     raise LivetextError(@draft) if @meta.nil?
 
+    # FIXME what if title changes?
+
     @meta.views.each do |view_name|   # Create dir using slug (index.html, metadata?)
       view = @blog.str2view(view_name)
       vdir = view.dir
