@@ -1,12 +1,14 @@
 #!/usr/bin/env ruby
 
-$: << "./lib"
+# $LOAD_PATH << "./lib"
 
+require 'global'
+require 'rubytext' if curses?
 require 'readline'
 
 require 'repl'
 
-trap("INT") { }
+# trap("INT") { }
 
 include RuneBlog::REPL
 
@@ -34,7 +36,12 @@ if ! RuneBlog.exist?
 end
 
 def mainloop
-  cmd = Readline.readline(red("\nblog> "), true)
+  if curses?
+    print red("blog> ")
+    cmd = gets
+  else
+    cmd = Readline.readline(red("\nblog> "), true)
+  end
   cmd_quit(nil) if cmd.nil?   # ^D
   cmd.chomp!
   return if cmd.empty?   # CR does nothing
@@ -43,6 +50,14 @@ def mainloop
   puts str unless str.nil?
 rescue => err
   puts err
+end
+
+
+puts curses?
+sleep 6
+
+if curses?
+  RubyText.start(:echo, :noraw, log: "debug.out")
 end
 
 @blog = RuneBlog.new

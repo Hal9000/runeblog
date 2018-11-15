@@ -57,6 +57,10 @@ module RuneBlog::REPL
   def cmd_publish(arg)  # FIXME non-string return expected in caller?
     reset_output
     check_empty(arg)
+    unless @blog.view.can_publish?
+      output! "Can't publish without entries in #{@blog.view}/publish"
+      return @out
+    end
     @blog.view.publish
     user, server, sroot, spath = *@publish[@blog.view]
     if files.empty?    # FIXME  baloney

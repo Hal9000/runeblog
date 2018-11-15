@@ -11,8 +11,12 @@ class RuneBlog::View
     raise NoBlogAccessor if RuneBlog.blog.nil?
     @blog = RuneBlog.blog
     @name = name
-    dep_file = @blog.root + "/views/#@name/publish"
-    @publisher = read_config(dep_file)
+    @can_publish = false
+    pub_file = @blog.root + "/views/#@name/publish"
+    unless File.size(pub_file) == 0
+      @publisher = RuneBlog::Publishing.new(read_config(pub_file))
+      @can_publish = true
+    end
   end
 
   def dir
@@ -34,6 +38,10 @@ class RuneBlog::View
     files += others.map {|x| "#{vdir}/#{x}" }
     files.reject! {|f| recent?(f) } if recent
     files
+  end
+
+  def can_publish?
+    @can_publish
   end
 
   def publish

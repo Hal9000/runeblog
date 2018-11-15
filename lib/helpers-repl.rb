@@ -6,7 +6,61 @@ make_exception(:CantDelete,      "Can't open '$1'")
 make_exception(:InternalError,   "Glitch: $1 got arg '$2'")
 make_exception(:CantCopy,        "Can't copy $1 to $2")
 
+module WithANSI
+  def clear
+    puts "\e[H\e[2J"  # clear screen  # CHANGE_FOR_CURSES?
+  end
+
+  def red(text)
+    "\e[31m#{text}\e[0m"  # CHANGE_FOR_CURSES?
+  end
+
+  def blue(text)
+    "\e[34m#{text}\e[0m"  # CHANGE_FOR_CURSES?
+  end
+
+  def bold(str)
+    "\e[1m#{str}\e[22m"  # CHANGE_FOR_CURSES?
+  end
+
+end
+
+module NoANSI
+
+  def gets
+    str = ""
+    loop do
+      ch = ::STDSCR.getch
+      if ch == 10
+#       puts "\n\n "
+        break 
+      end
+      str << ch
+    end
+    str
+  end
+
+  def clear
+#   puts "\e[H\e[2J"  # clear screen  # CHANGE_FOR_CURSES?
+  end
+
+  def red(text)
+    text
+  end
+
+  def blue(text)
+    text
+  end
+
+  def bold(str)
+    str
+  end
+end
+
+
 module RuneBlog::REPL
+  include curses? ? NoANSI : WithANSI
+
   Patterns = 
     {"help"              => :cmd_help, 
      "h"                 => :cmd_help,
@@ -158,22 +212,6 @@ module RuneBlog::REPL
       when Array
         raise CantDelete(files.join("\n"))
     end
-  end
-
-  def clear
-    puts "\e[H\e[2J"  # clear screen  # CHANGE_FOR_CURSES?
-  end
-
-  def red(text)
-    "\e[31m#{text}\e[0m"  # CHANGE_FOR_CURSES?
-  end
-
-  def blue(text)
-    "\e[34m#{text}\e[0m"  # CHANGE_FOR_CURSES?
-  end
-
-  def bold(str)
-    "\e[1m#{str}\e[22m"  # CHANGE_FOR_CURSES?
   end
 
   def colored_slug(slug)

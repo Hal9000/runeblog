@@ -130,7 +130,8 @@ class RuneBlog
     create_dir('custom')
     create_dir('assets')
     # FIXME dump method??
-    dump("", "publish")
+    pub = "user: xxx\nserver: xxx\ndocroot: xxx\npath: xxx\nproto: xxx\n"
+    dump(pub, "publish")  # FIXME publish
     dump(x::BlogHeader, "custom/blog_header.html")
     dump(x::BlogTrailer, "custom/blog_trailer.html")
     dump(x::PostTemplate, "custom/post_template.html")

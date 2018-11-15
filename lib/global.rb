@@ -17,6 +17,10 @@ class RuneBlog
   end
 end
 
+def curses?
+  false
+end
+
 def make_exception(sym, str)
   return if Object.constants.include?(sym)
   Object.const_set(sym, StandardError.dup)
