@@ -19,25 +19,9 @@ def get_argv
   [cmd, arg]
 end
 
-###########
-
-STDOUT.sync = true
-
-cmd, arg = get_argv
-
-if ! RuneBlog.exist?
-  print "No blog found. Create new one? (y/n) "
-  resp = gets.chomp
-  if resp == "y"
-    RuneBlog.create_new_blog
-  else
-    exit
-  end
-end
-
 def mainloop
   if curses?
-    print red("blog> ")
+    print :red, "\nblog> "
     cmd = gets
   else
     cmd = Readline.readline(red("\nblog> "), true)
@@ -53,17 +37,30 @@ rescue => err
 end
 
 
-puts curses?
-sleep 6
+###########
 
-if curses?
-  RubyText.start(:echo, :noraw, log: "debug.out")
+RubyText.start(:echo, :_raw, log: "debug.out", fg: :blue, bg: :white)
+
+STDOUT.sync = true
+
+cmd, arg = get_argv
+
+if ! RuneBlog.exist?
+  print "No blog found. Create new one? (y/n) "
+  resp = gets.chomp
+  if resp == "y"
+    RuneBlog.create_new_blog
+  else
+    exit
+  end
 end
 
 @blog = RuneBlog.new
 
+# STDSCR.clear if curses?
+
 if cmd.nil?   # REPL
-  system("tput smcup")  # see: tput rmcup in cmd_quit
+# system("tput smcup")  # see: tput rmcup in cmd_quit
 
   puts red("\n  RuneBlog v #{RuneBlog::VERSION}")
   loop { mainloop }

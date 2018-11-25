@@ -32,7 +32,7 @@ module NoANSI
     loop do
       ch = ::STDSCR.getch
       if ch == 10
-#       puts "\n\n "
+        STDSCR.crlf
         break 
       end
       str << ch
@@ -172,17 +172,17 @@ module RuneBlog::REPL
 
   def output(str)  # \n and indent
     @out ||= ""
-    @out << "\n  " + str
+    @out << "  " + str.to_s
   end
 
-  def outstr(str)  # \n and indent
+  def outstr(str)  # indent
     @out ||= ""
     @out << str
   end
 
   def output!(str)  # red, \n and indent
     @out ||= ""
-    @out << "\n  " + red(str)
+    @out << "  " + red(str)
   end
 
   def output_newline(n = 1)

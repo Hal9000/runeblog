@@ -18,7 +18,7 @@ class RuneBlog
 end
 
 def curses?
-  false
+  true
 end
 
 def make_exception(sym, str)

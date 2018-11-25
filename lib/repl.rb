@@ -58,7 +58,7 @@ module RuneBlog::REPL
     reset_output
     check_empty(arg)
     unless @blog.view.can_publish?
-      output! "Can't publish without entries in #{@blog.view}/publish"
+      output! "Can't publish without entries in #{@blog.view.name}/publish"
       return @out
     end
     @blog.view.publish
@@ -102,16 +102,6 @@ module RuneBlog::REPL
     nil
   end
 
-  def cmd_list_views(arg)
-    reset_output("\n")
-    check_empty(arg)
-    @blog.views.each do |v| 
-      v = bold(v) if v == @blog.view
-      outstr "  #{v}\n"
-    end
-    @out
-  end
-
   def cmd_change_view(arg)
     reset_output
     # Simplify this
@@ -121,7 +111,7 @@ module RuneBlog::REPL
     else
       if @blog.view?(arg)
         @blog.view = arg  # reads config
-        output red("View: ") + bold(@blog.view)
+        output red("View: ") + bold(@blog.view.name.to_s)  # FIXME?
       end
     end
     @out
@@ -147,7 +137,7 @@ module RuneBlog::REPL
   end
 
   def cmd_kill(arg)
-    reset_output "\n"
+    reset_output
     args = arg.split
     args.each do |x| 
       # FIXME
@@ -192,29 +182,40 @@ module RuneBlog::REPL
     nil
   end
 
-  def cmd_list_posts(arg)
-    check_empty(arg)
+  def cmd_list_views(arg)
     reset_output
+    check_empty(arg)
+    @blog.views.each do |v| 
+      v = bold(v) if v == @blog.view.name
+      outstr "  #{v}\n"
+    end
+    @out
+  end
+
+  def cmd_list_posts(arg)
+    reset_output
+    check_empty(arg)
     posts = @blog.posts  # current view
-    output bold(@blog.view.name) + ":"
+    str = @blog.view.name + ":\n"
+    output str
     if posts.empty?
       output! bold("No posts")
     else
-      output_newline
-      posts.each {|post| outstr "  #{colored_slug(post)}\n" }
+      posts.each do |post| 
+        outstr "  #{colored_slug(post)}\n" 
+      end
     end
     @out
   end
 
   def cmd_list_drafts(arg)
-    check_empty(arg)
     reset_output
+    check_empty(arg)
     drafts = @blog.drafts  # current view
     if drafts.empty?
       output! "No drafts"
       return @out
     else
-      output_newline
       drafts.each do |draft| 
         outstr "  #{colored_slug(draft.sub(/.lt3$/, ""))}\n" 
       end

@@ -34,7 +34,7 @@ class RuneBlog::Publishing
     dir = "#@docroot/#@path"
     result = system("ssh #@user@#@server -x mkdir #{dir}") 
     list = files.join(' ')
-    cmd = "scp -r #{list} #@user@##server:#{dir} >/dev/null 2>&1"
+    cmd = "scp -r #{list} #@user@#@server:#{dir} >/dev/null 2>/tmp/wtf"
     output! "Publishing #{files.size} files...\n"
     result = system(cmd)
     raise PublishError unless result

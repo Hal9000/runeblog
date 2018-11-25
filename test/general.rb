@@ -32,9 +32,9 @@ class TestREPL < Minitest::Test
   def test_002_cmd_version
     out = cmd_version(nil)
     assert out.is_a?(String), "Expected a string returned"
-    lines = out.split("\n")[1]
+    lines = out
     assert lines =~ /\d+\.\d+\.\d+/m,
-           "Couldn't find version number"
+           "Couldn't find version number; found #{out.inspect}"
   end
 
   def test_003_list_views!
@@ -54,14 +54,14 @@ class TestREPL < Minitest::Test
     out = cmd_list_drafts(nil)
     assert out.is_a?(String), "Expected a string returned"
     lines = out.split("\n").length 
-    assert lines == 11, "Expecting 11 lines; got #{show_lines(out)}"
+    assert lines == 10, "Expecting 10 lines; got #{show_lines(out)}"
   end
 
   def test_006_lsp!
     out = cmd_list_posts(nil)
     assert out.is_a?(String), "Expected a string returned; got: #{out.inspect}"
     lines = out.split("\n").length 
-    assert lines == 7, "Expecting 7 lines; got #{show_lines(out)}"
+    assert lines == 6, "Expecting 6 lines; got #{show_lines(out)}"
   end
 
   def test_007_parser
