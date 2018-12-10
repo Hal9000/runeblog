@@ -21,8 +21,8 @@ end
 
 def mainloop
   if curses?
-    print :red, "\nblog> "
-    cmd = gets
+    print fx("blog> ", Red)
+    cmd = STDSCR.gets
   else
     cmd = Readline.readline(red("\nblog> "), true)
   end
@@ -39,7 +39,10 @@ end
 
 ###########
 
-RubyText.start(:echo, :_raw, log: "debug.out", fg: :blue, bg: :white)
+RubyText.start(log: "blogcmd.txt", scroll: true, fg: Blue, bg: White)
+RubyText.set(:_echo)
+
+X.stdscr.keypad(true)
 
 STDOUT.sync = true
 
@@ -62,7 +65,8 @@ end
 if cmd.nil?   # REPL
 # system("tput smcup")  # see: tput rmcup in cmd_quit
 
-  puts red("\n  RuneBlog v #{RuneBlog::VERSION}")
+  puts fx("\n  RuneBlog", :bold), fx(" v #{RuneBlog::VERSION}", Red)
+  puts
   loop { mainloop }
 else  # one command
   file = File.open("/dev/tty")

@@ -183,13 +183,20 @@ module RuneBlog::REPL
   end
 
   def cmd_list_views(arg)
-    reset_output
+    reset_output("\n")
     check_empty(arg)
+    debug "curr view = #{@blog.view.name.inspect}"
+    puts
     @blog.views.each do |v| 
-      v = bold(v) if v == @blog.view.name
-      outstr "  #{v}\n"
+      v = v.to_s
+      v = fx(v, :bold) if v == @blog.view.name
+      debug "v = #{v.inspect} - #{v.fx.inspect rescue 'no fx'}"
+      print "  "
+      puts v
     end
+    debug "out = #{@out.inspect}"
     @out
+    ""
   end
 
   def cmd_list_posts(arg)
