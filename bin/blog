@@ -30,8 +30,8 @@ def mainloop
   cmd.chomp!
   return if cmd.empty?   # CR does nothing
   meth, params = RuneBlog::REPL.choose_method(cmd)
-  str = send(meth, params)
-  puts str unless str.nil?
+  old, str = send(meth, params)
+  puts str if old && ! str.nil?
 rescue => err
   puts err
 end
@@ -39,7 +39,7 @@ end
 
 ###########
 
-RubyText.start(log: "blogcmd.txt", scroll: true, fg: Blue, bg: White)
+RubyText.start(log: "blogcmd.txt", fg: Blue, bg: White)
 RubyText.set(:_echo)
 
 X.stdscr.keypad(true)
@@ -66,8 +66,11 @@ if cmd.nil?   # REPL
 # system("tput smcup")  # see: tput rmcup in cmd_quit
 
   puts fx("\n  RuneBlog", :bold), fx(" v #{RuneBlog::VERSION}", Red)
-  puts
   loop { mainloop }
+# STDSCR.clear
+  RubyText.stop
+  system("tput clear")
+  puts
 else  # one command
   file = File.open("/dev/tty")
   STDIN.reopen(file)    # avoid ARGF dumbness

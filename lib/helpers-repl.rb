@@ -149,14 +149,12 @@ module RuneBlog::REPL
 
   def ask(prompt, meth = :to_s)
     print prompt
-    STDOUT.flush
-    STDIN.gets.chomp.send(meth)
+    gets.chomp.send(meth)
   end
 
   def yesno(prompt, meth = :to_s)
     print prompt
-    STDOUT.flush
-    STDIN.gets.chomp.upcase[0] == "Y"
+    gets.chomp.upcase[0] == "Y"
   end
 
   def reset_output(initial = "")

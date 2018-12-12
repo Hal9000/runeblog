@@ -2,22 +2,35 @@ require 'runeblog'
 require 'ostruct'
 require 'helpers-repl'  # FIXME structure
 
-make_exception(:PublishError, "Error during publishing")
-make_exception(:EditorProblem,   "Could not edit $1")
+make_exception(:PublishError,  "Error during publishing")
+# make_exception(:EditorProblem, "Could not edit $1")
 
 module RuneBlog::REPL
 
+  def edit_file(file)
+    result = system("#{blog.editor} #{file}")
+    raise EditorProblem(file) unless result
+    STDSCR.clear
+  end
+
   def cmd_quit(arg)
     check_empty(arg)
-    system("tput rmcup")
+#   system("tput rmcup")
+    RubyText.stop
     abort "\n "
+  end
+
+  def cmd_clear(arg)
+    check_empty(arg)
+    STDSCR.cwin.clear
+    STDSCR.cwin.refresh
   end
 
   def cmd_version(arg)
     reset_output
     check_empty(arg)
     output RuneBlog::VERSION
-    return @out
+    [true, @out]
   end
 
   def cmd_config(arg)
@@ -29,7 +42,7 @@ module RuneBlog::REPL
              "custom/post_template.html"] 
     puts "\nEdit which file?"  # FIXME use @out for testing later
     fname = dumb_menu(items)
-    system("#{@blog.editor} #{dir}/#{fname}")
+    edit_file("#{dir}/#{fname}")
   end
 
   def cmd_browse(arg)
@@ -39,7 +52,7 @@ module RuneBlog::REPL
     # FIXME Bad logic here.
     if url.nil?   
       output! "Publish first."
-      return @out
+      return [true, @out]
     end
     result = system("open '#{url}'")
     raise CantOpen(url) unless result
@@ -59,13 +72,13 @@ module RuneBlog::REPL
     check_empty(arg)
     unless @blog.view.can_publish?
       output! "Can't publish without entries in #{@blog.view.name}/publish"
-      return @out
+      return [true, @out]
     end
     @blog.view.publish
     user, server, sroot, spath = *@publish[@blog.view]
     if files.empty?    # FIXME  baloney
       output! "No files to publish"
-      return @out
+      return [true, @out]
     end
 
     output "Files:"
@@ -83,7 +96,7 @@ module RuneBlog::REPL
 
     dump(files, "#{vdir}/last_published")
     output! "...finished.\n"
-    @out
+    return [true, @out]
   end
 
   def cmd_rebuild(arg)
@@ -107,14 +120,14 @@ module RuneBlog::REPL
     # Simplify this
     if arg.nil?
       output bold(@blog.view)
-      return @out
+      return [true, @out]
     else
       if @blog.view?(arg)
         @blog.view = arg  # reads config
         output red("View: ") + bold(@blog.view.name.to_s)  # FIXME?
       end
     end
-    @out
+    return [true, @out]
   end
 
   def cmd_new_view(arg)
@@ -133,6 +146,7 @@ module RuneBlog::REPL
     meta = OpenStruct.new
     meta.title = title
     @blog.create_new_post(meta)
+    STDSCR.clear
     nil
   end
 
@@ -144,7 +158,7 @@ module RuneBlog::REPL
       ret = cmd_remove_post(x.to_i, false)
       output ret
     end
-    @out
+    return [true, @out]
   end
 
   #-- FIXME affects linking, building, publishing...
@@ -154,11 +168,8 @@ module RuneBlog::REPL
     reset_output
     id = get_integer(arg)
     result = @blog.remove_post(id)
-    if result.nil?
-      output! "Post #{id} not found"
-      return @out
-    end
-    @out
+    output! "Post #{id} not found" if result.nil?
+    return [true, @out]
   end
 
   #-- FIXME affects linking, building, publishing...
@@ -171,13 +182,11 @@ module RuneBlog::REPL
     files = Find.find(@blog.root+"/src").to_a
     files = files.grep(/#{tag}-/)
     files = files.map {|f| File.basename(f) }
-    return red("Multiple files: #{files}") if files.size > 1
-    return red("\n  Can't edit post #{id}") if files.empty?
+    return [true, "Multiple files: #{files}"] if files.size > 1
+    return [true, "\n  Can't edit post #{id}"] if files.empty?
 
     file = files.first
-    result = system("vi #{@blog.root}/src/#{file}")
-    raise EditorProblem(file) unless result
-
+    result = edit_file("#{@blog.root}/src/#{file}")
     @blog.rebuild_post(file)
     nil
   end
@@ -185,18 +194,15 @@ module RuneBlog::REPL
   def cmd_list_views(arg)
     reset_output("\n")
     check_empty(arg)
-    debug "curr view = #{@blog.view.name.inspect}"
     puts
     @blog.views.each do |v| 
       v = v.to_s
       v = fx(v, :bold) if v == @blog.view.name
-      debug "v = #{v.inspect} - #{v.fx.inspect rescue 'no fx'}"
       print "  "
       puts v
     end
-    debug "out = #{@out.inspect}"
-    @out
-    ""
+    puts
+    return [false, @out]
   end
 
   def cmd_list_posts(arg)
@@ -205,14 +211,23 @@ module RuneBlog::REPL
     posts = @blog.posts  # current view
     str = @blog.view.name + ":\n"
     output str
+    puts
+    print "  "
+    puts fx(str, :bold)
     if posts.empty?
       output! bold("No posts")
+      puts fx("  No posts", :bold)
     else
       posts.each do |post| 
         outstr "  #{colored_slug(post)}\n" 
+        base = post.sub(/.lt3$/, "")
+        num, rest = base[0..3], base[4..-1]
+        print "  "
+        puts fx(num, Red), fx(rest, Blue)
       end
     end
-    @out
+    puts
+    return [false, @out]
   end
 
   def cmd_list_drafts(arg)
@@ -221,18 +236,25 @@ module RuneBlog::REPL
     drafts = @blog.drafts  # current view
     if drafts.empty?
       output! "No drafts"
-      return @out
+      puts "  No drafts"
+      return [true, @out]
     else
+      puts
       drafts.each do |draft| 
         outstr "  #{colored_slug(draft.sub(/.lt3$/, ""))}\n" 
+        base = draft.sub(/.lt3$/, "")
+        num, rest = base[0..3], base[4..-1]
+        print "  "
+        puts fx(num, Red), fx(rest, Blue)
       end
     end
-    @out
+    puts
+    return [false, @out]
   end
 
   def cmd_INVALID(arg)
     reset_output "\n  Command '#{red(arg)}' was not understood."
-    return @out
+    return [true, @out]
   end
 
   def cmd_help(arg)
@@ -271,7 +293,7 @@ module RuneBlog::REPL
        #{red('rebuild          ')} Regenerate all posts and relink
        #{red('publish          ')} Publish (current view)
     EOS
-    @out
+    return [true, @out]
   end
 
 end
