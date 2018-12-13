@@ -19,7 +19,7 @@ module RuneBlog::Helpers
     return vals
   rescue => err
     puts "Something hit the fan: #{err}"  # CHANGE_FOR_CURSES?
-    puts err.backtrace  # CHANGE_FOR_CURSES?
+    puts err.backtrace.join("\n")  # CHANGE_FOR_CURSES?
     exit
   end
 
@@ -82,7 +82,7 @@ module RuneBlog::Helpers
   def error(err)  # Hmm, this is duplicated
     str = "\n  Error: #{err}"
     puts str  # CHANGE_FOR_CURSES?
-    puts err.backtrace  # CHANGE_FOR_CURSES?
+    puts err.backtrace.join("\n")  # CHANGE_FOR_CURSES?
   end
 
   def dump(obj, name)
@@ -90,3 +90,8 @@ module RuneBlog::Helpers
   end
 
 end
+
+def dump(obj, name)      # FIXME scope
+  File.write(name, obj)
+end
+

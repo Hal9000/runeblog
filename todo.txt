@@ -5,6 +5,8 @@
   6 3 - config command (See notes.txt)
   7 6 - add post template capability
 
+  4 4 - spinner for publishing, etc.
+
 * 6 4 - work on: rebuild, relink, link_post, generate, ...
 
   4 2 - allow for post title changing

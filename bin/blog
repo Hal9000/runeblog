@@ -39,12 +39,9 @@ end
 
 ###########
 
-RubyText.start(log: "blogcmd.txt", fg: Blue, bg: White)
-RubyText.set(:_echo)
+RubyText.start(:_echo, :keypad, scroll: true, log: "blogcmd.txt", fg: Blue, bg: White)
 
-X.stdscr.keypad(true)
-
-STDOUT.sync = true
+# STDOUT.sync = true
 
 cmd, arg = get_argv
 

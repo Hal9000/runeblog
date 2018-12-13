@@ -8,7 +8,7 @@ make_exception(:PublishError,  "Error during publishing")
 module RuneBlog::REPL
 
   def edit_file(file)
-    result = system("#{blog.editor} #{file}")
+    result = system("#{@blog.editor} #{file}")
     raise EditorProblem(file) unless result
     STDSCR.clear
   end
@@ -119,15 +119,20 @@ module RuneBlog::REPL
     reset_output
     # Simplify this
     if arg.nil?
+      viewnames = @blog.views.map {|x| x.name }
+      n = viewnames.find_index(@blog.view.name)
+      k, name = RubyText.menu(c: 30, items: viewnames, curr: n)
+      @blog.view = name
       output bold(@blog.view)
-      return [true, @out]
+      puts "\n  ", fx(name, :bold), "\n"
+      return [false, @out]
     else
       if @blog.view?(arg)
         @blog.view = arg  # reads config
         output red("View: ") + bold(@blog.view.name.to_s)  # FIXME?
       end
     end
-    return [true, @out]
+    return [false, @out]
   end
 
   def cmd_new_view(arg)
@@ -196,6 +201,7 @@ module RuneBlog::REPL
     check_empty(arg)
     puts
     @blog.views.each do |v| 
+      debug "v = #{v.inspect}"
       v = v.to_s
       v = fx(v, :bold) if v == @blog.view.name
       print "  "

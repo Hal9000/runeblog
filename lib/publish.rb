@@ -30,12 +30,14 @@ class RuneBlog::Publishing
   end
  
   def publish(files)
+    debug "files = #{files.inspect}"
     reset_output
     dir = "#@docroot/#@path"
     result = system("ssh #@user@#@server -x mkdir #{dir}") 
     list = files.join(' ')
     cmd = "scp -r #{list} #@user@#@server:#{dir} >/dev/null 2>/tmp/wtf"
     output! "Publishing #{files.size} files...\n"
+    debug "cmd = #{cmd.inspect}  - see /tmp/wtf"
     result = system(cmd)
     raise PublishError unless result
 

@@ -73,7 +73,7 @@ class RuneBlog::Post
     end
   rescue => err
     p err  # CHANGE_FOR_CURSES?
-    puts err.backtrace  # CHANGE_FOR_CURSES?
+    puts err.backtrace.join("\n")  # CHANGE_FOR_CURSES?
   end
 
   private

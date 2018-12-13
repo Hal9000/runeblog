@@ -52,7 +52,7 @@ class RuneBlog
     blog.create_view("test_view")
   rescue => err
     puts "Can't create blog: '#{dir}' - #{err}"  # CHANGE_FOR_CURSES?
-    puts err.backtrace  # CHANGE_FOR_CURSES?
+    puts err.backtrace.join("\n")  # CHANGE_FOR_CURSES?
   end
 
   def initialize   # assumes existing blog
@@ -85,12 +85,12 @@ class RuneBlog
     case arg
       when RuneBlog::View
         @view = arg
-        @view.publisher = read_config(@view.dir + "/publish")
+        @view.publisher = RuneBlog::Publishing.new(read_config(@view.dir + "/publish"))
       when String
         new_view = str2view(arg)
         raise NoSuchView(arg) if new_view.nil?
         @view = new_view
-        @view.publisher = read_config(@view.dir + "/publish")
+        @view.publisher = RuneBlog::Publishing.new(read_config(@view.dir + "/publish"))
       else 
         raise CantAssignView(arg.class.to_s)
     end
@@ -174,6 +174,7 @@ class RuneBlog
     post.num
   rescue => err
     puts err # error(err)  # CHANGE_FOR_CURSES?
+    puts err.backtrace.join("\n")  # CHANGE_FOR_CURSES?
   end
 
   def edit_initial_post(file, testing = false)
