@@ -2,6 +2,9 @@
   6 4 - more tests!
   6 6 - resolve issues: draft vs post, kill, etc.
 
+  5 5 - check remote mkdir
+  5 5 - screen messed up on exit
+
   6 3 - config command (See notes.txt)
   7 6 - add post template capability
 

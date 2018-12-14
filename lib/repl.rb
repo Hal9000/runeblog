@@ -36,12 +36,13 @@ module RuneBlog::REPL
   def cmd_config(arg)
     check_empty(arg)
     dir = @blog.view.dir
-    items = ["publish", 
-             "custom/blog_header.html", 
-             "custom/blog_trailer.html", 
-             "custom/post_template.html"] 
-    puts "\nEdit which file?"  # FIXME use @out for testing later
-    fname = dumb_menu(items)
+    items = ["Edit: publish", 
+             "Edit: custom/blog_header.html", 
+             "Edit: custom/blog_trailer.html", 
+             "Edit: custom/post_template.html"] 
+#   puts "\nEdit which file?"  # FIXME use @out for testing later
+    num, cmd = RubyText.menu(r: 10, c: 30, items: items)
+    fname = cmd.split[1]
     edit_file("#{dir}/#{fname}")
   end
 
