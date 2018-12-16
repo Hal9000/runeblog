@@ -10,6 +10,7 @@ module RuneBlog::REPL
   def edit_file(file)
     result = system("#{@blog.editor} #{file}")
     raise EditorProblem(file) unless result
+    sleep 0.1
     STDSCR.clear
   end
 
@@ -17,7 +18,8 @@ module RuneBlog::REPL
     check_empty(arg)
 #   system("tput rmcup")
     RubyText.stop
-    abort "\n "
+    system("tput clear")
+    exit
   end
 
   def cmd_clear(arg)
@@ -36,13 +38,11 @@ module RuneBlog::REPL
   def cmd_config(arg)
     check_empty(arg)
     dir = @blog.view.dir
-    items = ["Edit: publish", 
-             "Edit: custom/blog_header.html", 
-             "Edit: custom/blog_trailer.html", 
-             "Edit: custom/post_template.html"] 
-#   puts "\nEdit which file?"  # FIXME use @out for testing later
-    num, cmd = RubyText.menu(r: 10, c: 30, items: items)
-    fname = cmd.split[1]
+    items = ["publish", 
+             "custom/blog_header.html", 
+             "custom/blog_trailer.html", 
+             "custom/post_template.html"] 
+    num, fname = RubyText.menu(title: "Edit file:", items: items)
     edit_file("#{dir}/#{fname}")
   end
 
@@ -122,7 +122,7 @@ module RuneBlog::REPL
     if arg.nil?
       viewnames = @blog.views.map {|x| x.name }
       n = viewnames.find_index(@blog.view.name)
-      k, name = RubyText.menu(c: 30, items: viewnames, curr: n)
+      k, name = RubyText.menu(title: "Views", items: viewnames, curr: n)
       @blog.view = name
       output bold(@blog.view)
       puts "\n  ", fx(name, :bold), "\n"

@@ -65,7 +65,7 @@ if cmd.nil?   # REPL
   puts fx("\n  RuneBlog", :bold), fx(" v #{RuneBlog::VERSION}", Red)
   loop { mainloop }
 # STDSCR.clear
-  RubyText.stop
+# RubyText.stop
   system("tput clear")
   puts
 else  # one command
