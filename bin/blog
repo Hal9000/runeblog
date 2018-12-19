@@ -3,8 +3,7 @@
 # $LOAD_PATH << "./lib"
 
 require 'global'
-require 'rubytext' if curses?
-require 'readline'
+require 'rubytext'
 
 require 'repl'
 
@@ -20,12 +19,8 @@ def get_argv
 end
 
 def mainloop
-  if curses?
-    print fx("blog> ", Red)
-    cmd = STDSCR.gets
-  else
-    cmd = Readline.readline(red("\nblog> "), true)
-  end
+  print fx("blog> ", Red)
+  cmd = STDSCR.gets
   cmd_quit(nil) if cmd.nil?   # ^D
   cmd.chomp!
   return if cmd.empty?   # CR does nothing
@@ -60,12 +55,9 @@ end
 # STDSCR.clear if curses?
 
 if cmd.nil?   # REPL
-# system("tput smcup")  # see: tput rmcup in cmd_quit
-
-  puts fx("\n  RuneBlog", :bold), fx(" v #{RuneBlog::VERSION}", Red)
+  puts fx("\n  RuneBlog", :bold), fx(" v #{RuneBlog::VERSION}\n", Red)
   loop { mainloop }
-# STDSCR.clear
-# RubyText.stop
+  sleep 0.2
   system("tput clear")
   puts
 else  # one command

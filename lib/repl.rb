@@ -42,7 +42,7 @@ module RuneBlog::REPL
              "custom/blog_header.html", 
              "custom/blog_trailer.html", 
              "custom/post_template.html"] 
-    num, fname = RubyText.menu(title: "Edit file:", items: items)
+    num, fname = STDSCR.menu(title: "Edit file:", items: items)
     edit_file("#{dir}/#{fname}")
   end
 
@@ -87,8 +87,7 @@ module RuneBlog::REPL
     output_newline
     dir = "#{sroot}/#{spath}"
     # FIXME - may or may not already exist
-    result = system("ssh root@#{server} mkdir #{dir}") 
-    # ^ needs -c?? 
+    result = system("ssh root@#{server} mkdir -p #{dir}") 
 
     cmd = "scp -r #{files.join(' ')} root@#{server}:#{dir} >/dev/null 2>&1"
     output! "Publishing #{files.size} files...\n"
@@ -122,7 +121,7 @@ module RuneBlog::REPL
     if arg.nil?
       viewnames = @blog.views.map {|x| x.name }
       n = viewnames.find_index(@blog.view.name)
-      k, name = RubyText.menu(title: "Views", items: viewnames, curr: n)
+      k, name = STDSCR.menu(title: "Views", items: viewnames, curr: n)
       @blog.view = name
       output bold(@blog.view)
       puts "\n  ", fx(name, :bold), "\n"

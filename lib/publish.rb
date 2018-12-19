@@ -33,7 +33,7 @@ class RuneBlog::Publishing
     debug "files = #{files.inspect}"
     reset_output
     dir = "#@docroot/#@path"
-    result = system("ssh #@user@#@server -x mkdir #{dir}") 
+    result = system("ssh #@user@#@server -x mkdir -p #{dir}") 
     list = files.join(' ')
     cmd = "scp -r #{list} #@user@#@server:#{dir} >/dev/null 2>/tmp/wtf"
     output! "Publishing #{files.size} files...\n"
