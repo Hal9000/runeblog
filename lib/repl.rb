@@ -69,37 +69,41 @@ module RuneBlog::REPL
   end
 
   def cmd_publish(arg)  # FIXME non-string return expected in caller?
+    puts
     reset_output
     check_empty(arg)
     unless @blog.view.can_publish?
+      puts "Can't publish without entries in #{@blog.view.name}/publish"
       output! "Can't publish without entries in #{@blog.view.name}/publish"
-      return [true, @out]
+      return [false, @out]
     end
-    @blog.view.publish
-    user, server, sroot, spath = *@publish[@blog.view]
-    if files.empty?    # FIXME  baloney
-      output! "No files to publish"
-      return [true, @out]
-    end
+    RubyText.spinner { @blog.view.publish }
+#     user, server, sroot, spath = *@publish[@blog.view]
+#     if files.empty?    # FIXME  baloney
+#       output! "No files to publish"
+#       return [true, @out]
+#     end
 
-    output "Files:"
-    files.each {|f| output "    #{f}\n" }
-    output_newline
-    dir = "#{sroot}/#{spath}"
-    # FIXME - may or may not already exist
-    result = system("ssh root@#{server} mkdir -p #{dir}") 
-
-    cmd = "scp -r #{files.join(' ')} root@#{server}:#{dir} >/dev/null 2>&1"
-    output! "Publishing #{files.size} files...\n"
-    result = system(cmd)
-    raise PublishError unless result
+#     output "Files:"
+#     files.each {|f| output "    #{f}\n" }
+#     output_newline
+#     dir = "#{sroot}/#{spath}"
+#     # FIXME - may or may not already exist
+#     result = system("ssh root@#{server} mkdir -p #{dir}") 
+# 
+#     cmd = "scp -r #{files.join(' ')} root@#{server}:#{dir} >/dev/null 2>&1"
+#     output! "Publishing #{files.size} files...\n"
+#     result = system(cmd)
+#     raise PublishError unless result
 
     dump(files, "#{vdir}/last_published")
+    puts "  ...finished" 
     output! "...finished.\n"
-    return [true, @out]
+    return [false, @out]
   end
 
   def cmd_rebuild(arg)
+    debug "Starting cmd_rebuild..."
     reset_output
     check_empty(arg)
     puts  # CHANGE_FOR_CURSES?
@@ -201,7 +205,6 @@ module RuneBlog::REPL
     check_empty(arg)
     puts
     @blog.views.each do |v| 
-      debug "v = #{v.inspect}"
       v = v.to_s
       v = fx(v, :bold) if v == @blog.view.name
       print "  "

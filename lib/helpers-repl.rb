@@ -272,36 +272,25 @@ module RuneBlog::REPL
 
   ### find_asset
 
-#   def find_asset(asset)    # , views)
-# # STDERR.puts "repl find_asset: @meta = #{@meta.inspect}"
-#     views = @meta.views
-#     views.each do |view| 
-#       vdir = @config.viewdir(view)
-#       post_dir = "#{vdir}#{@meta.slug}/assets/"
-#       path = post_dir + asset
-#       STDERR.puts "          Seeking #{path}"
-#       return path if File.exist?(path)
-#     end
-#     views.each do |view| 
-#       dir = @config.viewdir(view) + "/assets/"
-#       path = dir + asset
-#       STDERR.puts "          Seeking #{path}"
-#       return path if File.exist?(path)
-#     end
-#     top = @root + "/assets/"
-#     path = top + asset
-#     STDERR.puts "          Seeking #{path}"
-#     return path if File.exist?(path)
-# 
-#     return nil
-#   end
-# 
-#   ### find_all_assets
-# 
-#   def find_all_assets(list, views)
-# #   STDERR.puts "\n  Called find_all_assets with #{list.inspect}"
-#     list ||= []
-#     list.each {|asset| puts "#{asset} => #{find_asset(asset, views)}" }
-#   end
+  # FIXME is this per-post?
 
+  def find_asset(asset_name)    # , views)
+    search_path = proc do |path| 
+      full_path = path + asset_name
+      return full_path if File.exist?(full_path)
+    end
+    views = @meta.views
+    views.each do |view| search_path.call("#{view.dir}/#{@meta.slug}/assets/") end
+    views.each do |view| search_path.call(view.dir + "/assets/") end
+    search_path.call(@root + "/assets/", asset_name)
+    # If all fail... return nil
+    return nil
+  end
+
+  ### find_all_assets
+
+  def find_all_assets(list, views)
+    list ||= []
+    list.each {|asset| puts "#{asset} => #{find_asset(asset, views)}" }
+  end
 end

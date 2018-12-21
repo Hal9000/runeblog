@@ -26,7 +26,7 @@ class RuneBlog::Publishing
   end
 
   def url
-    url = "#{protocol}://#{@server}/#{@path}"
+    url = "#@proto://#@server/#@path"
   end
  
   def publish(files)

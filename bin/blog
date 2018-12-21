@@ -20,7 +20,7 @@ end
 
 def mainloop
   print fx("blog> ", Red)
-  cmd = STDSCR.gets
+  cmd = STDSCR.gets(history: @cmdhist)
   cmd_quit(nil) if cmd.nil?   # ^D
   cmd.chomp!
   return if cmd.empty?   # CR does nothing
@@ -56,6 +56,7 @@ end
 
 if cmd.nil?   # REPL
   puts fx("\n  RuneBlog", :bold), fx(" v #{RuneBlog::VERSION}\n", Red)
+  @cmdhist = []
   loop { mainloop }
   sleep 0.2
   system("tput clear")

@@ -20,6 +20,7 @@ module RuneBlog::Helpers
   rescue => err
     puts "Something hit the fan: #{err}"  # CHANGE_FOR_CURSES?
     puts err.backtrace.join("\n")  # CHANGE_FOR_CURSES?
+    puts "dir = #{Dir.pwd}"
     exit
   end
 

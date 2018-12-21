@@ -2,13 +2,14 @@
   6 4 - more tests!
   6 6 - resolve issues: draft vs post, kill, etc.
 
-  5 5 - check remote mkdir
+  6 2 - publish is buggy
+  5 2 - pin command
+
   5 5 - screen/colors messed up on exit
 
-  6 3 - config command (See notes.txt)
   7 6 - add post template capability
 
-  4 4 - spinner for publishing, etc.
+x 4 4 - spinner for publishing, etc.
 
 * 6 4 - work on: rebuild, relink, link_post, generate, ...
 
@@ -77,6 +78,8 @@
   8 7 - docs: how to write templates (incl main one)
   8 6 - docs: overview of Livetext
 
+x 5 5 - check remote mkdir
+x 6 3 - config command (See notes.txt)
 x 3 3 - dumb_menu method
 x 3 3 - rethink publish/deploy 
 x 2 2 - remove explicit tag formatting

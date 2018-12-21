@@ -298,6 +298,7 @@ class RuneBlog
   end
 
   def rebuild_post(file)
+    debug "Called rebuild_post(#{file.inspect})"
     raise ArgumentError unless file.is_a?(String)
     @meta = process_post(file)
     @meta.views.each do |view| 
@@ -350,6 +351,7 @@ class RuneBlog
   end
 
   def make_slug(title, postnum = nil)
+    debug "title = #{title.inspect} (#{title.class})"
     raise ArgumentError unless title.is_a?(String)
     postnum ||= self.next_sequence
     num = '%04d' % postnum   # FIXME can do better
