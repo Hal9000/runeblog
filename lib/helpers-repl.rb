@@ -59,7 +59,7 @@ end
 
 
 module RuneBlog::REPL
-  include curses? ? NoANSI : WithANSI
+  include NoANSI
 
   Patterns = 
     {"help"              => :cmd_help, 

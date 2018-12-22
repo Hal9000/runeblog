@@ -1,6 +1,8 @@
 $LOAD_PATH << "."
 
-require 'lib/repl'
+require 'global'
+require 'rubytext'
+require 'repl'
 
 def make_post(x, title)
   meta = OpenStruct.new

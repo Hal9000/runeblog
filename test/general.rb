@@ -5,6 +5,8 @@ require "minitest/autorun"
 require 'lib/repl'
 require 'rubytext'
 
+RubyText.start
+
 class TestREPL < Minitest::Test
   include RuneBlog::REPL
 
@@ -18,6 +20,7 @@ class TestREPL < Minitest::Test
   def setup
     # To be strictly correct in testing (though slower),
     #   run make_blog here.
+    system("ruby test/make_blog.rb") if ARGV.first == "new"
     @blog = RuneBlog.new
   end
 
@@ -42,11 +45,12 @@ class TestREPL < Minitest::Test
     flag, out = cmd_list_views(nil)
     assert out.is_a?(String), "Expected a string returned"
     lines = out.split("\n").length 
+p out
     assert lines >= 2, "Expecting at least 2 lines"
   end
  
   def test_004_change_view!
-    flag, out = cmd_change_view(nil)  # no param
+    flag, out = cmd_change_view(nil, true)  # no param, but testing
     assert out.is_a?(String), "Expected a string; got: #{out.inspect}"
     assert out =~ /alpha_view/m, "Expecting 'alpha_view' as default; got: #{out.inspect}"
   end

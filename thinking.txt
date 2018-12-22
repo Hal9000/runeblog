@@ -1,0 +1,34 @@
+** Thinking about assets...
+
+Search as far up the tree as necessary?
+Copy to server? Or also to local dir?
+
+Why do we even track assets? 
+ - So they can be uploaded to the remote server as needed.
+ - ? So they can be moved to optimum point of use?
+Remember to update "src=" properly.
+First order simplification:
+  - dump all into view/assets
+  - let .image be aware of view/assets
+  - publish dumps all needed assets (looking at checksums? Or just published list?)
+  - how to handle in repl?
+
+
+** Thinking about templates...
+
+Should there be global templates? Maybe with
+  more than one view specified?
+Should there be a default template per view?
+Always select view when starting post? Unless there
+  is only one to choose?
+Or select a template, then start a post?
+Templates are part of "config" menu??
+
+
+Templates:
+  Austin event
+  Book review
+  Movie review
+  Software/gadget unboxing/review
+  ...
+

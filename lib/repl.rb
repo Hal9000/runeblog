@@ -119,15 +119,16 @@ module RuneBlog::REPL
     nil
   end
 
-  def cmd_change_view(arg)
+  def cmd_change_view(arg, testing = false)
     reset_output
     # Simplify this
     if arg.nil?
       viewnames = @blog.views.map {|x| x.name }
       n = viewnames.find_index(@blog.view.name)
-      k, name = STDSCR.menu(title: "Views", items: viewnames, curr: n)
+      name = @blog.view.name
+      k, name = STDSCR.menu(title: "Views", items: viewnames, curr: n) unless testing
       @blog.view = name
-      output bold(@blog.view)
+      output name + "\n"
       puts "\n  ", fx(name, :bold), "\n"
       return [false, @out]
     else
@@ -208,6 +209,7 @@ module RuneBlog::REPL
       v = v.to_s
       v = fx(v, :bold) if v == @blog.view.name
       print "  "
+      output v + "\n"
       puts v
     end
     puts

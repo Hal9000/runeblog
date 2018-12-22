@@ -38,7 +38,7 @@ debug "Looking in #{vdir}"
     others = Dir.entries(vdir).grep(/^\d\d\d\d/)
     files += others.map {|x| "#{vdir}/#{x}" }
 debug "Found #{files.inspect}"
-#   files.reject! {|f| recent?(f) } if recent
+    files.reject! {|f| ! recent?(f) } if recent
 debug "Now files = #{files.inspect}"
     files
   end
@@ -59,7 +59,9 @@ debug "Now files = #{files.inspect}"
   end
 
   def recent?(file)
-    File.mtime(file) < File.mtime("#{dir()}/last_published")
+    File.mtime(file) > File.mtime("#{dir()}/last_published")
+  rescue
+    true
   end
 
 end
