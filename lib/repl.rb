@@ -14,7 +14,7 @@ module RuneBlog::REPL
     STDSCR.clear
   end
 
-  def cmd_quit(arg)
+  def cmd_quit(arg, testing = false)
     check_empty(arg)
 #   system("tput rmcup")
     RubyText.stop
@@ -22,20 +22,20 @@ module RuneBlog::REPL
     exit
   end
 
-  def cmd_clear(arg)
+  def cmd_clear(arg, testing = false)
     check_empty(arg)
     STDSCR.cwin.clear
     STDSCR.cwin.refresh
   end
 
-  def cmd_version(arg)
+  def cmd_version(arg, testing = false)
     reset_output
     check_empty(arg)
     output RuneBlog::VERSION
     [true, @out]
   end
 
-  def cmd_config(arg)
+  def cmd_config(arg, testing = false)
     check_empty(arg)
     dir = @blog.view.dir
     items = ["publish", 
@@ -46,7 +46,7 @@ module RuneBlog::REPL
     edit_file("#{dir}/#{fname}")
   end
 
-  def cmd_browse(arg)
+  def cmd_browse(arg, testing = false)
     reset_output
     check_empty(arg)
     url = @blog.view.publisher.url
@@ -60,7 +60,7 @@ module RuneBlog::REPL
     nil
   end
 
-  def cmd_preview(arg)
+  def cmd_preview(arg, testing = false)
     reset_output
     check_empty(arg)
     local = @blog.view.index
@@ -68,51 +68,36 @@ module RuneBlog::REPL
     raise CantOpen(local) unless result
   end
 
-  def cmd_publish(arg)  # FIXME non-string return expected in caller?
-    puts
+  def cmd_publish(arg, testing = false)  # FIXME non-string return expected in caller?
+    puts unless testing
     reset_output
     check_empty(arg)
     unless @blog.view.can_publish?
-      puts "Can't publish without entries in #{@blog.view.name}/publish"
+      puts "Can't publish without entries in #{@blog.view.name}/publish" unless testing
       output! "Can't publish without entries in #{@blog.view.name}/publish"
       return [false, @out]
     end
     RubyText.spinner { @blog.view.publish }
-#     user, server, sroot, spath = *@publish[@blog.view]
-#     if files.empty?    # FIXME  baloney
-#       output! "No files to publish"
-#       return [true, @out]
-#     end
-
-#     output "Files:"
-#     files.each {|f| output "    #{f}\n" }
-#     output_newline
-#     dir = "#{sroot}/#{spath}"
-#     # FIXME - may or may not already exist
-#     result = system("ssh root@#{server} mkdir -p #{dir}") 
-# 
-#     cmd = "scp -r #{files.join(' ')} root@#{server}:#{dir} >/dev/null 2>&1"
-#     output! "Publishing #{files.size} files...\n"
-#     result = system(cmd)
-#     raise PublishError unless result
-
-    dump(files, "#{vdir}/last_published")
-    puts "  ...finished" 
+    dump("fix this later", "#{vdir}/last_published")
+    puts "  ...finished" unless testing
     output! "...finished.\n"
     return [false, @out]
   end
 
-  def cmd_rebuild(arg)
+  def cmd_rebuild(arg, testing = false)
     debug "Starting cmd_rebuild..."
     reset_output
     check_empty(arg)
-    puts  # CHANGE_FOR_CURSES?
+    puts unless testing
+debug "cp1"
     files = @blog.find_src_slugs
+debug "cp2"
     files.each {|file| @blog.rebuild_post(file) }
+debug "cp3"
     nil
   end
 
-  def cmd_relink(arg)
+  def cmd_relink(arg, testing = false)
     reset_output
     check_empty(arg)
     @blog.relink
@@ -129,7 +114,7 @@ module RuneBlog::REPL
       k, name = STDSCR.menu(title: "Views", items: viewnames, curr: n) unless testing
       @blog.view = name
       output name + "\n"
-      puts "\n  ", fx(name, :bold), "\n"
+      puts "\n  ", fx(name, :bold), "\n" unless testing
       return [false, @out]
     else
       if @blog.view?(arg)
@@ -140,7 +125,7 @@ module RuneBlog::REPL
     return [false, @out]
   end
 
-  def cmd_new_view(arg)
+  def cmd_new_view(arg, testing = false)
     reset_output
     @blog.create_view(arg)
     resp = yesno("Add publishing info now? ")
@@ -149,18 +134,19 @@ module RuneBlog::REPL
     nil
   end
 
-  def cmd_new_post(arg)
+  def cmd_new_post(arg, testing = false)
     reset_output
     check_empty(arg)
     title = ask("\nTitle: ")
-    meta = OpenStruct.new
-    meta.title = title
-    @blog.create_new_post(meta)
+    @blog.create_new_post(title)
     STDSCR.clear
     nil
+  rescue => err
+    puts err
+    puts err.backtrace.join("\n")
   end
 
-  def cmd_kill(arg)
+  def cmd_kill(arg, testing = false)
     reset_output
     args = arg.split
     args.each do |x| 
@@ -173,7 +159,7 @@ module RuneBlog::REPL
 
   #-- FIXME affects linking, building, publishing...
 
-  def cmd_remove_post(arg, safe=true)
+  def cmd_remove_post(arg, testing = false, safe=true)
     # FIXME - 'safe' is no longer a thing
     reset_output
     id = get_integer(arg)
@@ -184,7 +170,7 @@ module RuneBlog::REPL
 
   #-- FIXME affects linking, building, publishing...
 
-  def cmd_edit_post(arg)
+  def cmd_edit_post(arg, testing = false)
     reset_output
     id = get_integer(arg)
     # Simplify this
@@ -201,74 +187,74 @@ module RuneBlog::REPL
     nil
   end
 
-  def cmd_list_views(arg)
+  def cmd_list_views(arg, testing = false)
     reset_output("\n")
     check_empty(arg)
-    puts
+    puts unless testing
     @blog.views.each do |v| 
       v = v.to_s
       v = fx(v, :bold) if v == @blog.view.name
       print "  "
       output v + "\n"
-      puts v
+      puts v unless testing
     end
-    puts
+    puts unless testing
     return [false, @out]
   end
 
-  def cmd_list_posts(arg)
+  def cmd_list_posts(arg, testing = false)
     reset_output
     check_empty(arg)
     posts = @blog.posts  # current view
     str = @blog.view.name + ":\n"
     output str
-    puts
+    puts unless testing
     print "  "
-    puts fx(str, :bold)
+    puts fx(str, :bold) unless testing
     if posts.empty?
       output! bold("No posts")
-      puts fx("  No posts", :bold)
+      puts fx("  No posts", :bold) unless testing
     else
       posts.each do |post| 
         outstr "  #{colored_slug(post)}\n" 
         base = post.sub(/.lt3$/, "")
         num, rest = base[0..3], base[4..-1]
         print "  "
-        puts fx(num, Red), fx(rest, Blue)
+        puts fx(num, Red), fx(rest, Blue) unless testing
       end
     end
-    puts
+    puts unless testing
     return [false, @out]
   end
 
-  def cmd_list_drafts(arg)
+  def cmd_list_drafts(arg, testing = false)
     reset_output
     check_empty(arg)
     drafts = @blog.drafts  # current view
     if drafts.empty?
       output! "No drafts"
-      puts "  No drafts"
+      puts "  No drafts" unless testing
       return [true, @out]
     else
-      puts
+      puts unless testing
       drafts.each do |draft| 
         outstr "  #{colored_slug(draft.sub(/.lt3$/, ""))}\n" 
         base = draft.sub(/.lt3$/, "")
         num, rest = base[0..3], base[4..-1]
         print "  "
-        puts fx(num, Red), fx(rest, Blue)
+        puts fx(num, Red), fx(rest, Blue) unless testing
       end
     end
-    puts
+    puts unless testing
     return [false, @out]
   end
 
-  def cmd_INVALID(arg)
+  def cmd_INVALID(arg, testing = false)
     reset_output "\n  Command '#{red(arg)}' was not understood."
     return [true, @out]
   end
 
-  def cmd_help(arg)
+  def cmd_help(arg, testing = false)
     reset_output 
     check_empty(arg)
     output(<<-EOS)

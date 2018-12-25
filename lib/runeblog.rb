@@ -53,6 +53,7 @@ class RuneBlog
   rescue => err
     puts "Can't create blog: '#{dir}' - #{err}"  # CHANGE_FOR_CURSES?
     puts err.backtrace.join("\n")  # CHANGE_FOR_CURSES?
+    sleep 5
   end
 
   def initialize   # assumes existing blog
@@ -101,7 +102,9 @@ class RuneBlog
   end
 
   def next_sequence
-    dump(@sequence += 1, "#@root/sequence")
+    @sequence += 1
+    debug "seq = #@sequence  caller = #{caller.join("\n")}"
+    dump(@sequence, "#@root/sequence")
     @sequence
   end
 
@@ -164,17 +167,25 @@ class RuneBlog
     result
   end
 
-# def create_new_post(title, testing = false, teaser = nil, body = nil)
-  def create_new_post(meta, testing = false)
-    meta.teaser ||= "Teaser goes here."
-    meta.body ||= "Remainder of post goes here."
-    post = RuneBlog::Post.new(meta, @view.to_s)
+  def create_new_post(title, testing = false)
+    # FIXME maybe not distinguish between a post and its metadata??
+debug "cnp title = #{title.inspect}"
+    meta = OpenStruct.new
+    meta.title = title
+    meta.teaser = "Teaser goes here."
+    meta.body   = "Remainder of post goes here."
+    meta.num    = self.next_sequence
+    check_meta(meta, "cnp1")
+    post = RuneBlog::Post.new(meta, @view.name)  #???
     post.edit unless testing
-    post.build
-    post.num
+    check_meta(meta, "cnp2")
+    post.build(meta)
+    check_meta(meta, "cnp3")
+    meta.num
   rescue => err
-    puts err # error(err)  # CHANGE_FOR_CURSES?
-    puts err.backtrace.join("\n")  # CHANGE_FOR_CURSES?
+    puts err
+    puts err.backtrace.join("\n")
+    sleep 5
   end
 
   def edit_initial_post(file, testing = false)
@@ -184,6 +195,7 @@ class RuneBlog
     nil
   rescue => err
     error(err)
+    sleep 5
   end
 
   def posts
@@ -206,24 +218,29 @@ class RuneBlog
   end
 
   def process_post(file)
+debug "procpost 1: file = #{file.inspect}"
     raise ArgumentError unless file.is_a?(String)
     path = @root + "/src/#{file}"
     raise FileNotFound(path) unless File.exist?(path)
     livetext = Livetext.new(STDOUT) # (nil)
-    @meta = livetext.process_file(path, binding)
-    raise LivetextError(path) if @meta.nil?
+    @meta2 = livetext.process_file(path, binding)
+@meta2.num = file.to_i  # dumb af
+    check_meta(@meta2, "procpost1")
+    raise LivetextError(path) if @meta2.nil?
 
-    num, slug = self.make_slug(@meta.title, self.sequence)
-    slug = file.sub(/.lt3$/, "")
-    @meta.slug = slug
-    @meta
+    self.make_slug(@meta2)  # RuneBlog#process_post
+    # slug = file.sub(/.lt3$/, "")
+    # @meta.slug = slug
+    @meta2
   rescue => err
     error(err)
+    sleep 5
   end
 
   def build_post_view(view)
     # Create dir using slug (index.html, metadata?)
     vdir = self.viewdir(view) # FIXME
+    check_meta(@meta, "build_post_view")
     dir = vdir + @meta.slug + "/"
     create_dir(dir + "assets") 
     Dir.chdir(dir) do
@@ -237,6 +254,7 @@ class RuneBlog
     generate_index(view)
   rescue => err
     error(err)
+    sleep 5
   end
 
   def generate_index(view)
@@ -261,6 +279,8 @@ class RuneBlog
       pdir = vdir + "/" + post
       Dir.chdir(pdir) do
         meta = read_config("metadata.txt")
+        meta.num = post.to_i  # first 4 digits
+        check_meta(meta, "gen_index")
         meta.teaser = File.read("teaser.txt")
         meta.body = File.read("body.txt")
       end
@@ -273,6 +293,7 @@ class RuneBlog
     end
   rescue => err
     error(err)
+    sleep 5
     exit
   end
 
@@ -281,8 +302,12 @@ class RuneBlog
   end
 
   def index_entry(view, meta)
+    check_meta(meta, "index_entry1")
+    debug "\nindex_entry: meta = #{meta.inspect}"
     raise ArgumentError unless view.is_a?(String) || view.is_a?(RuneBlog::View)
-    meta.slug ||= make_slug(meta.title)
+    check_meta(meta, "index_entry2")
+    self.make_slug(meta)    # RuneBlog#index_entry
+    check_meta(meta, "index_entry3")
     # FIXME clean up and generalize
     ref = "#{view}/#{meta.slug}/index.html"
     <<-HTML
@@ -300,12 +325,13 @@ class RuneBlog
   def rebuild_post(file)
     debug "Called rebuild_post(#{file.inspect})"
     raise ArgumentError unless file.is_a?(String)
-    @meta = process_post(file)
-    @meta.views.each do |view| 
-      build_post_view(view)
-    end
+    @meta2 = process_post(file)
+    check_meta(@meta2, "rebuild_post")
+debug "rebuild_post: @meta2 = #{@meta2.inspect}"
+    @meta2.views.each {|view| build_post_view(view) }
   rescue => err
     error(err)
+    sleep 5
   end
 
   def remove_post(num)
@@ -350,13 +376,17 @@ class RuneBlog
     list.empty? ? nil : list
   end
 
-  def make_slug(title, postnum = nil)
-    debug "title = #{title.inspect} (#{title.class})"
-    raise ArgumentError unless title.is_a?(String)
-    postnum ||= self.next_sequence
-    num = '%04d' % postnum   # FIXME can do better
-    slug = title.downcase.strip.gsub(' ', '-').gsub(/[^\w-]/, '')
-    [postnum, "#{num}-#{slug}"]
+  def make_slug(meta)
+    check_meta(meta, "makeslug")
+debug "mkslug 1: meta = #{meta.inspect}"
+    raise ArgumentError unless meta.title.is_a?(String)
+    label = '%04d' % meta.num   # FIXME can do better
+debug "mkslug 2: label = #{label.inspect}"
+    slug0 = meta.title.downcase.strip.gsub(' ', '-').gsub(/[^\w-]/, '')
+debug "mkslug 2: slug0 = #{slug0.inspect}"
+    str = "#{label}-#{slug0}"
+    meta.slug = str
+    str
   end
 
 end

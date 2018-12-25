@@ -149,7 +149,9 @@ module RuneBlog::REPL
 
   def ask(prompt, meth = :to_s)
     print prompt
-    gets.chomp.send(meth)
+    str = gets
+    str.chomp!
+    str.send(meth)
   end
 
   def yesno(prompt, meth = :to_s)
@@ -224,7 +226,7 @@ module RuneBlog::REPL
     name = arg
     grep = `grep ^.title #{name}`
     @title = grep.sub(/^.title /, "")
-    @slug = @blog.make_slug(@title)
+    @slug = @blog.make_slug(@title) # import (not impl)
     @fname = @slug + ".lt3"
     result = system("cp #{name} #@root/src/#@fname")
     raise CantCopy(name, "#@root/src/#@fname") unless result
@@ -278,7 +280,8 @@ module RuneBlog::REPL
     search_path = proc do |path| 
       full_path = path + asset_name
       return full_path if File.exist?(full_path)
-    end
+    end 
+    check_meta(@meta, "find_asset")
     views = @meta.views
     views.each do |view| search_path.call("#{view.dir}/#{@meta.slug}/assets/") end
     views.each do |view| search_path.call(view.dir + "/assets/") end

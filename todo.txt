@@ -2,8 +2,13 @@
   6 4 - more tests!
   6 6 - resolve issues: draft vs post, kill, etc.
 
+  7 4 - tests are screwed up
+
   6 2 - publish is buggy
   5 2 - pin command
+
+   
+  3 3 - [false, @out]
 
   5 5 - screen/colors messed up on exit
 

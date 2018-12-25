@@ -7,16 +7,7 @@ require 'rubytext'
 
 require 'repl'
 
-# trap("INT") { }
-
 include RuneBlog::REPL
-
-def get_argv
-  return nil if ARGV.size == 0
-  cmd = ARGV[0..1].join(" ")
-  arg = ARGV[2]
-  [cmd, arg]
-end
 
 def mainloop
   print fx("blog> ", Red)
@@ -31,14 +22,9 @@ rescue => err
   puts err
 end
 
-
-###########
+###
 
 RubyText.start(:_echo, :keypad, scroll: true, log: "blogcmd.txt", fg: Blue, bg: White)
-
-# STDOUT.sync = true
-
-cmd, arg = get_argv
 
 if ! RuneBlog.exist?
   print "No blog found. Create new one? (y/n) "
@@ -52,22 +38,10 @@ end
 
 @blog = RuneBlog.new
 
-# STDSCR.clear if curses?
-
-if cmd.nil?   # REPL
-  puts fx("\n  RuneBlog", :bold), fx(" v #{RuneBlog::VERSION}\n", Red)
-  @cmdhist = []
-  loop { mainloop }
-  sleep 0.2
-  system("tput clear")
-  puts
-else  # one command
-  file = File.open("/dev/tty")
-  STDIN.reopen(file)    # avoid ARGF dumbness
-  cmd = ARGV.join(" ")
-  meth, params = RuneBlog::REPL.choose_method(cmd)
-  str = send(meth, params)
-  puts str unless str.nil?
-  puts
-end
+puts fx("\n  RuneBlog", :bold), fx(" v #{RuneBlog::VERSION}\n", Red)
+@cmdhist = []
+loop { mainloop }
+sleep 0.2
+system("tput clear")
+puts
 

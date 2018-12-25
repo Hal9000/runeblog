@@ -8,8 +8,11 @@ Why do we even track assets?
  - ? So they can be moved to optimum point of use?
 Remember to update "src=" properly.
 First order simplification:
+  - .image copies into assets?
+  - should worry about filenames overwritten
   - dump all into view/assets
   - let .image be aware of view/assets
+  - HTML should say src=assets/...
   - publish dumps all needed assets (looking at checksums? Or just published list?)
   - how to handle in repl?
 

@@ -27,14 +27,16 @@ class TestREPL < Minitest::Test
   # Note: "Bang" methods depend on the data_test subtree
 
   def test_001_cmd_help
-    flag, out = cmd_help(nil)
+#   puts __method__
+    flag, out = cmd_help(nil, true)
     assert out.is_a?(String), "Expected a string returned"
     lines = out.split("\n").length 
     assert lines > 25, "Expecting lengthy help message"
   end
 
   def test_002_cmd_version
-    flag, out = cmd_version(nil)
+#   puts __method__
+    flag, out = cmd_version(nil, true)
     assert out.is_a?(String), "Expected a string returned"
     lines = out
     assert lines =~ /\d+\.\d+\.\d+/m,
@@ -42,34 +44,38 @@ class TestREPL < Minitest::Test
   end
 
   def test_003_list_views!
-    flag, out = cmd_list_views(nil)
+#   puts __method__
+    flag, out = cmd_list_views(nil, true)
     assert out.is_a?(String), "Expected a string returned"
     lines = out.split("\n").length 
-p out
     assert lines >= 2, "Expecting at least 2 lines"
   end
  
   def test_004_change_view!
+#   puts __method__
     flag, out = cmd_change_view(nil, true)  # no param, but testing
     assert out.is_a?(String), "Expected a string; got: #{out.inspect}"
     assert out =~ /alpha_view/m, "Expecting 'alpha_view' as default; got: #{out.inspect}"
   end
 
   def test_005_lsd!
-    flag, out = cmd_list_drafts(nil)
+#   puts __method__
+    flag, out = cmd_list_drafts(nil, true)
     assert out.is_a?(String), "Expected a string returned"
     lines = out.split("\n").length 
     assert lines == 10, "Expecting 10 lines; got #{show_lines(out)}"
   end
 
-  def test_006_lsp!
-    flag, out = cmd_list_posts(nil)
+  def xtest_006_lsp!
+    puts __method__
+    flag, out = cmd_list_posts(nil, true)
     assert out.is_a?(String), "Expected a string returned; got: #{out.inspect}"
     lines = out.split("\n").length 
     assert lines == 6, "Expecting 6 lines; got #{show_lines(out)}"
   end
 
   def test_007_parser
+#   puts __method__
     parse_tests = {
       # Loading/trailing blanks as well
       "kill 81 82 83"     => [:cmd_kill, "81 82 83"],
@@ -116,10 +122,12 @@ p out
   end
 
   def test_008_current_view!
+#   puts __method__
     assert @blog.view.to_s == "alpha_view", "Current view wrong (#{@blog.view}, not alpha_view)"
   end
 
   def test_009_change_view!
+#   puts __method__
     assert @blog.change_view("beta_view")
     assert @blog.view.to_s == "beta_view", "Current view wrong (#{@blog.view}, not beta_view)"
     assert @blog.change_view("alpha_view")
@@ -127,12 +135,14 @@ p out
   end
 
   def test_010_accessors!
+#   puts __method__
     sorted_views = @blog.views.map(&:to_s).sort
     assert sorted_views == ["alpha_view", "beta_view", "gamma_view", "test_view"], 
            "Got: #{sorted_views.inspect}"
   end
 
   def test_011_create_delete_view!
+#   puts __method__
     @blog.create_view("anotherview")
     sorted_views = @blog.views.map(&:to_s).sort
     assert sorted_views == ["alpha_view", "anotherview", "beta_view", "gamma_view", "test_view"], 
@@ -143,7 +153,8 @@ p out
            "After delete: #{sorted_views.inspect}"
   end
 
-  def test_012_create_remove_post!
+  def xtest_012_create_remove_post!
+#   puts __method__
     @blog.change_view("beta_view")
     assert @blog.view.to_s == "beta_view", "Expected beta_view"
     nposts = @blog.posts.size 
@@ -163,6 +174,7 @@ p out
   end
 
   def test_013_slug_tests
+    puts __method__
     hash = { "abcxyz"      => "abcxyz",      # 0-based
              "abc'xyz"     => "abcxyz",
              'abc"xyz'     => "abcxyz",
@@ -173,25 +185,30 @@ p out
            }
     hash.each_pair.with_index do |keys, i|
       real, fixed = *keys
-      result = @blog.make_slug(real)[1][5..-1]  # weird? returns [99, "0099-whatever"]
+      meta = OpenStruct.new
+      meta.title = real
+      meta.num = 99
+      result = @blog.make_slug(meta)[5..-1]  # Skip num (test_013...)
       assert result == fixed, "Case #{i}: expected: #{fixed.inspect}, got #{result.inspect}"
     end
   end
 
   def test_014_remove_nonexistent_post!
+#   puts __method__
     @blog.change_view("alpha_view")
-    flag, out = cmd_remove_post(99)
+    flag, out = cmd_remove_post(99, true)
     assert out =~ /Post 99 not found/, "Expected error about nonexistent post, got: #{out}"
   end
 
   def test_015_kill_multiple_posts!
+#   puts __method__
     @blog.change_view("alpha_view")
-    flag, out = cmd_list_posts(nil)
+    flag, out = cmd_list_posts(nil, true)
     before = out.split("\n").length 
-    flag, out = cmd_kill("1  2 7")
-    flag, out = cmd_list_posts(nil)
+    flag, out = cmd_kill("1  2 7", true)
+    flag, out = cmd_list_posts(nil, true)
     after = out.split("\n").length 
-    expecting = before - 2
+    expecting = before - 3
     assert after == expecting, "list_posts saw #{before} posts, now #{after} (not #{expecting})"
     @blog.undelete_post(1)
     @blog.undelete_post(2)
@@ -201,6 +218,7 @@ p out
 if File.exist?("testing.publish")
 
   def test_016_can_publish
+#   puts __method__
     x = OpenStruct.new
     x.user, x.server, x.docroot, x.docroot, x.path, x.proto = 
       "root", "rubyhacker.com", "/var/www", "whatever", "http"
@@ -212,6 +230,7 @@ if File.exist?("testing.publish")
   end
 
   def test_017_cannot_publish_wrong_user
+#   puts __method__
     x = OpenStruct.new
     x.user, x.server, x.docroot, x.docroot, x.path, x.proto = 
       "bad_user", "rubyhacker.com", "/var/www", "whatever", "http"
@@ -221,6 +240,7 @@ if File.exist?("testing.publish")
   end
 
   def test_018_cannot_publish_bad_server
+#   puts __method__
     x = OpenStruct.new
     x.user, x.server, x.docroot, x.docroot, x.path, x.proto = 
       "root", "nonexistent123.com", "/var/www", "whatever", "http"
@@ -232,10 +252,12 @@ if File.exist?("testing.publish")
 end  # conditional tests
 
   def test_019_exception_existing_blog
+#   puts __method__
     assert_raises(BlogAlreadyExists) { RuneBlog.create_new_blog }
   end
 
   def test_020_exception_missing_blog_accessor
+#   puts __method__
     save = RuneBlog.blog
     RuneBlog.blog = nil
     assert_raises(NoBlogAccessor) { RuneBlog::Post.load(1) }
@@ -243,24 +265,31 @@ end  # conditional tests
   end
 
   def test_021_exception_cant_assign_view
+#   puts __method__
     assert_raises(CantAssignView) { @blog.view = 99 }
   end
 
   def test_022_exception_no_such_view
+#   puts __method__
     assert_raises(NoSuchView) { @blog.view = 'not_a_view_name' }
   end
 
   def test_023_exception_view_already_exists
+#   puts __method__
     assert_raises(ViewAlreadyExists) { @blog.create_view('alpha_view') }
   end
 
   def xtest_024_exception_livetext_error   # FIXME Doesn't work! Change Livetext
+#   puts __method__
     testfile = "testfile.lt3"
     path = @blog.root + "/src/" + testfile
     cmd = "echo .no_such_command > #{path}"
     system(cmd)
-    system("ls -l #{path}")
+#   system("ls -l #{path}")
+    save = STDERR
+    STDERR.reopen("/dev/null")
     assert_raises(LivetextError) { @blog.process_post(testfile) }
+    STDERR.reopen(save)
     File.rm(path)
   end
 

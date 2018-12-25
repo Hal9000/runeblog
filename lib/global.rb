@@ -31,3 +31,16 @@ def prefix(num)
   "#{'%04d' % num.to_i}"
 end
 
+def check_meta(meta, where = "")
+  str =  "--- #{where}\n"
+  str << "\ncheck_meta: \n" + caller.join("\n") + "\n  meta = #{meta.inspect}\n"
+  str << "  title missing!\n" unless meta.title
+  str << "  title missing! (empty)" if meta.title && meta.title.empty?
+  str << "  num missing!\n" unless meta.num
+  if str =~ /missing!/
+    debug str
+exit
+    raise str 
+  end
+end
+

@@ -1,13 +1,16 @@
 $LOAD_PATH << "."
 
 require 'global'
-require 'rubytext'
+# require 'rubytext'
 require 'repl'
+
+def debug(str)
+  STDERR.puts str
+end
 
 def make_post(x, title)
   meta = OpenStruct.new
-  meta.title = title
-  num = x.create_new_post(meta, true)
+  num = x.create_new_post(title, true)
   num
 end
 

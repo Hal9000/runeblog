@@ -30,8 +30,13 @@ class RuneBlog::Publishing
   end
  
   def publish(files)
-    debug "files = #{files.inspect}"
     reset_output
+    if files.empty?
+      puts "\n  No files to publish"
+      output! "\n  No files to publish"
+      return @out
+    end
+    debug "files = #{files.inspect}"
     dir = "#@docroot/#@path"
     result = system("ssh #@user@#@server -x mkdir -p #{dir}") 
     list = files.join(' ')
@@ -39,7 +44,10 @@ class RuneBlog::Publishing
     output! "Publishing #{files.size} files...\n"
     debug "cmd = #{cmd.inspect}  - see /tmp/wtf"
     result = system(cmd)
-    raise PublishError unless result
+    if not result
+      debug "error = #{File.read("/tmp/wtf")}"
+      raise PublishError 
+    end
 
     dump(files, "#{@blog.view.dir}/last_published")
     output! "...finished.\n"
