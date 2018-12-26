@@ -174,7 +174,6 @@ class TestREPL < Minitest::Test
   end
 
   def test_013_slug_tests
-    puts __method__
     hash = { "abcxyz"      => "abcxyz",      # 0-based
              "abc'xyz"     => "abcxyz",
              'abc"xyz'     => "abcxyz",

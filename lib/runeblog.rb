@@ -53,7 +53,6 @@ class RuneBlog
   rescue => err
     puts "Can't create blog: '#{dir}' - #{err}"  # CHANGE_FOR_CURSES?
     puts err.backtrace.join("\n")  # CHANGE_FOR_CURSES?
-    sleep 5
   end
 
   def initialize   # assumes existing blog
@@ -185,7 +184,6 @@ debug "cnp title = #{title.inspect}"
   rescue => err
     puts err
     puts err.backtrace.join("\n")
-    sleep 5
   end
 
   def edit_initial_post(file, testing = false)
@@ -195,7 +193,6 @@ debug "cnp title = #{title.inspect}"
     nil
   rescue => err
     error(err)
-    sleep 5
   end
 
   def posts
@@ -218,23 +215,14 @@ debug "cnp title = #{title.inspect}"
   end
 
   def process_post(file)
-debug "procpost 1: file = #{file.inspect}"
     raise ArgumentError unless file.is_a?(String)
     path = @root + "/src/#{file}"
     raise FileNotFound(path) unless File.exist?(path)
-    livetext = Livetext.new(STDOUT) # (nil)
-    @meta2 = livetext.process_file(path, binding)
-@meta2.num = file.to_i  # dumb af
-    check_meta(@meta2, "procpost1")
-    raise LivetextError(path) if @meta2.nil?
-
-    self.make_slug(@meta2)  # RuneBlog#process_post
-    # slug = file.sub(/.lt3$/, "")
-    # @meta.slug = slug
-    @meta2
+    live = Livetext.new(STDOUT) # (nil)
+    text = File.read(file)
+    live.process_text(path, binding)
   rescue => err
     error(err)
-    sleep 5
   end
 
   def build_post_view(view)
@@ -254,7 +242,6 @@ debug "procpost 1: file = #{file.inspect}"
     generate_index(view)
   rescue => err
     error(err)
-    sleep 5
   end
 
   def generate_index(view)
@@ -293,7 +280,6 @@ debug "procpost 1: file = #{file.inspect}"
     end
   rescue => err
     error(err)
-    sleep 5
     exit
   end
 
@@ -325,13 +311,11 @@ debug "procpost 1: file = #{file.inspect}"
   def rebuild_post(file)
     debug "Called rebuild_post(#{file.inspect})"
     raise ArgumentError unless file.is_a?(String)
-    @meta2 = process_post(file)
-    check_meta(@meta2, "rebuild_post")
-debug "rebuild_post: @meta2 = #{@meta2.inspect}"
+    process_post(file)
+# FIXME this is broken now
     @meta2.views.each {|view| build_post_view(view) }
   rescue => err
     error(err)
-    sleep 5
   end
 
   def remove_post(num)

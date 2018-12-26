@@ -78,6 +78,7 @@ module RuneBlog::REPL
       return [false, @out]
     end
     RubyText.spinner { @blog.view.publish }
+    vdir = @blog.view.dir
     dump("fix this later", "#{vdir}/last_published")
     puts "  ...finished" unless testing
     output! "...finished.\n"

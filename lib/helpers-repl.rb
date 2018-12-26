@@ -141,10 +141,10 @@ module RuneBlog::REPL
     [meth, params]
   end
 
-  def error(err)
-    str = "\n  Error: #{red(err)}"
-    puts str  # CHANGE_FOR_CURSES?
-    puts err.backtrace[0]  # CHANGE_FOR_CURSES?
+  def error(err)  # Hmm, this is duplicated
+    str = "\n  Error: #{err}"
+    puts str
+    puts err.backtrace.join("\n")
   end
 
   def ask(prompt, meth = :to_s)
