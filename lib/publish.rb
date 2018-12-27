@@ -30,28 +30,31 @@ class RuneBlog::Publishing
   end
  
   def publish(files)
-    reset_output
+puts "--- pub 1"
     if files.empty?
+      STDSCR.up
       puts "\n  No files to publish"
-      output! "\n  No files to publish"
-      return @out
+      return false
     end
+puts "--- pub 2"
     debug "files = #{files.inspect}"
     dir = "#@docroot/#@path"
     result = system("ssh #@user@#@server -x mkdir -p #{dir}") 
+puts "--- pub 3"
     list = files.join(' ')
     cmd = "scp -r #{list} #@user@#@server:#{dir} >/dev/null 2>/tmp/wtf"
-    output! "Publishing #{files.size} files...\n"
+    puts "Publishing #{files.size} files...\n "
     debug "cmd = #{cmd.inspect}  - see /tmp/wtf"
+puts "--- pub 4"
     result = system(cmd)
     if not result
       debug "error = #{File.read("/tmp/wtf")}"
+getch
       raise PublishError 
     end
 
     dump(files, "#{@blog.view.dir}/last_published")
-    output! "...finished.\n"
-    @out
+    true
   end
 
   def remote_login?

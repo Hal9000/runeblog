@@ -32,7 +32,8 @@ module RuneBlog::REPL
     reset_output
     check_empty(arg)
     output RuneBlog::VERSION
-    [true, @out]
+    puts RuneBlog::VERSION unless testing
+    [false, @out]
   end
 
   def cmd_config(arg, testing = false)
@@ -53,11 +54,12 @@ module RuneBlog::REPL
     # FIXME Bad logic here.
     if url.nil?   
       output! "Publish first."
-      return [true, @out]
+      puts "\n  Publish first."
+      return [false, @out]
     end
     result = system("open '#{url}'")
     raise CantOpen(url) unless result
-    nil
+    return [false, @out]
   end
 
   def cmd_preview(arg, testing = false)
@@ -77,11 +79,14 @@ module RuneBlog::REPL
       output! "Can't publish without entries in #{@blog.view.name}/publish"
       return [false, @out]
     end
-    RubyText.spinner { @blog.view.publish }
+    ret = RubyText.spinner { @blog.view.publish }
+    return [false, @out] unless ret
     vdir = @blog.view.dir
     dump("fix this later", "#{vdir}/last_published")
-    puts "  ...finished" unless testing
-    output! "...finished.\n"
+    if ! testing || ! ret
+      puts "  ...finished.\n " 
+      output! "...finished.\n"
+    end
     return [false, @out]
   end
 
@@ -90,11 +95,8 @@ module RuneBlog::REPL
     reset_output
     check_empty(arg)
     puts unless testing
-debug "cp1"
     files = @blog.find_src_slugs
-debug "cp2"
     files.each {|file| @blog.rebuild_post(file) }
-debug "cp3"
     nil
   end
 
@@ -153,9 +155,10 @@ debug "cp3"
     args.each do |x| 
       # FIXME
       ret = cmd_remove_post(x.to_i, false)
+      puts ret
       output ret
     end
-    return [true, @out]
+    return [false, @out]
   end
 
   #-- FIXME affects linking, building, publishing...
@@ -166,7 +169,8 @@ debug "cp3"
     id = get_integer(arg)
     result = @blog.remove_post(id)
     output! "Post #{id} not found" if result.nil?
-    return [true, @out]
+#   puts "Post #{id} not found" if result.nil?
+    return [false, @out]
   end
 
   #-- FIXME affects linking, building, publishing...
@@ -179,13 +183,23 @@ debug "cp3"
     files = Find.find(@blog.root+"/src").to_a
     files = files.grep(/#{tag}-/)
     files = files.map {|f| File.basename(f) }
-    return [true, "Multiple files: #{files}"] if files.size > 1
-    return [true, "\n  Can't edit post #{id}"] if files.empty?
+    if files.size > 1
+      msg = "Multiple files: #{files}"
+      output msg
+      puts msg unless testing
+      return [false, msg]
+    end
+    if files.empty?
+      msg = "\n  Can't edit post #{id}"
+      output msg
+      puts msg unless testing
+      return [false, msg]
+    end
 
     file = files.first
     result = edit_file("#{@blog.root}/src/#{file}")
     @blog.rebuild_post(file)
-    nil
+    return [false, @out]
   end
 
   def cmd_list_views(arg, testing = false)
@@ -195,9 +209,8 @@ debug "cp3"
     @blog.views.each do |v| 
       v = v.to_s
       v = fx(v, :bold) if v == @blog.view.name
-      print "  "
       output v + "\n"
-      puts v unless testing
+      puts "  ", v unless testing
     end
     puts unless testing
     return [false, @out]
@@ -210,8 +223,7 @@ debug "cp3"
     str = @blog.view.name + ":\n"
     output str
     puts unless testing
-    print "  "
-    puts fx(str, :bold) unless testing
+    puts "  ", fx(str, :bold) unless testing
     if posts.empty?
       output! bold("No posts")
       puts fx("  No posts", :bold) unless testing
@@ -220,8 +232,7 @@ debug "cp3"
         outstr "  #{colored_slug(post)}\n" 
         base = post.sub(/.lt3$/, "")
         num, rest = base[0..3], base[4..-1]
-        print "  "
-        puts fx(num, Red), fx(rest, Blue) unless testing
+        puts "  ", fx(num, Red), fx(rest, Blue) unless testing
       end
     end
     puts unless testing
@@ -235,15 +246,14 @@ debug "cp3"
     if drafts.empty?
       output! "No drafts"
       puts "  No drafts" unless testing
-      return [true, @out]
+      return [false, @out]
     else
       puts unless testing
       drafts.each do |draft| 
         outstr "  #{colored_slug(draft.sub(/.lt3$/, ""))}\n" 
         base = draft.sub(/.lt3$/, "")
         num, rest = base[0..3], base[4..-1]
-        print "  "
-        puts fx(num, Red), fx(rest, Blue) unless testing
+        puts "  ", fx(num, Red), fx(rest, Blue) unless testing
       end
     end
     puts unless testing
@@ -252,46 +262,49 @@ debug "cp3"
 
   def cmd_INVALID(arg, testing = false)
     reset_output "\n  Command '#{red(arg)}' was not understood."
-    return [true, @out]
+    puts "\n  Command ", fx(arg, Red), " was not understood."
+    return [false, @out]
   end
 
   def cmd_help(arg, testing = false)
     reset_output 
     check_empty(arg)
-    output(<<-EOS)
+    msg = <<-EOS
   Commands:
   
-       #{red('h, help       ')}    This message
-       #{red('q, quit        ')}   Exit the program
-       #{red('v, version    ')}    Print version information
+       h, help           This message
+       q, quit           Exit the program
+       v, version        Print version information
   
-       #{red('change view VIEW ')} Change current view
-       #{red('cv VIEW          ')} Change current view
+       change view VIEW  Change current view
+       cv VIEW           Change current view
 
-       #{red('new view         ')} Create a new view
+       new view          Create a new view
 
-       #{red('list views       ')} List all views available
-       #{red('lsv              ')} Same as: list views
+       list views        List all views available
+       lsv               Same as: list views
   
-       #{red('p, post          ')} Create a new post
-       #{red('new post         ')} Same as post (create a post)
+       p, post           Create a new post
+       new post          Same as post (create a post)
 
-       #{red('lsp, list posts  ')} List posts in current view
+       lsp, list posts   List posts in current view
 
-       #{red('lsd, list drafts ')} List all posts regardless of view
+       lsd, list drafts  List all posts regardless of view
   
-       #{red('rm ID            ')} Remove a post
-       #{red('kill ID ID ID... ')} Remove multiple posts
-       #{red('undelete ID      ')} Undelete a post
-       #{red('edit ID          ')} Edit a post
+       rm ID             Remove a post
+       kill ID ID ID...  Remove multiple posts
+       undelete ID       Undelete a post
+       edit ID           Edit a post
   
-       #{red('preview          ')} Look at current (local) view in browser
-       #{red('browse           ')} Look at current (published) view in browser
-       #{red('relink           ')} Regenerate index for all views
-       #{red('rebuild          ')} Regenerate all posts and relink
-       #{red('publish          ')} Publish (current view)
+       preview           Look at current (local) view in browser
+       browse            Look at current (published) view in browser
+       relink            Regenerate index for all views
+       rebuild           Regenerate all posts and relink
+       publish           Publish (current view)
     EOS
-    return [true, @out]
+    output msg
+    puts msg unless testing
+    return [false, @out]
   end
 
 end

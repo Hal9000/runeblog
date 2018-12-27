@@ -32,13 +32,74 @@ class RuneBlog::Post
     meta
   end
 
-  def initialize(meta, view_name)
+  def create_post_subtree(viewname = nil) 
+    viewname ||= @blog.view.dir
+    post_dir = viewname + "/" + @meta.slug
+    create_dir(post_dir) rescue nil # FIXME?
+    Dir.chdir(post_dir) do
+      create_dir("assets") rescue nil
+      system("cp body.txt index.html")  # gahhh
+    end
+  end
+
+  def write_metadata(meta)
+    fname2 = "metadata.txt"
+    hash = meta.to_h
+
+    File.write("teaser.txt", hash[:teaser])
+    File.write("body.txt", hash[:body])
+    hash.delete(:teaser)
+    hash.delete(:body)
+
+    hash[:views] = hash[:views].join(" ")
+    hash[:tags]  = hash[:tags].join(" ")
+
+    fields = [:num, :title, :date, :pubdate, :views, :tags]
+
+    f2 = File.new(fname2, "w")
+    fields.each {|fld| f2.puts "#{fld}: #{hash[fld]}" }
+    f2.close
+  end
+
+  def initialize
+    # nothing yet...
+    @blog = RuneBlog.blog || raise(NoBlogAccessor)
+  end
+
+  def self.create(title)
+    post = self.new
+    post.new_metadata(title)
+    post.create_draft
+    post.create_post_subtree  # gets done in build anyway
+#   post.build   # where livetext gets called
+    post
+  end
+
+  def new_metadata(title)
+    meta = OpenStruct.new
+    meta.title = title
+    meta.teaser = "Teaser goes here."
+    meta.body   = "Remainder of post goes here."
+    meta.pubdate = Time.now.strftime("%Y-%m-%d")
+    meta.date = meta.pubdate  # fix later
+    meta.views = [@blog.view.to_s]
+    # only place next_sequence is called
+    meta.num   = @blog.next_sequence
+    @blog.make_slug(meta)  # adds to meta
+    @meta = meta
+  end
+
+  def create_draft
+    html = RuneBlog.post_template(title: @meta.title, date: @meta.pubdate, 
+               view: @meta.view, teaser: @meta.teaser, body: @meta.body)
+    @draft = "#{@blog.root}/src/#{slug}.lt3"
+    dump(html, @draft)
+  end
+
+  def old_initialize(meta, view_name)
     # FIXME weird logic here
     @blog = RuneBlog.blog || raise(NoBlogAccessor)
     @blog.make_slug(meta)  # Post#initialize
-    meta.pubdate = Time.now.strftime("%Y-%m-%d")
-    meta.date = meta.pubdate  # fix later
-    meta.views = [view_name]
     check_meta(meta, "Post#initialize")
     html = RuneBlog.post_template(title: meta.title, date: meta.pubdate, 
                                   view: meta.view, teaser: meta.teaser, 
@@ -60,76 +121,31 @@ class RuneBlog::Post
     error(err)
   end 
 
-  def build(meta=nil)
-    meta = @meta  # FIXME
-    check_meta(meta, "Post.build")
+  def build
+    views = @meta.views
+    text = File.read(@draft)
+    Livetext.parameters = [@blog, @meta]
     livetext = Livetext.new(STDOUT)
-  puts "build: meta = #{meta.inspect}"
-    views = meta.views
-    @meta2 = livetext.process_file(@draft, binding)
-    @meta2.num = meta.num  # dumb?
-    @meta2.views = views   # extra dumb
-    check_meta(@meta2, "build2")
-    raise LivetextError(@draft) if @meta2.nil?
+    meta = livetext.process_text(text)
+    raise LivetextError(@draft) if meta.nil?
 
-  puts "build: cp 2 - meta2 = #{@meta2.inspect}"
+    meta.num = File.basename(@draft).to_i
+    # FIXME what if title changes? slug should change?
+    meta.views = views  # FIXME
 
-    # Hmm. @meta2 differs from meta -- views, etc.
-
-    # FIXME what if title changes?
-
-    @meta2.views.each do |view_name|   # Create dir using slug (index.html, metadata?)
-  puts "build: cp 3 - view = #{view_name}"
-      view = @blog.str2view(view_name)
-      vdir = view.dir
+    meta.views.each do |view_name|   # Create dir using slug (index.html, metadata?)
+      vdir = "#{@blog.root}/views/#{view_name}/"
       dir = vdir + meta.slug + "/"
-      Dir.mkdir(dir)
+      create_dir(dir) rescue nil
       Dir.chdir(dir) do
-  puts "build: cp 4 - view = #{view_name}"
-        create_post_subtree(vdir)
-  puts "build: cp 5 - view = #{view_name}"
-        @blog.generate_index(view)
-  puts "build: cp 6 - view = #{view_name}"
+        create_post_subtree
+        @blog.generate_index(view_name)
       end
     end
+    meta
   rescue => err
     p err
     puts err.backtrace.join("\n")
-  end
-
-  private
-
-  def create_post_subtree(vdir)
-    create_dir("assets") 
-    check_meta(@meta2, "create_post_subtree")
-    write_metadata(@meta2)
-    meta = @meta2
-    text = RuneBlog.teaser_template(title: meta.title, date: meta.date, 
-                                    view: meta.view, teaser: meta.teaser, 
-                                    body: meta.body)
-    dump(text, "index.html")   # FIXME write_index ?
-  end
-
-  def write_metadata(meta)
-    fname2 = "metadata.txt"
-    hash = meta.to_h
-debug "write_meta: #{hash.inspect}"
-    
-    File.write("teaser.txt", hash[:teaser])
-    File.write("body.txt", hash[:body])
-    hash.delete(:teaser)
-    hash.delete(:body)
-    
-    hash[:views] = hash[:views].join(" ")
-    hash[:tags]  = hash[:tags].join(" ")
-    
-    fields = [:num, :title, :date, :pubdate, :views, :tags]
-    
-    f2 = File.new(fname2, "w")
-    fields.each do |fld|
-      f2.puts "#{fld}: #{hash[fld]}"
-    end
-    f2.close
   end
 
 end

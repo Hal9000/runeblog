@@ -25,6 +25,10 @@ system("rm -rf .blog")
 RuneBlog.create_new_blog(".blog/data_test")
 x = RuneBlog.new
 x.create_view("alpha_view")
+
+# Hack:
+system("cp publish .blog/data_test/views/alpha_view/publish")
+
 x.create_view("beta_view")
 x.create_view("gamma_view")
 

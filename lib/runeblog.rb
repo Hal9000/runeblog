@@ -102,7 +102,7 @@ class RuneBlog
 
   def next_sequence
     @sequence += 1
-    debug "seq = #@sequence  caller = #{caller.join("\n")}"
+#   debug "seq = #@sequence  caller = #{caller.join("\n")}"
     dump(@sequence, "#@root/sequence")
     @sequence
   end
@@ -167,19 +167,9 @@ class RuneBlog
   end
 
   def create_new_post(title, testing = false)
-    # FIXME maybe not distinguish between a post and its metadata??
-debug "cnp title = #{title.inspect}"
-    meta = OpenStruct.new
-    meta.title = title
-    meta.teaser = "Teaser goes here."
-    meta.body   = "Remainder of post goes here."
-    meta.num    = self.next_sequence
-    check_meta(meta, "cnp1")
-    post = RuneBlog::Post.new(meta, @view.name)  #???
+    post = Post.create(title)
     post.edit unless testing
-    check_meta(meta, "cnp2")
-    post.build(meta)
-    check_meta(meta, "cnp3")
+    meta = post.build
     meta.num
   rescue => err
     puts err
@@ -218,6 +208,7 @@ debug "cnp title = #{title.inspect}"
     raise ArgumentError unless file.is_a?(String)
     path = @root + "/src/#{file}"
     raise FileNotFound(path) unless File.exist?(path)
+    Livetext.parameters = [@blog, @meta]
     live = Livetext.new(STDOUT) # (nil)
     text = File.read(file)
     live.process_text(path, binding)
@@ -226,19 +217,6 @@ debug "cnp title = #{title.inspect}"
   end
 
   def build_post_view(view)
-    # Create dir using slug (index.html, metadata?)
-    vdir = self.viewdir(view) # FIXME
-    check_meta(@meta, "build_post_view")
-    dir = vdir + @meta.slug + "/"
-    create_dir(dir + "assets") 
-    Dir.chdir(dir) do
-      dump(@meta.teaser, "teaser.txt")
-      dump(@meta.body, "body.txt")
-      # FIXME make get_post_template method
-      template = File.read("#{vdir}/custom/post_template.html")
-      post = interpolate(template)
-      dump(post, "index.html")
-    end
     generate_index(view)
   rescue => err
     error(err)
@@ -362,12 +340,9 @@ debug "cnp title = #{title.inspect}"
 
   def make_slug(meta)
     check_meta(meta, "makeslug")
-debug "mkslug 1: meta = #{meta.inspect}"
     raise ArgumentError unless meta.title.is_a?(String)
     label = '%04d' % meta.num   # FIXME can do better
-debug "mkslug 2: label = #{label.inspect}"
     slug0 = meta.title.downcase.strip.gsub(' ', '-').gsub(/[^\w-]/, '')
-debug "mkslug 2: slug0 = #{slug0.inspect}"
     str = "#{label}-#{slug0}"
     meta.slug = str
     str

@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
   s.email       = 'rubyhacker@gmail.com'
   s.executables << "blog"
   s.add_runtime_dependency 'livetext', '~> 0.8', '>= 0.8.20'
+  s.add_runtime_dependency 'rubytext', '~> 0.1', '>= 0.1.0'
 
   # Files...
   main = Find.find("bin").to_a + 

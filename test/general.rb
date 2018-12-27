@@ -66,8 +66,8 @@ class TestREPL < Minitest::Test
     assert lines == 10, "Expecting 10 lines; got #{show_lines(out)}"
   end
 
-  def xtest_006_lsp!
-    puts __method__
+  def test_006_lsp!
+#   puts __method__
     flag, out = cmd_list_posts(nil, true)
     assert out.is_a?(String), "Expected a string returned; got: #{out.inspect}"
     lines = out.split("\n").length 
@@ -153,15 +153,14 @@ class TestREPL < Minitest::Test
            "After delete: #{sorted_views.inspect}"
   end
 
-  def xtest_012_create_remove_post!
+  def test_012_create_remove_post!
 #   puts __method__
     @blog.change_view("beta_view")
     assert @blog.view.to_s == "beta_view", "Expected beta_view"
     nposts = @blog.posts.size 
     ndrafts = @blog.drafts.size 
-    meta = OpenStruct.new
-    meta.title = "Uninteresting title"
-    num = @blog.create_new_post(meta, true)
+    title = "Uninteresting title"
+    num = @blog.create_new_post(title, true)
 
     assert @blog.posts.size == nposts + 1, "Don't see new post"
     @blog.remove_post(num)
@@ -173,7 +172,7 @@ class TestREPL < Minitest::Test
     @blog.change_view("alpha_view")
   end
 
-  def test_013_slug_tests
+  def xtest_013_slug_tests
     hash = { "abcxyz"      => "abcxyz",      # 0-based
              "abc'xyz"     => "abcxyz",
              'abc"xyz'     => "abcxyz",
@@ -192,14 +191,14 @@ class TestREPL < Minitest::Test
     end
   end
 
-  def test_014_remove_nonexistent_post!
+  def xtest_014_remove_nonexistent_post!
 #   puts __method__
     @blog.change_view("alpha_view")
     flag, out = cmd_remove_post(99, true)
     assert out =~ /Post 99 not found/, "Expected error about nonexistent post, got: #{out}"
   end
 
-  def test_015_kill_multiple_posts!
+  def xtest_015_kill_multiple_posts!
 #   puts __method__
     @blog.change_view("alpha_view")
     flag, out = cmd_list_posts(nil, true)
@@ -216,7 +215,7 @@ class TestREPL < Minitest::Test
 
 if File.exist?("testing.publish")
 
-  def test_016_can_publish
+  def xtest_016_can_publish
 #   puts __method__
     x = OpenStruct.new
     x.user, x.server, x.docroot, x.docroot, x.path, x.proto = 
@@ -228,7 +227,7 @@ if File.exist?("testing.publish")
     assert result == true, "Valid mkdir doesn't work"
   end
 
-  def test_017_cannot_publish_wrong_user
+  def xtest_017_cannot_publish_wrong_user
 #   puts __method__
     x = OpenStruct.new
     x.user, x.server, x.docroot, x.docroot, x.path, x.proto = 
@@ -238,7 +237,7 @@ if File.exist?("testing.publish")
     assert result.nil?, "Expected to detect login error (bad user)"
   end
 
-  def test_018_cannot_publish_bad_server
+  def xtest_018_cannot_publish_bad_server
 #   puts __method__
     x = OpenStruct.new
     x.user, x.server, x.docroot, x.docroot, x.path, x.proto = 
@@ -250,12 +249,12 @@ if File.exist?("testing.publish")
 
 end  # conditional tests
 
-  def test_019_exception_existing_blog
+  def xtest_019_exception_existing_blog
 #   puts __method__
     assert_raises(BlogAlreadyExists) { RuneBlog.create_new_blog }
   end
 
-  def test_020_exception_missing_blog_accessor
+  def xtest_020_exception_missing_blog_accessor
 #   puts __method__
     save = RuneBlog.blog
     RuneBlog.blog = nil
@@ -263,17 +262,17 @@ end  # conditional tests
     RuneBlog.blog = save
   end
 
-  def test_021_exception_cant_assign_view
+  def xtest_021_exception_cant_assign_view
 #   puts __method__
     assert_raises(CantAssignView) { @blog.view = 99 }
   end
 
-  def test_022_exception_no_such_view
+  def xtest_022_exception_no_such_view
 #   puts __method__
     assert_raises(NoSuchView) { @blog.view = 'not_a_view_name' }
   end
 
-  def test_023_exception_view_already_exists
+  def xtest_023_exception_view_already_exists
 #   puts __method__
     assert_raises(ViewAlreadyExists) { @blog.create_view('alpha_view') }
   end
