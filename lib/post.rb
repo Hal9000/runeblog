@@ -62,7 +62,6 @@ class RuneBlog::Post
   end
 
   def initialize
-    # nothing yet...
     @blog = RuneBlog.blog || raise(NoBlogAccessor)
   end
 
@@ -92,7 +91,7 @@ class RuneBlog::Post
   def create_draft
     html = RuneBlog.post_template(title: @meta.title, date: @meta.pubdate, 
                view: @meta.view, teaser: @meta.teaser, body: @meta.body)
-    @draft = "#{@blog.root}/src/#{slug}.lt3"
+    @draft = "#{@blog.root}/src/#{@meta.slug}.lt3"
     dump(html, @draft)
   end
 

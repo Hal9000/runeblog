@@ -34,12 +34,9 @@ class RuneBlog::View
   def files(recent = false)
     vdir = dir()
     files = [index()]
-debug "Looking in #{vdir}"
     others = Dir.entries(vdir).grep(/^\d\d\d\d/)
     files += others.map {|x| "#{vdir}/#{x}" }
-debug "Found #{files.inspect}"
     files.reject! {|f| ! recent?(f) } if recent
-debug "Now files = #{files.inspect}"
     files
   end
 

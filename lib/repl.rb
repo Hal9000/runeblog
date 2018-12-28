@@ -79,12 +79,12 @@ module RuneBlog::REPL
       output! "Can't publish without entries in #{@blog.view.name}/publish"
       return [false, @out]
     end
-    ret = RubyText.spinner { @blog.view.publish }
+    ret = RubyText.spinner(label: "Publishing... ") { @blog.view.publish }
     return [false, @out] unless ret
     vdir = @blog.view.dir
     dump("fix this later", "#{vdir}/last_published")
     if ! testing || ! ret
-      puts "  ...finished.\n " 
+      puts " ...finished.\n " 
       output! "...finished.\n"
     end
     return [false, @out]

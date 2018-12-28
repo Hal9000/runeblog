@@ -2,7 +2,7 @@
 
 # $LOAD_PATH << "./lib"
 
-require 'global'
+require 'runeblog'
 require 'rubytext'
 
 require 'repl'

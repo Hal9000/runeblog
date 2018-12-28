@@ -136,7 +136,7 @@ class RuneBlog
     dump(pub, "publish")  # FIXME publish
     dump(x::BlogHeader, "custom/blog_header.html")
     dump(x::BlogTrailer, "custom/blog_trailer.html")
-    dump(x::PostTemplate, "custom/post_template.html")
+#   dump(x::PostTemplate, "custom/post_template.html")
     dump("Initial creation", "last_published")
     Dir.chdir(up)
     @views << RuneBlog::View.new(arg)
@@ -267,7 +267,7 @@ class RuneBlog
 
   def index_entry(view, meta)
     check_meta(meta, "index_entry1")
-    debug "\nindex_entry: meta = #{meta.inspect}"
+#   debug "\nindex_entry: meta = #{meta.inspect}"
     raise ArgumentError unless view.is_a?(String) || view.is_a?(RuneBlog::View)
     check_meta(meta, "index_entry2")
     self.make_slug(meta)    # RuneBlog#index_entry

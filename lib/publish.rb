@@ -28,31 +28,28 @@ class RuneBlog::Publishing
   def url
     url = "#@proto://#@server/#@path"
   end
- 
-  def publish(files)
-puts "--- pub 1"
+
+  def no_files?(files)
     if files.empty?
       STDSCR.up
       puts "\n  No files to publish"
-      return false
+      true
+    else
+      false
     end
-puts "--- pub 2"
-    debug "files = #{files.inspect}"
+  end
+ 
+  def publish(files)
+    return false if no_files?(files)
+#   print " Publishing #{files.size} files... "
+#   debug "files = #{files.inspect}"
     dir = "#@docroot/#@path"
     result = system("ssh #@user@#@server -x mkdir -p #{dir}") 
-puts "--- pub 3"
     list = files.join(' ')
     cmd = "scp -r #{list} #@user@#@server:#{dir} >/dev/null 2>/tmp/wtf"
-    puts "Publishing #{files.size} files...\n "
     debug "cmd = #{cmd.inspect}  - see /tmp/wtf"
-puts "--- pub 4"
     result = system(cmd)
-    if not result
-      debug "error = #{File.read("/tmp/wtf")}"
-getch
-      raise PublishError 
-    end
-
+    raise PublishError if !result
     dump(files, "#{@blog.view.dir}/last_published")
     true
   end
