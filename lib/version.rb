@@ -1,6 +1,6 @@
 
 class RuneBlog
-  VERSION = "0.1.16"
+  VERSION = "0.1.17"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
 end

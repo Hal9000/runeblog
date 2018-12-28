@@ -38,7 +38,7 @@ class RuneBlog::Post
     create_dir(post_dir) rescue nil # FIXME?
     Dir.chdir(post_dir) do
       create_dir("assets") rescue nil
-      system("cp body.txt index.html")  # gahhh
+      system("cp body.txt index.html")  # gahhh FIXME
     end
   end
 

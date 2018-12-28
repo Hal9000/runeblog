@@ -36,17 +36,23 @@ class RuneBlog
 
   include Helpers
 
-  def self.create_new_blog(dir = ".blog")
+  def self.create_new_blog(dir = ".blog/data")
+puts "--- create_new_blog"
     raise ArgumentError unless dir.is_a?(String) && ! dir.empty?
     root_dir = Dir.pwd + "/" + dir
+puts "--- create: dir = #{dir}  pwd = #{Dir.pwd} DotDir = #{DotDir} root_dir = #{root_dir}"
     raise BlogAlreadyExists if Dir.exist?(root_dir)
-    new_dotfile(root: root_dir, current_view: "test_view")
+puts "--- new dotfile"
+    new_dotfile(root: dir, current_view: "test_view")
+puts "--- create #{dir}"
     create_dir(dir)
     Dir.chdir(dir) do
+puts "--- in chdir: pwd = #{Dir.pwd}"
       create_dir("views")
       create_dir("assets")
       create_dir("src")
       new_sequence
+puts "==== CREATED BLOG ==="
     end
     blog = self.new
     blog.create_view("test_view")
@@ -61,6 +67,7 @@ class RuneBlog
     self.class.blog = self   # Weird. Like a singleton - dumbass circular dependency?
     @root, @view_name, @editor = 
       read_config(ConfigFile, :root, :current_view, :editor)
+puts "=== init root = #@root"
     @views = get_views
     @view = str2view(@view_name)
     @sequence = get_sequence
@@ -130,6 +137,7 @@ class RuneBlog
     Dir.chdir(dir)
     x = RuneBlog::Default
     create_dir('custom')
+puts "=== create_view - created 'custom'"
     create_dir('assets')
     # FIXME dump method??
     pub = "user: xxx\nserver: xxx\ndocroot: xxx\npath: xxx\nproto: xxx\n"

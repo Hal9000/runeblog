@@ -18,7 +18,7 @@ module RuneBlog::Helpers
     end
     return vals
   rescue => err
-    puts "Something hit the fan: #{err}"
+    puts "Can't read config file '#{file}': #{err}"
     puts err.backtrace.join("\n")
     puts "dir = #{Dir.pwd}"
     exit
@@ -43,7 +43,8 @@ module RuneBlog::Helpers
     Dir.mkdir(".blog")
     x = OpenStruct.new
     x.root, x.current_view, x.editor = root, current_view, editor
-    write_config(x, RuneBlog::DotDir + "/config")
+puts "config = #{RuneBlog::ConfigFile}"
+    write_config(x, RuneBlog::ConfigFile)
   end
 
   def new_sequence
@@ -56,8 +57,10 @@ module RuneBlog::Helpers
     dirs = Dir.entries(dir) - %w[. ..]
     dirs.reject! {|x| ! File.directory?("#@root/views/#{x}") }
     dirs
-  rescue
+  rescue => err
     STDERR.puts "Can't find dir '#{dir}'"
+    puts err
+    puts err.backtrace
     exit
   end
 
@@ -70,7 +73,7 @@ module RuneBlog::Helpers
 
   def create_dir(dir)
     return if Dir.exist?(dir)  #  && File.directory?(dir)
-    cmd = "mkdir -p #{dir} >/dev/null 2>&1"
+    cmd = "mkdir -p #{dir} >/dev/null"  #  2>&1"
     result = system(cmd) 
     raise CantCreateDir(dir) unless result
   end
