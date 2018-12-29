@@ -1,13 +1,13 @@
 require 'find'
 require 'livetext'
+
+require 'version'
 require 'global'
 require 'helpers-blog'
 require 'default'
 require 'view'
 require 'publish'
 require 'post'
-require 'version'
-
 
 ###
 
@@ -37,22 +37,22 @@ class RuneBlog
   include Helpers
 
   def self.create_new_blog(dir = ".blog/data")
-puts "--- create_new_blog"
+# puts "--- create_new_blog"
     raise ArgumentError unless dir.is_a?(String) && ! dir.empty?
     root_dir = Dir.pwd + "/" + dir
-puts "--- create: dir = #{dir}  pwd = #{Dir.pwd} DotDir = #{DotDir} root_dir = #{root_dir}"
+# puts "--- create: dir = #{dir}  pwd = #{Dir.pwd} DotDir = #{DotDir} root_dir = #{root_dir}"
     raise BlogAlreadyExists if Dir.exist?(root_dir)
-puts "--- new dotfile"
+# puts "--- new dotfile"
     new_dotfile(root: dir, current_view: "test_view")
-puts "--- create #{dir}"
+# puts "--- create #{dir}"
     create_dir(dir)
     Dir.chdir(dir) do
-puts "--- in chdir: pwd = #{Dir.pwd}"
+# puts "--- in chdir: pwd = #{Dir.pwd}"
       create_dir("views")
       create_dir("assets")
       create_dir("src")
       new_sequence
-puts "==== CREATED BLOG ==="
+# puts "==== CREATED BLOG ==="
     end
     blog = self.new
     blog.create_view("test_view")
@@ -67,7 +67,7 @@ puts "==== CREATED BLOG ==="
     self.class.blog = self   # Weird. Like a singleton - dumbass circular dependency?
     @root, @view_name, @editor = 
       read_config(ConfigFile, :root, :current_view, :editor)
-puts "=== init root = #@root"
+# puts "=== init root = #@root"
     @views = get_views
     @view = str2view(@view_name)
     @sequence = get_sequence
