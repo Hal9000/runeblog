@@ -3,7 +3,7 @@ require 'find'
 
 $LOAD_PATH << "lib"
 
-require "version"
+require "runeblog_version"
 
 Gem::Specification.new do |s|
   system("rm -f *.gem")
