@@ -1,3 +1,5 @@
+require 'runeblog_version'
+
 module RuneBlog::Helpers
 
   def read_config(file, *syms)

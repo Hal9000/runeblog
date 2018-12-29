@@ -1,6 +1,7 @@
 require 'find'
 require 'livetext'
 
+require 'runeblog_version'
 require 'global'
 require 'helpers-blog'
 require 'default'
