@@ -1,7 +1,6 @@
 require 'find'
 require 'livetext'
 
-require 'version'
 require 'global'
 require 'helpers-blog'
 require 'default'
