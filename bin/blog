@@ -10,7 +10,7 @@ require 'repl'
 include RuneBlog::REPL
 
 def mainloop
-  print fx("blog> ", Red)
+  print fx("blog> ", Red, :bold)
   cmd = STDSCR.gets(history: @cmdhist)
   cmd_quit(nil) if cmd.nil?   # ^D
   cmd.chomp!

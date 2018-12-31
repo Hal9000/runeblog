@@ -261,8 +261,10 @@ module RuneBlog::REPL
   end
 
   def cmd_INVALID(arg, testing = false)
-    reset_output "\n  Command '#{red(arg)}' was not understood."
-    puts "\n  Command ", fx(arg, Red), " was not understood."
+    reset_output "\n  Command '#{arg}' was not understood."
+    print fx("\n  Command ", :bold)
+    print fx(arg, Red, :bold)
+    puts fx(" was not understood.\n ", :bold)
     return [false, @out]
   end
 
@@ -270,7 +272,8 @@ module RuneBlog::REPL
     reset_output 
     check_empty(arg)
     msg = <<-EOS
-  Commands:
+
+       Commands:
   
        h, help           This message
        q, quit           Exit the program
@@ -303,7 +306,14 @@ module RuneBlog::REPL
        publish           Publish (current view)
     EOS
     output msg
-    puts msg unless testing
+    msg.each_line do |line|
+      next if testing
+      line.chomp!
+      s1, s2 = line[0..22], line[23..-1]
+      print fx(s1, :bold)
+      puts s2
+    end
+    puts unless testing
     return [false, @out]
   end
 

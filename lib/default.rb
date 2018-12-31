@@ -6,22 +6,22 @@ BlogHeader = <<-TEXT
 <html>
 <body>
 
-<title>Ruby, Elixir, and More</title>
+<title>Fake Blog, Fake Title, Fake Author</title>
 
 <table>
   <tr>
     <td>
-        <img src=blog3a.jpg width=400 height=300>
+        <img src=fakeimage.jpg width=400 height=300>
     </td>
     <td>
-      <h3>Yet another blog by Hal Fulton</h3>
+      <h3>Yet another blog... by Kilgore Trout</h3>
       <br>
       <br>
-      <b>Note</b>: I can never find a blogging engine I like! <br>
-      For now, this will just be a set of static pages.
+      If you're the kind of person who likes this sort of thing,
+      then this is the sort of thing a person like you will like.
       <br>
       <br>
-      If you want to comment, just <a href=mailto:rubyhacker@gmail.com>email me</a>.
+      Don't you feel more like you do now than before you read this?
     </td>
   </tr>
 </table>
