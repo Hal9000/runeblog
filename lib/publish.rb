@@ -32,7 +32,7 @@ class RuneBlog::Publishing
   def no_files?(files)
     if files.empty?
       STDSCR.up
-      puts "\n  No files to publish"
+      puts fx("\n  No files to publish", :bold)
       true
     else
       false

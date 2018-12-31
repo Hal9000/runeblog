@@ -37,22 +37,16 @@ class RuneBlog
   include Helpers
 
   def self.create_new_blog(dir = ".blog/data")
-# puts "--- create_new_blog"
     raise ArgumentError unless dir.is_a?(String) && ! dir.empty?
     root_dir = Dir.pwd + "/" + dir
-# puts "--- create: dir = #{dir}  pwd = #{Dir.pwd} DotDir = #{DotDir} root_dir = #{root_dir}"
     raise BlogAlreadyExists if Dir.exist?(root_dir)
-# puts "--- new dotfile"
-    new_dotfile(root: dir, current_view: "test_view")
-# puts "--- create #{dir}"
+    new_dotfile(root: root_dir, current_view: "test_view")
     create_dir(dir)
     Dir.chdir(dir) do
-# puts "--- in chdir: pwd = #{Dir.pwd}"
       create_dir("views")
       create_dir("assets")
       create_dir("src")
       new_sequence
-# puts "==== CREATED BLOG ==="
     end
     blog = self.new
     blog.create_view("test_view")
@@ -67,7 +61,6 @@ class RuneBlog
     self.class.blog = self   # Weird. Like a singleton - dumbass circular dependency?
     @root, @view_name, @editor = 
       read_config(ConfigFile, :root, :current_view, :editor)
-# puts "=== init root = #@root"
     @views = get_views
     @view = str2view(@view_name)
     @sequence = get_sequence
@@ -109,7 +102,6 @@ class RuneBlog
 
   def next_sequence
     @sequence += 1
-#   debug "seq = #@sequence  caller = #{caller.join("\n")}"
     dump(@sequence, "#@root/sequence")
     @sequence
   end
@@ -126,6 +118,7 @@ class RuneBlog
   end
 
   def create_view(arg)
+    debug "=== create_view #{arg.inspect}"
     raise ArgumentError unless arg.is_a?(String) && ! arg.empty?
     names = self.views.map(&:to_s)
     raise ViewAlreadyExists(arg) if names.include?(arg)
@@ -137,14 +130,12 @@ class RuneBlog
     Dir.chdir(dir)
     x = RuneBlog::Default
     create_dir('custom')
-puts "=== create_view - created 'custom'"
     create_dir('assets')
     # FIXME dump method??
     pub = "user: xxx\nserver: xxx\ndocroot: xxx\npath: xxx\nproto: xxx\n"
     dump(pub, "publish")  # FIXME publish
     dump(x::BlogHeader, "custom/blog_header.html")
     dump(x::BlogTrailer, "custom/blog_trailer.html")
-#   dump(x::PostTemplate, "custom/post_template.html")
     dump("Initial creation", "last_published")
     Dir.chdir(up)
     @views << RuneBlog::View.new(arg)
@@ -175,9 +166,12 @@ puts "=== create_view - created 'custom'"
   end
 
   def create_new_post(title, testing = false)
+    save = Dir.pwd
+    Dir.chdir(self.view.dir)
     post = Post.create(title)
     post.edit unless testing
     meta = post.build
+    Dir.chdir(save)
     meta.num
   rescue => err
     puts err
@@ -185,6 +179,7 @@ puts "=== create_view - created 'custom'"
   end
 
   def edit_initial_post(file, testing = false)
+    debug "=== edit_initial_post #{file.inspect}  => #{sourcefile}"
     sourcefile = "#@root/src/#{file}"
     result = system("#@editor #{sourcefile} +8") unless testing
     raise EditorProblem(sourcefile) unless result
@@ -213,6 +208,7 @@ puts "=== create_view - created 'custom'"
   end
 
   def process_post(file)
+    debug "=== process_post #{file.inspect}"
     raise ArgumentError unless file.is_a?(String)
     path = @root + "/src/#{file}"
     raise FileNotFound(path) unless File.exist?(path)
@@ -231,6 +227,7 @@ puts "=== create_view - created 'custom'"
   end
 
   def generate_index(view)
+    debug "=== generate_index view = #{view.inspect}"
     raise ArgumentError unless view.is_a?(String) || view.is_a?(RuneBlog::View)
     # Gather all posts, create list
     vdir = "#@root/views/#{view}"
@@ -259,6 +256,7 @@ puts "=== create_view - created 'custom'"
       end
       meta  # block return
     end
+
     File.open("#{vdir}/index.html", "w") do |f|
       f.puts @bloghead
       posts.each {|post| f.puts index_entry(view, post) }
@@ -274,8 +272,8 @@ puts "=== create_view - created 'custom'"
   end
 
   def index_entry(view, meta)
+    debug "=== index_entry #{view.to_s.inspect}  #{meta.num} #{meta.title.inspect}"
     check_meta(meta, "index_entry1")
-#   debug "\nindex_entry: meta = #{meta.inspect}"
     raise ArgumentError unless view.is_a?(String) || view.is_a?(RuneBlog::View)
     check_meta(meta, "index_entry2")
     self.make_slug(meta)    # RuneBlog#index_entry

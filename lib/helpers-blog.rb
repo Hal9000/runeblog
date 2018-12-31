@@ -40,7 +40,7 @@ module RuneBlog::Helpers
     dirs.map {|name| RuneBlog::View.new(name) }
   end
 
-  def new_dotfile(root: "data", current_view: "no_default", editor: "vi")
+  def new_dotfile(root: "./.blog/data", current_view: "no_default", editor: "vi")
     raise BlogAlreadyExists if Dir.exist?(".blog")
     Dir.mkdir(".blog")
     x = OpenStruct.new

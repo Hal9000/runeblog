@@ -39,7 +39,6 @@ def check_meta(meta, where = "")
   str << "  num missing!\n" unless meta.num
   if str =~ /missing!/
     debug str
-exit
     raise str 
   end
 end

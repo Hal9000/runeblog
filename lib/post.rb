@@ -33,16 +33,15 @@ class RuneBlog::Post
   end
 
   def create_post_subtree(viewname = nil) 
-    viewname ||= @blog.view.dir
-    post_dir = viewname + "/" + @meta.slug
-    create_dir(post_dir) rescue nil # FIXME?
-    Dir.chdir(post_dir) do
-      create_dir("assets") rescue nil
-      system("cp body.txt index.html")  # gahhh FIXME
-    end
+    debug "=== create_post_subtree #{viewname.inspect}  pwd = #{Dir.pwd}"
+    # We are INSIDE views/myview/000n-mytitle dir now - FIXME later? how did that happen?
+    create_dir("assets")
+    system("cp body.txt index.html")  # gahhh FIXME
   end
 
   def write_metadata(meta)
+    debug "=== write_metadata:"
+    debug "-----\n#{meta.inspect}\n-----"
     fname2 = "metadata.txt"
     hash = meta.to_h
 
@@ -62,10 +61,12 @@ class RuneBlog::Post
   end
 
   def initialize
+    debug "=== Post#initialize"
     @blog = RuneBlog.blog || raise(NoBlogAccessor)
   end
 
   def self.create(title)
+    debug "=== Post.create #{title.inspect}   pwd = #{Dir.pwd}"
     post = self.new
     post.new_metadata(title)
     post.create_draft
@@ -121,6 +122,7 @@ class RuneBlog::Post
   end 
 
   def build
+    debug "=== build"
     views = @meta.views
     text = File.read(@draft)
     Livetext.parameters = [@blog, @meta]
@@ -135,9 +137,9 @@ class RuneBlog::Post
     meta.views.each do |view_name|   # Create dir using slug (index.html, metadata?)
       vdir = "#{@blog.root}/views/#{view_name}/"
       dir = vdir + meta.slug + "/"
-      create_dir(dir) rescue nil
+      create_dir(dir) unless Dir.exist?(dir)
       Dir.chdir(dir) do
-        create_post_subtree
+        create_post_subtree(view_name)  # unless existing??
         @blog.generate_index(view_name)
       end
     end
