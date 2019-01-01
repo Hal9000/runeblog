@@ -45,7 +45,6 @@ module RuneBlog::Helpers
     Dir.mkdir(".blog")
     x = OpenStruct.new
     x.root, x.current_view, x.editor = root, current_view, editor
-puts "config = #{RuneBlog::ConfigFile}"
     write_config(x, RuneBlog::ConfigFile)
   end
 

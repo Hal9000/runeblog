@@ -6,6 +6,7 @@ require 'runeblog'
 require 'lib/repl'
 require 'rubytext'
 
+
 RubyText.start
 
 class TestREPL < Minitest::Test

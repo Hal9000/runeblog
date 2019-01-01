@@ -32,7 +32,7 @@ module RuneBlog::REPL
     reset_output
     check_empty(arg)
     output RuneBlog::VERSION
-    puts RuneBlog::VERSION unless testing
+    puts fx("\n  RuneBlog", :bold), fx(" v #{RuneBlog::VERSION}\n", Red) unless testing
     [false, @out]
   end
 
@@ -79,12 +79,25 @@ module RuneBlog::REPL
       output! "Can't publish without entries in #{@blog.view.name}/publish"
       return [false, @out]
     end
-    ret = RubyText.spinner(label: "Publishing... ") { @blog.view.publish }
+    # Need to check dirty/clean status first
+    dirty, all, assets = @blog.view.publishable_files
+    files = dirty
+    if dirty.empty?
+      puts fx("\n  No files are out of date." + " "*20, :bold)
+      print "  Publish anyway? "
+      yn = RubyText.gets.chomp
+      files = all if yn == "y"
+    end
+    return if files.empty?
+
+    ret = RubyText.spinner(label: " Publishing... ") do
+      @blog.view.publisher.publish(files, assets)  # FIXME weird?
+    end
     return [false, @out] unless ret
     vdir = @blog.view.dir
     dump("fix this later", "#{vdir}/last_published")
     if ! testing || ! ret
-      puts " ...finished.\n " 
+      puts "  ...finished.\n " 
       output! "...finished.\n"
     end
     return [false, @out]
@@ -123,6 +136,7 @@ module RuneBlog::REPL
       if @blog.view?(arg)
         @blog.view = arg  # reads config
         output red("View: ") + bold(@blog.view.name.to_s)  # FIXME?
+        puts "\n  ", fx(arg, :bold), "\n" unless testing
       end
     end
     return [false, @out]

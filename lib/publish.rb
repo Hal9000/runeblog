@@ -29,26 +29,23 @@ class RuneBlog::Publishing
     url = "#@proto://#@server/#@path"
   end
 
-  def no_files?(files)
-    if files.empty?
-      STDSCR.up
-      puts fx("\n  No files to publish", :bold)
-      true
-    else
-      false
-    end
+  def system!(str)
+    rc = system(str)
+    puts "Running: #{str}"
+    puts "Failed: #{str}" if ! rc
+    rc
   end
- 
-  def publish(files)
-    return false if no_files?(files)
-#   print " Publishing #{files.size} files... "
-#   debug "files = #{files.inspect}"
+
+  def publish(files, assets=[])
     dir = "#@docroot/#@path"
-    result = system("ssh #@user@#@server -x mkdir -p #{dir}") 
+    result = system!("ssh #@user@#@server -x mkdir -p #{dir}") 
+    result = system!("ssh #@user@#@server -x mkdir -p #{dir}/../assets") 
     list = files.join(' ')
-    cmd = "scp -r #{list} #@user@#@server:#{dir} >/dev/null 2>/tmp/wtf"
+    cmd = "scp #{list} #@user@#@server:#{dir} >/dev/null 2>/tmp/wtf"
     debug "cmd = #{cmd.inspect}  - see /tmp/wtf"
-    result = system(cmd)
+    result = system!(cmd)
+    cmd = "scp #{assets.join(' ')} #@user@#@server:#{dir}/../assets >/dev/null 2>/tmp/wtf2"
+    result = system!(cmd)
     raise PublishError if !result
     dump(files, "#{@blog.view.dir}/last_published")
     true

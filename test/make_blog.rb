@@ -5,7 +5,7 @@ require 'global'
 require 'repl'
 
 def debug(str)
-  STDERR.puts str
+# STDERR.puts str
 end
 
 def make_post(x, title)

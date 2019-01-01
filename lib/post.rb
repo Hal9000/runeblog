@@ -33,10 +33,10 @@ class RuneBlog::Post
   end
 
   def create_post_subtree(viewname = nil) 
+    # FIXME Doesn't really do anything - refactor
     debug "=== create_post_subtree #{viewname.inspect}  pwd = #{Dir.pwd}"
     # We are INSIDE views/myview/000n-mytitle dir now - FIXME later? how did that happen?
     create_dir("assets")
-    system("cp body.txt index.html")  # gahhh FIXME
   end
 
   def write_metadata(meta)

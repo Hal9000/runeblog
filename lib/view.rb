@@ -31,28 +31,22 @@ class RuneBlog::View
     @name
   end
 
-  def files(recent = false)
+  def publishable_files
     vdir = dir()
     files = [index()]
-    others = Dir.entries(vdir).grep(/^\d\d\d\d/)
-    files += others.map {|x| "#{vdir}/#{x}" }
-    files.reject! {|f| ! recent?(f) } if recent
-    files
+    others = Dir.entries(vdir).grep(/^\d\d\d\d/).map {|x| "#{vdir}/#{x}" }
+    assets = Dir.entries("#{@blog.root}/assets") - %w[. ..]
+    assets.map! {|x| "#{@blog.root}/assets/#{x}" }
+    assets.reject! {|x| File.directory?(x) }
+#   assets.reject! {|x| ! recent?(x) }
+    files = files + others
+    all = files.dup
+    dirty = files.reject {|f| ! recent?(f) }
+    [dirty, all, assets]
   end
 
   def can_publish?
     @can_publish
-  end
-
-  def publish
-    # ?? @blog.view.publisher.publish
-    # output "Files:"
-    # files.each {|f| output "    #{f}\n" }
-    output_newline
-    list = files(true)
-    @publisher.publish(list)
-  rescue => err
-    error(err)
   end
 
   def recent?(file)
