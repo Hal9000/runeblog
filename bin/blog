@@ -16,8 +16,7 @@ def mainloop
   cmd.chomp!
   return if cmd.empty?   # CR does nothing
   meth, params = RuneBlog::REPL.choose_method(cmd)
-  old, str = send(meth, params)
-  puts str if old && ! str.nil?
+  ret, str = send(meth, params)
 rescue => err
   puts err
 end

@@ -3,6 +3,7 @@ require 'runeblog_version'
 module RuneBlog::Helpers
 
   def read_config(file, *syms)
+    verify(File.exist?(file) => "File #{file} doesn't exist")
     lines = File.readlines(file).map(&:chomp)
     obj = OpenStruct.new
     lines.each do |line|
@@ -36,6 +37,7 @@ module RuneBlog::Helpers
   end
 
   def get_views   # read from filesystem
+    verify(Dir.exist?("#@root/views") => "#{@root/views} doesn't exist")
     dirs = subdirs("#@root/views/").sort
     dirs.map {|name| RuneBlog::View.new(name) }
   end

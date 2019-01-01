@@ -33,7 +33,7 @@ module RuneBlog::REPL
     check_empty(arg)
     output RuneBlog::VERSION
     puts fx("\n  RuneBlog", :bold), fx(" v #{RuneBlog::VERSION}\n", Red) unless testing
-    [false, @out]
+    [true, @out]
   end
 
   def cmd_config(arg, testing = false)
@@ -51,7 +51,6 @@ module RuneBlog::REPL
     reset_output
     check_empty(arg)
     url = @blog.view.publisher.url
-    # FIXME Bad logic here.
     if url.nil?   
       output! "Publish first."
       puts "\n  Publish first."
@@ -59,7 +58,7 @@ module RuneBlog::REPL
     end
     result = system("open '#{url}'")
     raise CantOpen(url) unless result
-    return [false, @out]
+    return [true, @out]
   end
 
   def cmd_preview(arg, testing = false)
@@ -68,9 +67,10 @@ module RuneBlog::REPL
     local = @blog.view.index
     result = system("open #{local}")
     raise CantOpen(local) unless result
+    [true, @out]
   end
 
-  def cmd_publish(arg, testing = false)  # FIXME non-string return expected in caller?
+  def cmd_publish(arg, testing = false)
     puts unless testing
     reset_output
     check_empty(arg)
@@ -88,7 +88,7 @@ module RuneBlog::REPL
       yn = RubyText.gets.chomp
       files = all if yn == "y"
     end
-    return if files.empty?
+    return [false, @out] if files.empty?
 
     ret = RubyText.spinner(label: " Publishing... ") do
       @blog.view.publisher.publish(files, assets)  # FIXME weird?
@@ -100,7 +100,7 @@ module RuneBlog::REPL
       puts "  ...finished.\n " 
       output! "...finished.\n"
     end
-    return [false, @out]
+    return [true, @out]
   end
 
   def cmd_rebuild(arg, testing = false)
@@ -110,14 +110,14 @@ module RuneBlog::REPL
     puts unless testing
     files = @blog.find_src_slugs
     files.each {|file| @blog.rebuild_post(file) }
-    nil
+    [true, @out]
   end
 
   def cmd_relink(arg, testing = false)
     reset_output
     check_empty(arg)
     @blog.relink
-    nil
+    [true, @out]
   end
 
   def cmd_change_view(arg, testing = false)
@@ -139,7 +139,7 @@ module RuneBlog::REPL
         puts "\n  ", fx(arg, :bold), "\n" unless testing
       end
     end
-    return [false, @out]
+    return [true, @out]
   end
 
   def cmd_new_view(arg, testing = false)
@@ -148,7 +148,7 @@ module RuneBlog::REPL
     resp = yesno("Add publishing info now? ")
     @blog.view.publisher = ask_publishing_info
     write_config(@blog.view.publisher,  @blog.view.dir + "/publish")  # change this?
-    nil
+    [true, @out]
   end
 
   def cmd_new_post(arg, testing = false)
@@ -157,7 +157,7 @@ module RuneBlog::REPL
     title = ask("\nTitle: ")
     @blog.create_new_post(title)
     STDSCR.clear
-    nil
+    [true, @out]
   rescue => err
     puts err
     puts err.backtrace.join("\n")
@@ -172,7 +172,7 @@ module RuneBlog::REPL
       puts ret
       output ret
     end
-    return [false, @out]
+    [true, @out]
   end
 
   #-- FIXME affects linking, building, publishing...
@@ -184,7 +184,7 @@ module RuneBlog::REPL
     result = @blog.remove_post(id)
     output! "Post #{id} not found" if result.nil?
 #   puts "Post #{id} not found" if result.nil?
-    return [false, @out]
+    [true, @out]
   end
 
   #-- FIXME affects linking, building, publishing...
@@ -213,7 +213,7 @@ module RuneBlog::REPL
     file = files.first
     result = edit_file("#{@blog.root}/src/#{file}")
     @blog.rebuild_post(file)
-    return [false, @out]
+    [true, @out]
   end
 
   def cmd_list_views(arg, testing = false)
@@ -227,7 +227,7 @@ module RuneBlog::REPL
       puts "  ", v unless testing
     end
     puts unless testing
-    return [false, @out]
+    [true, @out]
   end
 
   def cmd_list_posts(arg, testing = false)
@@ -250,7 +250,7 @@ module RuneBlog::REPL
       end
     end
     puts unless testing
-    return [false, @out]
+    [true, @out]
   end
 
   def cmd_list_drafts(arg, testing = false)
@@ -271,7 +271,7 @@ module RuneBlog::REPL
       end
     end
     puts unless testing
-    return [false, @out]
+    [true, @out]
   end
 
   def cmd_INVALID(arg, testing = false)
@@ -279,7 +279,7 @@ module RuneBlog::REPL
     print fx("\n  Command ", :bold)
     print fx(arg, Red, :bold)
     puts fx(" was not understood.\n ", :bold)
-    return [false, @out]
+    [true, @out]
   end
 
   def cmd_help(arg, testing = false)
@@ -328,7 +328,7 @@ module RuneBlog::REPL
       puts s2
     end
     puts unless testing
-    return [false, @out]
+    [true, @out]
   end
 
 end

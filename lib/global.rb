@@ -43,3 +43,14 @@ def check_meta(meta, where = "")
   end
 end
 
+def verify(hash)
+  hash.each_pair do |expr, msg|
+    puts "<< #{msg}" unless expr
+  end
+end
+
+def assure(hash)  # really the same as verify for now...
+  hash.each_pair do |expr, msg|
+    puts "<< #{msg}" unless expr
+  end
+end

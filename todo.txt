@@ -1,20 +1,10 @@
-* 6 4 - work on publishing
+  4 6 - DBC code?
   6 4 - more tests!
   6 6 - resolve issues: draft vs post, kill, etc.
 
-  7 4 - tests are screwed up
-
-  6 2 - publish is buggy
   5 2 - pin command
 
-   
-  3 3 - [false, @out]
-
-  5 5 - screen/colors messed up on exit
-
   7 6 - add post template capability
-
-x 4 4 - spinner for publishing, etc.
 
 * 6 4 - work on: rebuild, relink, link_post, generate, ...
 
@@ -83,6 +73,12 @@ x 4 4 - spinner for publishing, etc.
   8 7 - docs: how to write templates (incl main one)
   8 6 - docs: overview of Livetext
 
+x 6 4 - work on publishing
+x 7 4 - tests are screwed up
+x 6 2 - publish is buggy
+x 3 3 - [false, @out]
+x 5 5 - screen/colors messed up on exit
+x 4 4 - spinner for publishing, etc.
 x 5 5 - check remote mkdir
 x 6 3 - config command (See notes.txt)
 x 3 3 - dumb_menu method
