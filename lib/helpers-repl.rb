@@ -6,61 +6,8 @@ make_exception(:CantDelete,      "Can't open '$1'")
 make_exception(:InternalError,   "Glitch: $1 got arg '$2'")
 make_exception(:CantCopy,        "Can't copy $1 to $2")
 
-module WithANSI
-  def clear
-    puts "\e[H\e[2J"  # clear screen  # CHANGE_FOR_CURSES?
-  end
-
-  def red(text)
-    "\e[31m#{text}\e[0m"  # CHANGE_FOR_CURSES?
-  end
-
-  def blue(text)
-    "\e[34m#{text}\e[0m"  # CHANGE_FOR_CURSES?
-  end
-
-  def bold(str)
-    "\e[1m#{str}\e[22m"  # CHANGE_FOR_CURSES?
-  end
-
-end
-
-module NoANSI
-
-  def gets
-    str = ""
-    loop do
-      ch = ::STDSCR.getch
-      if ch == 10
-        STDSCR.crlf
-        break 
-      end
-      str << ch
-    end
-    str
-  end
-
-  def clear
-#   puts "\e[H\e[2J"  # clear screen  # CHANGE_FOR_CURSES?
-  end
-
-  def red(text)
-    text
-  end
-
-  def blue(text)
-    text
-  end
-
-  def bold(str)
-    str
-  end
-end
-
 
 module RuneBlog::REPL
-  include NoANSI
-
   Patterns = 
     {"help"              => :cmd_help, 
      "h"                 => :cmd_help,
@@ -130,7 +77,6 @@ module RuneBlog::REPL
     params = nil
     Regexes.each_pair do |rx, meth|
       m = cmd.match(rx)
-# puts "#{rx} =~ #{cmd.inspect}  --> #{m.to_a.inspect}"
       result = m ? m.to_a : nil
       next unless result
       found = meth
@@ -180,9 +126,9 @@ module RuneBlog::REPL
     @out << str
   end
 
-  def output!(str)  # red, \n and indent
+  def output!(str)  # \n and indent
     @out ||= ""
-    @out << "  " + red(str)
+    @out << "  " + str
   end
 
   def output_newline(n = 1)
@@ -215,11 +161,10 @@ module RuneBlog::REPL
   end
 
   def colored_slug(slug)
-    red(slug[0..3])+blue(slug[4..-1])  # CHANGE_FOR_CURSES?
+    slug[0..3] + slug[4..-1]
   end
 
   def import(arg = nil)
-#   open_blog unless @blog
     raise "Not implemented at present..."
     arg = nil if arg == ""
     arg ||= ask("Filename: ")  # check validity later
@@ -239,6 +184,8 @@ module RuneBlog::REPL
   end
 
   def ask_publishing_info   # returns Publishing object
+    verify(@blog => "@blog is nil", 
+           @blog.view => "@blog.view is nil")
     # user, server, root, path, protocol = "http"
     puts "Please enter publishing data for view #{@blog.view}..."
     user = ask("User: ")
@@ -249,27 +196,6 @@ module RuneBlog::REPL
     [user, root, server, path, proto].each {|x| x.chomp! }
     proto = "http" if proto.empty?
     RuneBlog::Publishing.new(user, server, root, path, proto)
-  end
-
-  def dumb_menu(array)
-    # { string => :meth, ... }
-    max = array.size
-    puts "\n  Select from:"  # CHANGE_FOR_CURSES?
-    array.each.with_index do |string, i|
-      puts "   #{red('%2d' % (i+1))} #{string}"  # CHANGE_FOR_CURSES?
-    end
-    picked = nil
-    loop do
-      print red("> ")  # CHANGE_FOR_CURSES?
-      num = gets.to_i
-      if num.between?(1, max)
-        picked = array[num-1]
-        break
-      else
-        puts "Huh? Must be 1 to #{max}"  # CHANGE_FOR_CURSES?
-      end
-    end
-    picked
   end
 
   ### find_asset

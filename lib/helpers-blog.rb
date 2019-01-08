@@ -37,7 +37,9 @@ module RuneBlog::Helpers
   end
 
   def get_views   # read from filesystem
-    verify(Dir.exist?("#@root/views") => "#{@root/views} doesn't exist")
+    verify(@root => "#@root is nil",
+           Dir.exist?(@root) => "#@root doesn't exist",
+           Dir.exist?("#@root/views") => "#@root/views doesn't exist")
     dirs = subdirs("#@root/views/").sort
     dirs.map {|name| RuneBlog::View.new(name) }
   end
@@ -57,17 +59,16 @@ module RuneBlog::Helpers
   end
 
   def subdirs(dir)
+    verify(Dir.exist?(dir) => "Directory #{dir} not found")
     dirs = Dir.entries(dir) - %w[. ..]
     dirs.reject! {|x| ! File.directory?("#@root/views/#{x}") }
     dirs
-  rescue => err
-    STDERR.puts "Can't find dir '#{dir}'"
-    puts err
-    puts err.backtrace
-    exit
   end
 
   def find_src_slugs
+    verify(@root => "#@root is nil",
+           Dir.exist?(@root) => "#@root doesn't exist",
+           Dir.exist?("#@root/src") => "#{@root/src} doesn't exist")
     files = Dir.entries("#@root/src/").grep /\d{4}.*.lt3$/
     files.map! {|f| File.basename(f) }
     files = files.sort.reverse

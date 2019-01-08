@@ -19,15 +19,21 @@ class RuneBlog::Post
     # FIXME weird logic here
     raise NoBlogAccessor if RuneBlog.blog.nil?
     pdir = RuneBlog.blog.view.dir + "/" + post
+    verify(Dir.exist?(pdir) => "Directory #{pdir} not found")
     meta = nil
     Dir.chdir(pdir) do
+      verify(File.exist?("metadata.txt") => "metadata.txt not found",
+             File.exist?("teaser.txt") => "teaser.txt not found",
+             File.exist?("body.txt") => "body.txt not found")
       meta = read_config("metadata.txt")
+      verify(meta.date  => "meta.date is nil",
+             meta.views => "meta.views is nil",
+             meta.tags  => "meta.tags is nil")
       meta.date = Date.parse(meta.date)
       meta.views = meta.views.split
       meta.tags = meta.tags.split
       meta.teaser = File.read("teaser.txt")
       meta.body = File.read("body.txt")
-      check_meta(meta, "Post.load")
     end
     meta
   end
@@ -61,7 +67,6 @@ class RuneBlog::Post
   end
 
   def initialize
-    debug "=== Post#initialize"
     @blog = RuneBlog.blog || raise(NoBlogAccessor)
   end
 
@@ -70,12 +75,14 @@ class RuneBlog::Post
     post = self.new
     post.new_metadata(title)
     post.create_draft
-    post.create_post_subtree  # gets done in build anyway
-#   post.build   # where livetext gets called
+    post.create_post_subtree
+    # post.build is not called here! It is called
+    # in runeblog.rb:create_new_post AFTER post.edit
     post
   end
 
   def new_metadata(title)
+    verify(title.is_a?(String) => "Title #{title.inspect} is not a string")
     meta = OpenStruct.new
     meta.title = title
     meta.teaser = "Teaser goes here."
@@ -83,8 +90,7 @@ class RuneBlog::Post
     meta.pubdate = Time.now.strftime("%Y-%m-%d")
     meta.date = meta.pubdate  # fix later
     meta.views = [@blog.view.to_s]
-    # only place next_sequence is called
-    meta.num   = @blog.next_sequence
+    meta.num   = @blog.next_sequence   # ONLY place next_sequence is called!
     @blog.make_slug(meta)  # adds to meta
     @meta = meta
   end
@@ -92,28 +98,16 @@ class RuneBlog::Post
   def create_draft
     html = RuneBlog.post_template(title: @meta.title, date: @meta.pubdate, 
                view: @meta.view, teaser: @meta.teaser, body: @meta.body)
-    @draft = "#{@blog.root}/src/#{@meta.slug}.lt3"
+    srcdir = "#{@blog.root}/src/"
+    verify(Dir.exist?(srcdir) => "#{srcdir} not found",
+           @meta.slug.is_a?(String) => "slug #{@meta.slug.inspect} is invalid")
+    fname  = @meta.slug + ".lt3"
+    @draft = srcdir + fname
     dump(html, @draft)
-  end
-
-  def old_initialize(meta, view_name)
-    # FIXME weird logic here
-    @blog = RuneBlog.blog || raise(NoBlogAccessor)
-    @blog.make_slug(meta)  # Post#initialize
-    check_meta(meta, "Post#initialize")
-    html = RuneBlog.post_template(title: meta.title, date: meta.pubdate, 
-                                  view: meta.view, teaser: meta.teaser, 
-                                  body: meta.body)
-    slug = meta.slug
-    @meta = meta
-    @draft = "#{@blog.root}/src/#{slug}.lt3"
-    dump(html, @draft)
-  rescue => err
-    puts err
-    puts err.backtrace
   end
 
   def edit
+    verify(File.exist?(@draft) => "File #{@draft} not found")
     result = system("vi #@draft +8")  # TODO improve this
     raise EditorProblem(draft) unless result
     nil
