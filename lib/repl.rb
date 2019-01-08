@@ -135,7 +135,7 @@ module RuneBlog::REPL
     else
       if @blog.view?(arg)
         @blog.view = arg  # reads config
-        output red("View: ") + bold(@blog.view.name.to_s)  # FIXME?
+        output "View: " + @blog.view.name.to_s
         puts "\n  ", fx(arg, :bold), "\n" unless testing
       end
     end
@@ -239,7 +239,7 @@ module RuneBlog::REPL
     puts unless testing
     puts "  ", fx(str, :bold) unless testing
     if posts.empty?
-      output! bold("No posts")
+      output! "No posts"
       puts fx("  No posts", :bold) unless testing
     else
       posts.each do |post| 

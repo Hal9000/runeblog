@@ -1,4 +1,5 @@
   4 6 - DBC code?
+  4 4 - verify view is publishable before trying
   6 4 - more tests!
   6 6 - resolve issues: draft vs post, kill, etc.
 

@@ -31,8 +31,8 @@ class RuneBlog::Publishing
 
   def system!(str)
     rc = system(str)
-    puts "Running: #{str}"
-    puts "Failed: #{str}" if ! rc
+debug "Running: #{str}"
+debug "Failed!\n " if ! rc
     rc
   end
 
@@ -40,13 +40,19 @@ class RuneBlog::Publishing
     dir = "#@docroot/#@path"
     result = system!("ssh #@user@#@server -x mkdir -p #{dir}") 
     result = system!("ssh #@user@#@server -x mkdir -p #{dir}/../assets") 
-    list = files.join(' ')
-    cmd = "scp #{list} #@user@#@server:#{dir} >/dev/null 2>/tmp/wtf"
-    debug "cmd = #{cmd.inspect}  - see /tmp/wtf"
-    result = system!(cmd)
-    cmd = "scp #{assets.join(' ')} #@user@#@server:#{dir}/../assets >/dev/null 2>/tmp/wtf2"
-    result = system!(cmd)
-    raise PublishError if !result
+    files.each do |file|
+      dest = "#@user@#@server:#{dir}"
+      file.gsub!(/\/\//, "/")  # weird... :-/
+      dest.gsub!(/\/\//, "/")  # weird... :-/
+      cmd = "scp -r #{file} #{dest} >/dev/null 2>/tmp/wtf"
+      debug "cmd = #{cmd.inspect}  - see /tmp/wtf"
+      result = system!(cmd) || puts("\n  Could not copy #{file} to #{dest}")
+    end
+    unless assets.empty?
+      cmd = "scp #{assets.join(' ')} #@user@#@server:#{dir}/../assets >/dev/null 2>/tmp/wtf2"
+      result = system!(cmd)
+      raise PublishError if !result
+    end
     dump(files, "#{@blog.view.dir}/last_published")
     true
   end
