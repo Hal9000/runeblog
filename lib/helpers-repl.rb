@@ -112,7 +112,7 @@ module RuneBlog::REPL
 
   def flush_output(initial = "")
     @out ||= ""
-    puts @out  # CHANGE_FOR_CURSES?
+    puts @out
     reset_output
   end
 

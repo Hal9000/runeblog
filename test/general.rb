@@ -6,6 +6,9 @@ require 'runeblog'
 require 'lib/repl'
 require 'rubytext'
 
+major, minor = RUBY_VERSION.split(".").values_at(0,1)
+ver = major.to_i*10 + minor.to_i
+abort "Need Ruby 2.4 or greater" unless ver >= 24
 
 RubyText.start
 

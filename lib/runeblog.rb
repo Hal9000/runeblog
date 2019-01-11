@@ -51,8 +51,8 @@ class RuneBlog
     blog = self.new
     blog.create_view("test_view")
   rescue => err
-    puts "Can't create blog: '#{dir}' - #{err}"  # CHANGE_FOR_CURSES?
-    puts err.backtrace.join("\n")  # CHANGE_FOR_CURSES?
+    puts "Can't create blog: '#{dir}' - #{err}"
+    puts err.backtrace.join("\n")
   end
 
   def initialize   # assumes existing blog
@@ -208,7 +208,7 @@ class RuneBlog
   end
 
   def process_post(file)
-    debug "=== process_post #{file.inspect}"
+    debug "=== process_post #{file.inspect}   pwd = #{Dir.pwd}"
     raise ArgumentError unless file.is_a?(String)
     path = @root + "/src/#{file}"
     raise FileNotFound(path) unless File.exist?(path)

@@ -68,7 +68,7 @@ module RuneBlog::Helpers
   def find_src_slugs
     verify(@root => "#@root is nil",
            Dir.exist?(@root) => "#@root doesn't exist",
-           Dir.exist?("#@root/src") => "#{@root/src} doesn't exist")
+           Dir.exist?("#@root/src") => "#@root/src doesn't exist")
     files = Dir.entries("#@root/src/").grep /\d{4}.*.lt3$/
     files.map! {|f| File.basename(f) }
     files = files.sort.reverse

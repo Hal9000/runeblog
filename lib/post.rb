@@ -134,6 +134,7 @@ class RuneBlog::Post
       create_dir(dir) unless Dir.exist?(dir)
       Dir.chdir(dir) do
         create_post_subtree(view_name)  # unless existing??
+        system("cp body.txt index.html")
         @blog.generate_index(view_name)
       end
     end
