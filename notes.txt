@@ -1,3 +1,10 @@
+templates...
+------------
+To post: 
+  - ask title
+  - multiselect views
+  - multiselect tags?
+
 config command (?)
 --------------
 edit .blog/config? view/publish

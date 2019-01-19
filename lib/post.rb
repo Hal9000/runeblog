@@ -119,7 +119,7 @@ class RuneBlog::Post
     debug "=== build"
     views = @meta.views
     text = File.read(@draft)
-    Livetext.parameters = [@blog, @meta]
+    Livetext.parameters = [@blog, @meta.num]
     livetext = Livetext.new(STDOUT)
     meta = livetext.process_text(text)
     raise LivetextError(@draft) if meta.nil?

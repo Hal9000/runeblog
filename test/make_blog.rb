@@ -8,6 +8,10 @@ require 'global'
 # require 'rubytext'
 require 'repl'
 
+def getch
+# sleep 5
+end
+
 def debug(str)
 # STDERR.puts str
 end

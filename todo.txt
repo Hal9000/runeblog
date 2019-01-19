@@ -1,107 +1,99 @@
-  4 6 - DBC code?
-  4 4 - verify view is publishable before trying
-  6 4 - more tests!
-  6 6 - resolve issues: draft vs post, kill, etc.
+   - fix unnecessary rebuild_post/generate_index calls
+*  - DBC code?
+*  - work on: rebuild, relink, link_post, generate, ...
+   - fix image dir discrepancy
+   - more tests!
+   - verify view is publishable before trying
+   - resolve issues: draft vs post, kill, etc.
+   - allow for post title changing
+   - add post template capability (create, edit, post)
+   - "pinned" or favorite posts? ("best" tag? or pin command that understands views?)
+   - methods such as get_post_template?
+   - rethink helper libs?
+   - improve gemspec
+   - remember runeblog fixes
+   - weaponize rubytext (gemspec, etc.)
+   - handle larger output for lsp, lsd
+   - rethink remove/delete/kill and other verbs
+   - safe way to delete a view?
+   - modifiable global defaults for publishing info/etc.?
+   - distinguish view and view_name
+   - start using keyword parameters as needed
+   - test credentials for publishing?
 
-  5 2 - pin command
+   - move some logic into liveblog?
 
-  7 6 - add post template capability
+   - commands to edit templates, config, etc.? ('config' command?) (See notes.txt)
+   - maybe add (default) publishing info to config?
+   - shorten commands?
+   - undo last post?
 
-* 6 4 - work on: rebuild, relink, link_post, generate, ...
+   - code coverage analysis
 
-  4 2 - allow for post title changing
+   - config files: persistent comments?
 
-  3 3 - methods such as get_post_template
-  4 2 - rethink helper libs?
-  4 2 - improve gemspec
-  6 2 - remember runeblog fixes
-  6 2 - weaponize rubytext (gemspec, etc.)
+   - change interaction of liveblog and process_file (arbitrary ostruct?)
+   - hash same as metadata??
+   - allow templates to be .lt3 files?
+   - snippets for templates?
+   - facebook/twitter as snippets?
+   - changes in liveblog for snippets??
 
-  6 5 - handle larger output for lsp, lsd
+   - Fix/rewrite asset handling? .asset and .asset! tags?
+   - Command to import asset(s)?
+   - Readline completion for views
+   - Readline completion for commands?
+   - possibly change: relink, rebuild, etc.?
+   - permalinks??
+   - use a database???
+   - back-sync with remote?
+   - explicitly document use of ssh/scp
+   - deal with CSS??
+   - update docs
 
-  3 2 - rethink remove/delete/kill and other verbs
-  4 6 - safe way to delete a view?
-  4 7 - modifiable global defaults for publishing info/etc.?
+   - true command line options?
+   - special view 'all'?
+   - other vars in .blog?
+   - out-of-the-box workflow
+   - video tutorial
+   - figure out linked-list dependencies?
 
-  4 8 - custom curses menu
+   - docs: getting started
+   - docs: how-to
+   - docs: how to write templates (incl main one)
+   - docs: overview of Livetext
 
-  4 3 - distinguish view and view_name
-  4 4 - start using keyword parameters as needed
-  5 3 - test credentials for publishing?
-
-  4 6 - move some logic into liveblog?
-
-  4 4 - commands to edit templates, config, etc.? ('config' command?) (See notes.txt)
-  4 2 - maybe add (default) publishing info to config?
-  2 5 - shorten commands?
-  3 2 - undo last post?
-
-  6 9 - code coverage analysis
-
-  3 2 - config files: persistent comments?
-
-  6 7 - change interaction of liveblog and process_file (arbitrary ostruct?)
-  4 3 - hash same as metadata??
-  6 7 - allow templates to be .lt3 files?
-  6 5 - snippets for templates?
-  6 5 - facebook/twitter as snippets?
-  6 5 - changes in liveblog for snippets??
-
-  7 7 - Fix/rewrite asset handling? .asset and .asset! tags?
-  6 6 - Command to import asset(s)?
-  4 4 - Readline completion for views
-  4 4 - Readline completion for commands?
-  6 6 - possibly change: relink, rebuild, etc.?
-  4 8 - curses integration?
-  3 6 - distinguish unpublished?
-  7 6 - "pinned" or favorite posts? ("best" tag? or dot-command that understands views?)
-  3 4 - permalinks??
-  5 8 - use a database???
-  4 8 - back-sync with remote?
-  7 7 - explicitly document use of ssh/scp
-  5 9 - deal with CSS??
-  5 9 - update docs
-
-  5 9 - true command line options?
-  4 7 - special view 'all'?
-  4 4 - other vars in .blog?
-  7 6 - out-of-the-box workflow
-  8 9 - video tutorial
-  7 8 - figure out linked-list dependencies?
-
-  8 8 - docs: getting started
-  8 8 - docs: how-to
-  8 7 - docs: how to write templates (incl main one)
-  8 6 - docs: overview of Livetext
-
-x 6 4 - work on publishing
-x 7 4 - tests are screwed up
-x 6 2 - publish is buggy
-x 3 3 - [false, @out]
-x 5 5 - screen/colors messed up on exit
-x 4 4 - spinner for publishing, etc.
-x 5 5 - check remote mkdir
-x 6 3 - config command (See notes.txt)
-x 3 3 - dumb_menu method
-x 3 3 - rethink publish/deploy 
-x 2 2 - remove explicit tag formatting
-x 6 3 - rescue errors only in main REPL?
-x 8 4 - run "unyaml" everywhere (incl my instance!)
-x 6 2 - delete/undelete from view, not file list
-x 5 1 - "undelete" from trash
-x 8 3 - Fix the bad rescues!!
-x 8 3 - Fix dumping of metadata.yaml => .txt
-x 7 2 - change "remainder"
-x 5 5 - get rid of YAML dependency
-x 5 5 - add body, teaser to post subdir
-x 3 2 - fix cmdline args
-x?4 2 - search for .blog under cwd, home
-x 6 4 - a "real" default view?
-x 6 3 - let main blog be named? call 'data' something else?
-x 5 2 - params checking on method entry
-x 5 2 - occasional sanity checking?
-x 3 3 - config files: blank lines, comments (persistent?)
-x 4 2 - consolidate under .blog
+x  - distinguish unpublished?
+x  - custom curses menu
+x  - work on publishing
+x  - tests are screwed up
+x  - publish is buggy
+x  - [false, @out]
+x  - screen/colors messed up on exit
+x  - spinner for publishing, etc.
+x  - check remote mkdir
+x  - curses integration?
+x  - config command (See notes.txt)
+x  - dumb_menu method
+x  - rethink publish/deploy 
+x  - remove explicit tag formatting
+x  - rescue errors only in main REPL?
+x  - run "unyaml" everywhere (incl my instance!)
+x  - delete/undelete from view, not file list
+x  - "undelete" from trash
+x  - Fix the bad rescues!!
+x  - Fix dumping of metadata.yaml => .txt
+x  - change "remainder"
+x  - get rid of YAML dependency
+x  - add body, teaser to post subdir
+x  - fix cmdline args
+x? - search for .blog under cwd, home
+x  - a "real" default view?
+x  - let main blog be named? call 'data' something else?
+x  - params checking on method entry
+x  - occasional sanity checking?
+x  - config files: blank lines, comments (persistent?)
+x  - consolidate under .blog
 x - test make_slug to death
 x - fix/improve config file path handling
 x - editor variable?

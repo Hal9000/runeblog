@@ -150,7 +150,7 @@ class RuneBlog
   end
 
   def view_files
-    vdir = @blog.viewdir
+    vdir = self.viewdir
     files = ["#{vdir}/index.html"]
     files += posts.map {|x| "#{vdir}/#{x}" }
     # Huh? 
@@ -212,18 +212,14 @@ class RuneBlog
     raise ArgumentError unless file.is_a?(String)
     path = @root + "/src/#{file}"
     raise FileNotFound(path) unless File.exist?(path)
-    Livetext.parameters = [@blog, @meta]
+    num = file.to_i       # e.g. 0098-this-is-a-title
+    Livetext.parameters = [self, num]
     live = Livetext.new(STDOUT) # (nil)
-    text = File.read(file)
-    live.process_text(path, binding)
+    text = File.read(path)
+    live.process_text(text)
   rescue => err
     error(err)
-  end
-
-  def build_post_view(view)
-    generate_index(view)
-  rescue => err
-    error(err)
+    getch
   end
 
   def generate_index(view)
@@ -296,10 +292,15 @@ class RuneBlog
     debug "Called rebuild_post(#{file.inspect})"
     raise ArgumentError unless file.is_a?(String)
     process_post(file)
-# FIXME this is broken now
-    @meta2.views.each {|view| build_post_view(view) }
+    # FIXME this is broken now
+    self.views.each do |view| 
+      p view.inspect
+      getch
+      generate_index(view)
+    end
   rescue => err
     error(err)
+    getch
   end
 
   def remove_post(num)

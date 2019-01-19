@@ -109,7 +109,10 @@ module RuneBlog::REPL
     check_empty(arg)
     puts unless testing
     files = @blog.find_src_slugs
-    files.each {|file| @blog.rebuild_post(file) }
+    files.each do |file| 
+      @blog.rebuild_post(file)
+    end
+    File.write("last_rebuild", Time.now)
     [true, @out]
   end
 
