@@ -1,7 +1,10 @@
    - fix unnecessary rebuild_post/generate_index calls
+   - allow tag pool
+   - allow menu selection of views/tags
+   - make hierarchy of publish files
 *  - DBC code?
 *  - work on: rebuild, relink, link_post, generate, ...
-   - fix image dir discrepancy
+   - store initial content as .lt3 rather than .html
    - more tests!
    - verify view is publishable before trying
    - resolve issues: draft vs post, kill, etc.
@@ -63,6 +66,10 @@
    - docs: how to write templates (incl main one)
    - docs: overview of Livetext
 
+---
+
+x  - ssh from within repl?
+x  - fix asset discrepancy
 x  - distinguish unpublished?
 x  - custom curses menu
 x  - work on publishing

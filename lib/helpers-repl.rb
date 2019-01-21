@@ -55,6 +55,8 @@ module RuneBlog::REPL
 
      "publish"           => :cmd_publish,
 
+     "ssh"               => :cmd_ssh,
+
      "q"                 => :cmd_quit,
      "quit"              => :cmd_quit
    }

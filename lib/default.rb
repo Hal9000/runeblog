@@ -11,7 +11,7 @@ BlogHeader = <<-TEXT
 <table>
   <tr>
     <td>
-        <img src=../../assets/fakeimage.jpg width=400 height=300>
+        <img src=assets/fakeimage.jpg width=400 height=300>
     </td>
     <td>
       <h3>Yet another blog... by Kilgore Trout</h3>

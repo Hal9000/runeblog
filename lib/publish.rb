@@ -39,7 +39,7 @@ debug "Failed!\n " if ! rc
   def publish(files, assets=[])
     dir = "#@docroot/#@path"
     result = system!("ssh #@user@#@server -x mkdir -p #{dir}") 
-    result = system!("ssh #@user@#@server -x mkdir -p #{dir}/../assets") 
+    result = system!("ssh #@user@#@server -x mkdir -p #{dir}/assets") 
     files.each do |file|
       dest = "#@user@#@server:#{dir}"
       file.gsub!(/\/\//, "/")  # weird... :-/
@@ -49,7 +49,7 @@ debug "Failed!\n " if ! rc
       result = system!(cmd) || puts("\n  Could not copy #{file} to #{dest}")
     end
     unless assets.empty?
-      cmd = "scp #{assets.join(' ')} #@user@#@server:#{dir}/../assets >/dev/null 2>/tmp/wtf2"
+      cmd = "scp #{assets.join(' ')} #@user@#@server:#{dir}/assets >/dev/null 2>/tmp/wtf2"
       result = system!(cmd)
       raise PublishError if !result
     end

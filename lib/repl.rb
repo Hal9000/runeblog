@@ -277,6 +277,11 @@ module RuneBlog::REPL
     [true, @out]
   end
 
+  def cmd_ssh(arg, testing = false)
+    pub = @blog.view.publisher
+    system("ssh #{pub.user}@#{pub.server}")
+  end
+
   def cmd_INVALID(arg, testing = false)
     reset_output "\n  Command '#{arg}' was not understood."
     print fx("\n  Command ", :bold)
@@ -321,6 +326,7 @@ module RuneBlog::REPL
        relink            Regenerate index for all views
        rebuild           Regenerate all posts and relink
        publish           Publish (current view)
+       ssh               Login to remote server
     EOS
     output msg
     msg.each_line do |line|

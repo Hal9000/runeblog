@@ -37,6 +37,7 @@ x.create_view("alpha_view")
 # Hack:
 system("cp publish .blog/data_test/views/alpha_view/publish")
 system("cp fakeimage.jpg .blog/data_test/assets/")
+system("cp fakeimage.jpg .blog/data_test/views/alpha_view/assets/")
 
 x.create_view("beta_view")
 x.create_view("gamma_view")
