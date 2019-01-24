@@ -18,6 +18,8 @@ module RuneBlog::REPL
 
      "new view $name"    => :cmd_new_view,
 
+     "customize"         => :cmd_customize,
+
      "new post"          => :cmd_new_post,
      "p"                 => :cmd_new_post,
      "post"              => :cmd_new_post,

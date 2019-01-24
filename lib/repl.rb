@@ -47,6 +47,19 @@ module RuneBlog::REPL
     edit_file("#{dir}/#{fname}")
   end
 
+  def cmd_customize(arg, testing = false)
+    # add extra views? add tags?
+    Dir.chdir(@blog.root + "/views/" + @blog.view.name)
+    others = @blog.views - [@blog.view]
+    others.map!(&:name)
+    viewlist = STDSCR.multimenu(items: others)
+    puts "\n  #{viewlist.inspect}\n "
+    tags = File.readlines("tagpool").map(&:chomp)
+    tags << "[NEW TAG]"
+    taglist = STDSCR.multimenu(items: tags)
+    puts "\n  #{taglist.inspect}\n "
+  end
+
   def cmd_browse(arg, testing = false)
     reset_output
     check_empty(arg)
@@ -308,6 +321,8 @@ module RuneBlog::REPL
 
        list views        List all views available
        lsv               Same as: list views
+
+       customize         Change set of tags, extra views
   
        p, post           Create a new post
        new post          Same as post (create a post)

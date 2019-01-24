@@ -26,7 +26,7 @@ class RuneBlog::Publishing
   end
 
   def url
-    url = "#@proto://#@server/#@path"
+    url = "#@proto://#@server/#@path/#{@blog.view.name}"
   end
 
   def system!(str)
@@ -38,10 +38,11 @@ debug "Failed!\n " if ! rc
 
   def publish(files, assets=[])
     dir = "#@docroot/#@path"
-    result = system!("ssh #@user@#@server -x mkdir -p #{dir}") 
+    view_name = @blog.view.name
+    result = system!("ssh #@user@#@server -x mkdir -p #{dir}/#{view_name}") 
     result = system!("ssh #@user@#@server -x mkdir -p #{dir}/assets") 
     files.each do |file|
-      dest = "#@user@#@server:#{dir}"
+      dest = "#@user@#@server:#{dir}/#{view_name}"
       file.gsub!(/\/\//, "/")  # weird... :-/
       dest.gsub!(/\/\//, "/")  # weird... :-/
       cmd = "scp -r #{file} #{dest} >/dev/null 2>/tmp/wtf"

@@ -16,8 +16,8 @@ class RuneBlog::Post
   end
   
   def self.load(post)
-    # FIXME weird logic here
     raise NoBlogAccessor if RuneBlog.blog.nil?
+    # "post" is a slug
     pdir = RuneBlog.blog.view.dir + "/" + post
     verify(Dir.exist?(pdir) => "Directory #{pdir} not found")
     meta = nil
@@ -128,7 +128,8 @@ class RuneBlog::Post
     # FIXME what if title changes? slug should change?
     meta.views = views  # FIXME
 
-    meta.views.each do |view_name|   # Create dir using slug (index.html, metadata?)
+    meta.views.each do |view_name|   
+      # Create dir using slug (index.html, metadata?)
       vdir = "#{@blog.root}/views/#{view_name}/"
       dir = vdir + meta.slug + "/"
       create_dir(dir) unless Dir.exist?(dir)

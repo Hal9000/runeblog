@@ -11,7 +11,7 @@ include RuneBlog::REPL
 
 def mainloop
   print fx("blog> ", Red, :bold)
-  cmd = STDSCR.gets(history: @cmdhist)
+  cmd = STDSCR.gets(history: @cmdhist, tab: @tabcom)
   cmd_quit(nil) if cmd.nil?   # ^D
   cmd.chomp!
   return if cmd.empty?   # CR does nothing
@@ -43,6 +43,8 @@ end
 
 puts fx("\n  RuneBlog", :bold), fx(" v #{RuneBlog::VERSION}\n", Red)
 @cmdhist = []
+@tabcom = RuneBlog::REPL::Patterns.keys
+@tabcom.map! {|x| x.sub(/ \$.*/, " ") }
 loop { mainloop }
 sleep 0.2
 system("tput clear")

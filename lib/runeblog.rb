@@ -131,9 +131,9 @@ class RuneBlog
     x = RuneBlog::Default
     create_dir('custom')
     create_dir('assets')
-    # FIXME dump method??
     pub = "user: xxx\nserver: xxx\ndocroot: xxx\npath: xxx\nproto: xxx\n"
-    dump(pub, "publish")  # FIXME publish
+    dump(pub, "publish")
+    dump("", "tagpool")
     dump(x::BlogHeader, "custom/blog_header.html")
     dump(x::BlogTrailer, "custom/blog_trailer.html")
     dump("Initial creation", "last_published")
@@ -294,8 +294,8 @@ class RuneBlog
     process_post(file)
     # FIXME this is broken now
     self.views.each do |view| 
-      p view.inspect
-      getch
+#     p view.inspect
+#     getch
       generate_index(view)
     end
   rescue => err

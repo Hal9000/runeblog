@@ -1,6 +1,6 @@
    - fix unnecessary rebuild_post/generate_index calls
-   - allow tag pool
-   - allow menu selection of views/tags
+*  - allow menu selection of views/tags
+   - fix asset handling once and for all
    - make hierarchy of publish files
 *  - DBC code?
 *  - work on: rebuild, relink, link_post, generate, ...
@@ -45,7 +45,6 @@
    - Fix/rewrite asset handling? .asset and .asset! tags?
    - Command to import asset(s)?
    - Readline completion for views
-   - Readline completion for commands?
    - possibly change: relink, rebuild, etc.?
    - permalinks??
    - use a database???
@@ -68,6 +67,9 @@
 
 ---
 
+x  - allow tag pool
+x  - Readline completion for commands?
+x  - leave view out of ./publish file!
 x  - ssh from within repl?
 x  - fix asset discrepancy
 x  - distinguish unpublished?
