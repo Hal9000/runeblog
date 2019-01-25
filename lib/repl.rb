@@ -53,11 +53,16 @@ module RuneBlog::REPL
     others = @blog.views - [@blog.view]
     others.map!(&:name)
     viewlist = STDSCR.multimenu(items: others)
-    puts "\n  #{viewlist.inspect}\n "
+    @blog.post_views = viewlist
     tags = File.readlines("tagpool").map(&:chomp)
-    tags << "[NEW TAG]"
+    return if tags.empty?
     taglist = STDSCR.multimenu(items: tags)
-    puts "\n  #{taglist.inspect}\n "
+    @blog.post_tags = taglist
+  end
+  
+  def cmd_tags(arg, testing = false)
+    Dir.chdir(@blog.root + "/views/" + @blog.view.name)
+    edit_file("tagpool")
   end
 
   def cmd_browse(arg, testing = false)

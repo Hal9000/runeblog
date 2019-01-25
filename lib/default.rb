@@ -34,14 +34,16 @@ BlogTrailer = <<-TEXT
 TEXT
 
 def RuneBlog.post_template(title: "No title", date: nil, view: "test_view", 
-                       teaser: "No teaser", body: "No body")
+                       teaser: "No teaser", body: "No body", tags: [], views: [])
+viewlist = (views + [view.to_s]).join(" ")
+taglist = tags.join(" ")
 <<-TEXT
 .mixin liveblog
  
 .title #{title}
 .pubdate #{date}
-.views #{view}
-.tags 
+.views #{viewlist}
+.tags #{taglist}
  
 .teaser
 #{teaser}

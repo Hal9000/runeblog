@@ -34,6 +34,8 @@ class RuneBlog
   attr_reader :root, :views, :sequence, :editor
   attr_accessor :view  # overridden
 
+  attr_accessor :post_views, :post_tags
+
   include Helpers
 
   def self.create_new_blog(dir = ".blog/data")
@@ -64,6 +66,8 @@ class RuneBlog
     @views = get_views
     @view = str2view(@view_name)
     @sequence = get_sequence
+    @post_views = []
+    @post_tags = []
   end
 
   def view?(name)
