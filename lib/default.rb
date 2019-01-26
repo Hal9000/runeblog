@@ -2,30 +2,52 @@ class RuneBlog::Default
 
 # This will all become much more generic later.
 
-BlogHeader = <<-TEXT
-<html>
-<body>
+NewBlogHeader = <<-TEXT   # Can't do this yet!!
+.mixin liveblog
 
-<title>Fake Blog, Fake Title, Fake Author</title>
+.title Fake Blog, Fake Title, Fake Author
+
+.asset fakeimage.jpg
 
 <table>
   <tr>
     <td>
-        <img src=assets/fakeimage.jpg width=400 height=300>
+.image fakeimage.jpg
     </td>
     <td>
-      <h3>Yet another blog... by Kilgore Trout</h3>
-      <br>
-      <br>
+.h3 Yet another blog... 
+.h4 by Kilgore Trout
+.br 2
       If you're the kind of person who likes this sort of thing,
       then this is the sort of thing a person like you will like.
-      <br>
-      <br>
+.br 2
       Don't you feel more like you do now than before you read this?
     </td>
   </tr>
 </table>
+.hr
+TEXT
 
+BlogHeader = <<-TEXT
+<html>
+<body>
+<title>Fake Blog, Fake Title, Fake Author</title>
+<table>
+  <tr>
+    <td>
+      <img src=assets/fakeimage.jpg width=400 height=300>
+    </td>
+    <td>
+      <h2>Yet another blog...</h2>
+      <h3>by Kilgore Trout</h3>
+      <br> <br>
+      If you're the kind of person who likes this sort of thing,
+      then this is the sort of thing a person like you will like.
+      <br> <br>
+      Don't you feel more like you do now than before you read this?
+    </td>
+  </tr>
+</table>
 <hr>
 TEXT
 

@@ -138,6 +138,9 @@ class RuneBlog
     pub = "user: xxx\nserver: xxx\ndocroot: xxx\npath: xxx\nproto: xxx\n"
     dump(pub, "publish")
     dump("", "tagpool")
+#   live = Livetext.new
+#   Livetext.parameters = [RuneBlog.blog, 0]
+#   meta = live.process_text(x::BlogHeader)
     dump(x::BlogHeader, "custom/blog_header.html")
     dump(x::BlogTrailer, "custom/blog_trailer.html")
     dump("Initial creation", "last_published")
