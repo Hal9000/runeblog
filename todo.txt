@@ -1,10 +1,12 @@
+   - rebuild doesn't seem to work?
    - fix unnecessary rebuild_post/generate_index calls
+   - create tag pool with defaults
+   - implicit paragraphs not working?
 *  - allow menu selection of views/tags
-   - fix asset handling once and for all
-   - make hierarchy of publish files
+   - make hierarchy of publish files?
 *  - DBC code?
 *  - work on: rebuild, relink, link_post, generate, ...
-   - store initial content as .lt3 rather than .html
+   - Problematic: store initial content as .lt3 rather than .html
    - more tests!
    - verify view is publishable before trying
    - resolve issues: draft vs post, kill, etc.
@@ -67,6 +69,7 @@
 
 ---
 
+x  - fix asset handling for now
 x  - allow tag pool
 x  - Readline completion for commands?
 x  - leave view out of ./publish file!

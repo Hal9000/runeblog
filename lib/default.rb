@@ -14,7 +14,7 @@ NewBlogHeader = <<-TEXT   # Can't do this yet!!
     <td>
 .image fakeimage.jpg
     </td>
-    <td>
+    <td valign=top>
 .h3 Yet another blog... 
 .h4 by Kilgore Trout
 .br 2
@@ -32,12 +32,12 @@ BlogHeader = <<-TEXT
 <html>
 <body>
 <title>Fake Blog, Fake Title, Fake Author</title>
-<table>
+<table cellpadding=4>
   <tr>
     <td>
       <img src=assets/fakeimage.jpg width=400 height=300>
     </td>
-    <td>
+    <td valign=top>
       <h2>Yet another blog...</h2>
       <h3>by Kilgore Trout</h3>
       <br> <br>
@@ -57,15 +57,15 @@ TEXT
 
 def RuneBlog.post_template(title: "No title", date: nil, view: "test_view", 
                        teaser: "No teaser", body: "No body", tags: [], views: [])
-viewlist = (views + [view.to_s]).join(" ")
-taglist = tags.join(" ")
+  viewlist = (views + [view.to_s]).join(" ")
+  taglist = tags.empty? ? "" : (".tags " + tags.join(" "))
 <<-TEXT
 .mixin liveblog
  
 .title #{title}
 .pubdate #{date}
 .views #{viewlist}
-.tags #{taglist}
+#{taglist}
  
 .teaser
 #{teaser}
@@ -74,8 +74,8 @@ taglist = tags.join(" ")
 TEXT
 end
 
-def RuneBlog.teaser_template(title: "No title", date: nil, view: "test_view", 
-                         teaser: "No teaser", body: "No body", slug: nil)
+def RuneBlog.teaser_template(title: "No title", date:, view: "test_view", 
+                         teaser: "No teaser", body: "No body", slug:)
 <<-TEXT
 <html>
 

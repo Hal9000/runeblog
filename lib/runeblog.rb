@@ -284,13 +284,12 @@ class RuneBlog
     # FIXME clean up and generalize
     ref = "#{view}/#{meta.slug}/index.html"
     <<-HTML
-      <br>
-      <font size=+1>#{meta.pubdate}&nbsp;&nbsp;</font>
+      <font size=-1>#{meta.date}&nbsp;&nbsp;</font> <br>
       <font size=+2 color=blue><a href=../#{ref} style="text-decoration: none">#{meta.title}</font></a>
       <br>
-      #{meta.teaser}  
+      <font size=+1>#{meta.teaser}&nbsp;&nbsp;</font>
       <a href=../#{ref} style="text-decoration: none">Read more...</a>
-      <br><br>
+      <br>
       <hr>
     HTML
   end
