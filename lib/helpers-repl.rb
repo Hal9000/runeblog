@@ -20,6 +20,7 @@ module RuneBlog::REPL
 
      "customize"         => :cmd_customize,
      "tags"              => :cmd_tags,
+     "import"            => :cmd_import,
 
      "new post"          => :cmd_new_post,
      "p"                 => :cmd_new_post,

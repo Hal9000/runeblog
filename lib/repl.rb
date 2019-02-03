@@ -65,6 +65,12 @@ module RuneBlog::REPL
     edit_file("tagpool")
   end
 
+  def cmd_import(arg, testing = false)
+    check_empty(arg)
+    files = ask("\n  File(s) = ")
+    system("cp #{files} #{@blog.root}/views/#{@blog.view.name}/assets/")
+  end
+
   def cmd_browse(arg, testing = false)
     reset_output
     check_empty(arg)
@@ -331,6 +337,8 @@ module RuneBlog::REPL
   
        p, post           Create a new post
        new post          Same as post (create a post)
+
+       import ASSETS     Import assets (images, etc.)
 
        lsp, list posts   List posts in current view
 
