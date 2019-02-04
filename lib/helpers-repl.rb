@@ -38,6 +38,9 @@ module RuneBlog::REPL
      "list drafts"       => :cmd_list_drafts,
      "lsd"               => :cmd_list_drafts,
 
+     "list assets"       => :cmd_list_assets,
+     "lsa"               => :cmd_list_assets,
+
      "rm $postid"        => :cmd_remove_post,
      "undel $postid"     => :cmd_undelete_post,
 

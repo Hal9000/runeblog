@@ -1,9 +1,7 @@
    - rebuild doesn't seem to work?
    - fix unnecessary rebuild_post/generate_index calls
    - create tag pool with defaults
-   - list assets?
    - implicit paragraphs not working?
-*  - allow menu selection of views/tags
    - make hierarchy of publish files?
 *  - DBC code?
 *  - work on: rebuild, relink, link_post, generate, ...
@@ -69,6 +67,8 @@
 
 ---
 
+x  - list assets?
+x  - allow menu selection of views/tags
 x  - Command to import asset(s)?
 x  - fix asset handling for now
 x  - allow tag pool

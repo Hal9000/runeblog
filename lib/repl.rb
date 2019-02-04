@@ -301,6 +301,27 @@ module RuneBlog::REPL
     [true, @out]
   end
 
+  def cmd_list_assets(arg, testing = false)
+    reset_output
+    check_empty(arg)
+    dir = @blog.view.dir + "/assets"
+    assets = Dir[dir + "/*"]
+    if assets.empty?
+      output! "No assets"
+      puts "  No assets" unless testing
+      return [false, @out]
+    else
+      puts unless testing
+      assets.each do |name| 
+        asset = File.basename(name)
+        outstr asset
+        puts "  ", fx(asset, Blue) unless testing
+      end
+    end
+    puts unless testing
+    [true, @out]
+  end
+
   def cmd_ssh(arg, testing = false)
     pub = @blog.view.publisher
     system("ssh #{pub.user}@#{pub.server}")
