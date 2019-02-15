@@ -69,7 +69,10 @@ module RuneBlog::Helpers
     verify(@root => "#@root is nil",
            Dir.exist?(@root) => "#@root doesn't exist",
            Dir.exist?("#@root/src") => "#@root/src doesn't exist")
-    files = Dir.entries("#@root/src/").grep /\d{4}.*.lt3$/
+    files = Dir["#@root/src/**"].grep /\d{4}.*.lt3$/
+    flagfile = "#@root/src/last_rebuild"
+    last = File.exist?(flagfile) ? File.mtime(flagfile) : (Time.now - 86_400)
+    files.reject! {|f| File.mtime(f) > last }
     files.map! {|f| File.basename(f) }
     files = files.sort.reverse
     files

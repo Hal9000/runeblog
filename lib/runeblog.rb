@@ -297,13 +297,8 @@ class RuneBlog
   def rebuild_post(file)
     debug "Called rebuild_post(#{file.inspect})"
     raise ArgumentError unless file.is_a?(String)
-    process_post(file)
-    # FIXME this is broken now
-    self.views.each do |view| 
-#     p view.inspect
-#     getch
-      generate_index(view)
-    end
+    meta = process_post(file)
+    self.views.each {|view| generate_index(view) }  # All views for now?
   rescue => err
     error(err)
     getch

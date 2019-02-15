@@ -56,7 +56,8 @@ BlogTrailer = <<-TEXT
 TEXT
 
 def RuneBlog.post_template(title: "No title", date: nil, view: "test_view", 
-                       teaser: "No teaser", body: "No body", tags: [], views: [])
+                       teaser: "No teaser", body: "No body", tags: [], views: [],
+                       back: "no url", home: "no url")
   viewlist = (views + [view.to_s]).join(" ")
   taglist = tags.empty? ? "" : (".tags " + tags.join(" "))
 <<-TEXT
@@ -71,7 +72,12 @@ def RuneBlog.post_template(title: "No title", date: nil, view: "test_view",
 #{teaser}
 .end
 #{body}
+<hr>
+<a href='#{back}' style='text-decoration: none'>Back</a>
+<br>
+<a href='#{home}' style='text-decoration: none'>Home</a>
 TEXT
+
 end
 
 def RuneBlog.teaser_template(title: "No title", date:, view: "test_view", 

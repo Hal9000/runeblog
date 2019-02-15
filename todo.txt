@@ -1,7 +1,5 @@
-   - rebuild doesn't seem to work?
    - fix unnecessary rebuild_post/generate_index calls
    - create tag pool with defaults
-   - implicit paragraphs not working?
    - make hierarchy of publish files?
 *  - DBC code?
 *  - work on: rebuild, relink, link_post, generate, ...
@@ -67,6 +65,9 @@
 
 ---
 
+x  - Add Back/Home to post template
+x  - rebuild doesn't seem to work?
+x  - implicit paragraphs not working?
 x  - list assets?
 x  - allow menu selection of views/tags
 x  - Command to import asset(s)?
