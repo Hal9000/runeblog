@@ -49,6 +49,9 @@ module RuneBlog::REPL
 
   def cmd_customize(arg, testing = false)
     # add extra views? add tags?
+    puts "\n  This is still buggy.\n "
+    return
+
     Dir.chdir(@blog.root + "/views/" + @blog.view.name)
     others = @blog.views - [@blog.view]
     others.map!(&:name)
