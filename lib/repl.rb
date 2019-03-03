@@ -268,7 +268,7 @@ module RuneBlog::REPL
     puts "  ", fx(str, :bold) unless testing
     if posts.empty?
       output! "No posts"
-      puts fx("  No posts", :bold) unless testing
+      puts "  No posts" unless testing
     else
       posts.each do |post| 
         outstr "  #{colored_slug(post)}\n" 
@@ -287,7 +287,7 @@ module RuneBlog::REPL
     drafts = @blog.drafts  # current view
     if drafts.empty?
       output! "No drafts"
-      puts "  No drafts" unless testing
+      puts "\n  No drafts\n " unless testing
       return [false, @out]
     else
       puts unless testing
