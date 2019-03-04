@@ -1,4 +1,5 @@
 $LOAD_PATH << "."
+require "minitest/fail_fast"
 
 require "minitest/autorun"
 
