@@ -1,4 +1,4 @@
-#$LOAD_PATH << "."
+$LOAD_PATH << "."
 require "test_helper"
 
 require 'runeblog'
