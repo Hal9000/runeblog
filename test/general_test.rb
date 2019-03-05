@@ -1,6 +1,5 @@
 $LOAD_PATH << "."
-
-require "minitest/autorun"
+require "test_helper"
 
 require 'runeblog'
 require 'lib/repl'
