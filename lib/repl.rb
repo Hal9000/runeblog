@@ -33,7 +33,7 @@ module RuneBlog::REPL
     check_empty(arg)
     output RuneBlog::VERSION
     puts fx("\n  RuneBlog", :bold), fx(" v #{RuneBlog::VERSION}\n", Red) unless testing
-    [true, @out]
+    @out
   end
 
   def cmd_config(arg, testing = false)
@@ -81,11 +81,11 @@ module RuneBlog::REPL
     if url.nil?   
       output! "Publish first."
       puts "\n  Publish first."
-      return [false, @out]
+      return @out
     end
     result = system("open '#{url}'")
     raise CantOpen(url) unless result
-    return [true, @out]
+    return @out
   end
 
   def cmd_preview(arg, testing = false)
@@ -94,7 +94,7 @@ module RuneBlog::REPL
     local = @blog.view.index
     result = system("open #{local}")
     raise CantOpen(local) unless result
-    [true, @out]
+    @out
   end
 
   def cmd_publish(arg, testing = false)
@@ -104,7 +104,7 @@ module RuneBlog::REPL
     unless @blog.view.can_publish?
       puts "Can't publish without entries in #{@blog.view.name}/publish" unless testing
       output! "Can't publish without entries in #{@blog.view.name}/publish"
-      return [false, @out]
+      return @out
     end
     # Need to check dirty/clean status first
     dirty, all, assets = @blog.view.publishable_files
@@ -115,19 +115,19 @@ module RuneBlog::REPL
       yn = RubyText.gets.chomp
       files = all if yn == "y"
     end
-    return [false, @out] if files.empty?
+    return @out if files.empty?
 
     ret = RubyText.spinner(label: " Publishing... ") do
       @blog.view.publisher.publish(files, assets)  # FIXME weird?
     end
-    return [false, @out] unless ret
+    return @out unless ret
     vdir = @blog.view.dir
     dump("fix this later", "#{vdir}/last_published")
     if ! testing || ! ret
       puts "  ...finished.\n " 
       output! "...finished.\n"
     end
-    return [true, @out]
+    return @out
   end
 
   def cmd_rebuild(arg, testing = false)
@@ -138,14 +138,14 @@ module RuneBlog::REPL
     files = @blog.find_src_slugs
     files.each {|file| @blog.rebuild_post(file) }
     File.write("#{@blog.root}/src/last_rebuild", Time.now)
-    [true, @out]
+    @out
   end
 
   def cmd_relink(arg, testing = false)
     reset_output
     check_empty(arg)
     @blog.relink
-    [true, @out]
+    @out
   end
 
   def cmd_change_view(arg, testing = false)
@@ -159,7 +159,7 @@ module RuneBlog::REPL
       @blog.view = name
       output name + "\n"
       puts "\n  ", fx(name, :bold), "\n" unless testing
-      return [false, @out]
+      return @out
     else
       if @blog.view?(arg)
         @blog.view = arg  # reads config
@@ -167,7 +167,7 @@ module RuneBlog::REPL
         puts "\n  ", fx(arg, :bold), "\n" unless testing
       end
     end
-    return [true, @out]
+    return @out
   end
 
   def cmd_new_view(arg, testing = false)
@@ -176,7 +176,7 @@ module RuneBlog::REPL
     resp = yesno("Add publishing info now? ")
     @blog.view.publisher = ask_publishing_info
     write_config(@blog.view.publisher,  @blog.view.dir + "/publish")  # change this?
-    [true, @out]
+    @out
   end
 
   def cmd_new_post(arg, testing = false)
@@ -185,7 +185,7 @@ module RuneBlog::REPL
     title = ask("\nTitle: ")
     @blog.create_new_post(title)
     STDSCR.clear
-    [true, @out]
+    @out
   rescue => err
     puts err
     puts err.backtrace.join("\n")
@@ -200,7 +200,7 @@ module RuneBlog::REPL
       puts ret
       output ret
     end
-    [true, @out]
+    @out
   end
 
   #-- FIXME affects linking, building, publishing...
@@ -212,7 +212,7 @@ module RuneBlog::REPL
     result = @blog.remove_post(id)
     output! "Post #{id} not found" if result.nil?
 #   puts "Post #{id} not found" if result.nil?
-    [true, @out]
+    @out
   end
 
   #-- FIXME affects linking, building, publishing...
@@ -241,7 +241,7 @@ module RuneBlog::REPL
     file = files.first
     result = edit_file("#{@blog.root}/src/#{file}")
     @blog.rebuild_post(file)
-    [true, @out]
+    @out
   end
 
   def cmd_list_views(arg, testing = false)
@@ -255,7 +255,7 @@ module RuneBlog::REPL
       puts "  ", v unless testing
     end
     puts unless testing
-    [true, @out]
+    @out
   end
 
   def cmd_list_posts(arg, testing = false)
@@ -278,7 +278,7 @@ module RuneBlog::REPL
       end
     end
     puts unless testing
-    [true, @out]
+    @out
   end
 
   def cmd_list_drafts(arg, testing = false)
@@ -288,7 +288,7 @@ module RuneBlog::REPL
     if drafts.empty?
       output! "No drafts"
       puts "\n  No drafts\n " unless testing
-      return [false, @out]
+      return @out
     else
       puts unless testing
       drafts.each do |draft| 
@@ -299,7 +299,7 @@ module RuneBlog::REPL
       end
     end
     puts unless testing
-    [true, @out]
+    @out
   end
 
   def cmd_list_assets(arg, testing = false)
@@ -310,7 +310,7 @@ module RuneBlog::REPL
     if assets.empty?
       output! "No assets"
       puts "  No assets" unless testing
-      return [false, @out]
+      return @out
     else
       puts unless testing
       assets.each do |name| 
@@ -320,7 +320,7 @@ module RuneBlog::REPL
       end
     end
     puts unless testing
-    [true, @out]
+    @out
   end
 
   def cmd_ssh(arg, testing = false)
@@ -333,7 +333,7 @@ module RuneBlog::REPL
     print fx("\n  Command ", :bold)
     print fx(arg, Red, :bold)
     puts fx(" was not understood.\n ", :bold)
-    [true, @out]
+    @out
   end
 
   def cmd_help(arg, testing = false)
@@ -387,7 +387,7 @@ module RuneBlog::REPL
       puts s2
     end
     puts unless testing
-    [true, @out]
+    @out
   end
 
 end

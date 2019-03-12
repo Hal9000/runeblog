@@ -1,5 +1,8 @@
 $LOAD_PATH << "."
-require "test_helper"
+# require "test_helper"
+
+require "minitest/autorun"
+require "minitest/fail_fast"
 
 require 'runeblog'
 require 'lib/repl'
@@ -33,15 +36,15 @@ class TestREPL < Minitest::Test
 
   def test_001_cmd_help
 #   puts __method__
-    flag, out = cmd_help(nil, true)
+    out = cmd_help(nil, true)
     assert out.is_a?(String), "Expected a string returned"
     lines = out.split("\n").length 
-    assert lines > 25, "Expecting lengthy help message"
+    assert lines > 15, "Expecting lengthy help message"
   end
 
   def test_002_cmd_version
 #   puts __method__
-    flag, out = cmd_version(nil, true)
+    out = cmd_version(nil, true)
     assert out.is_a?(String), "Expected a string returned"
     lines = out
     assert lines =~ /\d+\.\d+\.\d+/m,
@@ -50,7 +53,7 @@ class TestREPL < Minitest::Test
 
   def test_003_list_views!
 #   puts __method__
-    flag, out = cmd_list_views(nil, true)
+    out = cmd_list_views(nil, true)
     assert out.is_a?(String), "Expected a string returned"
     lines = out.split("\n").length 
     assert lines >= 2, "Expecting at least 2 lines"
@@ -58,14 +61,14 @@ class TestREPL < Minitest::Test
  
   def test_004_change_view!
 #   puts __method__
-    flag, out = cmd_change_view(nil, true)  # no param, but testing
+    out = cmd_change_view(nil, true)  # no param, but testing
     assert out.is_a?(String), "Expected a string; got: #{out.inspect}"
     assert out =~ /alpha_view/m, "Expecting 'alpha_view' as default; got: #{out.inspect}"
   end
 
   def test_005_lsd!
 #   puts __method__
-    flag, out = cmd_list_drafts(nil, true)
+    out = cmd_list_drafts(nil, true)
     assert out.is_a?(String), "Expected a string returned"
     lines = out.split("\n").length 
     assert lines == 10, "Expecting 10 lines; got #{show_lines(out)}"
@@ -73,7 +76,7 @@ class TestREPL < Minitest::Test
 
   def test_006_lsp!
 #   puts __method__
-    flag, out = cmd_list_posts(nil, true)
+    out = cmd_list_posts(nil, true)
     assert out.is_a?(String), "Expected a string returned; got: #{out.inspect}"
     lines = out.split("\n").length 
     assert lines == 6, "Expecting 6 lines; got #{show_lines(out)}"
@@ -197,19 +200,17 @@ class TestREPL < Minitest::Test
   end
 
   def xtest_014_remove_nonexistent_post!
-#   puts __method__
     @blog.change_view("alpha_view")
-    flag, out = cmd_remove_post(99, true)
+    out = cmd_remove_post(99, true)
     assert out =~ /Post 99 not found/, "Expected error about nonexistent post, got: #{out}"
   end
 
   def xtest_015_kill_multiple_posts!
-#   puts __method__
     @blog.change_view("alpha_view")
-    flag, out = cmd_list_posts(nil, true)
+    out = cmd_list_posts(nil, true)
     before = out.split("\n").length 
-    flag, out = cmd_kill("1  2 7", true)
-    flag, out = cmd_list_posts(nil, true)
+    cmd_kill("1  2 7", true)
+    out = cmd_list_posts(nil, true)
     after = out.split("\n").length 
     expecting = before - 3
     assert after == expecting, "list_posts saw #{before} posts, now #{after} (not #{expecting})"

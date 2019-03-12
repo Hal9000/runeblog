@@ -13,6 +13,7 @@ GEM
     minitest (5.11.3)
     minitest-fail-fast (0.1.0)
       minitest (~> 5)
+    rake (12.3.2)
     rubytext (0.1.14)
       curses (~> 1.2, >= 1.2.5)
 
@@ -20,8 +21,12 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  curses
+  livetext
   minitest
   minitest-fail-fast
+  rake
+  rubytext
   runeblog!
 
 BUNDLED WITH
