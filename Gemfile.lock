@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    runeblog (0.1.39)
+    runeblog (0.1.40)
       livetext (~> 0.8, >= 0.8.58)
       rubytext (~> 0.1, >= 0.1.14)
 
@@ -9,7 +9,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     curses (1.2.7)
-    livetext (0.8.58)
+    livetext (0.8.62)
     minitest (5.11.3)
     minitest-fail-fast (0.1.0)
       minitest (~> 5)

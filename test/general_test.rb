@@ -70,8 +70,9 @@ class TestREPL < Minitest::Test
 #   puts __method__
     out = cmd_list_drafts(nil, true)
     assert out.is_a?(String), "Expected a string returned"
-    lines = out.split("\n").length 
-    assert lines == 10, "Expecting 10 lines; got #{show_lines(out)}"
+    nlines = out.split("\n").length 
+    exp = 10
+    assert nlines == exp, "Expecting #{exp} lines, got #{nlines}; #{show_lines(out)}"
   end
 
   def test_006_lsp!
@@ -79,7 +80,7 @@ class TestREPL < Minitest::Test
     out = cmd_list_posts(nil, true)
     assert out.is_a?(String), "Expected a string returned; got: #{out.inspect}"
     lines = out.split("\n").length 
-    assert lines == 6, "Expecting 6 lines; got #{show_lines(out)}"
+    assert lines == 6, "Expecting 6 lines; got #{lines.size}; #{show_lines(out)}"
   end
 
   def test_007_parser
