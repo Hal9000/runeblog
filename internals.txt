@@ -1,0 +1,178 @@
+=========================
+What are some TODO items?
+=========================
+
+1. Improve the HTML "templates" -- e.g. no TABLEs for formatting.
+2. Introduce CSS into HTML templates?
+3. Convert HTML to Livetext (??)
+4. Support CSS in Livetext
+5. Support CSS in liveblog plugin
+6. Select themes/styles for blog??
+7. Move some pieces into "snippets" (e.g. Facebook/Twitter integration)
+
+===========================
+How is the tree structured?
+===========================
+
+.blog                                  The root dir of the blog(s) 
+├── config                             Small config file (global)       
+└── data_test                          The data directory where "all" stuff lives          
+    ├── VERSION                        Version info, date blog was created            
+    ├── assets                         Images, other media, etc. (blog-wide)           
+    │   └── fakeimage.jpg                                    
+    ├── sequence                       Sequence number for next post (global)             
+    ├── src                            Source directory (drafts and original text)        
+    │   ├── 0001-post-number-1.lt3     Livetext files (one per draft)
+    │   ├── 0002-post-number-2.lt3                                    
+    │   ├── 0003-post-number-3.lt3                                    
+    │   ├── 0004-post-number-4.lt3                                    
+    │   ├── 0005-post-number-5.lt3                                    
+    │   ├── 0006-post-number-6.lt3                                    
+    │   ├── 0007-post-number-7.lt3                                    
+    │   ├── 0008-post-number-8.lt3                                    
+    │   ├── 0009-post-number-9.lt3                                    
+    │   └── 0010-post-number-10.lt3                                    
+    └── views                          Where all views are stored          
+        ├── alpha_view                 All stuff for this one view                   
+        │   ├── 0001-post-number-1     All files related to draft 0001 (output)
+        │   │   ├── assets             Assets (per draft); not used yet                       
+        │   │   ├── body.txt           The body of the blog post                         
+        │   │   ├── index.html         Final HTML form of the blog post                           
+        │   │   ├── metadata.txt       Metadata for the blog post                             
+        │   │   └── teaser.txt         The "teaser" for the post                           
+        │   ├── 0002-post-number-2                                    
+        │   │   ├── assets
+        .   .   .   ...
+        │   ├── 0007-post-number-7                                    
+        .   .   .   ...
+        │   ├── 0008-post-number-8                                    
+        .   .   .   ...
+        │   ├── 0009-post-number-9                                    
+        .   .   .   ...
+        │   ├── assets                 Assets (per view); not used yet                    
+        │   │   └── fakeimage.jpg                                    
+        │   ├── custom                 Customized headers, templates, whatever                   
+        │   │   ├── blog_header.html   Goes at top of main page for view
+        │   │   └── blog_trailer.html  Goes at bottom of main page for view                                  
+        │   ├── index.html             The generated HTML of the view's main page                       
+        │   ├── last_published         Which files were published when (for efficiency)                           
+        │   ├── publish                Exactly where the view is to be published                    
+        │   └── tagpool                All existing tags available for this view                    
+        ├── beta_view                  Next view...                  
+        .   .   .   ...
+        ├── gamma_view                                    
+        .   .   .   ...
+        └── test_view                                    
+            ├── assets                                    
+            ├── custom                                    
+            │   ├── blog_header.html                                    
+            │   └── blog_trailer.html                                    
+            ├── last_published                                    
+            ├── publish                                    
+            └── tagpool                                    
+                                    
+
+
+=======================================
+What is wrong, inconsistent, or broken?
+=======================================
+
+ 1. The "multi-level" assets may be a good idea, but only the global one is
+    used right now.
+ 2. No provision for different assets of same name.
+ 3. The "publish" file specifies the server, user, etc., but the private keys
+    must already be set up. This is not really configurable inside the program
+    (and maybe shouldn't be), but should at least be documented or something.
+ 4. Because of code evolution, there is some redundant information stored here
+    and there (e.g., the body.txt and teaser.txt for each post).
+ 5. The "teaser" might have been a dumb idea. It is sort of hard-wired into the
+    very guts of the code. Maybe this should change later.
+ 6. The "publish" files should perhaps be in a hierarchy like the one I imagined
+    for assets. For example, many views might be stored on a single server. This
+    is probably not very important.
+ 7. The "tag pools" could also be in a hierarchy. Not sure it matters.
+ 8. Rather than a header and trailer for a view, we should probably have a template
+    of some kind.
+ 9. In fact, for each view, we might want several different templates to choose from.
+10. I have considered different post templates as well (varying per view or maybe 
+    even within a view). For example, a book review and a movie review might look
+    different in general form.
+11. I think "most people" will say this should all be in a database. Personally, I 
+    think I would get lost earlier and more often if I weren't able to simply surf
+    around the directory structure and look at files (on the local and/or the 
+    remote side). But a database is a possibility for later.
+12. I'm thinking there should probably be some "code snippets" stored somewhere 
+    that we can easily include. An example would be the overly complex Twitter and
+    Facebook code that is currently hard-wired into the post template.
+13. There is no CSS anywhere. This is a flaw both in the templates and headers, but
+    in the output from Livetext itself.
+14. The last_published file is supposed to make it unnecessary to upload (publish)
+    files that have not changed. This is probably not working currently.
+15. Note that each post starts as a single .lt3 file, but ends up as a directory.
+    Both these are named with the global serial number (see the sequence file) and
+    then the "slug" of the title. It is possible that a user might edit an existing
+    post and re-publish it. This works fine... unless the title itself is changed.
+    This creates chaos, as we don't support it yet.
+16. Notice that the src directory knows nothing about the views. But each draft has
+    a list of views; when the post is "built," this list of views is how the generated
+    post will end up under different views. 
+17. If a post is under (say) ten different views, there will be ten different copies
+    of all the information for that post. This may not ever be a problem, but it seems
+    inelegant. On the other hand, there might later on be good reasons to keep separate
+    copies.
+18. The headers/trailers and so on are pure HTML, not Livetext. This is probably a 
+    drawback.
+
+
+===========================
+What does a post look like?
+===========================
+
+Here is a shortened version of a real blog post. Afterward there's a 
+brief explanation.
+
+--------------------------------------------------------------------------
+.mixin liveblog
+.mixin bookish
+
+.title Immutable data (ditching the wax tablet)
+.pubdate 2015-08-25
+.tags elixir ruby
+.views computing
+
+.teaser
+A couple of weeks ago, I went to Phoenix training prior to the Lone Star Ruby
+Conference in Austin. I was talking with Bruce Tate, and he shared with me 
+some thoughts about functional programming in general. 
+.end
+
+Obviously Bruce isn't responsible if I misquote him. My memory is faulty.
+
+"Functional programming is the future," he told me, "and OOP is dying." 
+He pointed to the ever-increasing popularity of multi-core machines and the 
+increasing irrelevance of conserving memory.
+
+[blah blah...]
+
+I can imagine a time when memory is simply never erased at all. We're seeing
+the crude beginnings of this already. Source control systems and databases
+preserve far more history than they used to. My laptop's OS encourages me to
+think of my backed-up data as a sort of limitless archive of past versions of
+files. It's mostly an illusion, but it needn't always be. Why should any
+document, any image, any video ever be erased? 
+
+Food for thought. Chow down, friends.
+--------------------------------------------------------------------------
+
+The two "mixin" commands are rather like Ruby's require method. I've thought of
+making at least one of these implicit (liveblog) since every single post will
+use the liveblog plugin.
+
+Though .title and .views are necessary, I don't think this is enforced right now.
+Leave out something crucial, and it might just crash. The list of tags is optional
+anyhow.
+
+The .teaser command introduces the teaser, which continues until the .end is reached.
+The remainder of the post "could" have all kinds of fancy commands, but this is the
+basic structure you can expect.
+
