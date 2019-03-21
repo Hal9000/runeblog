@@ -7,6 +7,7 @@ What are some TODO items?
 3. Support CSS in Livetext (liveblog plugin)
 4. Select themes/styles for blog??
 5. Move some pieces into "snippets" (e.g. Facebook/Twitter integration)
+6. Navigation and other "modules" for template
 6. Convert HTML to Livetext (??)
 
 ===========================
