@@ -29,6 +29,8 @@ def show_lines(text)
   str
 end
 
+puts Dir.pwd
+exit
 
 system("rm -rf .blog")
 RuneBlog.create_new_blog(".blog/data_test")
@@ -36,9 +38,11 @@ x = RuneBlog.new
 x.create_view("alpha_view")
 
 # Hack:
-system("cp publish .blog/data_test/views/alpha_view/publish")
-system("cp fakeimage.jpg .blog/data_test/assets/")
-system("cp fakeimage.jpg .blog/data_test/views/alpha_view/assets/")
+if File.exist?("publish")
+  system("cp publish .blog/data_test/views/alpha_view/publish")
+end
+system("cp test/fakeimage.jpg .blog/data_test/assets/")
+system("cp test/fakeimage.jpg .blog/data_test/views/alpha_view/assets/")
 
 x.create_view("beta_view")
 x.create_view("gamma_view")

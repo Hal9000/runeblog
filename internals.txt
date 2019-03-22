@@ -5,9 +5,10 @@ What are some TODO items?
 1. Improve the HTML "templates" -- e.g. no TABLEs for formatting.
 2. Introduce CSS into HTML templates?
 3. Support CSS in Livetext (liveblog plugin)
-4. Select themes/styles for blog??
-5. Move some pieces into "snippets" (e.g. Facebook/Twitter integration)
-6. Convert HTML to Livetext (??)
+4. Better navigation/etc for default?
+5. Select themes/styles for blog??
+6. Move some pieces into "snippets" (e.g. Facebook/Twitter integration)
+7. Convert HTML to Livetext (??)
 
 ===========================
 How is the tree structured?

@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    runeblog (0.1.42)
+    runeblog (0.1.43)
       livetext (~> 0.8, >= 0.8.58)
       rubytext (~> 0.1, >= 0.1.14)
 
