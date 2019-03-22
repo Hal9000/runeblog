@@ -29,9 +29,6 @@ def show_lines(text)
   str
 end
 
-puts Dir.pwd
-exit
-
 system("rm -rf .blog")
 RuneBlog.create_new_blog(".blog/data_test")
 x = RuneBlog.new
