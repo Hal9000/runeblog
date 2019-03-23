@@ -27,7 +27,15 @@ major, minor = RUBY_VERSION.split(".").values_at(0,1)
 ver = major.to_i*10 + minor.to_i
 abort "Need Ruby 2.4 or greater" unless ver >= 24
 
-RubyText.start(:_echo, :keypad, scroll: true, log: "blogcmd.txt", fg: Blue, bg: White)
+include RuneBlog::Helpers  # for try_read_config
+
+# read a .rubytext file here??
+home = ENV['HOME']
+@fg, @bg = try_read_config("#{home}/.rubytext", fg: Blue, bg: White)
+@fg = @fg.downcase.to_sym
+@bg = @bg.downcase.to_sym
+
+RubyText.start(:_echo, :keypad, scroll: true, log: "blogcmd.txt", fg: @fg, bg: @bg)
 
 if ! RuneBlog.exist?
   print "No blog found. Create new one? (y/n) "

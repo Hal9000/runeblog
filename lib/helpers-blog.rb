@@ -27,6 +27,12 @@ module RuneBlog::Helpers
     exit
   end
 
+  def try_read_config(file, hash)
+    return hash.values unless File.exist?(file)
+    vals = read_config(file, *hash.keys)
+    vals
+  end
+
   def write_config(obj, file)
     hash = obj.to_h
     File.open(file, "w") do |f| 
