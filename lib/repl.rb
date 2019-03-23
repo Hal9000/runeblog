@@ -52,15 +52,9 @@ module RuneBlog::REPL
     puts "\n  This is still buggy.\n "
     return
 
-    Dir.chdir(@blog.root + "/views/" + @blog.view.name)
-    others = @blog.views - [@blog.view]
-    others.map!(&:name)
-    viewlist = STDSCR.multimenu(items: others)
-    @blog.post_views = viewlist
-    tags = File.readlines("tagpool").map(&:chomp)
-    return if tags.empty?
-    taglist = STDSCR.multimenu(items: tags)
-    @blog.post_tags = taglist
+    avail_tags = all_tags
+    tags = STDSCR.multimenu(items: avail_tags)
+    @blog.post_tags = tags
   end
   
   def cmd_tags(arg, testing = false)

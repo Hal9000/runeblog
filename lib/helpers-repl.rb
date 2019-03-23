@@ -207,6 +207,24 @@ module RuneBlog::REPL
     RuneBlog::Publishing.new(user, server, root, path, proto)
   end
 
+  def tags_for_view(vname = @blog.view)
+    Dir.chdir(vname) do
+      fname = "tagpool"
+      if File.exist?(fname)
+        tags = File.readlines(fname).map(&:chomp)
+      else
+        tags = []
+      end
+    end
+    tags.sort
+  end
+
+  def all_tags
+    all = []
+    @blog.views.each {|view| all.append(*tags_for_view(view)) }
+    all.sort + ["NEW TAG"]
+  end
+
   ### find_asset
 
   # FIXME is this per-post?

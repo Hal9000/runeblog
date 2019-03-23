@@ -1,5 +1,6 @@
+   - try new code with old data
+   - create tag cloud
    - fix unnecessary rebuild_post/generate_index calls
-   - create tag pool with defaults
    - make hierarchy of publish files?
 *  - DBC code?
 *  - work on: rebuild, relink, link_post, generate, ...
@@ -65,6 +66,7 @@
 
 ---
 
+x  - create tag pool (no defaults for now)
 x  - Add Back/Home to post template
 x  - rebuild doesn't seem to work?
 x  - implicit paragraphs not working?
