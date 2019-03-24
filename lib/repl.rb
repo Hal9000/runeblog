@@ -16,7 +16,6 @@ module RuneBlog::REPL
 
   def cmd_quit(arg, testing = false)
     check_empty(arg)
-#   system("tput rmcup")
     RubyText.stop
     system("tput clear")
     exit
@@ -131,6 +130,7 @@ module RuneBlog::REPL
     puts unless testing
     files = @blog.find_src_slugs
     files.each {|file| @blog.rebuild_post(file) }
+    @blog.dirty_views.each {|view| generate_index(view) }  # All views for now?
     File.write("#{@blog.root}/src/last_rebuild", Time.now)
     @out
   end
@@ -178,7 +178,7 @@ module RuneBlog::REPL
     check_empty(arg)
     title = ask("\nTitle: ")
     @blog.create_new_post(title)
-    STDSCR.clear
+#   STDSCR.clear
     @out
   rescue => err
     puts err

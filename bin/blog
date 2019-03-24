@@ -35,7 +35,8 @@ home = ENV['HOME']
 @fg = @fg.downcase.to_sym
 @bg = @bg.downcase.to_sym
 
-RubyText.start(:_echo, :keypad, scroll: true, log: "blogcmd.txt", fg: @fg, bg: @bg)
+RubyText.start(:_echo, :keypad, scroll: true, log: "binblog.txt", 
+               fg: @fg, bg: @bg)
 
 if ! RuneBlog.exist?
   print "No blog found. Create new one? (y/n) "

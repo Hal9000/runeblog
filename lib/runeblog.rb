@@ -34,7 +34,7 @@ class RuneBlog
   attr_reader :root, :views, :sequence, :editor
   attr_accessor :view  # overridden
 
-  attr_accessor :post_views, :post_tags
+  attr_accessor :post_views, :post_tags, :dirty_views
 
   include Helpers
 
@@ -215,6 +215,8 @@ class RuneBlog
   end
 
   def process_post(file)
+sleep 3
+    puts "    process_post #{file.inspect}   pwd = #{Dir.pwd}"
     debug "=== process_post #{file.inspect}   pwd = #{Dir.pwd}"
     raise ArgumentError unless file.is_a?(String)
     path = @root + "/src/#{file}"
@@ -230,7 +232,8 @@ class RuneBlog
   end
 
   def generate_index(view)
-    debug "=== generate_index view = #{view.inspect}"
+    puts "  generate_index view = #{view.to_s}"
+    debug "=== generate_index view = #{view.to_s}"
     raise ArgumentError unless view.is_a?(String) || view.is_a?(RuneBlog::View)
     # Gather all posts, create list
     vdir = "#@root/views/#{view}"
@@ -298,7 +301,10 @@ class RuneBlog
     debug "Called rebuild_post(#{file.inspect})"
     raise ArgumentError unless file.is_a?(String)
     meta = process_post(file)
-    self.views.each {|view| generate_index(view) }  # All views for now?
+    @views_dirty ||= []
+    @views_dirty << meta.views
+    @views_dirty.flatten!
+    @views_dirty.uniq!
   rescue => err
     error(err)
     getch

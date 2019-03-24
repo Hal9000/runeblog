@@ -98,7 +98,7 @@ class RuneBlog::Post
   def create_draft
     html = RuneBlog.post_template(title: @meta.title, date: @meta.pubdate, 
                view: @meta.view, teaser: @meta.teaser, body: @meta.body,
-               views: @blog.post_views, tags: @blog.post_tags)
+               views: @meta.views, tags: @meta.tags)
     srcdir = "#{@blog.root}/src/"
     verify(Dir.exist?(srcdir) => "#{srcdir} not found",
            @meta.slug.is_a?(String) => "slug #{@meta.slug.inspect} is invalid")

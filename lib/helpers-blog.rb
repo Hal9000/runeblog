@@ -81,6 +81,7 @@ module RuneBlog::Helpers
     files.reject! {|f| File.mtime(f) > last }
     files.map! {|f| File.basename(f) }
     files = files.sort.reverse
+    debug "fss: #{files.inspect}"
     files
   end
 
