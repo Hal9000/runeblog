@@ -26,7 +26,8 @@ class RuneBlog::Publishing
   end
 
   def url
-    url = "#@proto://#@server/#@path/#{@blog.view.name}"
+    vname = @blog.view.name.gsub(/_/, "\\_")
+    url = "#@proto://#@server/#@path/#{vname}"
   end
 
   def system!(str)

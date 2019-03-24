@@ -56,10 +56,10 @@ BlogTrailer = <<-TEXT
 TEXT
 
 def RuneBlog.post_template(title: "No title", date: nil, view: "test_view", 
-                       teaser: "No teaser", body: "No body", tags: [], views: [],
-                       back: "no url", home: "no url")
+                       teaser: "No teaser", body: "No body", tags: ["untagged"], 
+                       views: [], back: "javascript:history.go(-1)", home: "no url")
   viewlist = (views + [view.to_s]).join(" ")
-  taglist = tags.empty? ? "" : (".tags " + tags.join(" "))
+  taglist = ".tags " + tags.join(" ")
 <<-TEXT
 .mixin liveblog
  
