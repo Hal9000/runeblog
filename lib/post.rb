@@ -90,6 +90,7 @@ class RuneBlog::Post
     meta.pubdate = Time.now.strftime("%Y-%m-%d")
     meta.date = meta.pubdate  # fix later
     meta.views = [@blog.view.to_s]
+    meta.tags = []
     meta.num   = @blog.next_sequence   # ONLY place next_sequence is called!
     @blog.make_slug(meta)  # adds to meta
     @meta = meta

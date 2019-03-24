@@ -232,7 +232,7 @@ sleep 3
   end
 
   def generate_index(view)
-    puts "  generate_index view = #{view.to_s}"
+#   puts "  generate_index view = #{view.to_s}"
     debug "=== generate_index view = #{view.to_s}"
     raise ArgumentError unless view.is_a?(String) || view.is_a?(RuneBlog::View)
     # Gather all posts, create list
