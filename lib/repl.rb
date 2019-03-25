@@ -349,7 +349,8 @@ module RuneBlog::REPL
        list views        List all views available
        lsv               Same as: list views
 
-       customize         Change set of tags, extra views
+       config            Edit the publish file or the templates
+       customize         (BUGGY) Change set of tags, extra views
   
        p, post           Create a new post
        new post          Same as post (create a post)

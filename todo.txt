@@ -1,4 +1,13 @@
+   - fix 'categories' bug
    - try new code with old data
+   - improve HTML (eg DIV not TABLE)
+   - put CSS into templates?
+   - Livetext: support CSS
+   - Better navigation/etc for default?
+   - Select themes/styles for blog??
+   - Move some pieces into "snippets" (e.g. Facebook/Twitter integration)
+   - Convert HTML to Livetext (??)
+   - real support for tags (persist, etc.)
    - create tag cloud
    - fix unnecessary rebuild_post/generate_index calls
    - make hierarchy of publish files?

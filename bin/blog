@@ -9,6 +9,17 @@ require 'repl'
 
 include RuneBlog::REPL
 
+def get_started
+  puts
+  puts fx(<<-TEXT, :bold)
+  Blog successfully created.
+  You can create views with the command: new view
+  Create a post within the current view: new post
+  You can't publish until you set up the publish file 
+    via the config command.
+TEXT
+end
+
 def mainloop
   print fx("blog> ", Red, :bold)
   cmd = STDSCR.gets(history: @cmdhist, tab: @tabcom)
@@ -29,7 +40,7 @@ abort "Need Ruby 2.4 or greater" unless ver >= 24
 
 include RuneBlog::Helpers  # for try_read_config
 
-# read a .rubytext file here??
+# read a .rubytext file here?? Call it something else?
 home = ENV['HOME']
 @fg, @bg = try_read_config("#{home}/.rubytext", fg: Blue, bg: White)
 @fg = @fg.downcase.to_sym
@@ -39,10 +50,11 @@ RubyText.start(:_echo, :keypad, scroll: true, log: "binblog.txt",
                fg: @fg, bg: @bg)
 
 if ! RuneBlog.exist?
-  print "No blog found. Create new one? (y/n) "
+  print fx("\n  No blog found. Create new one? (y/n) ", :bold)
   resp = gets.chomp
-  if resp == "y"
+  if resp.downcase == "y"
     RuneBlog.create_new_blog
+    get_started
   else
     exit
   end
@@ -51,11 +63,14 @@ end
 @blog = RuneBlog.new
 
 puts fx("\n  RuneBlog", :bold), fx(" v #{RuneBlog::VERSION}\n", Red)
+
 @cmdhist = []
 @tabcom = RuneBlog::REPL::Patterns.keys
 @tabcom.map! {|x| x.sub(/ \$.*/, " ") }
+  
 loop { mainloop }
-sleep 0.2
-system("tput clear")
+
+# sleep 0.2
+# system("tput clear")
 puts
 

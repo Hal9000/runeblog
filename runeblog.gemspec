@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.authors     = ["Hal Fulton"]
   s.email       = 'rubyhacker@gmail.com'
   s.executables << "blog"
-  s.add_runtime_dependency 'livetext', '~> 0.8', '>= 0.8.58'
+  s.add_runtime_dependency 'livetext', '~> 0.8', '>= 0.8.64'
   s.add_runtime_dependency 'rubytext', '~> 0.1', '>= 0.1.14'
 
   # Files...
