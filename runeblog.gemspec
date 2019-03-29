@@ -5,7 +5,13 @@ $LOAD_PATH << "lib"
 
 require "runeblog_version"
 
-Gem::Specification.new do |s|
+Gem.post_build do |spec|
+  puts "Here we are"
+  puts Dir.pwd
+  system("livetext -i liveblog.rb")
+end
+
+spec = Gem::Specification.new do |s|
   system("rm -f *.gem")
   s.name        = 'runeblog'
   s.version     = RuneBlog::VERSION
@@ -29,3 +35,5 @@ Gem::Specification.new do |s|
   s.homepage    = 'https://github.com/Hal9000/runeblog'
   s.license     = "Ruby"
 end
+
+spec
