@@ -114,7 +114,6 @@ class TestREPL < Minitest::Test
       "ed 105"            => [:cmd_edit_post, "105"],
       "e 106"             => [:cmd_edit_post, "106"],
       "preview"           => [:cmd_preview, nil],
-      "pre"               => [:cmd_preview, nil],
       "browse"            => [:cmd_browse, nil],
       "relink"            => [:cmd_relink, nil],
       "rebuild"           => [:cmd_rebuild, nil],

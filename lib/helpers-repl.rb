@@ -52,8 +52,6 @@ module RuneBlog::REPL
 
      "preview"           => :cmd_preview,
 
-     "pre"               => :cmd_preview,
-
      "browse"            => :cmd_browse,
 
      "relink"            => :cmd_relink,
@@ -67,6 +65,24 @@ module RuneBlog::REPL
      "q"                 => :cmd_quit,
      "quit"              => :cmd_quit
    }
+
+  Abbr = {
+     "h"                 => :cmd_help,
+     "v"                 => :cmd_version,
+     "lsv"               => :cmd_list_views, 
+     "p"                 => :cmd_new_post,
+     "cv $name"          => :cmd_change_view,
+     "cv"                => :cmd_change_view,  # 0-arity must come second
+     "config"            => :cmd_config,
+     "lsp"               => :cmd_list_posts,
+     "lsd"               => :cmd_list_drafts,
+     "list assets"       => :cmd_list_assets,
+     "lsa"               => :cmd_list_assets,
+     "rm $postid"        => :cmd_remove_post,
+     "ed $postid"        => :cmd_edit_post,
+     "e $postid"         => :cmd_edit_post,
+     "q"                 => :cmd_quit
+     }
   
   Regexes = {}
   Patterns.each_pair do |pat, meth|

@@ -129,6 +129,12 @@ module RuneBlog::REPL
     check_empty(arg)
     puts unless testing
     files = @blog.find_src_slugs
+    if files.empty? 
+      msg = "No files changed"
+      output! msg
+      puts "\n  #{msg}\n " unless testing
+      return @out
+    end
     files.each {|file| @blog.rebuild_post(file) }
     @blog.dirty_views.each {|view| generate_index(view) }  # All views for now?
     File.write("#{@blog.root}/src/last_rebuild", Time.now)
@@ -199,8 +205,7 @@ module RuneBlog::REPL
 
   #-- FIXME affects linking, building, publishing...
 
-  def cmd_remove_post(arg, testing = false, safe=true)
-    # FIXME - 'safe' is no longer a thing
+  def cmd_remove_post(arg, testing = false)
     reset_output
     id = get_integer(arg)
     result = @blog.remove_post(id)

@@ -215,8 +215,7 @@ class RuneBlog
   end
 
   def process_post(file)
-sleep 3
-    puts "    process_post #{file.inspect}   pwd = #{Dir.pwd}"
+#   puts "    process_post #{file.inspect}   pwd = #{Dir.pwd}"
     debug "=== process_post #{file.inspect}   pwd = #{Dir.pwd}"
     raise ArgumentError unless file.is_a?(String)
     path = @root + "/src/#{file}"
