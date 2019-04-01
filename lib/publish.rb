@@ -16,7 +16,7 @@ class RuneBlog::Publishing
                                  :path, :proto)
       @user, @server, @docroot, @path, @proto = *array
     else
-      @user, @server, @docroot, @path, @proto = *obj
+      @user, @server, @docroot, @path, @proto = *params
     end
   end
 

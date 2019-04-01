@@ -173,9 +173,15 @@ module RuneBlog::REPL
   def cmd_new_view(arg, testing = false)
     reset_output
     @blog.create_view(arg)
+    @blog.change_view(arg)
     resp = yesno("Add publishing info now? ")
     @blog.view.publisher = ask_publishing_info
-    write_config(@blog.view.publisher,  @blog.view.dir + "/publish")  # change this?
+    out = @blog.view.dir + "/publish"
+    print "pub = "
+    p @blog.view.publisher
+    print "out = "
+    p out
+    write_config(@blog.view.publisher, out)
     @out
   end
 

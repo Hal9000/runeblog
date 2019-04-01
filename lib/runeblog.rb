@@ -300,8 +300,8 @@ class RuneBlog
     debug "Called rebuild_post(#{file.inspect})"
     raise ArgumentError unless file.is_a?(String)
     meta = process_post(file)
-p meta
-sleep 4
+# p meta
+# sleep 4
     @views_dirty ||= []
     @views_dirty << meta.views
     @views_dirty.flatten!

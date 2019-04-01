@@ -23,7 +23,6 @@ end
 def mainloop
   print fx("blog> ", Red, :bold)
   cmd = STDSCR.gets(history: @cmdhist, tab: @tabcom)
-puts cmd.inspect
   cmd_quit(nil) if cmd.nil?   # ^D
   cmd.chomp!
   return if cmd.empty?   # CR does nothing

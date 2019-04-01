@@ -73,7 +73,6 @@ module RuneBlog::REPL
      "p"                 => :cmd_new_post,
      "cv $name"          => :cmd_change_view,
      "cv"                => :cmd_change_view,  # 0-arity must come second
-     "config"            => :cmd_config,
      "lsp"               => :cmd_list_posts,
      "lsd"               => :cmd_list_drafts,
      "list assets"       => :cmd_list_assets,
