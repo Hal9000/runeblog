@@ -5,9 +5,9 @@ $LOAD_PATH << "lib"
 
 require "runeblog_version"
 
-Gem.post_build do |spec|
-  puts "Here we are"
-  puts Dir.pwd
+Gem.post_install do |spec|
+  Dir.chdir(RuneBlog::Path)
+p Dir.pwd
   system("livetext -i liveblog.rb")
 end
 

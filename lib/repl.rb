@@ -240,6 +240,7 @@ module RuneBlog::REPL
     file = files.first
     result = edit_file("#{@blog.root}/src/#{file}")
     @blog.rebuild_post(file)
+sleep 5
     @out
   end
 

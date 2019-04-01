@@ -98,8 +98,8 @@ class RuneBlog::Post
 
   def create_draft
     viewhome = @blog.view.publisher.url
-print "HOME = "
-p viewhome
+# print "HOME = "
+# p viewhome
     html = RuneBlog.post_template(title: @meta.title, date: @meta.pubdate, 
                view: @meta.view, teaser: @meta.teaser, body: @meta.body,
                views: @meta.views, tags: @meta.tags, home: viewhome)
