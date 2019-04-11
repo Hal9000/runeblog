@@ -144,8 +144,8 @@ class RuneBlog
     Livetext.parameters = [RuneBlog.blog, 0]
     live = Livetext.new
     meta = live.transform(x::NewBlogHeader)
-#   dump(x::BlogHeader, "templates/blog_header.html")
-#   dump(x::BlogTrailer, "templates/blog_trailer.html")
+    dump(x::BlogHeader, "templates/blog_header.html")
+    dump(x::BlogTrailer, "templates/blog_trailer.html")
     dump("Initial creation", "last_published")
     Dir.chdir(up)
     @views << view

@@ -7,7 +7,6 @@ require "runeblog_version"
 
 Gem.post_install do |spec|
   Dir.chdir(RuneBlog::Path)
-p Dir.pwd
   system("livetext -i liveblog.rb")
 end
 
@@ -21,8 +20,8 @@ spec = Gem::Specification.new do |s|
   s.authors     = ["Hal Fulton"]
   s.email       = 'rubyhacker@gmail.com'
   s.executables << "blog"
-  s.add_runtime_dependency 'livetext', '~> 0.8', '>= 0.8.64'
-  s.add_runtime_dependency 'rubytext', '~> 0.1', '>= 0.1.14'
+  s.add_runtime_dependency 'livetext', '~> 0.8', '>= 0.8.66'
+  s.add_runtime_dependency 'rubytext', '~> 0.1', '>= 0.1.16'
 
   # Files...
   main = Find.find("bin").to_a + 

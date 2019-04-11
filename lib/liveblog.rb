@@ -36,16 +36,16 @@ def categories   # does nothing right now
 end
 
 
+# Move elsewhere later
+
 def h1; _puts "<h1>#{@_data}</h1>"; end
 def h2; _puts "<h2>#{@_data}</h2>"; end
-
-def h3
-  _puts "<h3>#{@_data}</h3>"
-end
-
+def h3; _puts "<h3>#{@_data}</h3>"; end
 def h4; _puts "<h4>#{@_data}</h4>"; end
 def h5; _puts "<h5>#{@_data}</h5>"; end
 def h6; _puts "<h6>#{@_data}</h6>"; end
+
+def hr; _puts "<hr>"; end
 
 
 ### inset
@@ -92,7 +92,6 @@ end
 
 def init_liveblog    # FIXME - a lot of this logic sucks
   @blog, num = Livetext.parameters
-puts "passed in: #{@blog.view}"
   @meta = OpenStruct.new
   @meta.num = num
   @root = @blog.root rescue nil
