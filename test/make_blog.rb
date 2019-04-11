@@ -38,6 +38,7 @@ x.create_view("alpha_view")
 if File.exist?("publish")
   system("cp publish .blog/data_test/views/alpha_view/publish")
 end
+puts "inside make_blog: pwd = #{Dir.pwd}"
 system("cp test/fakeimage.jpg .blog/data_test/assets/")
 system("cp test/fakeimage.jpg .blog/data_test/views/alpha_view/assets/")
 

@@ -39,13 +39,14 @@ module RuneBlog::REPL
     check_empty(arg)
     dir = @blog.view.dir
     items = ["publish", 
-             "custom/blog_header.html", 
-             "custom/blog_trailer.html", 
-             "custom/post_template.html"] 
+             "templates/blog_header.html", 
+             "templates/blog_trailer.html", 
+             "templates/post_template.html"] 
     num, fname = STDSCR.menu(title: "Edit file:", items: items)
     edit_file("#{dir}/#{fname}")
   end
 
+  # Currently not used
   def cmd_customize(arg, testing = false)
     # add extra views? add tags?
     puts "\n  This is still buggy.\n "

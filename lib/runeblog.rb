@@ -124,6 +124,7 @@ class RuneBlog
   def create_view(arg)
     debug "=== create_view #{arg.inspect}"
     raise ArgumentError unless arg.is_a?(String) && ! arg.empty?
+
     names = self.views.map(&:to_s)
     raise ViewAlreadyExists(arg) if names.include?(arg)
 
@@ -133,19 +134,21 @@ class RuneBlog
     up = Dir.pwd
     Dir.chdir(dir)
     x = RuneBlog::Default
-    create_dir('custom')
+    create_dir('templates')
     create_dir('assets')
     pub = "user: xxx\nserver: xxx\ndocroot: xxx\npath: xxx\nproto: xxx\n"
     dump(pub, "publish")
     dump("", "tagpool")
-#   live = Livetext.new
-#   Livetext.parameters = [RuneBlog.blog, 0]
-#   meta = live.process_text(x::BlogHeader)
-    dump(x::BlogHeader, "custom/blog_header.html")
-    dump(x::BlogTrailer, "custom/blog_trailer.html")
+    view = RuneBlog::View.new(arg)
+    self.view = view
+    Livetext.parameters = [RuneBlog.blog, 0]
+    live = Livetext.new
+    meta = live.transform(x::NewBlogHeader)
+#   dump(x::BlogHeader, "templates/blog_header.html")
+#   dump(x::BlogTrailer, "templates/blog_trailer.html")
     dump("Initial creation", "last_published")
     Dir.chdir(up)
-    @views << RuneBlog::View.new(arg)
+    @views << view
   end
 
   def delete_view(name, force = false)
@@ -222,7 +225,7 @@ class RuneBlog
     raise FileNotFound(path) unless File.exist?(path)
     num = file.to_i       # e.g. 0098-this-is-a-title
     Livetext.parameters = [self, num]
-    live = Livetext.new(STDOUT) # (nil)
+    live = Livetext.new # (STDOUT) # (nil)
     text = File.read(path)
     live.process_text(text)
   rescue => err
@@ -242,8 +245,8 @@ class RuneBlog
     # Add view header/trailer
     head = tail = nil
     Dir.chdir(vdir) do 
-      head = File.read("custom/blog_header.html")
-      tail = File.read("custom/blog_trailer.html")
+      head = File.read("templates/blog_header.html")
+      tail = File.read("templates/blog_trailer.html")
     end
     @bloghead = interpolate(head)
     @blogtail = interpolate(tail)

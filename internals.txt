@@ -51,7 +51,7 @@ How is the tree structured?
         .   .   .   ...
         │   ├── assets                 Assets (per view); not used yet                    
         │   │   └── fakeimage.jpg                                    
-        │   ├── custom                 Customized headers, templates, whatever                   
+        │   ├── templates              Customized headers, templates, whatever                   
         │   │   ├── blog_header.html   Goes at top of main page for view
         │   │   └── blog_trailer.html  Goes at bottom of main page for view                                  
         │   ├── index.html             The generated HTML of the view's main page                       
@@ -64,7 +64,7 @@ How is the tree structured?
         .   .   .   ...
         └── test_view                                    
             ├── assets                                    
-            ├── custom                                    
+            ├── templates                                 
             │   ├── blog_header.html                                    
             │   └── blog_trailer.html                                    
             ├── last_published                                    

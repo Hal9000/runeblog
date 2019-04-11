@@ -7,8 +7,6 @@ NewBlogHeader = <<-TEXT   # Can't do this yet!!
 
 .title Fake Blog, Fake Title, Fake Author
 
-.asset fakeimage.jpg
-
 <table>
   <tr>
     <td>

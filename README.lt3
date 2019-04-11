@@ -15,10 +15,10 @@ It has the concept of multiple "views" for a blog
 .h2 What is Livetext?
 
 Livetext is a markup format that is a throwback to the old, old days of text 
-formatters such as nroff. It's very flexible, and it is extensible _[in Ruby]. 
+formatters such as ``nroff. It's very flexible, and it is extensible _[in Ruby]. 
 
-It isn't yet full-featured, but it is usable. Runeblog uses Livetext, along 
-with some custom definitions, to try to ease the formatting of a blog entry.
+It is far from mature or full-featured, but it is usable. Runeblog uses Livetext, 
+along with some custom definitions, to try to ease the formatting of a blog entry.
 
 .h2 What are "views"?
 

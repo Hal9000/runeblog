@@ -18,7 +18,7 @@ module RuneBlog::REPL
 
      "new view $name"    => :cmd_new_view,
 
-     "customize"         => :cmd_customize,
+#    "customize"         => :cmd_customize,
      "tags"              => :cmd_tags,
      "import"            => :cmd_import,
 
