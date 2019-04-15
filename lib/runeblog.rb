@@ -142,10 +142,17 @@ class RuneBlog
     view = RuneBlog::View.new(arg)
     self.view = view
     Livetext.parameters = [RuneBlog.blog, 0]
-    live = Livetext.new
-    meta = live.transform(x::NewBlogHeader)
-    dump(x::BlogHeader, "templates/blog_header.html")
-    dump(x::BlogTrailer, "templates/blog_trailer.html")
+    devnull = File.new("/dev/null", "w")
+    live = Livetext.new(devnull)
+    meta = live.transform(x::BlogTemplate)
+puts x::BlogTemplate
+puts
+puts meta
+puts
+puts "---"
+    dump(meta, "templates/blogview.lt3")
+#   dump(x::BlogHeader, "templates/blog_header.html")
+#   dump(x::BlogTrailer, "templates/blog_trailer.html")
     dump("Initial creation", "last_published")
     Dir.chdir(up)
     @views << view
@@ -244,12 +251,14 @@ class RuneBlog
 
     # Add view header/trailer
     head = tail = nil
+    @blogview = nil
     Dir.chdir(vdir) do 
-      head = File.read("templates/blog_header.html")
-      tail = File.read("templates/blog_trailer.html")
+      @blogview = File.read("templates/blogview.lt3")
+#     head = File.read("templates/blog_header.html")
+#     tail = File.read("templates/blog_trailer.html")
     end
-    @bloghead = interpolate(head)
-    @blogtail = interpolate(tail)
+#   @bloghead = interpolate(head)
+#   @blogtail = interpolate(tail)
 
     # Output view
     posts.map! do |post|
@@ -266,9 +275,10 @@ class RuneBlog
     end
 
     File.open("#{vdir}/index.html", "w") do |f|
-      f.puts @bloghead
-      posts.each {|post| f.puts index_entry(view, post) }
-      f.puts @blogtail
+      teasers = ""
+      posts.each {|post| teasers << index_entry(view, post) }
+      text = @blogview.sub(/TEASERS/, teasers)
+      f.puts text
     end
   rescue => err
     error(err)

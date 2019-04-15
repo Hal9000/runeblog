@@ -1,0 +1,9 @@
+What are the biggest issues here?
+---------------------------------
+
+Valid links for Back/Home, etc.
+Must handle uploading assets well
+Must detect errors such as missing assets
+Must never, ever crash
+Must never leave files in an inconsistent state
+Should sync backward as well as forward?

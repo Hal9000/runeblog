@@ -38,14 +38,14 @@ end
 
 # Move elsewhere later
 
-def h1; _puts "<h1>#{@_data}</h1>"; end
-def h2; _puts "<h2>#{@_data}</h2>"; end
-def h3; _puts "<h3>#{@_data}</h3>"; end
-def h4; _puts "<h4>#{@_data}</h4>"; end
-def h5; _puts "<h5>#{@_data}</h5>"; end
-def h6; _puts "<h6>#{@_data}</h6>"; end
+def h1; _out "<h1>#{@_data}</h1>"; end
+def h2; _out "<h2>#{@_data}</h2>"; end
+def h3; _out "<h3>#{@_data}</h3>"; end
+def h4; _out "<h4>#{@_data}</h4>"; end
+def h5; _out "<h5>#{@_data}</h5>"; end
+def h6; _out "<h6>#{@_data}</h6>"; end
 
-def hr; _puts "<hr>"; end
+def hr; _out "<hr>"; end
 
 
 ### inset
@@ -140,6 +140,7 @@ end
 def image   # primitive so far
   _debug "img: huh? <img src=#{_args.first}></img>"
   fname = _args.first
+puts "image fname = #{fname}"
   path = "../assets/#{fname}"
   @body << "<img src=#{path}></img>"
   _optional_blank_line
@@ -235,8 +236,7 @@ end
 
 def finalize
   if @blog.nil?
-    puts @body
-    return
+    return @body
   end
   @slug = @blog.make_slug(@meta)
   @postdir = @blog.view.dir + "/#@slug"

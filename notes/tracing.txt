@@ -1,0 +1,10 @@
+repl  cmd_new_post
+rune  create_new_post
+      create meta (title, teaser, body)
+      next_seq
+      Post.new(meta, view)
+        make_slug(meta)
+        get template
+        interpolate
+      post.edit
+      post.build(meta)

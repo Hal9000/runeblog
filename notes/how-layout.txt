@@ -1,0 +1,18 @@
+
+Just brainstorming here...
+
+
+.widebanner  mybanner.jpg
+.left_column
+ABOUT
+RECENT
+CALENDAR
+TAG_CLOUD
+.end
+.right_column
+POST
+AD
+.end
+
+
+then when it's processed, strings like TAG_CLOUD would get interpreted

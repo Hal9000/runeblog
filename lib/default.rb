@@ -2,7 +2,7 @@ class RuneBlog::Default
 
 # This will all become much more generic later.
 
-NewBlogHeader = <<-TEXT   # Can't do this yet!!
+BlogTemplate = <<-TEXT
 .mixin liveblog
 
 .title Fake Blog, Fake Title, Fake Author
@@ -24,33 +24,7 @@ NewBlogHeader = <<-TEXT   # Can't do this yet!!
   </tr>
 </table>
 .hr
-TEXT
-
-BlogHeader = <<-TEXT
-<html>
-<body>
-<title>Fake Blog, Fake Title, Fake Author</title>
-<table cellpadding=4>
-  <tr>
-    <td>
-      <img src=assets/fakeimage.jpg width=400 height=300>
-    </td>
-    <td valign=top>
-      <h2>Yet another blog...</h2>
-      <h3>by Kilgore Trout</h3>
-      <br> <br>
-      If you're the kind of person who likes this sort of thing,
-      then this is the sort of thing a person like you will like.
-      <br> <br>
-      Don't you feel more like you do now than before you read this?
-    </td>
-  </tr>
-</table>
-<hr>
-TEXT
-
-BlogTrailer = <<-TEXT
-<!-- no blog trailer -->
+TEASERS
 TEXT
 
 def RuneBlog.post_template(title: "No title", date: nil, view: "test_view", 

@@ -39,8 +39,7 @@ module RuneBlog::REPL
     check_empty(arg)
     dir = @blog.view.dir
     items = ["publish", 
-             "templates/blog_header.html", 
-             "templates/blog_trailer.html", 
+             "templates/blogview.lt3", 
              "templates/post_template.html"] 
     num, fname = STDSCR.menu(title: "Edit file:", items: items)
     edit_file("#{dir}/#{fname}")

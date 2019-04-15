@@ -1,0 +1,10 @@
+When a post is processed...
+Add link (number?) to tag - how store?
+Read, add, sort, write
+
+Dir tags
+  tag1: n, n, n
+  tag2: n, n
+  tag3: n, n, n, n
+
+
