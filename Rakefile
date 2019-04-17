@@ -13,10 +13,10 @@ end
 
 task default: :test
 
-desc "Create Sample Blog"
+desc "Create sample blog"
 task :create_sample do
-# sh %{ruby test/make_blog.rb}
-  system %{ruby -v; pwd; ruby test/make_blog.rb}
+  system %{ruby test/make_blog.rb}
+  puts
 end
 
 desc "Bump gem version"

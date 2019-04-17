@@ -12,6 +12,8 @@ It's based on Livetext (highly extensible Ruby-based markup)
 It has the concept of multiple "views" for a blog
 .end
 
+The multiple views are in effect multiple blogs managed with the same backend.
+
 .h2 What is Livetext?
 
 Livetext is a markup format that is a throwback to the old, old days of text 
@@ -36,11 +38,15 @@ _All the views will be managed the same way in the same place, and they will all
 Any post can easily be included in a single view, in more than one, or in all of them.
 Each view can have its own look and feel, and it can be linked/published separately from the others.
 Each view can be hosted in a different location and/or a different server and domain
+Any post can be in more than one view
 .end
 
 .h2 The `blog environment
 
 There is a command-line tool called `blog which is a REPL (read-eval-print loop). 
+Note that this tool is a curses-based environment (mainly so it can display menus
+and such to the user).
+
 The help message looks like this:
 
 .mono
@@ -49,7 +55,7 @@ The help message looks like this:
      h, help           This message
      q, quit           Exit the program
 
-     change view _view Change current view
+     change view _view  Change current view
      new view          Create a new view
      list views        List all views available
      lsv               Same as: list views
@@ -62,16 +68,39 @@ The help message looks like this:
      rm _id             Remove a post
      edit _id           Edit a post
 
-     open              Look at current (local) view in browser
-     open remote       Look at current (deployed) view in browser
+     preview           Look at current (local) view in browser
+     browse            Look at current (deployed) view in browser
 
-     relink            Regenerate index for all views
-     rebuild           Regenerate all posts and relink
+     relink            Regenerate index for all views  (MAY CHANGE)
+     rebuild           Regenerate all posts and relink (MAY CHANGE)
      deploy            Deploy (current view)
 .end
 
-.h2 More later...
+.h2 Getting started
+
+But when you first run the REPL, it checks for an existing blog under the `.blog
+directory. If it doesn't find one, it asks whether you want to create a new blog.
+If you enter `y for yes, it creates a sort of "skeleton" with a single view
+called ``test_view.
+
+The next thing you should do is to create at least one view of your own. Use the
+`[new view] command for this.  
+
+(new view)
+
+(new post)
+
+(preview)
+
+(publishing one-time setup - server, ssh keys, etc.)
+
+(publish)
+
+(browse)
+
+(and so on...)
 
 *[To be continued]
 
+.h2 More later...
 
