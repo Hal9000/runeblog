@@ -141,21 +141,16 @@ class RuneBlog
     dump("", "tagpool")
     view = RuneBlog::View.new(arg)
     self.view = view
-    Livetext.parameters = [RuneBlog.blog, 0]
-    devnull = File.new("/dev/null", "w")
-    live = Livetext.new(devnull)
+    live = Livetext.new(nil)
+    Livetext.parameters = [RuneBlog.blog, 0, live]
     meta = live.transform(x::BlogTemplate)
-puts x::BlogTemplate
-puts
-puts meta
-puts
-puts "---"
     dump(meta, "templates/blogview.lt3")
 #   dump(x::BlogHeader, "templates/blog_header.html")
 #   dump(x::BlogTrailer, "templates/blog_trailer.html")
     dump("Initial creation", "last_published")
     Dir.chdir(up)
     @views << view
+    @views
   end
 
   def delete_view(name, force = false)
@@ -231,8 +226,8 @@ puts "---"
     path = @root + "/src/#{file}"
     raise FileNotFound(path) unless File.exist?(path)
     num = file.to_i       # e.g. 0098-this-is-a-title
-    Livetext.parameters = [self, num]
     live = Livetext.new # (STDOUT) # (nil)
+    Livetext.parameters = [self, num, live]
     text = File.read(path)
     live.process_text(text)
   rescue => err
