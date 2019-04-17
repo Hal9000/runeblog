@@ -174,15 +174,15 @@ module RuneBlog::REPL
     reset_output
     @blog.create_view(arg)
     @blog.change_view(arg)
-    resp = yesno("Add publishing info now? ")
-    @blog.view.publisher = ask_publishing_info
-    out = @blog.view.dir + "/publish"
-    print "pub = "
-    p @blog.view.publisher
-    print "out = "
-    p out
-    write_config(@blog.view.publisher, out)
+    resp = yesno("Add publishing/hosting info now? (Y/N): ")
+    if resp
+      @blog.view.publisher = ask_publishing_info
+      out = @blog.view.dir + "/publish"
+      write_config(@blog.view.publisher, out)
+    end
     @out
+  rescue ViewAlreadyExists
+    puts 'Blog already exists'
   end
 
   def cmd_new_post(arg, testing = false)
