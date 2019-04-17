@@ -46,14 +46,15 @@ home = ENV['HOME']
 @fg = @fg.downcase.to_sym
 @bg = @bg.downcase.to_sym
 
-RubyText.start(:_echo, :keypad, scroll: true, log: "binblog.txt", 
-               fg: @fg, bg: @bg)
+RubyText.start(:_echo, :keypad, scroll: true, log: "binblog.txt", fg: @fg, bg: @bg)
 
 if ! RuneBlog.exist?
-  print fx("\n  No blog found. Create new one? (y/n) ", :bold)
-  resp = gets.chomp
-  if resp.downcase == "y"
-    RuneBlog.create_new_blog
+  print fx("\n  No blog found. Create new one? (y/n): ", :bold)
+  response = gets.chomp
+  if response.downcase == "y"
+    print fx("\n Enter blog name: ", :bold)
+    blog_name = gets.chomp
+    RuneBlog.create_new_blog(blog_name)
     get_started
   else
     exit
