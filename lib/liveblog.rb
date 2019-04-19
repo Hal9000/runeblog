@@ -15,6 +15,11 @@ def categories   # does nothing right now
 end
 
 
+def style
+  fname = _args[0]
+  _out %[<link rel="stylesheet" href="???/assets/#{fname}')">]
+end
+
 # Move elsewhere later!
 
 def h1; _out "<h1>#{@_data}</h1>"; end
