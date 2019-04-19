@@ -7,13 +7,16 @@ Runeblog is a blogging tool written in Ruby. It has these basic characteristics:
  * So far, yes, like Jekyll
  * It's based on Livetext (highly extensible Ruby-based markup)
  * It has the concept of multiple "views" for a blog
-## What is Livetext?
-Livetext is a markup format that is a throwback to the old, old days of text 
-formatters such as nroff. It's very flexible, and it is extensible <i>in Ruby</i>. 
+The multiple views are in effect multiple blogs managed with the same backend.
 <p>
 
-It isn't yet full-featured, but it is usable. Runeblog uses Livetext, along 
-with some custom definitions, to try to ease the formatting of a blog entry.
+## What is Livetext?
+Livetext is a markup format that is a throwback to the old, old days of text 
+formatters such as <font size=+1><tt>nroff</tt></font>. It's very flexible, and it is extensible <i>in Ruby</i>. 
+<p>
+
+It is far from mature or full-featured, but it is usable. Runeblog uses Livetext, 
+along with some custom definitions, to try to ease the formatting of a blog entry.
 <p>
 
 ## What are "views"?
@@ -32,8 +35,13 @@ But the important points are these:
  * Any post can easily be included in a single view, in more than one, or in all of them.
  * Each view can have its own look and feel, and it can be linked/published separately from the others.
  * Each view can be hosted in a different location and/or a different server and domain
+ * Any post can be in more than one view
 ## The `blog environment
-There is a command-line tool called <tt>blog</tt> which is a REPL (read-eval-print loop). 
+There is a command-line tool called <font size=+1><tt>blog</tt></font> which is a REPL (read-eval-print loop). 
+Note that this tool is a curses-based environment (mainly so it can display menus
+and such to the user).
+<p>
+
 The help message looks like this:
 <p>
 
@@ -43,7 +51,7 @@ The help message looks like this:
      h, help           This message
      q, quit           Exit the program
 
-     change view <i>view</i> Change current view
+     change view _view  Change current view
      new view          Create a new view
      list views        List all views available
      lsv               Same as: list views
@@ -53,19 +61,93 @@ The help message looks like this:
      lsp, list posts   List posts in current view
      lsd, list drafts  List all posts regardless of view
 
-     rm <i>id</i>             Remove a post
-     edit <i>id</i>           Edit a post
+     rm _id             Remove a post
+     edit _id           Edit a post
 
-     open              Look at current (local) view in browser
-     open remote       Look at current (deployed) view in browser
+     preview           Look at current (local) view in browser
+     browse            Look at current (deployed) view in browser
 
-     relink            Regenerate index for all views
-     rebuild           Regenerate all posts and relink
+     relink            Regenerate index for all views  (MAY CHANGE)
+     rebuild           Regenerate all posts and relink (MAY CHANGE)
      deploy            Deploy (current view)
 </pre>
-## More later...
+## Getting started
+But when you first run the REPL, it checks for an existing blog under the <font size=+1><tt>.blog</tt></font>
+directory. If it doesn't find one, it asks whether you want to create a new blog.
+If you enter <font size=+1><tt>y</tt></font> for yes, it creates a sort of "skeleton" with a single view
+called <font size=+1><tt>test_view</tt></font>.
+<p>
+
+The next thing you should do is to create at least one view of your own. Use the
+<font size=+1><tt>new view</tt></font> command for this.  
+<p>
+
+(new view)
+<p>
+
+(new post)
+<p>
+
+(preview)
+<p>
+
+(publishing one-time setup - server, ssh keys, etc.)
+<p>
+
+(publish)
+<p>
+
+(browse)
+<p>
+
+(and so on...)
+<p>
+
 <b>To be continued</b>
 <p>
 
+## Changing the default templates
+<b>TBD</b>
+<p>
+
+## Basics of Livetext
+<b>TBD</b>
+<p>
+
+(bold, italics, etc.)
+<p>
+
+(common dot commands)
+<p>
+
+(predefined functions and variables)
+<p>
+
+## Runeblog-specific features (Liveblog)
+<b>TBD</b>
+<p>
+
+(dot commands)
+<p>
+
+(variables and functions)
+<p>
+
+## Defining your own features
+(dot commands)
+<p>
+
+(variables and functions)
+<p>
+
+<b>TBD</b>
+<p>
+
+## 
+<b>TBD</b>
+<p>
+
+## More later...
+<b>TBD</b>
 <p>
 

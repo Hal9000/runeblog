@@ -1,0 +1,57 @@
+
+My thoughts/ideas are kind of scattered. They end up in notes in 
+different files. Here they are.
+
+INDEX.txt
+
+  This file.
+
+todo.txt
+
+  One of the most important sets of notes -- a rough to-do list and
+  work log.
+
+internals.txt
+
+  If you're working on this - also one of the most important.
+
+runeblog-layout.pdf
+
+  Diagrams explaining how runeblog works at present. Will change.
+
+assets.txt
+
+  Thinking about asset management.
+
+dumb-mockup.png
+
+  Crude mockup of how a view "might" look.
+
+hmm-tags.txt
+
+  Thinking about tags.
+
+how-layout.txt
+
+  Brainstorming how a highest-level template might look.
+
+issues.txt
+
+  Thinking about robustness and consistency.
+
+notes.txt
+
+  Misc notes on logic and workflow.
+
+pondering.txt
+
+  The title/metadata problem. Permit changing title?
+
+thinking.txt
+
+  Thinking about assets and templates.
+
+tracing.txt
+
+  Trying to figure out convoluted logic of posting.
+

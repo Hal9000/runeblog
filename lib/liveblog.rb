@@ -222,3 +222,23 @@ def finalize
   @meta
 end
  
+Dot = self   # Clunky! for dot commands called from Functions class
+
+# Find a better way to do this?
+
+class LiveText::Functions
+
+  def br
+    # Thought: Maybe make a way for functions to "simply" call the
+    #   dot command of the same name?? Is this trivial??
+    # Also: Should probably pass as a "real" function parameter?
+    n = self.class.param
+    n = n.empty? ? 1 : n.to_i
+    "<br>"*n
+  end
+
+  def hr
+    Dot.hr
+  end
+
+end

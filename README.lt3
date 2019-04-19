@@ -102,5 +102,41 @@ The next thing you should do is to create at least one view of your own. Use the
 
 *[To be continued]
 
+.h2 Changing the default templates
+
+*TBD
+
+.h2 Basics of Livetext
+
+*TBD
+
+(bold, italics, etc.)
+
+(common dot commands)
+
+(predefined functions and variables)
+
+.h2 Runeblog-specific features (Liveblog)
+
+*TBD
+
+(dot commands)
+
+(variables and functions)
+
+.h2 Defining your own features
+
+(dot commands)
+
+(variables and functions)
+
+*TBD
+
+.h2
+
+*TBD
+
 .h2 More later...
+
+*TBD
 
