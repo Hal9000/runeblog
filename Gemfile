@@ -9,7 +9,6 @@ end
 
 
 gem 'rake'
-gem 'curses'
-gem 'rubytext'
-gem 'livetext'
-
+gem 'curses', '1.2.7'
+gem 'rubytext', '0.1.16'
+gem 'livetext', '~> 0.8'

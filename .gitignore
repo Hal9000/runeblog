@@ -1,3 +1,6 @@
 runeblog*.gem
 data_test/*
 .blog
+
+.idea/
+binblog.txt

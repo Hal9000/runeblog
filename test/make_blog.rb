@@ -30,7 +30,7 @@ def show_lines(text)
 end
 
 system("rm -rf .blog")
-RuneBlog.create_new_blog(".blog/data_test")
+RuneBlog.create_new_blog('test_view', ".blog/data_test")
 x = RuneBlog.new
 x.create_view("alpha_view")
 
