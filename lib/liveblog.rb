@@ -231,7 +231,7 @@ Dot = self   # Clunky! for dot commands called from Functions class
 
 # Find a better way to do this?
 
-class LiveText::Functions
+class Livetext::Functions
 
   def br
     # Thought: Maybe make a way for functions to "simply" call the
