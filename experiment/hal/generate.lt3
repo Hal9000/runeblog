@@ -1,0 +1,16 @@
+.mixin extras
+
+<html>
+  <head>
+    $.include head.lt3
+  </head>
+<body>
+  $.include navbar.lt3
+  <div class="content container-fluid mt-4">
+    <div class="row">
+      $.include global.lt3
+      $.include index.lt3
+    </div>
+  </div>
+</body>
+</html>

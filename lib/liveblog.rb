@@ -14,24 +14,29 @@ end
 def categories   # does nothing right now
 end
 
-
 def style
   fname = _args[0]
-  _out %[<link rel="stylesheet" href="???/assets/#{fname}')">]
+  _passthru %[<link rel="stylesheet" href="???/assets/#{fname}')">]
 end
 
 # Move elsewhere later!
 
-def h1; _out "<h1>#{@_data}</h1>"; end
+def h1; _passthru "<h1>#{@_data}</h1>"; end
+def h2; _passthru "<h2>#{@_data}</h2>"; end
+def h3; _passthru "<h3>#{@_data}</h3>"; end
+def h4; _passthru "<h4>#{@_data}</h4>"; end
+def h5; _passthru "<h5>#{@_data}</h5>"; end
+def h6; _passthru "<h6>#{@_data}</h6>"; end
 
-def h2; _out "<h2>#{@_data}</h2>"; end
-def h3; _out "<h3>#{@_data}</h3>"; end
-def h4; _out "<h4>#{@_data}</h4>"; end
-def h5; _out "<h5>#{@_data}</h5>"; end
-def h6; _out "<h6>#{@_data}</h6>"; end
+def hr; _passthru "<hr>"; end
 
-def hr; _out "<hr>"; end
-
+def emit   # send to STDOUT?
+  @emit = true
+  case _args.first
+    when "off";  @emit = false
+    when "on";   @emit = true
+  end
+end
 
 ### inset
 
@@ -77,6 +82,7 @@ end
 
 def init_liveblog    # FIXME - a lot of this logic sucks
   @blog, num, @live = Livetext.parameters  # live is Livetext instance
+  @live ||= Livetext.new(nil)
   @meta = OpenStruct.new
   @meta.num = num
   @root = @blog.root rescue nil
@@ -219,6 +225,7 @@ end
 
 def finalize
   if @blog.nil?
+    puts @live.body if @emit
     return @live.body
   end
   @slug = @blog.make_slug(@meta)
@@ -242,8 +249,19 @@ class Livetext::Functions
     "<br>"*n
   end
 
+  def h1; "<h1>#{self.class.param}</h1>"; end
+  def h2; "<h2>#{self.class.param}</h2>"; end
+  def h3; "<h3>#{self.class.param}</h3>"; end
+  def h4; "<h4>#{self.class.param}</h4>"; end
+  def h5; "<h5>#{self.class.param}</h5>"; end
+  def h6; "<h6>#{self.class.param}</h6>"; end
+
   def hr
     Dot.hr
+  end
+
+  def image
+    "<img src='#{self.class.param}'></img>"
   end
 
 end

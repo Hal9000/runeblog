@@ -1,0 +1,85 @@
+[Notes to Ronak G in slack]
+
+btw - I will make some comments here about Livetext and Runeblog --
+I have been playing with these a lot.
+
+ - Livetext (I think) no longer messes up underscores -- if they are
+   embedded, they are ignored. (If a name *starts* with an underscore,
+   that is probably still a problem)
+ - I have added a `$.` notation where there can be any number of blank
+   spaces before the `$` -- so I guess this allows for indentation.
+
+I wanted to explain the thought process I am using to "abstract away"
+as much HTML as possible. (I have barely begun here.)
+
+To summarize as briefly as possible:
+*Don't think like someone writing good conventional HTML.*
+*Think like someone who wants to invent a better replacement for HTML.*
+
+ - Remember the DRY principle - "Don't Repeat Yourself." For example:
+   If the `title` is used in five places, we should only set it once.
+ - HTML files have tended to be _very long and deeply nested_.
+   Think about *how and why* they got that way. You wouldn't write a
+   method with 1,000 lines in it, would you? But HTML was created
+   without _variables_ and without any kind of "include" feature.
+- But Livetext does have variables and multiple kinds of file inclusion.
+  It also has many other "dot commands" and several _functions_
+  defined (and there should be many more later).
+- Note that the user can define not only variables, but his own
+  dot commands and functions as well. This is potentially *powerful*.
+- Therefore let's break things down into many small pieces. (Think of
+  the people who want to put crazy limits on number of lines in a
+  method.)
+ - Another principle I want to use is: If a piece of text is _always there_,
+   then omit it and let the processor insert it based on context.
+ - A similar principle has to do with "parameters" in pretty much any
+   kind of context. There are three parts: 1. If text or data is *always*
+   the same, it's not a parameter -- hide it as deeply as you can.
+   2. If it's *very often* the same, it needs a reasonable default -- set one
+   one internally and let us omit it at higher levels. 3. If it varies often
+   and can have many possible values -- it's a "true" parameter.
+- I'd like to push this as far as I reasonably can. Example: Here's a file
+  that is going to be a complete HTML document. Don't put html and
+  body tags at the top and bottom -- build an environment where
+  the coder and processor recognize these files from context. Let the
+  processor itself add those on. (Analogy: It is possible to insert
+  assembly language code into a C program... but we only do it rarely
+  and when we have good reason.)
+
+So for example: I have created `experimental.rb` (not checked in yet)
+and I am trying to reduce your HTML example to its essence.
+
+For now, this `lt3` file produces your example HTML down to the end
+of the `head`. It doesn't handle the body yet.
+
+```.mixin experimental
+
+.set title="Your awesome title", host=http://localhost:4000
+
+.heredoc desc
+Write an awesome description for your new site here. It will appear in your document head meta (for Google search results) and in your feed.xml site
+.end
+
+. Note: 
+.   The command head takes the first word of each line as
+.   a sort of "subcommand"; there are other values besides
+.   these three, but they are defaulted based partly on
+.   title, host, and desc (and "frequently used" defaults
+.   such as en_US
+
+.head
+viewport width=device-width, initial-scale=1
+script head.lt3
+style main.css
+feed 
+.end
+```
+That is only 22 lines (counting comments), and it seems to me
+much more readable. My intent is to carry "custom formatting"
+to the point where the blog template might be *very* few lines
+(like 10-15?) and yet have all the same functionality, mainly
+through using other smaller files and higher levels of abstraction.
+
+We can talk on this later if you want.
+
+Cheers for now.

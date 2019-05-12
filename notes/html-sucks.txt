@@ -1,0 +1,115 @@
+I wanted to explain the thought process I am using to "abstract away"
+as much HTML as possible. (I have barely begun here.)
+
+To summarize as briefly as possible:
+*Don't think like someone writing good conventional HTML.*
+*Think like someone who wants to invent a better replacement for HTML.*
+
+When you look at an HTML file, it is frequently very long and very
+deeply nested. Why is this?
+
+You may think: Why is he asking why?
+
+Well, pretend that we're not talking about a markup language here. 
+After all, HTML has rather outgrown what it was 25 years ago.
+
+Pretend we're talking about a programming language, like C or even
+Ruby. Have you ever seen people whose code rambles on indefinitely, 
+perhaps for hundreds of lines in a single function or a main program?
+Code that nests more and more deeply until you must expand your window
+because the indentations have forced the code to crawl out far to the
+right, maybe 200 columns?
+
+The people I'm thinking of are typically students or beginners. Or 
+maybe they are "cowboy coders" who just don't care, or people who think 
+their deadlines don't permit refactoring. But I hope you have seen that
+kind of code?
+
+Yes, they "shouldn't" do that. They shouldn't because they _don't have to_.
+
+There are many language mechanisms that can make code more manageable.
+For example, there are separate files and facilities for including them.
+There are user-defined variables, there are functions that can take 
+parameters (or even defaults), there are ways to manage scope, and so on.
+
+You know how people like Ron Jeffries and Dave Thomas advocate for methods 
+or functions that are _very short_ or compact? Think how they would react
+to seeing 900 lines of continuous, unbroken code. Words come to my mind
+such as "shock," "horror," and "ridicule."
+
+But that is how HTML typically looks. What if it didn't have to? What if
+we could apply techniques to HTML as if it were C or C++ or Ruby?
+
+We expect certain features in any programming language less than 40 years 
+old. But HTML is missing these features. 
+
+For example, it does not have file inclusion of any kind. Javascript and 
+CSS permit this to some extent, but HTML does not.
+
+HTML has no variables. You have a value, a string, that appears in six 
+places? Fine, go ahead and hardcode it six times.
+
+It has no facility for making new tags. Just use the ones we gave you, OK?
+
+It has no functions. But you could probably do something in Javascript?
+
+Part of the reason for Livetext was to correct all of these shortcomings. 
+(My own design decisions, of course, will not match anyone else's, and they
+are changing anyhow.)
+
+There are at least two forms of file inclusion. The `.include file` command
+will bring in a file and interpret it. The `.copy file` command will _not
+interpret the text it brings in.
+
+There are built-in "dot commands" in Livetext, but you can write your own 
+in Ruby; these can be in separate files or injected into the Livetext source 
+or any combination of those.
+
+There are variables (`$var`) in Livetext. For heaven's sake, Don't Repeat 
+Yourself.
+
+There are predefined functions (`$$func` or `$$func[whatever,arbitrary,params]`).
+More importantly, you can define your own, within the main file or another
+file or a Ruby library.
+
+Intra-line formatting (e.g., italics and boldface) is simple, similar to 
+Markdown. But it can be turned off for a portion of a line, for an entire line,
+or for a group of lines. Naturally it can be escaped as well.
+
+Variables and dot-commands and functions mean that you can "abstract away"
+certain things you do. This can reduce the code-sprawl and the nesting.
+
+I am pondering what Rails calls "convention over configuration." I haven't
+fully thought this through, but I like the principle.
+
+Another principle I want to use is: If a piece of text is _always there_,
+then omit it and let the processor insert it based on context. Supposing we
+write a file that we (and the processor) know will be a complete HTML file.
+Well, then handle the `html` and `body` tags automatically. Don't make the
+user code these in any form. 
+
+That is like a high-level program that needs to have an explicit "stack push" 
+at the top, and an explicit "stack pop" and assembly language `HALT` at the 
+bottom.  That is so 1968. Just say no.
+
+Even today, it is _possible_ to insert assembly language code into a C 
+program... but we only do it rarely and when we have good reason.
+
+Moving on: Let's use parameters (in more than one sense) in whatever 
+meaningful ways we can. Back up and think generally for a moment: How do 
+parameters work, and what are they for? I see three basic principles here:
+
+  1. If text or data is *always* the same, it's not a parameter -- 
+     hide it as deeply as you can.
+  2. If it's *very often* the same, it needs a reasonable default -- set one
+     internally and let us omit it at higher levels. 
+  3. If it varies often and can have many possible values -- it's a 
+     "true" parameter.
+
+These principles are sound. I'd like to push them as far as I reasonably can. 
+
+Another very general principle: Let's handle the most common cases first. 
+We can make simplifiying assumptions which we can refine later as needed.
+We'll hardcode `en_US`, for example. 
+
+These are all my thoughts at the moment. Give any feedback you want.

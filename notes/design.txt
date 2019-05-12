@@ -1,0 +1,47 @@
+I wanted to explain the thought process I am using to "abstract away"
+as much HTML as possible. (I have barely begun here.)
+
+To summarize as briefly as possible:
+*Don't think like someone writing good conventional HTML.*
+*Think like someone who wants to invent a better replacement for HTML.*
+
+ - Remember what Rails calls "convention over configuration." I haven't
+   fully thought this through, but I like the principle.
+ - Let's handle the most common cases first. We'll hardcode en_US, for
+   example. 
+ - Let's make simplifiying assumptions which we can refine later as needed.
+ - Remember the DRY principle - "Don't Repeat Yourself." For example:
+   If the `title` is used in five places, we should only set it once.
+ - HTML files have tended to be _very long and deeply nested_.
+   Think about *how and why* they got that way. You wouldn't write a
+   method with 1,000 lines in it, would you? But HTML was created
+   without _variables_ and without any kind of "include" feature.
+- But Livetext does have variables and multiple kinds of file inclusion.
+  It also has many other "dot commands" and several _functions_
+  defined (and there should be many more later).
+- Note that the user can define not only variables, but his own
+  dot commands and functions as well. This is potentially *powerful*.
+- Therefore let's break things down into many small pieces. (Think of
+  the people who want to put crazy limits on number of lines in a
+  method.)
+ - Another principle I want to use is: If a piece of text is _always there_,
+   then omit it and let the processor insert it based on context.
+ - A similar principle has to do with "parameters" in pretty much any
+   kind of context. There are three parts: 
+     1. If text or data is *always* the same, it's not a parameter -- 
+        hide it as deeply as you can.
+     2. If it's *very often* the same, it needs a reasonable default -- set one
+        internally and let us omit it at higher levels. 
+     3. If it varies often and can have many possible values -- it's a 
+        "true" parameter.
+- I'd like to push this as far as I reasonably can. 
+  Example: Here's a file that is going to be a complete HTML document. 
+  Don't put html and body tags at the top and bottom -- build an 
+  environment where the coder and processor recognize these files from 
+  context. Let the processor itself add those on. (Analogy: It is possible 
+  to insert assembly language code into a C program... but we only do it 
+  rarely and when we have good reason.)
+
+So for example: I have created `experimental.rb` (not checked in yet)
+and I am trying to reduce your HTML example to its essence.
+
