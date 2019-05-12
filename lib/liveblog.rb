@@ -95,16 +95,16 @@ def _errout(*args)
   ::STDERR.puts *args
 end
 
-def _passthru(line, context = nil)
+def _passthru(line)
   return if line.nil?
-  line = _formatting(line, context)
+  line = _formatting(line)
   @live.body << line + "\n"
   @live.body << "<p>" if line.empty? && ! @_nopara
 end
 
-def _passthru_noline(line, context = nil)
+def _passthru_noline(line)
   return if line.nil?
-  line = _formatting(line, context)
+  line = _formatting(line)
   @live.body << line
   @live.body << "<p>" if line.empty? && ! @_nopara
 end
@@ -240,28 +240,26 @@ Dot = self   # Clunky! for dot commands called from Functions class
 
 class Livetext::Functions
 
-  def br
+  def br(n="1")
     # Thought: Maybe make a way for functions to "simply" call the
     #   dot command of the same name?? Is this trivial??
-    # Also: Should probably pass as a "real" function parameter?
-    n = self.class.param
     n = n.empty? ? 1 : n.to_i
     "<br>"*n
   end
 
-  def h1; "<h1>#{self.class.param}</h1>"; end
-  def h2; "<h2>#{self.class.param}</h2>"; end
-  def h3; "<h3>#{self.class.param}</h3>"; end
-  def h4; "<h4>#{self.class.param}</h4>"; end
-  def h5; "<h5>#{self.class.param}</h5>"; end
-  def h6; "<h6>#{self.class.param}</h6>"; end
+  def h1(param); "<h1>#{param}</h1>"; end
+  def h2(param); "<h2>#{param}</h2>"; end
+  def h3(param); "<h3>#{param}</h3>"; end
+  def h4(param); "<h4>#{param}</h4>"; end
+  def h5(param); "<h5>#{param}</h5>"; end
+  def h6(param); "<h6>#{param}</h6>"; end
 
-  def hr
+  def hr(param=nil)
     Dot.hr
   end
 
-  def image
-    "<img src='#{self.class.param}'></img>"
+  def image(param)
+    "<img src='#{param}'></img>"
   end
 
 end

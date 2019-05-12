@@ -1,6 +1,9 @@
 .mixin extras
 
 <html>
+  <!-- Editing this file is not recommended. 
+       It was generated from $File on $$date. 
+    -->
   <head>
     $.include head.lt3
   </head>

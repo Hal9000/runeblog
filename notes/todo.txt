@@ -1,4 +1,7 @@
    - improve HTML (eg DIV not TABLE)
+   - create "posts" dir
+   - rename source to drafts
+   - tag pools are dumb??
    - put CSS into templates?
    - Livetext: support CSS
    - create tag cloud
@@ -11,7 +14,7 @@
    - make hierarchy of publish files?
    - Problematic: store initial content as .lt3 rather than .html
    - more tests!
-   - special tags: intra-bog, gist, github, youtube, vimeo, twitter, fb?, reddit?, ...
+   - special tags: intra-blog, gist, github, youtube, vimeo, twitter, fb?, reddit?, ...
    - verify view is publishable before trying
    - resolve issues: draft vs post, kill, etc.
    - allow for post title changing

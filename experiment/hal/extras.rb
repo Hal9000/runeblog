@@ -53,6 +53,29 @@ def script
   _out %[<script src="#{url}" integrity="#{integ}" crossorigin="#{cross}"></script>]
 end
 
+### How this next bit works:
+### 
+###   all_teasers will call _find_recent_posts
+### 
+###   _find_recent_posts will search higher in the directory structure
+###   for where the posts are (0001, 0002, ...) NOTE: This implies you
+###   must be in some specific place when this code is run.
+###   It returns the 20 most recent posts.
+### 
+###   all_teasers will then pick a small number of posts and call _teaser
+
+###   on each one. (The code in _teaser really belongs in a small template
+###   somewhere.)
+### 
+
+def _find_recent_posts
+  # .. = templates, ../.. = views/thisview
+  posts = Dir.entries("../..").grep(/^\d\d\d\d/).select {|x| File.directory?(x) }
+  # directories that start with four digits
+  posts = posts.sort {|a, b| b.to_i <=> a.to_i }  # sort descending
+  posts[0..19]  # return 20 at most
+end
+
 def all_teasers
   open = <<-HTML
       <section class="posts">
@@ -61,21 +84,43 @@ def all_teasers
       </section>
   HTML
   _out open
-  # Call teaser here (multiple times)...
+  # FIXME: Now do the magic...
+# posts = _find_recent_posts
+# wanted = 5  # estimate how many we want?
+# enum = posts.each
+# wanted.times do
+#   postid = enum.next.to_i
+#   _teaser(postid)
+# end
   40.times { _out "Lots of stuff missing here. " }
   _out close
 end
 
-def teaser
-  ids = _args
+def _post_lookup(postid)
+  # .. = templates, ../.. = views/thisview
+  posts = Dir.entries("../..").grep(/^\d\d\d\d/).select {|x| File.directory?(x) }
+  post = posts.select {|x| x.to_i == postid }
+  raise "Error: More than one post #{postid}" if post.size > 1
+  dir = post.first
+  teaser_text = File.read("#{post}/teaser.txt")
+  # FIXME dumb hacks...
+  lines = File.readlines("#{post}/metadata.txt")
+  title = lines.grep(/title:/).first[7..-1]
+  date  = lines.grep(/pubdate:/).first[9..-1]
+  slug  = post
+  [slug, title, date, teaser_text]
+end
+
+def _teaser(id)
   ids.each do |id|
-    post = SOMEHOW_LOOKUP(id)
+    title, date, teaser_text = _post_lookup(id)
+    url = "#{slug}/index.html"
     text = <<-HTML
       <div class="post">
-        <h1 class="post-title"> <a href="NNNN.html">POST_TITLE</a> </h1>
-        <span class="post-date mt-1 mb-1">PUBDATE</span>
-        <p>POST_TEASER</p>
-        <p><a class="btn btn-light" href="NNNN.html">Keep Reading</a></p>
+        <h1 class="post-title"> <a href="#{url}">#{title}</a> </h1>
+        <span class="post-date mt-1 mb-1">#{date}</span>
+        <p>#{teaser_text}</p>
+        <p><a class="btn btn-light" href="#{url}">Keep Reading</a></p>
         <hr>
       </div>
     HTML
