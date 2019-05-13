@@ -1,5 +1,7 @@
 .mixin markdown
 
+<div float="left"><image src="raido.png"></div>
+
 .h1 runeblog
 
 Runeblog is a blogging tool written in Ruby. It has these basic characteristics:

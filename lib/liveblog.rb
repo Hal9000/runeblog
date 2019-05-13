@@ -97,22 +97,22 @@ end
 
 def _passthru(line)
   return if line.nil?
-  line = _formatting(line)
-  @live.body << line + "\n"
-  @live.body << "<p>" if line.empty? && ! @_nopara
+  line = _format(line)
+  _out line + "\n"
+  _out "<p>" if line.empty? && ! @_nopara
 end
 
 def _passthru_noline(line)
   return if line.nil?
-  line = _formatting(line)
-  @live.body << line
-  @live.body << "<p>" if line.empty? && ! @_nopara
+  line = _format(line)
+  _out line
+  _out "<p>" if line.empty? && ! @_nopara
 end
 
 def title 
   title = @_data.chomp
   @meta.title = title
-  @live.body << "<h1>#{title}</h1>"
+  _out "<h1>#{title}</h1>"
   _optional_blank_line
 end
 
@@ -131,7 +131,7 @@ def image   # primitive so far
   _debug "img: huh? <img src=#{_args.first}></img>"
   fname = _args.first
   path = "../assets/#{fname}"
-  @live.body << "<img src=#{path}></img>"
+  _out "<img src=#{path}></img>"
   _optional_blank_line
 end
 
@@ -158,25 +158,25 @@ end
 # end
 
 def list
-  @live.body << "<ul>"
-  _body {|line| @live.body << "<li>#{line}</li>" }
-  @live.body << "</ul>"
+  _out "<ul>"
+  _body {|line| _out "<li>#{line}</li>" }
+  _out "</ul>"
   _optional_blank_line
 end
 
 def list!
-  @live.body << "<ul>"
+  _out "<ul>"
   lines = _body.each   # {|line| @body << "<li>#{line}</li>" }
   loop do 
     line = lines.next
-    line = _formatting(line)
+    line = _format(line)
     if line[0] == " "
-      @live.body << line
+      _out line
     else
-      @live.body << "<li>#{line}</li>"
+      _out "<li>#{line}</li>"
     end
   end
-  @live.body << "</ul>"
+  _out "</ul>"
   _optional_blank_line
 end
 
@@ -219,7 +219,7 @@ end
 
 def teaser
   @meta.teaser = _body_text
-  @live.body << @meta.teaser + "\n"
+  _out @meta.teaser + "\n"
   # FIXME
 end
 

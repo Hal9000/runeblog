@@ -1,3 +1,6 @@
+<div float="left"><image src="raido.png"></div>
+<p>
+
 # runeblog
 Runeblog is a blogging tool written in Ruby. It has these basic characteristics:
 <p>
@@ -12,7 +15,7 @@ The multiple views are in effect multiple blogs managed with the same backend.
 
 ## What is Livetext?
 Livetext is a markup format that is a throwback to the old, old days of text 
-formatters such as <font size=+1><tt>nroff</tt></font>. It's very flexible, and it is extensible <i>in Ruby</i>. 
+formatters such as <font size=+1><tt>roff</tt></font> It's very flexible, and it is extensible <i>in Ruby</i>. 
 <p>
 
 It is far from mature or full-featured, but it is usable. Runeblog uses Livetext, 
@@ -31,13 +34,13 @@ can see. There might be a view purely for reviews of music, books, and movies.
 <p>
 
 But the important points are these:
- * <i>All</i> the views will be managed the same way in the same place, and they will all share common data.
+ * _All the views will be managed the same way in the same place, and they will all share common data.
  * Any post can easily be included in a single view, in more than one, or in all of them.
  * Each view can have its own look and feel, and it can be linked/published separately from the others.
  * Each view can be hosted in a different location and/or a different server and domain
  * Any post can be in more than one view
 ## The `blog environment
-There is a command-line tool called <font size=+1><tt>blog</tt></font> which is a REPL (read-eval-print loop). 
+There is a command-line tool called <font size=+1><tt>blog</tt></font>  which is a REPL (read-eval-print loop). 
 Note that this tool is a curses-based environment (mainly so it can display menus
 and such to the user).
 <p>
@@ -74,8 +77,8 @@ The help message looks like this:
 ## Getting started
 But when you first run the REPL, it checks for an existing blog under the <font size=+1><tt>.blog</tt></font>
 directory. If it doesn't find one, it asks whether you want to create a new blog.
-If you enter <font size=+1><tt>y</tt></font> for yes, it creates a sort of "skeleton" with a single view
-called <font size=+1><tt>test_view</tt></font>.
+If you enter <font size=+1><tt>y</tt></font>  for yes, it creates a sort of "skeleton" with a single view
+called <font size=+1><tt>est_view</tt></font>.
 <p>
 
 The next thing you should do is to create at least one view of your own. Use the
@@ -103,15 +106,15 @@ The next thing you should do is to create at least one view of your own. Use the
 (and so on...)
 <p>
 
-<b>To be continued</b>
+*[To be continued]
 <p>
 
 ## Changing the default templates
-<b>TBD</b>
+*TBD
 <p>
 
 ## Basics of Livetext
-<b>TBD</b>
+*TBD
 <p>
 
 (bold, italics, etc.)
@@ -124,7 +127,7 @@ The next thing you should do is to create at least one view of your own. Use the
 <p>
 
 ## Runeblog-specific features (Liveblog)
-<b>TBD</b>
+*TBD
 <p>
 
 (dot commands)
@@ -140,14 +143,14 @@ The next thing you should do is to create at least one view of your own. Use the
 (variables and functions)
 <p>
 
-<b>TBD</b>
+*TBD
 <p>
 
 ## 
-<b>TBD</b>
+*TBD
 <p>
 
 ## More later...
-<b>TBD</b>
+*TBD
 <p>
 
