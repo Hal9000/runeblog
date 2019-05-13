@@ -1,4 +1,6 @@
 <div float="left" align="left"><img src="raido.png" width="196" height="275" align="left"></img></div>
+<p>
+
 # runeblog
 Runeblog is a blogging tool written in Ruby. It has these basic characteristics:
 <p>
