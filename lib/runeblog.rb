@@ -44,6 +44,7 @@ class RuneBlog
     raise BlogAlreadyExists if Dir.exist?(root_dir)
     new_dotfile(root: root_dir, current_view: blog_name)
     create_dir(dir)
+# New code goes here! templates/ dir tree
     Dir.chdir(dir) do
       create_dir("views")
       create_dir("assets")
@@ -141,6 +142,8 @@ class RuneBlog
     dump("", "tagpool")
     view = RuneBlog::View.new(arg)
     self.view = view
+# Rewrite this! think: livtext templates/generate.lt3
+#  (output goes elsewhere)
     live = Livetext.new(nil)
     Livetext.parameters = [RuneBlog.blog, 0, live]
     meta = live.transform(x::BlogTemplate)

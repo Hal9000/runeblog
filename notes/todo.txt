@@ -1,6 +1,7 @@
-   - improve HTML (eg DIV not TABLE)
+ x - improve HTML (eg DIV not TABLE)
+    - setup wizard?
    - create "posts" dir
-   - rename source to drafts
+   - rename source to drafts?
    - tag pools are dumb??
    - put CSS into templates?
    - Livetext: support CSS
@@ -8,11 +9,11 @@
    - Better navigation/etc for default?
    - Select themes/styles for blog??
    - Move some pieces into "snippets" (e.g. Facebook/Twitter integration)
-   - Convert HTML to Livetext (??)
+ x - Convert HTML to Livetext (??)
    - real support for tags (persist, etc.)
    - fix unnecessary rebuild_post/generate_index calls
    - make hierarchy of publish files?
-   - Problematic: store initial content as .lt3 rather than .html
+x - Problematic: store initial content as .lt3 rather than .html
    - more tests!
    - special tags: intra-blog, gist, github, youtube, vimeo, twitter, fb?, reddit?, ...
    - verify view is publishable before trying
