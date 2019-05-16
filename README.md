@@ -1,4 +1,10 @@
-<div float="left" align="left"><img src="raido.png" width="196" height="275" align="left"></img></div>
+<div float="left" align="left">
+<p>
+
+<p>
+
+<img src="raido.png" width="196" height="275" align="left"></img>
+</div>
 <p>
 
 # runeblog
