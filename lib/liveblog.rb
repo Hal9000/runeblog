@@ -130,7 +130,7 @@ end
 def image   # primitive so far
   _debug "img: huh? <img src=#{_args.first}></img>"
   fname = _args.first
-  path = "../assets/#{fname}"
+  path = "assets/#{fname}"
   _out "<img src=#{path}></img>"
   _optional_blank_line
 end

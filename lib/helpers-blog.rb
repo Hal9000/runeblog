@@ -50,9 +50,9 @@ module RuneBlog::Helpers
     dirs.map {|name| RuneBlog::View.new(name) }
   end
 
-  def new_dotfile(root: "./.blog/data", current_view: "no_default", editor: "vi")
-    raise BlogAlreadyExists if Dir.exist?(".blog")
-    Dir.mkdir(".blog")
+  def new_dotfile(root: "./.blogs/data", current_view: "no_default", editor: "vi")
+    raise BlogAlreadyExists if Dir.exist?(".blogs")
+    Dir.mkdir(".blogs")
     x = OpenStruct.new
     x.root, x.current_view, x.editor = root, current_view, editor
     write_config(x, RuneBlog::ConfigFile)
@@ -71,12 +71,12 @@ module RuneBlog::Helpers
     dirs
   end
 
-  def find_src_slugs
+  def find_draft_slugs
     verify(@root => "#@root is nil",
            Dir.exist?(@root) => "#@root doesn't exist",
-           Dir.exist?("#@root/src") => "#@root/src doesn't exist")
-    files = Dir["#@root/src/**"].grep /\d{4}.*.lt3$/
-    flagfile = "#@root/src/last_rebuild"
+           Dir.exist?("#@root/drafts") => "#@root/drafts doesn't exist")
+    files = Dir["#@root/drafts/**"].grep /\d{4}.*.lt3$/
+    flagfile = "#@root/drafts/last_rebuild"
     last = File.exist?(flagfile) ? File.mtime(flagfile) : (Time.now - 86_400)
     files.reject! {|f| File.mtime(f) > last }
     files.map! {|f| File.basename(f) }

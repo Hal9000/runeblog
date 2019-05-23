@@ -103,7 +103,7 @@ class RuneBlog::Post
     html = RuneBlog.post_template(title: @meta.title, date: @meta.pubdate, 
                view: @meta.view, teaser: @meta.teaser, body: @meta.body,
                views: @meta.views, tags: @meta.tags, home: viewhome)
-    srcdir = "#{@blog.root}/src/"
+    srcdir = "#{@blog.root}/drafts/"
     verify(Dir.exist?(srcdir) => "#{srcdir} not found",
            @meta.slug.is_a?(String) => "slug #{@meta.slug.inspect} is invalid")
     fname  = @meta.slug + ".lt3"
@@ -121,13 +121,14 @@ class RuneBlog::Post
   end 
 
   def build
+STDERR.puts "BUILD: #{RuneBlog.constants.sort.inspect}"
     debug "=== build"
     views = @meta.views
     text = File.read(@draft)
-    livetext = Livetext.new(STDOUT)
+    livetext = Livetext::Livetext.new(STDOUT)
     Livetext.parameters = [@blog, @meta.num, livetext]
     meta = livetext.process_text(text)
-    raise LivetextError(@draft) if meta.nil?
+    raise RuneBlog::LivetextError(@draft) if meta.nil?
 
     meta.num = File.basename(@draft).to_i
     # FIXME what if title changes? slug should change?

@@ -39,8 +39,8 @@ module RuneBlog::REPL
     check_empty(arg)
     dir = @blog.view.dir
     items = ["publish", 
-             "templates/blogview.lt3", 
-             "templates/post_template.html"] 
+             "themes/standard/blogview.lt3", 
+             "themes/standard/post/index.lt3"] 
     num, fname = STDSCR.menu(title: "Edit file:", items: items)
     edit_file("#{dir}/#{fname}")
   end
@@ -128,7 +128,7 @@ module RuneBlog::REPL
     reset_output
     check_empty(arg)
     puts unless testing
-    files = @blog.find_src_slugs
+    files = @blog.find_draft_slugs
     if files.empty? 
       msg = "No files changed"
       output! msg
@@ -137,7 +137,7 @@ module RuneBlog::REPL
     end
     files.each {|file| @blog.rebuild_post(file) }
     @blog.dirty_views.each {|view| generate_index(view) }  # All views for now?
-    File.write("#{@blog.root}/src/last_rebuild", Time.now)
+    File.write("#{@blog.root}/drafts/last_rebuild", Time.now)
     @out
   end
 
@@ -227,7 +227,7 @@ module RuneBlog::REPL
     id = get_integer(arg)
     # Simplify this
     tag = "#{'%04d' % id}"
-    files = Find.find(@blog.root+"/src").to_a
+    files = Find.find(@blog.root+"/drafts").to_a
     files = files.grep(/#{tag}-/)
     files = files.map {|f| File.basename(f) }
     if files.size > 1
@@ -244,7 +244,7 @@ module RuneBlog::REPL
     end
 
     file = files.first
-    result = edit_file("#{@blog.root}/src/#{file}")
+    result = edit_file("#{@blog.root}/drafts/#{file}")
     @blog.rebuild_post(file)
 sleep 5
     @out

@@ -1,0 +1,38 @@
+README
+about.html
+assets
+blog
+global.lt3
+head.lt3
+meta.lt3
+post.lt3
+
+At some point, "real content" such as about.html should
+go in some well-defined location.
+
+
+standard                      The first "default theme" - more later
+├── README                    This file
+├── about.html                An "about" file (will move)
+├── assets                    Assets for entire view (blog)
+│   ├── application.css       "Global" CSS
+│   ├── favicon.ico           Favicon
+│   └── ...                   Other files later, images, etc.
+├── blog                      ** The whole template for this view (blog)
+│   ├── _postentry.lt3        Used repeatedly in list of blog posts
+│   ├── generate.lt3          The "main wrapper" that actually generates everything
+│   ├── index.lt3             The main "user editable" portion of the template
+│   ├── navbar.lt3            The navigation bar
+│   └── sidebar               The sidebar (which may include different things)
+│       ├── ad.lt3              Code to generate an advertisement
+│       ├── calendar.lt3        Code for a calendar
+│       ├── news.lt3            Recent news
+│       └── tag-cloud.lt3       Tag cloud (generated automatically of course)
+├── global.lt3                Some global settings
+├── head.lt3                  A standard <head> section
+├── meta.lt3                  Standard meta tags
+└── post                
+    ├── head.lt3              Specific to post (adds to higher-level head)
+    ├── generate.lt3          The "main wrapper" that actually generates the post
+    └── index.lt3             The main "user editable" portion of the post template
+

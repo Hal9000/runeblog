@@ -45,7 +45,7 @@ But the important points are these:
  * Each view can have its own look and feel, and it can be linked/published separately from the others.
  * Each view can be hosted in a different location and/or a different server and domain
  * Any post can be in more than one view
-## The `blog environment
+## The `[blog] environment
 There is a command-line tool called <font size=+1><tt>blog</tt></font>  which is a REPL (read-eval-print loop). 
 Note that this tool is a curses-based environment (mainly so it can display menus
 and such to the user).
@@ -81,10 +81,10 @@ The help message looks like this:
      deploy            Deploy (current view)
 </pre>
 ## Getting started
-But when you first run the REPL, it checks for an existing blog under the <font size=+1><tt>.blog</tt></font>
-directory. If it doesn't find one, it asks whether you want to create a new blog.
-If you enter <font size=+1><tt>y</tt></font>  for yes, it creates a sort of "skeleton" with a single view
-called <font size=+1><tt>est_view</tt></font>.
+But when you first run the REPL, it checks for an existing blog repository under 
+the <font size=+1><tt>.blog</tt></font> directory. If it doesn't find one, it asks whether you want to create 
+a new blog repo. If you enter <font size=+1><tt>y</tt></font>  for yes, it creates a sort of "skeleton" with a 
+single view called <font size=+1><tt>test_view</tt></font>.
 <p>
 
 The next thing you should do is to create at least one view of your own. Use the

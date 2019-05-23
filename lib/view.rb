@@ -35,8 +35,8 @@ class RuneBlog::View
     vdir = dir()
     files = [index()]
     others = Dir.entries(vdir).grep(/^\d\d\d\d/).map {|x| "#{vdir}/#{x}" }
-    assets = Dir.entries("#{@blog.root}/assets") - %w[. ..]
-    assets.map! {|x| "#{@blog.root}/assets/#{x}" }
+    assets = Dir.entries("#{vdir}/assets") - %w[. ..]
+    assets.map! {|x| "#{vdir}/assets/#{x}" }
     assets.reject! {|x| File.directory?(x) }
 #   assets.reject! {|x| ! recent?(x) }
     files = files + others

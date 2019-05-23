@@ -29,18 +29,24 @@ def show_lines(text)
   str
 end
 
-system("rm -rf .blog")
-RuneBlog.create_new_blog('test_view', ".blog/data_test")
+STDERR.puts :cp01
+
+system("rm -rf .blogs")
+STDERR.puts :cp02
+RuneBlog.create_new_blog_repo('test_view', ".blogs/data")
+STDERR.puts :cp03
 x = RuneBlog.new
+STDERR.puts :cp04
 x.create_view("alpha_view")
+STDERR.puts :cp05
 
 # Hack:
 if File.exist?("publish")
-  system("cp publish .blog/data_test/views/alpha_view/publish")
+  system("cp publish .blogs/data/views/alpha_view/publish")
 end
 # puts "inside make_blog: pwd = #{Dir.pwd}"
-system("cp test/fakeimage.jpg .blog/data_test/assets/")
-system("cp test/fakeimage.jpg .blog/data_test/views/alpha_view/assets/")
+system("cp test/fakeimage.jpg .blogs/data/assets/")
+system("cp test/fakeimage.jpg .blogs/data/views/alpha_view/assets/")
 
 x.create_view("beta_view")
 x.create_view("gamma_view")

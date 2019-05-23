@@ -32,7 +32,7 @@ class TestREPL < Minitest::Test
     @blog = RuneBlog.new
   end
 
-  # Note: "Bang" methods depend on the data_test subtree
+  # Note: "Bang" methods depend on the data subtree
 
   def test_001_cmd_help
 #   puts __method__
@@ -286,7 +286,7 @@ end  # conditional tests
   def xtest_024_exception_livetext_error   # FIXME Doesn't work! Change Livetext
 #   puts __method__
     testfile = "testfile.lt3"
-    path = @blog.root + "/src/" + testfile
+    path = @blog.root + "/drafts/" + testfile
     cmd = "echo .no_such_command > #{path}"
     system(cmd)
 #   system("ls -l #{path}")

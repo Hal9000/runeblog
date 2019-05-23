@@ -7,7 +7,7 @@ To post:
 
 config command (?)
 --------------
-edit .blog/config? view/publish
+edit .blogs/config? view/publish
 edit view/templates/*
 ssh keys??
 

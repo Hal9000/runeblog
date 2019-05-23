@@ -14,9 +14,9 @@ What are some TODO items?
 How is the tree structured?
 ===========================
 
-.blog                                  The root dir of the blog(s) 
+.blogs                                 The root dir of the blog(s) 
 ├── config                             Small config file (global)       
-└── data_test                          The data directory where "all" stuff lives          
+└── data                               The data directory where "all" stuff lives          
     ├── VERSION                        Version info, date blog was created            
     ├── assets                         Images, other media, etc. (blog-wide)           
     │   └── fakeimage.jpg                                    

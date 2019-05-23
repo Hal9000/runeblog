@@ -1,0 +1,61 @@
+=begin
+
+STEPS:
+  1. revamp blog/post creation
+  2. create .tgz, remove build logic
+  3. test the hell out of it
+  4. take notes for reworking old blog data!
+
+
+Remember "pages" and so on...
+
+.blog
+  local
+    src (drafts)
+    views
+      each_view
+        themes/standard
+        timestamps/  # reflects structure under gen.../each_view
+        assets
+        posts
+        ...?
+  generated
+    views
+      each_view
+        ? themes/standard
+        index.html
+        posts
+        assets
+        ...?
+  config
+    sequence
+    VERSION
+
+
+  themes
+    standard
+      head.lt3
+      meta.lt3
+      global.lt3
+      assets/
+      blog/
+        [kill assets]
+        sidebar/
+          ad.lt3
+          calendar.lt3
+          news.lt3
+          tag_cloud.lt3
+        _postentry
+        generate.lt3
+        index.lt3
+        meta.lt3
+        navbar.lt3
+      post/
+        generate.lt3
+        head.lt3
+        index.lt3
+
+
+=end
+
+

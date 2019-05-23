@@ -71,7 +71,7 @@ def head
                "og:site_name"   => %[<meta property="og:site_name" content="#{var(:title)}">],
                "style"          => %[<link rel="stylesheet" href="('/assets/application.css')">],
                "feed"           => %[<link type="application/atom+xml" rel="alternate" href="#{var(:host)}/feed.xml" title="#{var(:title)}">],
-               "favicon"        => %[<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">\n <link rel="apple-touch-icon" href="favicon.ico">]
+               "favicon"        => %[<link rel="shortcut icon" type="image/x-icon" href="assets/favicon.ico">\n <link rel="apple-touch-icon" href="assets/favicon.ico">]
              }
   result = {}
   lines = _body

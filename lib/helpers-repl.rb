@@ -197,8 +197,8 @@ module RuneBlog::REPL
     @title = grep.sub(/^.title /, "")
     @slug = @blog.make_slug(@title) # import (not impl)
     @fname = @slug + ".lt3"
-    result = system("cp #{name} #@root/src/#@fname")
-    raise CantCopy(name, "#@root/src/#@fname") unless result
+    result = system("cp #{name} #@root/drafts/#@fname")
+    raise CantCopy(name, "#@root/drafts/#@fname") unless result
 
     edit_initial_post(@fname)
     process_post(@fname)

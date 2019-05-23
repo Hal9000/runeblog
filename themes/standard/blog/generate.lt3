@@ -1,0 +1,23 @@
+.mixin experimental
+
+. ^ "experimental" will go into "liveblog" later
+
+<html>
+  <!-- Editing this file is not recommended. 
+       It was generated from $File on $$date. 
+    -->
+
+. new "inherit" command is like include but will search upward
+.   in the tree if needed
+
+.inherit head.lt3
+  <body>
+    $.inherit navbar.lt3
+    <div class="content container-fluid mt-4">
+      <div class="row">
+        $.inherit global.lt3
+        $.include index.lt3
+      </div>
+    </div>
+  </body>
+</html>

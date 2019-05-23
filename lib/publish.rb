@@ -26,7 +26,7 @@ class RuneBlog::Publishing
   end
 
   def url
-    vname = @blog.view.name.gsub(/_/, "\\_")
+    vname = @blog.view.name # .gsub(/_/, "\\_")
     url = "#@proto://#@server/#@path/#{vname}"
   end
 
@@ -40,8 +40,9 @@ debug "Failed!\n " if ! rc
   def publish(files, assets=[])
     dir = "#@docroot/#@path"
     view_name = @blog.view.name
-    result = system!("ssh #@user@#@server -x mkdir -p #{dir}/#{view_name}") 
-    result = system!("ssh #@user@#@server -x mkdir -p #{dir}/assets") 
+    viewpath = "#{dir}/#{view_name}"
+    result = system!("ssh #@user@#@server -x mkdir -p #{viewpath}") 
+#   result = system!("ssh #@user@#@server -x mkdir -p #{dir}/assets") 
     files.each do |file|
       dest = "#@user@#@server:#{dir}/#{view_name}"
       file.gsub!(/\/\//, "/")  # weird... :-/
@@ -51,7 +52,7 @@ debug "Failed!\n " if ! rc
       result = system!(cmd) || puts("\n  Could not copy #{file} to #{dest}")
     end
     unless assets.empty?
-      cmd = "scp #{assets.join(' ')} #@user@#@server:#{dir}/assets >/dev/null 2>/tmp/wtf2"
+      cmd = "scp #{assets.join(' ')} #@user@#@server:#{viewpath}/assets >/dev/null 2>/tmp/wtf2"
       result = system!(cmd)
       raise PublishError if !result
     end

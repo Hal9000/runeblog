@@ -1,9 +1,11 @@
+   - revamp dirs (see dir.struct)
+   - work on .banner!
  x - improve HTML (eg DIV not TABLE)
-    - setup wizard?
+   - setup wizard?
    - create "posts" dir
    - rename source to drafts?
    - tag pools are dumb??
-   - put CSS into templates?
+ x - put CSS into templates?
    - Livetext: support CSS
    - create tag cloud
    - Better navigation/etc for default?

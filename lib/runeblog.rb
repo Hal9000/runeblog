@@ -13,11 +13,12 @@ require 'post'
 
 class RuneBlog
  
-  DotDir = ".blog"
+  DotDir     = ".blogs"
   ConfigFile = "#{DotDir}/config"
+  GemData    = RuneBlog::Path + "/../data"
 
   make_exception(:FileNotFound,      "File $1 was not found")
-  make_exception(:BlogAlreadyExists, "Blog $1 already exists")
+  make_exception(:BlogRepoAlreadyExists, "Blog repo $1 already exists")
   make_exception(:CantAssignView,    "$1 is not a view")
   make_exception(:ViewAlreadyExists, "View $1 already exists")
   make_exception(:DirAlreadyExists,  "Directory $1 already exists")
@@ -38,23 +39,53 @@ class RuneBlog
 
   include Helpers
 
-  def self.create_new_blog(blog_name, dir = ".blog/data")
+=begin
+  timestamps
+	  filename (cf with real file)
+		
+	themes
+	  standard
+		  head.lt3
+	  	meta.lt3
+    	global.lt3
+	  	assets/
+	  	blog/
+			  [kill assets?]
+				sidebar/
+				  ad.lt3
+					calendar.lt3
+					news.lt3
+					tag_cloud.lt3
+				_postentry
+				generate.lt3
+				index.lt3
+				meta.lt3
+				navbar.lt3
+	  	post/
+			  generate.lt3
+				head.lt3
+				index.lt3
+=end
+
+  def self.create_new_blog_repo(repo_filename, dir = ".blogs/data")
     raise ArgumentError unless dir.is_a?(String) && ! dir.empty?
     root_dir = Dir.pwd + "/" + dir
-    raise BlogAlreadyExists if Dir.exist?(root_dir)
-    new_dotfile(root: root_dir, current_view: blog_name)
+    raise BlogRepoAlreadyExists if Dir.exist?(root_dir)
+    new_dotfile(root: root_dir, current_view: repo_filename)
     create_dir(dir)
-# New code goes here! templates/ dir tree
+# New code goes here! 
     Dir.chdir(dir) do
+      create_dir("drafts")
       create_dir("views")
-      create_dir("assets")
-      create_dir("src")
+#???  create_dir("generated")
+#?    create_dir("assets")
       new_sequence
     end
     blog = self.new
-    blog.create_view(blog_name)
+STDERR.puts :cp021
+    blog.create_view(repo_filename)
   rescue => err
-    puts "Can't create blog: '#{dir}' - #{err}"
+    puts "Can't create blog repo: '#{dir}' - #{err}"
     puts err.backtrace.join("\n")
   end
 
@@ -123,34 +154,60 @@ class RuneBlog
   end
 
   def create_view(arg)
+STDERR.puts :cp029
     debug "=== create_view #{arg.inspect}"
+STDERR.puts :cp029a
     raise ArgumentError unless arg.is_a?(String) && ! arg.empty?
 
+STDERR.puts :cp029b
     names = self.views.map(&:to_s)
+STDERR.puts :cp029c
     raise ViewAlreadyExists(arg) if names.include?(arg)
 
+STDERR.puts :cp029d
     dir = "#@root/views/#{arg}/"
+STDERR.puts :cp029e
     raise DirAlreadyExists(dir) if Dir.exist?(dir)
+STDERR.puts :cp029f
     create_dir(dir)
+STDERR.puts :cp029g
     up = Dir.pwd
+STDERR.puts :cp029h
     Dir.chdir(dir)
+STDERR.puts :cp029i
     x = RuneBlog::Default
-    create_dir('templates')
+STDERR.puts :cp029j
+    create_dir('themes')
+STDERR.puts :cp029k
+    create_dir("local")
+STDERR.puts :cp029l
+    create_dir("generated")
+STDERR.puts :cp029m
+## new code...
+    Dir.chdir("themes")  { system("tar zxvf #{GemData}/standard.tgz 2>/dev/null") }
+STDERR.puts :cp029n
     create_dir('assets')
+STDERR.puts :cp029o
+## add default stuff to assets?
     pub = "user: xxx\nserver: xxx\ndocroot: xxx\npath: xxx\nproto: xxx\n"
     dump(pub, "publish")
-    dump("", "tagpool")
+#?  dump("", "tagpool")
     view = RuneBlog::View.new(arg)
     self.view = view
-# Rewrite this! think: livtext templates/generate.lt3
+# Rewrite this! think: livetext themes/standard/generate.lt3
 #  (output goes elsewhere)
+    # This is just all wrong now?
+STDERR.puts :cp029p
     live = Livetext.new(nil)
+STDERR.puts :cp029q
     Livetext.parameters = [RuneBlog.blog, 0, live]
+STDERR.puts :cp029r
     meta = live.transform(x::BlogTemplate)
-    dump(meta, "templates/blogview.lt3")
-#   dump(x::BlogHeader, "templates/blog_header.html")
-#   dump(x::BlogTrailer, "templates/blog_trailer.html")
+STDERR.puts :cp029s
+    dump(meta, "themes/standard/blogview.lt3")
+STDERR.puts :cp029t
     dump("Initial creation", "last_published")
+STDERR.puts :cp029u
     Dir.chdir(up)
     @views << view
     @views
@@ -195,7 +252,7 @@ class RuneBlog
 
   def edit_initial_post(file, testing = false)
     debug "=== edit_initial_post #{file.inspect}  => #{sourcefile}"
-    sourcefile = "#@root/src/#{file}"
+    sourcefile = "#@root/drafts/#{file}"
     result = system("#@editor #{sourcefile} +8") unless testing
     raise EditorProblem(sourcefile) unless result
     nil
@@ -210,7 +267,7 @@ class RuneBlog
   end
 
   def drafts
-    dir = "#@root/src"
+    dir = "#@root/drafts"
     drafts = Dir.entries(dir).grep(/^\d{4}.*/)
   end
 
@@ -226,7 +283,7 @@ class RuneBlog
 #   puts "    process_post #{file.inspect}   pwd = #{Dir.pwd}"
     debug "=== process_post #{file.inspect}   pwd = #{Dir.pwd}"
     raise ArgumentError unless file.is_a?(String)
-    path = @root + "/src/#{file}"
+    path = @root + "/drafts/#{file}"
     raise FileNotFound(path) unless File.exist?(path)
     num = file.to_i       # e.g. 0098-this-is-a-title
     live = Livetext.new # (STDOUT) # (nil)
@@ -251,12 +308,8 @@ class RuneBlog
     head = tail = nil
     @blogview = nil
     Dir.chdir(vdir) do 
-      @blogview = File.read("templates/blogview.lt3")
-#     head = File.read("templates/blog_header.html")
-#     tail = File.read("templates/blog_trailer.html")
+      @blogview = File.read("themes/standard/blogview.lt3")
     end
-#   @bloghead = interpolate(head)
-#   @blogtail = interpolate(tail)
 
     # Output view
     posts.map! do |post|
@@ -355,7 +408,7 @@ class RuneBlog
   def delete_draft(num)
     raise ArgumentError unless num.is_a?(Integer)
     tag = prefix(num)
-    system("rm -rf #@root/src/#{tag}-*")
+    system("rm -rf #@root/drafts/#{tag}-*")
   end
 
   def post_exists?(num)

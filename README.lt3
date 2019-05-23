@@ -46,7 +46,7 @@ Each view can be hosted in a different location and/or a different server and do
 Any post can be in more than one view
 .end
 
-.h2 The `blog environment
+.h2 The `[blog] environment
 
 There is a command-line tool called `blog which is a REPL (read-eval-print loop). 
 Note that this tool is a curses-based environment (mainly so it can display menus
@@ -83,10 +83,10 @@ The help message looks like this:
 
 .h2 Getting started
 
-But when you first run the REPL, it checks for an existing blog under the `.blog
-directory. If it doesn't find one, it asks whether you want to create a new blog.
-If you enter `y for yes, it creates a sort of "skeleton" with a single view
-called ``test_view.
+But when you first run the REPL, it checks for an existing blog repository under 
+the `[.blog] directory. If it doesn't find one, it asks whether you want to create 
+a new blog repo. If you enter `y for yes, it creates a sort of "skeleton" with a 
+single view called `[test_view].
 
 The next thing you should do is to create at least one view of your own. Use the
 `[new view] command for this.  
