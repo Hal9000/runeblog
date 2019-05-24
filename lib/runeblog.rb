@@ -67,11 +67,11 @@ class RuneBlog
 				index.lt3
 =end
 
-  def self.create_new_blog_repo(repo_filename, dir = ".blogs/data")
+  def self.create_new_blog_repo(first_view, dir = ".blogs/data")
     raise ArgumentError unless dir.is_a?(String) && ! dir.empty?
     root_dir = Dir.pwd + "/" + dir
     raise BlogRepoAlreadyExists if Dir.exist?(root_dir)
-    new_dotfile(root: root_dir, current_view: repo_filename)
+    new_dotfile(root: root_dir, current_view: first_view)
     create_dir(dir)
 # New code goes here! 
     Dir.chdir(dir) do
@@ -82,8 +82,7 @@ class RuneBlog
       new_sequence
     end
     blog = self.new
-STDERR.puts :cp021
-    blog.create_view(repo_filename)
+    blog.create_view(first_view)
   rescue => err
     puts "Can't create blog repo: '#{dir}' - #{err}"
     puts err.backtrace.join("\n")
@@ -154,60 +153,30 @@ STDERR.puts :cp021
   end
 
   def create_view(arg)
-STDERR.puts :cp029
     debug "=== create_view #{arg.inspect}"
-STDERR.puts :cp029a
     raise ArgumentError unless arg.is_a?(String) && ! arg.empty?
 
-STDERR.puts :cp029b
     names = self.views.map(&:to_s)
-STDERR.puts :cp029c
     raise ViewAlreadyExists(arg) if names.include?(arg)
 
-STDERR.puts :cp029d
     dir = "#@root/views/#{arg}/"
-STDERR.puts :cp029e
     raise DirAlreadyExists(dir) if Dir.exist?(dir)
-STDERR.puts :cp029f
     create_dir(dir)
-STDERR.puts :cp029g
     up = Dir.pwd
-STDERR.puts :cp029h
     Dir.chdir(dir)
-STDERR.puts :cp029i
     x = RuneBlog::Default
-STDERR.puts :cp029j
     create_dir('themes')
-STDERR.puts :cp029k
     create_dir("local")
-STDERR.puts :cp029l
     create_dir("generated")
-STDERR.puts :cp029m
-## new code...
+
     Dir.chdir("themes")  { system("tar zxvf #{GemData}/standard.tgz 2>/dev/null") }
-STDERR.puts :cp029n
     create_dir('assets')
-STDERR.puts :cp029o
-## add default stuff to assets?
     pub = "user: xxx\nserver: xxx\ndocroot: xxx\npath: xxx\nproto: xxx\n"
     dump(pub, "publish")
-#?  dump("", "tagpool")
     view = RuneBlog::View.new(arg)
     self.view = view
-# Rewrite this! think: livetext themes/standard/generate.lt3
-#  (output goes elsewhere)
-    # This is just all wrong now?
-STDERR.puts :cp029p
-    live = Livetext.new(nil)
-STDERR.puts :cp029q
-    Livetext.parameters = [RuneBlog.blog, 0, live]
-STDERR.puts :cp029r
-    meta = live.transform(x::BlogTemplate)
-STDERR.puts :cp029s
-    dump(meta, "themes/standard/blogview.lt3")
-STDERR.puts :cp029t
+    system("livetext themes/standard/generate.lt3 >generated/blog/index.html 2>generated/blog/index.err")
     dump("Initial creation", "last_published")
-STDERR.puts :cp029u
     Dir.chdir(up)
     @views << view
     @views

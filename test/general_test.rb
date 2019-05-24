@@ -257,7 +257,7 @@ end  # conditional tests
 
   def xtest_019_exception_existing_blog
 #   puts __method__
-    assert_raises(BlogAlreadyExists) { RuneBlog.create_new_blog }
+    assert_raises(BlogAlreadyExists) { RuneBlog.create_new_blog_repo }
   end
 
   def xtest_020_exception_missing_blog_accessor

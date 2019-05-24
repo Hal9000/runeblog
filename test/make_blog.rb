@@ -32,13 +32,9 @@ end
 STDERR.puts :cp01
 
 system("rm -rf .blogs")
-STDERR.puts :cp02
 RuneBlog.create_new_blog_repo('test_view', ".blogs/data")
-STDERR.puts :cp03
 x = RuneBlog.new
-STDERR.puts :cp04
 x.create_view("alpha_view")
-STDERR.puts :cp05
 
 # Hack:
 if File.exist?("publish")

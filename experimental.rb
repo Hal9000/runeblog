@@ -1,7 +1,7 @@
 class Livetext::Functions
 
   def _var(name)
-    ::Livetext::Vars[name]
+    ::Livetext::Vars[name] || "[:#{name} is undefined]"
   end
 
 #   def svg
@@ -52,25 +52,25 @@ end
 
 ###############
 
-def var(name)
-  Livetext::Vars[name]
+def _var(name)  # FIXME later
+  ::Livetext::Vars[name] || "[:#{name} is undefined]"
 end
 
 def head
   defaults = {}
   defaults = { "charset"        => %[<meta charset="utf-8">],
                "http-equiv"     => %[<meta http-equiv="X-UA-Compatible" content="IE=edge">],
-               "title"          => %[<title>\n  #{var(:title)} | #{var(:desc)}\n  </title>],
+               "title"          => %[<title>\n  #{_var(:title)} | #{_var(:desc)}\n  </title>],
                "generator"      => %[<meta name="generator" content="Runeblog v #{0.1}">],  # FIXME
-               "og:title"       => %[<meta property="og:title" content="#{var(:title)}">],
+               "og:title"       => %[<meta property="og:title" content="#{_var(:title)}">],
                "og:locale"      => %[<meta property="og:locale" content="en_US">],
-               "description"    => %[<meta name="description" content="#{var(:desc)}">],
-               "og:description" => %[<meta property="og:description" content="#{var(:desc)}">],
-               "linkc"          => %[<link rel="canonical" href="#{var(:host)}">],
-               "og:url"         => %[<meta property="og:url" content="#{var(:host)}">],
-               "og:site_name"   => %[<meta property="og:site_name" content="#{var(:title)}">],
+               "description"    => %[<meta name="description" content="#{_var(:desc)}">],
+               "og:description" => %[<meta property="og:description" content="#{_var(:desc)}">],
+               "linkc"          => %[<link rel="canonical" href="#{_var(:host)}">],
+               "og:url"         => %[<meta property="og:url" content="#{_var(:host)}">],
+               "og:site_name"   => %[<meta property="og:site_name" content="#{_var(:title)}">],
                "style"          => %[<link rel="stylesheet" href="('/assets/application.css')">],
-               "feed"           => %[<link type="application/atom+xml" rel="alternate" href="#{var(:host)}/feed.xml" title="#{var(:title)}">],
+               "feed"           => %[<link type="application/atom+xml" rel="alternate" href="#{_var(:host)}/feed.xml" title="#{_var(:title)}">],
                "favicon"        => %[<link rel="shortcut icon" type="image/x-icon" href="assets/favicon.ico">\n <link rel="apple-touch-icon" href="assets/favicon.ico">]
              }
   result = {}
@@ -299,7 +299,7 @@ def tag_cloud
 end
 
 def navbar
-  title = var(:title)
+  title = _var(:title)
   open = <<-HTML
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <a class="navbar-brand" href="index.html">#{title}</a>

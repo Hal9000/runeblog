@@ -20,12 +20,13 @@ spec = Gem::Specification.new do |s|
   s.authors     = ["Hal Fulton"]
   s.email       = 'rubyhacker@gmail.com'
   s.executables << "blog"
-  s.add_runtime_dependency 'livetext', '~> 0.8', '>= 0.8.84'
+  s.add_runtime_dependency 'livetext', '~> 0.8', '>= 0.8.85'
   s.add_runtime_dependency 'rubytext', '~> 0.1', '>= 0.1.16'
 
   # Files...
-  main = Find.find("bin").to_a + 
-         Find.find("lib").to_a
+  main = Find.find("bin").to_a  + 
+         Find.find("lib").to_a  +
+         Find.find("data").to_a
 
   misc = %w[./README.lt3 ./README.md ./runeblog.gemspec]
   test = Find.find("test").to_a
