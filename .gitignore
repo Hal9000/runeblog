@@ -1,5 +1,4 @@
 runeblog*.gem
-data/*
 .blogs
 
 .idea/

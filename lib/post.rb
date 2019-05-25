@@ -121,11 +121,10 @@ class RuneBlog::Post
   end 
 
   def build
-STDERR.puts "BUILD: #{RuneBlog.constants.sort.inspect}"
     debug "=== build"
     views = @meta.views
     text = File.read(@draft)
-    livetext = Livetext::Livetext.new(STDOUT)
+    livetext = Livetext.new(STDOUT)
     Livetext.parameters = [@blog, @meta.num, livetext]
     meta = livetext.process_text(text)
     raise RuneBlog::LivetextError(@draft) if meta.nil?

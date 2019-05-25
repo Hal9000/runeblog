@@ -5,7 +5,6 @@ ver = major.to_i*10 + minor.to_i
 abort "Need Ruby 2.4 or greater" unless ver >= 24
 
 require 'global'
-# require 'rubytext'
 require 'repl'
 
 def getch
@@ -29,8 +28,6 @@ def show_lines(text)
   str
 end
 
-STDERR.puts :cp01
-
 system("rm -rf .blogs")
 RuneBlog.create_new_blog_repo('test_view', ".blogs/data")
 x = RuneBlog.new
@@ -40,8 +37,6 @@ x.create_view("alpha_view")
 if File.exist?("publish")
   system("cp publish .blogs/data/views/alpha_view/publish")
 end
-# puts "inside make_blog: pwd = #{Dir.pwd}"
-system("cp test/fakeimage.jpg .blogs/data/assets/")
 system("cp test/fakeimage.jpg .blogs/data/views/alpha_view/assets/")
 
 x.create_view("beta_view")

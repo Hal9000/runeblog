@@ -159,22 +159,26 @@ class RuneBlog
     names = self.views.map(&:to_s)
     raise ViewAlreadyExists(arg) if names.include?(arg)
 
-    dir = "#@root/views/#{arg}/"
-    raise DirAlreadyExists(dir) if Dir.exist?(dir)
-    create_dir(dir)
+    vdir = "#@root/views/#{arg}/"
+    raise DirAlreadyExists(vdir) if Dir.exist?(vdir)
+    create_dir(vdir)
     up = Dir.pwd
-    Dir.chdir(dir)
+
+    Dir.chdir(vdir)
     x = RuneBlog::Default
     create_dir('themes')
-    create_dir("local")
+#   create_dir("local")
     create_dir("generated")
-
-    Dir.chdir("themes")  { system("tar zxvf #{GemData}/standard.tgz 2>/dev/null") }
+    create_dir("generated/blog")
     create_dir('assets')
+
+    Dir.chdir("themes") { system("tar zxvf #{GemData}/standard.tgz 2>/dev/null") }
     pub = "user: xxx\nserver: xxx\ndocroot: xxx\npath: xxx\nproto: xxx\n"
     dump(pub, "publish")
+
     view = RuneBlog::View.new(arg)
     self.view = view
+p "---- pwd = #{Dir.pwd}"
     system("livetext themes/standard/generate.lt3 >generated/blog/index.html 2>generated/blog/index.err")
     dump("Initial creation", "last_published")
     Dir.chdir(up)
@@ -265,41 +269,17 @@ class RuneBlog
   end
 
   def generate_index(view)
+# FIXME This is currently very wrong.
+
 #   puts "  generate_index view = #{view.to_s}"
     debug "=== generate_index view = #{view.to_s}"
     raise ArgumentError unless view.is_a?(String) || view.is_a?(RuneBlog::View)
-    # Gather all posts, create list
-    vdir = "#@root/views/#{view}"
-    posts = Dir.entries(vdir).grep /^\d{4}/
-    posts = posts.sort.reverse
 
-    # Add view header/trailer
-    head = tail = nil
-    @blogview = nil
-    Dir.chdir(vdir) do 
-      @blogview = File.read("themes/standard/blogview.lt3")
-    end
+    vdir = self.view.dir
+    up = Dir.pwd
+    Dir.chdir(vdir)
 
-    # Output view
-    posts.map! do |post|
-      meta = nil
-      pdir = vdir + "/" + post
-      Dir.chdir(pdir) do
-        meta = read_config("metadata.txt")
-        meta.num = post.to_i  # first 4 digits
-        check_meta(meta, "gen_index")
-        meta.teaser = File.read("teaser.txt")
-        meta.body = File.read("body.txt")
-      end
-      meta  # block return
-    end
-
-    File.open("#{vdir}/index.html", "w") do |f|
-      teasers = ""
-      posts.each {|post| teasers << index_entry(view, post) }
-      text = @blogview.sub(/TEASERS/, teasers)
-      f.puts text
-    end
+    system("livetext themes/standard/generate.lt3 >generated/blog/index.html 2>generated/blog/index.err")
   rescue => err
     error(err)
     exit
