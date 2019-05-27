@@ -31,7 +31,7 @@ spec = Gem::Specification.new do |s|
     system("tar zcvf standard.tgz standard/")
   end
 
-  std_theme = "data/standard.tgz"
+  std_theme = ["data/standard.tgz"]
 
   misc = %w[./README.lt3 ./README.md ./runeblog.gemspec]
   test = Find.find("test").to_a
