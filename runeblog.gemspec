@@ -27,7 +27,7 @@ spec = Gem::Specification.new do |s|
   main = Find.find("bin").to_a  + 
          Find.find("lib").to_a
 
-  Dir.chdir do 
+  Dir.chdir("data") do 
     system("tar zcvf standard.tgz standard/")
   end
 
