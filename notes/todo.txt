@@ -1,3 +1,11 @@
+   - make sure posts go into 'generated'
+   - alternate config file format
+   - get rid of 'generated/blog'?
+   - must fix blog title issue!
+   - also query for title when view is created
+   - allow test code to add to post
+   - fix "Keep Reading" CSS
+   - add views to lsd/lsp output
    - revamp dirs (see dir.struct)
    - work on .banner!
  x - improve HTML (eg DIV not TABLE)

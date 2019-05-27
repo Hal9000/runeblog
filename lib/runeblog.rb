@@ -77,7 +77,6 @@ class RuneBlog
     Dir.chdir(dir) do
       create_dir("drafts")
       create_dir("views")
-#???  create_dir("generated")
 #?    create_dir("assets")
       new_sequence
     end
@@ -169,12 +168,13 @@ class RuneBlog
     create_dir('themes')
 #   create_dir("local")
     create_dir("generated")
-    create_dir("generated/blog")
     create_dir('assets')
 
     Dir.chdir("themes") { system("tar zxvf #{GemData}/standard.tgz 2>/dev/null") }
     pub = "user: xxx\nserver: xxx\ndocroot: xxx\npath: xxx\nproto: xxx\n"
     dump(pub, "publish")
+
+# Add to global.lt3 here?  FIXME
 
     view = RuneBlog::View.new(arg)
     self.view = view
@@ -212,10 +212,11 @@ class RuneBlog
     result
   end
 
-  def create_new_post(title, testing = false)
+  def create_new_post(title, testing = false, teaser: nil, body: nil)
+# STDERR.puts "-- create_new_post: teaser = #{teaser.inspect} body = #{body.inspect}"
     save = Dir.pwd
     Dir.chdir(self.view.dir)
-    post = Post.create(title)
+    post = Post.create(title, teaser, body)
     post.edit unless testing
     meta = post.build
     Dir.chdir(save)

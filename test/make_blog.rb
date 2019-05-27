@@ -15,9 +15,10 @@ def debug(str)
 # STDERR.puts str
 end
 
-def make_post(x, title)
+def make_post(x, title, teaser, body)
+# STDERR.puts "-- make_post: teaser = #{teaser.inspect} body = #{body.inspect}"
   meta = OpenStruct.new
-  num = x.create_new_post(title, true)
+  num = x.create_new_post(title, true, teaser: teaser, body: body)
   num
 end
 
@@ -31,31 +32,93 @@ end
 system("rm -rf .blogs")
 RuneBlog.create_new_blog_repo('test_view', ".blogs/data")
 x = RuneBlog.new
-x.create_view("alpha_view")
+
+x.create_view("around_austin")   # FIXME remember view title!
 
 # Hack:
 if File.exist?("publish")
-  system("cp publish .blogs/data/views/alpha_view/publish")
+  system("cp publish .blogs/data/views/around_austin/publish")
 end
-system("cp test/fakeimage.jpg .blogs/data/views/alpha_view/assets/")
+system("cp test/fakeimage.jpg .blogs/data/views/around_austin/assets/")
 
-x.create_view("beta_view")
-x.create_view("gamma_view")
+x.create_view("computing")
 
-x.change_view("alpha_view")    # 1 2 7 8 9 
-make_post(x, "Post number 1")
-make_post(x, "Post number 2")
-x.change_view("beta_view")     # 3 5 6
-make_post(x, "Post number 3")
-x.change_view("gamma_view")    # 4 10
-make_post(x, "Post number 4")
-x.change_view("beta_view")
-make_post(x, "Post number 5")
-make_post(x, "Post number 6")
-x.change_view("alpha_view")
-make_post(x, "Post number 7")
-make_post(x, "Post number 8")
-make_post(x, "Post number 9")
-x.change_view("gamma_view")
-make_post(x, "Post number 10")
-x.change_view("alpha_view")
+x.create_view("music")
+
+x.change_view("around_austin")    # 1 2 7 8 9 
+
+make_post(x, "What's at Stubbs...", <<-EXCERPT, <<-BODY)
+Stubbs has been around for longer than civilization.
+EXCERPT
+That's a good thing. But their music isn't always the greatest.
+BODY
+
+make_post(x, "The new amphitheatre is overrated", <<-EXCERPT, <<-BODY)
+It used to be that all major concerts played the Erwin Center.
+EXCERPT
+Now, depending on what you consider "major," blah blah blah...
+BODY
+
+x.change_view("computing")     # 3 5 6
+
+make_post(x, "Elixir Conf coming up...", <<-EXCERPT, <<-BODY)
+The next Elixir Conf is always coming up. 
+EXCERPT
+I mean, unless the previous one was the last one ever, which I don't expect to 
+happen for a couple of decades.
+BODY
+
+x.change_view("music")    # 4 10
+
+make_post(x, "Does indie still matter?", <<-EXCERPT, <<-BODY)
+Indie msic blah blah blah blah....
+EXCERPT
+And more about indie music.
+BODY
+
+x.change_view("computing")
+
+make_post(x, "The genius of Scenic", <<-EXCERPT, <<-BODY)
+Boyd Multerer is a genius.
+EXCERPT
+And so is Scenic.
+BODY
+
+make_post(x, "The future of coding", <<-EXCERPT, <<-BODY)
+Someday you can forget your text editor entirely.
+EXCERPT
+But that day hasn't come yet.
+BODY
+
+x.change_view("around_austin")
+
+make_post(x, "The graffiti wall", <<-EXCERPT, <<-BODY)
+RIP, Hope Gallery
+EXCERPT
+It's been a while since I was there. They say it was torn down
+while I wasn't looking.
+BODY
+
+make_post(x, "The Waller Creek project", <<-EXCERPT, <<-BODY)
+Will it ever be finished?
+EXCERPT
+Blah blah Waller Creek blah blah...
+BODY
+
+make_post(x, "Life on Sabine Street", <<-EXCERPT, <<-BODY)
+It's like Pooh Corner, except not.
+EXCERPT
+This is about Sabine St, blah blah lorem ipsum dolor...
+BODY
+
+x.change_view("music")
+
+make_post(x, "Remember Modest Mouse?", <<-EXCERPT, <<-BODY)
+They date to the 90s or before. 
+EXCERPT
+But I first heard of them
+in 2005.
+BODY
+
+x.change_view("around_austin")
+

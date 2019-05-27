@@ -34,6 +34,7 @@ def RuneBlog.post_template(title: "No title", date: nil, view: "test_view",
   taglist = ".tags " + tags.join(" ")
 <<-TEXT
 .mixin liveblog
+. ^ get rid of this later
  
 .title #{title}
 .pubdate #{date}

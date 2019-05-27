@@ -111,7 +111,6 @@ module RuneBlog::REPL
     return @out if files.empty?
 
     ret = RubyText.spinner(label: " Publishing... ") do
-STDERR.puts files.inspect
       @blog.view.publisher.publish(files, assets)  # FIXME weird?
     end
     return @out unless ret
@@ -247,7 +246,6 @@ STDERR.puts files.inspect
     file = files.first
     result = edit_file("#{@blog.root}/drafts/#{file}")
     @blog.rebuild_post(file)
-sleep 5
     @out
   end
 

@@ -70,10 +70,11 @@ class RuneBlog::Post
     @blog = RuneBlog.blog || raise(NoBlogAccessor)
   end
 
-  def self.create(title)
+  def self.create(title, teaser = "", body = "")
+# STDERR.puts "-- create: teaser = #{teaser.inspect} body = #{body.inspect}"
     debug "=== Post.create #{title.inspect}   pwd = #{Dir.pwd}"
     post = self.new
-    post.new_metadata(title)
+    post.new_metadata(title.chomp, teaser.chomp, body.chomp)
     post.create_draft
     post.create_post_subtree
     # post.build is not called here! It is called
@@ -81,25 +82,27 @@ class RuneBlog::Post
     post
   end
 
-  def new_metadata(title)
+  def new_metadata(title, teaser = nil, body = nil)
+# STDERR.puts "-- new_meta: teaser = #{teaser.inspect} body = #{body.inspect}"
     verify(title.is_a?(String) => "Title #{title.inspect} is not a string")
     meta = OpenStruct.new
     meta.title = title
-    meta.teaser = "Teaser goes here."
-    meta.body   = "Remainder of post goes here."
+    meta.teaser ||= teaser
+    meta.body   ||= body
+# STDERR.puts "-- new_meta2: teaser = #{meta.teaser.inspect} body = #{meta.body.inspect}"
     meta.pubdate = Time.now.strftime("%Y-%m-%d")
     meta.date = meta.pubdate  # fix later
     meta.views = [@blog.view.to_s]
     meta.tags = []
-    meta.num   = @blog.next_sequence   # ONLY place next_sequence is called!
+    # ONLY place next_sequence is called!
+    meta.num   = @blog.next_sequence
     @blog.make_slug(meta)  # adds to meta
     @meta = meta
   end
 
   def create_draft
+# STDERR.puts "-- create_draft: teaser = #{@meta.teaser.inspect} body = #{@meta.body.inspect}"
     viewhome = @blog.view.publisher.url
-# print "HOME = "
-# p viewhome
     html = RuneBlog.post_template(title: @meta.title, date: @meta.pubdate, 
                view: @meta.view, teaser: @meta.teaser, body: @meta.body,
                views: @meta.views, tags: @meta.tags, home: viewhome)
@@ -124,6 +127,7 @@ class RuneBlog::Post
     debug "=== build"
     views = @meta.views
     text = File.read(@draft)
+STDERR.puts "-- build: draft = #{@draft.inspect}"
     livetext = Livetext.new(STDOUT)
     Livetext.parameters = [@blog, @meta.num, livetext]
     meta = livetext.process_text(text)

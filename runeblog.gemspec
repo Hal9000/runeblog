@@ -25,8 +25,14 @@ spec = Gem::Specification.new do |s|
 
   # Files...
   main = Find.find("bin").to_a  + 
-         Find.find("lib").to_a  +
+         Find.find("lib").to_a  + 
          Find.find("data").to_a
+
+p main
+exit
+  Dir.chdir do 
+    system("tar zcvf standard.tgz standard/")
+  end
 
   misc = %w[./README.lt3 ./README.md ./runeblog.gemspec]
   test = Find.find("test").to_a

@@ -218,7 +218,7 @@ rescue => err
 end
 
 def teaser
-STDERR.puts "--- teaser: pwd = #{Dir.pwd}"
+# STDERR.puts "--- teaser: pwd = #{Dir.pwd}"
   @meta.teaser = _body_text
   _out @meta.teaser + "\n"
   # FIXME
@@ -235,7 +235,7 @@ def finalize
   @meta
 end
  
-Dot = self   # Clunky! for dot commands called from Functions class
+$Dot = self   # Clunky! for dot commands called from Functions class
 
 # Find a better way to do this?
 
@@ -256,7 +256,7 @@ class Livetext::Functions
   def h6(param); "<h6>#{param}</h6>"; end
 
   def hr(param=nil)
-    Dot.hr
+    $Dot.hr
   end
 
   def image(param)

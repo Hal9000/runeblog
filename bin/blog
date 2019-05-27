@@ -12,7 +12,7 @@ include RuneBlog::REPL
 def get_started
   puts
   puts fx(<<-TEXT, :bold)
-  Blog successfully created.
+  Blog repo successfully created.
   You can create views with the command: new view
   Create a post within the current view: new post
   You can't publish until you set up the publish file 
