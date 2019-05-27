@@ -178,8 +178,10 @@ class RuneBlog
 
     view = RuneBlog::View.new(arg)
     self.view = view
-p "---- pwd = #{Dir.pwd}"
-    system("livetext themes/standard/generate.lt3 >generated/blog/index.html 2>generated/blog/index.err")
+    vdir = self.view.dir
+    dir0 = "#{vdir}/themes/standard/blog"
+    dir1 = "#{vdir}/generated/blog"
+    system("livetext #{dir0}/generate.lt3 >#{dir1}/index.html 2>#{dir1}/index.err")
     dump("Initial creation", "last_published")
     Dir.chdir(up)
     @views << view
@@ -269,17 +271,13 @@ p "---- pwd = #{Dir.pwd}"
   end
 
   def generate_index(view)
-# FIXME This is currently very wrong.
-
-#   puts "  generate_index view = #{view.to_s}"
     debug "=== generate_index view = #{view.to_s}"
     raise ArgumentError unless view.is_a?(String) || view.is_a?(RuneBlog::View)
 
     vdir = self.view.dir
-    up = Dir.pwd
-    Dir.chdir(vdir)
-
-    system("livetext themes/standard/generate.lt3 >generated/blog/index.html 2>generated/blog/index.err")
+    dir0 = "#{vdir}/themes/standard/blog"
+    dir1 = "#{vdir}/generated/blog"
+    system("livetext #{dir0}/generate.lt3 >#{dir1}/index.html 2>#{dir1}/index.err")
   rescue => err
     error(err)
     exit

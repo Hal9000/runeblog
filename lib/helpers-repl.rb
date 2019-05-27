@@ -102,7 +102,6 @@ module RuneBlog::REPL
     Regexes.each_pair do |rx, meth|
       m = cmd.match(rx)
       result = m ? m.to_a : nil
-p [result, rx, meth]
       next unless result
       found = meth
       params = m[1]

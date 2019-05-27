@@ -23,6 +23,10 @@ class RuneBlog::View
     @blog.root + "/views/#@name/"
   end
 
+  def local_index
+    dir + "/generated/blog/index.html"
+  end
+
   def index
     dir + "index.html"
   end
@@ -33,7 +37,7 @@ class RuneBlog::View
 
   def publishable_files
     vdir = dir()
-    files = [index()]
+    files = [local_index()]
     others = Dir.entries(vdir).grep(/^\d\d\d\d/).map {|x| "#{vdir}/#{x}" }
     assets = Dir.entries("#{vdir}/assets") - %w[. ..]
     assets.map! {|x| "#{vdir}/assets/#{x}" }

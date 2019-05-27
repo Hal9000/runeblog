@@ -84,7 +84,7 @@ module RuneBlog::REPL
   def cmd_preview(arg, testing = false)
     reset_output
     check_empty(arg)
-    local = @blog.view.index
+    local = @blog.view.local_index
     result = system("open #{local}")
     raise CantOpen(local) unless result
     @out
@@ -111,6 +111,7 @@ module RuneBlog::REPL
     return @out if files.empty?
 
     ret = RubyText.spinner(label: " Publishing... ") do
+STDERR.puts files.inspect
       @blog.view.publisher.publish(files, assets)  # FIXME weird?
     end
     return @out unless ret

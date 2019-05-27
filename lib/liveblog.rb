@@ -218,6 +218,7 @@ rescue => err
 end
 
 def teaser
+STDERR.puts "--- teaser: pwd = #{Dir.pwd}"
   @meta.teaser = _body_text
   _out @meta.teaser + "\n"
   # FIXME

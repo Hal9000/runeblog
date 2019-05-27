@@ -170,10 +170,12 @@ end
 ### 
 
 def _find_recent_posts
-  # .. = templates, ../.. = views/thisview
-  posts = Dir.entries("../..").grep(/^\d\d\d\d/).select {|x| File.directory?(x) }
-  # directories that start with four digits
-  posts = posts.sort {|a, b| b.to_i <=> a.to_i }  # sort descending
+  posts = nil
+  Dir.chdir("../../..") do
+    posts = Dir.entries(".").grep(/^\d\d\d\d/).select {|x| File.directory?(x) }
+    # directories that start with four digits
+    posts = posts.sort {|a, b| b.to_i <=> a.to_i }  # sort descending
+  end
   posts[0..19]  # return 20 at most
 end
 
@@ -186,26 +188,38 @@ def all_teasers
   HTML
   _out open
   # FIXME: Now do the magic...
-# posts = _find_recent_posts
-# wanted = 5  # estimate how many we want?
-# enum = posts.each
-# wanted.times do
-#   postid = enum.next.to_i
-#   _teaser(postid)
-# end
-  40.times { _out "Lots of stuff missing here. " }
+  posts = _find_recent_posts
+STDERR.puts "--- after frp: posts = #{posts.inspect}"
+  wanted = [5, posts.size].min  # estimate how many we want?
+  enum = posts.each
+  wanted.times do
+    postid = enum.next
+STDERR.puts "--- allt: postid = #{postid.inspect}"
+    postid = postid.to_i
+    _teaser(postid)
+  end
+# 40.times { _out "Lots of stuff missing here. " }
   _out close
 end
 
 def _post_lookup(postid)
   # .. = templates, ../.. = views/thisview
-  posts = Dir.entries("../..").grep(/^\d\d\d\d/).select {|x| File.directory?(x) }
+  slug = title = date = teaser_text = nil
+
+  posts = Dir.entries(".").grep(/^\d\d\d\d/).select {|x| File.directory?(x) }
+STDERR.puts "--- entries in #{Dir.pwd} = #{posts.inspect}"
   post = posts.select {|x| x.to_i == postid }
   raise "Error: More than one post #{postid}" if post.size > 1
   dir = post.first
-  teaser_text = File.read("#{post}/teaser.txt")
+STDERR.puts "--- POST = #{post.inspect}"
+STDERR.puts "--- dir = #{dir.inspect}"
+  fname = "#{dir}/teaser.txt"
+STDERR.puts "--- fname = #{fname.inspect}"
+  teaser_text = File.read(fname)
   # FIXME dumb hacks...
-  lines = File.readlines("#{post}/metadata.txt")
+  mdfile = "#{dir}/metadata.txt"
+STDERR.puts "--- mdfile = #{mdfile.inspect}"
+  lines = File.readlines(mdfile)
   title = lines.grep(/title:/).first[7..-1]
   date  = lines.grep(/pubdate:/).first[9..-1]
   slug  = post
@@ -217,14 +231,17 @@ def _interpolate(str, context)   # FIXME move this later
   eval(wrapped, context)
 end
 
-def _teaser(id)
+def _teaser(slug)
+  id = slug.to_i
+  text = nil
   @_post_entry ||= File.read("_postentry.lt3")
-  ids.each do |id|
+  Dir.chdir("../../..") do
+STDERR.puts "--- _teaser read pwd = #{Dir.pwd}"
     title, date, teaser_text = _post_lookup(id)
     url = "#{slug}/index.html"
     text = _interpolate(@_post_entry, binding)
-    _out text
   end
+  _out text
 end
 
 def card_iframe

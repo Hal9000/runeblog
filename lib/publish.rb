@@ -37,6 +37,10 @@ debug "Failed!\n " if ! rc
     rc
   end
 
+# Could not copy 
+#   /Users/Hal/Dropbox/files/runeblog/.blogs/data/views/alpha_view/index.html to 
+#   root@rubyhacker.com:/var/www/testblog/alpha_view
+
   def publish(files, assets=[])
     dir = "#@docroot/#@path"
     view_name = @blog.view.name
