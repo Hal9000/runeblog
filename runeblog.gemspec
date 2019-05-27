@@ -25,19 +25,18 @@ spec = Gem::Specification.new do |s|
 
   # Files...
   main = Find.find("bin").to_a  + 
-         Find.find("lib").to_a  + 
-         Find.find("data").to_a
+         Find.find("lib").to_a
 
-p main
-exit
   Dir.chdir do 
     system("tar zcvf standard.tgz standard/")
   end
 
+  std_theme = "data/standard.tgz"
+
   misc = %w[./README.lt3 ./README.md ./runeblog.gemspec]
   test = Find.find("test").to_a
 
-  s.files       =  main + misc + test
+  s.files       =  main + std_theme + misc + test
   s.homepage    = 'https://github.com/Hal9000/runeblog'
   s.license     = "Ruby"
 end
