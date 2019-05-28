@@ -42,11 +42,12 @@ debug "Failed!\n " if ! rc
 #   root@rubyhacker.com:/var/www/testblog/alpha_view
 
   def publish(files, assets=[])
+STDERR.puts "-- publish: files = #{files.inspect}   assets = #{assets.inspect}"
     dir = "#@docroot/#@path"
     view_name = @blog.view.name
     viewpath = "#{dir}/#{view_name}"
     result = system!("ssh #@user@#@server -x mkdir -p #{viewpath}") 
-#   result = system!("ssh #@user@#@server -x mkdir -p #{dir}/assets") 
+    result = system!("ssh #@user@#@server -x mkdir -p #{viewpath}/assets") 
     files.each do |file|
       dest = "#@user@#@server:#{dir}/#{view_name}"
       file.gsub!(/\/\//, "/")  # weird... :-/

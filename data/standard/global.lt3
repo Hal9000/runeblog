@@ -1,0 +1,7 @@
+.set author="Hal Fulton"
+.set title="My Blog (and Welcome To It)"
+.set desc="All the stuff you never needed to know"
+.set host=localhost:4000//
+
+.  Maybe move publish info here?
+

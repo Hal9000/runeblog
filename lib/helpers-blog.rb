@@ -3,16 +3,17 @@ require 'runeblog_version'
 module RuneBlog::Helpers
 
   def read_config(file, *syms)
-    verify(File.exist?(file) => "File #{file} doesn't exist")
+#   verify(File.exist?(file) => "File #{file} doesn't exist")
     lines = File.readlines(file).map(&:chomp)
-    obj = OpenStruct.new
+    obj = ::OpenStruct.new
     lines.each do |line|
       next if line == "\n" || line[0] == "#"
-      key, val = line.split(" ", 2)
-      key = key[0..-2] # remove colon
+      key, val = line.split(/: +/, 2)
+# STDERR.puts [key, val].inspect
       obj.send(key+"=", val)
     end
     return obj if syms.empty?
+
     vals = []
     if syms.empty?
       vals = obj.to_hash.values
@@ -30,6 +31,7 @@ module RuneBlog::Helpers
   def try_read_config(file, hash)
     return hash.values unless File.exist?(file)
     vals = read_config(file, *hash.keys)
+# STDERR.puts vals.inspect
     vals
   end
 

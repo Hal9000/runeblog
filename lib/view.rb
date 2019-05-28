@@ -24,7 +24,7 @@ class RuneBlog::View
   end
 
   def local_index
-    dir + "/generated/blog/index.html"
+    dir + "/generated/index.html"
   end
 
   def index
@@ -38,9 +38,18 @@ class RuneBlog::View
   def publishable_files
     vdir = dir()
     files = [local_index()]
-    others = Dir.entries(vdir).grep(/^\d\d\d\d/).map {|x| "#{vdir}/#{x}" }
+    others = Dir.entries(vdir + "/generated").grep(/^\d\d\d\d/).map {|x| "#{vdir}/generated/#{x}" }
+STDERR.puts "-- publishable:  others = #{others.inspect}"
+    deep_assets = Dir["#{vdir}/themes/standard/assets/*"]
+# Do this at view creation
+    deep_assets.each do |file| 
+      cmd = "cp #{file} #{vdir}/assets"
+STDERR.puts "-- cmd = #{cmd}"
+      system(cmd)
+    end
     assets = Dir.entries("#{vdir}/assets") - %w[. ..]
     assets.map! {|x| "#{vdir}/assets/#{x}" }
+STDERR.puts "-- publishable: assets = #{assets.inspect}"
     assets.reject! {|x| File.directory?(x) }
 #   assets.reject! {|x| ! recent?(x) }
     files = files + others

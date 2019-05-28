@@ -4,44 +4,6 @@ class Livetext::Functions
     ::Livetext::Vars[name] || "[:#{name} is undefined]"
   end
 
-#   def svg
-#     file = self.class.param
-#     File.read(file+".svg")
-#   end
-# 
-#   def checkbox
-#     id = self.class.param
-#     %[<input type="checkbox" id="#{id}" class="#{id}">]
-#   end
-# 
-#   def wrap
-#     stuff = self.class.param
-#     stuff = FormatLine.var_func_parse(stuff)
-#     %[<div class="wrapper">\n#{stuff}\n</div>]
-#   end
-# 
-#   def wrap4
-#     string = self.class.param
-#     string = FormatLine.var_func_parse(string)
-#     params = string.split("||", 5)
-#     contents, aclass, rel, href, cdata = *params
-#     %[<div class="wrapper"><a class="#{aclass}" rel="#{rel}" href="#{href}">#{cdata}</a>\n] + contents + "\n</div>"
-#   end
-# 
-#   def h2
-#     id, cdata = self.class.param.split("||", 2)
-#     %[<h2 class="#{id}">#{cdata}</h2>]
-#   end
-# 
-#   def p 
-#     text, link = self.class.param.split("||", 2)
-#     %[<p class="rss-subscribe">#{text}\n #{link}</p>]
-#   end
-# 
-#   def divh
-#     head, tag, sub = self.class.param.split("||", 3)
-#     %[<div class="home">\n #{head}\n #{tag}\n #{sub}\n </div>]
-#   end
 
   def link
     file, cdata = self.class.param.split("||", 2)
@@ -230,15 +192,19 @@ def _teaser(slug)
   id = slug.to_i
   text = nil
   @_post_entry ||= File.read("_postentry.lt3")
-STDERR.puts "-- _teaser: postentry = #{@_post_entry.inspect}"
+  slug = title = date = teaser_text = nil
   Dir.chdir("../../..") do
-# STDERR.puts "--- _teaser read pwd = #{Dir.pwd}"
     slug, title, date, teaser_text = _post_lookup(id)
-STDERR.puts "--- _teaser looked up: #{[slug, title, date, teaser_text].inspect}"
-    url = "#{slug}/index.html"
-    text = _interpolate(@_post_entry, binding)
-STDERR.puts "-- _teaser: TEXT = #{text.inspect}"
   end
+# STDERR.puts "--- _teaser looked up: #{[slug, title, date, teaser_text].inspect}"
+  vdir = File.expand_path("../../..")
+  url = "#{vdir}/#{slug}.html"
+STDERR.puts "Making url... pwd = #{Dir.pwd}    url = #{url}"
+# STDERR.puts :_teas01
+    text = _interpolate(@_post_entry, binding)
+# STDERR.puts "Hmm, pwd = #{Dir.pwd}"
+    File.write("../../../generated/#{slug}.html", text)
+# STDERR.puts "-- _teaser: TEXT = #{text.inspect}"
   _out text
 end
 

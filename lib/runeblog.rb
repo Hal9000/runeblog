@@ -166,11 +166,12 @@ class RuneBlog
     Dir.chdir(vdir)
     x = RuneBlog::Default
     create_dir('themes')
-#   create_dir("local")
     create_dir("generated")
     create_dir('assets')
 
     Dir.chdir("themes") { system("tar zxvf #{GemData}/standard.tgz 2>/dev/null") }
+    system("cp themes/standard/blog/assets/* assets/")
+    
     pub = "user: xxx\nserver: xxx\ndocroot: xxx\npath: xxx\nproto: xxx\n"
     dump(pub, "publish")
 
@@ -180,7 +181,7 @@ class RuneBlog
     self.view = view
     vdir = self.view.dir
     dir0 = "#{vdir}/themes/standard/blog"
-    dir1 = "#{vdir}/generated/blog"
+    dir1 = "#{vdir}/generated"
     system("livetext #{dir0}/generate.lt3 >#{dir1}/index.html 2>#{dir1}/index.err")
     dump("Initial creation", "last_published")
     Dir.chdir(up)
@@ -277,7 +278,7 @@ class RuneBlog
 
     vdir = self.view.dir
     dir0 = "#{vdir}/themes/standard/blog"
-    dir1 = "#{vdir}/generated/blog"
+    dir1 = "#{vdir}/generated"
     system("livetext #{dir0}/generate.lt3 >#{dir1}/index.html 2>#{dir1}/index.err")
   rescue => err
     error(err)

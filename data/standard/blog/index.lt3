@@ -1,0 +1,11 @@
+.main
+
+. Should sidebar just stick items on its command line?
+
+.sidebar
+AD
+NEWS
+CALENDAR
+TAG-CLOUD
+.end
+

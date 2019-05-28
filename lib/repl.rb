@@ -91,6 +91,7 @@ module RuneBlog::REPL
   end
 
   def cmd_publish(arg, testing = false)
+# Future Hal says please refactor this
     puts unless testing
     reset_output
     check_empty(arg)
@@ -99,6 +100,7 @@ module RuneBlog::REPL
       output! "Can't publish without entries in #{@blog.view.name}/publish"
       return @out
     end
+
     # Need to check dirty/clean status first
     dirty, all, assets = @blog.view.publishable_files
     files = dirty
@@ -114,6 +116,7 @@ module RuneBlog::REPL
       @blog.view.publisher.publish(files, assets)  # FIXME weird?
     end
     return @out unless ret
+
     vdir = @blog.view.dir
     dump("fix this later", "#{vdir}/last_published")
     if ! testing || ! ret

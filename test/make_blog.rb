@@ -39,7 +39,6 @@ x.create_view("around_austin")   # FIXME remember view title!
 if File.exist?("publish")
   system("cp publish .blogs/data/views/around_austin/publish")
 end
-system("cp test/fakeimage.jpg .blogs/data/views/around_austin/assets/")
 
 x.create_view("computing")
 
