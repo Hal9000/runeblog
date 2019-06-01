@@ -1,12 +1,23 @@
-.post-title a {
-  color: #010101;
-}
-.post-title a:hover {
-  text-decoration: none;
-}
-
 .post-date {
   color: #9a9a9a;
   font-size: 12px;
   display: block;
+# float: left;
 }
+
+.post-title-box {
+# float: right;
+  display: block;
+}
+
+.post-title-text a {
+  color: #0101a1;
+  font-size: 20 
+# float: right;
+  display: block;
+}
+
+.post-title-text a:hover {
+  text-decoration: none;
+}
+

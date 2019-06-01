@@ -31,9 +31,9 @@ def head
                "linkc"          => %[<link rel="canonical" href="#{_var(:host)}">],
                "og:url"         => %[<meta property="og:url" content="#{_var(:host)}">],
                "og:site_name"   => %[<meta property="og:site_name" content="#{_var(:title)}">],
-               "style"          => %[<link rel="stylesheet" href="('/assets/application.css')">],
+               "style"          => %[<link rel="stylesheet" href="../assets/application.css">],
                "feed"           => %[<link type="application/atom+xml" rel="alternate" href="#{_var(:host)}/feed.xml" title="#{_var(:title)}">],
-               "favicon"        => %[<link rel="shortcut icon" type="image/x-icon" href="assets/favicon.ico">\n <link rel="apple-touch-icon" href="assets/favicon.ico">]
+               "favicon"        => %[<link rel="shortcut icon" type="image/x-icon" href="../assets/favicon.ico">\n <link rel="apple-touch-icon" href="../assets/favicon.ico">]
              }
   result = {}
   lines = _body
@@ -201,6 +201,8 @@ def _teaser(slug)
   url = "#{vdir}/#{slug}.html"
 STDERR.puts "Making url... pwd = #{Dir.pwd}    url = #{url}"
 # STDERR.puts :_teas01
+    date = Date.parse(date)
+    date = date.strftime("%B %e<br>%Y")
     text = _interpolate(@_post_entry, binding)
 # STDERR.puts "Hmm, pwd = #{Dir.pwd}"
     File.write("../../../generated/#{slug}.html", text)

@@ -1,5 +1,6 @@
 require 'helpers-blog'
-require 'runeblog'
+# require 'runeblog'
+require 'global'
 
 class RuneBlog::Publishing
   attr_reader :user, :server, :docroot, :path
@@ -32,17 +33,10 @@ class RuneBlog::Publishing
 
   def system!(str)
     rc = system(str)
-debug "Running: #{str}"
-debug "Failed!\n " if ! rc
     rc
   end
 
-# Could not copy 
-#   /Users/Hal/Dropbox/files/runeblog/.blogs/data/views/alpha_view/index.html to 
-#   root@rubyhacker.com:/var/www/testblog/alpha_view
-
   def publish(files, assets=[])
-STDERR.puts "-- publish: files = #{files.inspect}   assets = #{assets.inspect}"
     dir = "#@docroot/#@path"
     view_name = @blog.view.name
     viewpath = "#{dir}/#{view_name}"

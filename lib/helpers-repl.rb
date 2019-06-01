@@ -135,6 +135,7 @@ module RuneBlog::REPL
   end
 
   def flush_output(initial = "")
+    CantOpen
     @out ||= ""
     puts @out
     reset_output

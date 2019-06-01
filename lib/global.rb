@@ -17,6 +17,8 @@ class RuneBlog
   end
 end
 
+# Refactor, move stuff elsewhere?
+
 def make_exception(sym, str)
   return if Object.constants.include?(sym)
   Object.const_set(sym, StandardError.dup)

@@ -1,4 +1,5 @@
-require 'runeblog'
+# require 'runeblog'
+require 'global'
 require 'ostruct'
 require 'helpers-repl'  # FIXME structure
 
@@ -400,3 +401,4 @@ module RuneBlog::REPL
   end
 
 end
+

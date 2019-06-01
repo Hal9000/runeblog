@@ -26,6 +26,8 @@ class RuneBlog
   make_exception(:EditorProblem,     "Could not edit $1")
   make_exception(:NoSuchView,        "No such view: $1")
   make_exception(:LivetextError,     "Livetext#process_file returned nil for $1")
+  make_exception(:NoBlogAccessor, "Runeblog.blog is not set")
+
   
   class << self
     attr_accessor :blog
@@ -169,7 +171,7 @@ class RuneBlog
     create_dir("generated")
     create_dir('assets')
 
-    Dir.chdir("themes") { system("tar zxvf #{GemData}/standard.tgz 2>/dev/null") }
+    Dir.chdir("themes") { system("tar zxvf #{GemData}/standard.tgz >/dev/null 2>&1") }
     system("cp themes/standard/blog/assets/* assets/")
     
     pub = "user: xxx\nserver: xxx\ndocroot: xxx\npath: xxx\nproto: xxx\n"
@@ -182,7 +184,7 @@ class RuneBlog
     vdir = self.view.dir
     dir0 = "#{vdir}/themes/standard/blog"
     dir1 = "#{vdir}/generated"
-    system("livetext #{dir0}/generate.lt3 >#{dir1}/index.html 2>#{dir1}/index.err")
+    system("livetext #{dir0}/generate.lt3 >#{dir1}/index.html 2>#{dir1}/errors.txt")
     dump("Initial creation", "last_published")
     Dir.chdir(up)
     @views << view
@@ -279,7 +281,7 @@ class RuneBlog
     vdir = self.view.dir
     dir0 = "#{vdir}/themes/standard/blog"
     dir1 = "#{vdir}/generated"
-    system("livetext #{dir0}/generate.lt3 >#{dir1}/index.html 2>#{dir1}/index.err")
+    system("livetext #{dir0}/generate.lt3 >#{dir1}/index.html 2>#{dir1}/errors.txt")
   rescue => err
     error(err)
     exit

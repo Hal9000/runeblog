@@ -1,21 +1,16 @@
 .mixin experimental
-. ^ "experimental" will go into "liveblog" later
 
 <html>
   <!-- Editing this file is not recommended.   -->
   <!-- It was generated from $File on $$date.  -->
 
-
 .seek global.lt3
-.     ^ BUG here
 .inherit head.lt3
   <body>
     $.seek blog/navbar.lt3
-.          ^ BUG here
     <div class="content container-fluid mt-4">
       <div class="row">
         $.include blog/index.lt3
-.                 ^ BUG here
       </div>
     </div>
   </body>

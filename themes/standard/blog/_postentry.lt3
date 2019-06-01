@@ -1,8 +1,0 @@
-<div class="post">
-  <h1 class="post-title"> <a href="#{url}">#{title}</a> </h1>
-  <span class="post-date mt-1 mb-1">#{date}</span>
-  <p>#{teaser_text}</p>
-  <p><a class="btn btn-light" href="#{url}">Keep Reading</a></p>
-  <hr>
-</div>
-

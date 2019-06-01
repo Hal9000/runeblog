@@ -5,6 +5,7 @@ ver = major.to_i*10 + minor.to_i
 abort "Need Ruby 2.4 or greater" unless ver >= 24
 
 require 'global'
+require 'runeblog'
 require 'repl'
 
 def getch
