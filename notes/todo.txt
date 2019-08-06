@@ -1,3 +1,4 @@
+   - VIEW/posts dir
    - make sure posts go into 'generated'
    - alternate config file format
    - get rid of 'generated/blog'?

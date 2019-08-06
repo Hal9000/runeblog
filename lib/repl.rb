@@ -39,9 +39,10 @@ module RuneBlog::REPL
   def cmd_config(arg, testing = false)
     check_empty(arg)
     dir = @blog.view.dir
+# FIXME bad path
     items = ["publish", 
              "themes/standard/blogview.lt3", 
-             "themes/standard/post/index.lt3"] 
+             "themes/standard/post-index.lt3"] 
     num, fname = STDSCR.menu(title: "Edit file:", items: items)
     edit_file("#{dir}/#{fname}")
   end
@@ -248,8 +249,28 @@ module RuneBlog::REPL
     end
 
     file = files.first
-    result = edit_file("#{@blog.root}/drafts/#{file}")
-    @blog.rebuild_post(file)
+    draft = "#{@blog.root}/drafts/#{file}"
+    result = edit_file(draft)
+
+STDERR.puts "Calling gp: pwd = #{Dir.pwd}  draft = #{draft}"
+puts
+
+    @blog.generate_post(draft)
+return
+
+# NEW code...
+    view = @blog.view
+    # livetext source > naked post 9999-slug (dir?)
+    draft = @blog.root + "/drafts/#{file}"
+#   theme = "#{@blog.view.dir}/themes/standard"
+#   src = "#{theme}/post-index.lt3"
+    
+    system("cp #{draft} #{src}") # terms are confusing
+    file2 = file.sub(/.lt3$/, ".html")
+    Dir.chdir(theme) do 
+      system("livetext index.lt3 >#{file2}")
+    end
+#   @blog.rebuild_post(file)
     @out
   end
 

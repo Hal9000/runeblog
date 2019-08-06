@@ -1,15 +1,31 @@
 require 'runeblog_version'
 
+# Home = Dir.pwd # unless Home
+
 module RuneBlog::Helpers
 
+  def get_root
+    if $_blog
+      if $_blog.root
+        puts "0. Returned: #{$_blog.root}/"
+        return $_blog.root + "/"
+      else
+        puts "1. Returned: ./"
+        return "./"
+      end
+    else
+      puts "2. Returned: ./"
+      return "./"
+    end
+  end
+
   def read_config(file, *syms)
-#   verify(File.exist?(file) => "File #{file} doesn't exist")
+# puts "dir   = #{Dir.pwd}"
     lines = File.readlines(file).map(&:chomp)
     obj = ::OpenStruct.new
     lines.each do |line|
       next if line == "\n" || line[0] == "#"
       key, val = line.split(/: +/, 2)
-# STDERR.puts [key, val].inspect
       obj.send(key+"=", val)
     end
     return obj if syms.empty?
@@ -37,6 +53,8 @@ module RuneBlog::Helpers
 
   def write_config(obj, file)
     hash = obj.to_h
+# Dir.chdir(::Home)
+# puts "--- wc: pwd = #{Dir.pwd}"
     File.open(file, "w") do |f| 
       hash.each_pair do |key, val|
         f.puts "#{key}: #{val}"
@@ -45,11 +63,13 @@ module RuneBlog::Helpers
   end
 
   def get_views   # read from filesystem
-    verify(@root => "#@root is nil",
-           Dir.exist?(@root) => "#@root doesn't exist",
-           Dir.exist?("#@root/views") => "#@root/views doesn't exist")
-    dirs = subdirs("#@root/views/").sort
-    dirs.map {|name| RuneBlog::View.new(name) }
+#   Dir.chdir(::Home) do
+      verify(@root => "#@root is nil",
+             Dir.exist?(@root) => "#@root doesn't exist",
+             Dir.exist?("#@root/views") => "#@root/views doesn't exist")
+      dirs = subdirs("#@root/views/").sort
+      dirs.map {|name| RuneBlog::View.new(name) }
+#   end
   end
 
   def new_dotfile(root: "./.blogs/data", current_view: "no_default", editor: "vi")
@@ -57,7 +77,7 @@ module RuneBlog::Helpers
     Dir.mkdir(".blogs")
     x = OpenStruct.new
     x.root, x.current_view, x.editor = root, current_view, editor
-    write_config(x, RuneBlog::ConfigFile)
+    write_config(x, ".blogs/" + RuneBlog::ConfigFile)
   end
 
   def new_sequence

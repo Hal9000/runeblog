@@ -1,3 +1,6 @@
+require 'liveblog'
+require 'runeblog'
+
 class Livetext::Functions
 
   def _var(name)
@@ -14,16 +17,18 @@ end
 
 ###############
 
+
 def _var(name)  # FIXME later
   ::Livetext::Vars[name] || "[:#{name} is undefined]"
 end
 
 def head
+  # Depends on vars: title, desc, host
   defaults = {}
   defaults = { "charset"        => %[<meta charset="utf-8">],
                "http-equiv"     => %[<meta http-equiv="X-UA-Compatible" content="IE=edge">],
                "title"          => %[<title>\n  #{_var(:title)} | #{_var(:desc)}\n  </title>],
-               "generator"      => %[<meta name="generator" content="Runeblog v #{0.1}">],  # FIXME
+               "generator"      => %[<meta name="generator" content="Runeblog v #@version">],
                "og:title"       => %[<meta property="og:title" content="#{_var(:title)}">],
                "og:locale"      => %[<meta property="og:locale" content="en_US">],
                "description"    => %[<meta name="description" content="#{_var(:desc)}">],
@@ -76,7 +81,7 @@ def meta
       a2 = enum.next
       str << %["#{a2}"]
     else
-      puts "=== meta error?"
+      STDERR.puts "=== meta error?"
     end
     arg = enum.next
   end
@@ -86,7 +91,14 @@ end
 
 def main
   _out %[<div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">]
-  all_teasers    # FIXME does nothing yet
+  which = _args[0]
+  case which
+    when "recent_posts"
+      all_teasers    # FIXME does nothing yet
+    when "post"
+      self.data = "post-index.lt3"
+      _include 
+  end
   _out %[</div>]
 end
 
@@ -94,6 +106,17 @@ def sidebar
   _out %[<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">]
   _body do |line|
     tag = line.chomp.strip
+    self.data = "sidebar/#{tag.downcase}.lt3"
+    _include 
+  end
+  _out %[</div>]
+end
+
+def sidebar2
+  _out %[<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">]
+  _args do |line|
+    tag = line.chomp.strip
+STDERR.puts "including #{tag} in sidebar"
     self.data = "sidebar/#{tag.downcase}.lt3"
     _include 
   end
@@ -133,11 +156,16 @@ end
 
 def _find_recent_posts
   posts = nil
-  Dir.chdir("../../..") do
-    posts = Dir.entries(".").grep(/^\d\d\d\d/).select {|x| File.directory?(x) }
-    # directories that start with four digits
-    posts = posts.sort {|a, b| b.to_i <=> a.to_i }  # sort descending
-  end
+  dir_posts = @vdir + "posts"
+STDERR.puts "---- frp looks in #{dir_posts.inspect}"
+  entries = Dir.entries(dir_posts)
+STDERR.puts "---- frp entries =  #{entries.inspect}"
+  posts = entries.grep(/^\d\d\d\d/).map {|x| dir_posts + "/" + x }
+  posts.select! {|x| File.directory?(x) }
+STDERR.puts "---- frp found #{posts.inspect}"
+  # directories that start with four digits
+  posts = posts.sort {|a, b| b.to_i <=> a.to_i }  # sort descending
+STDERR.puts "---- frp returns #{posts[0..19].inspect}"
   posts[0..19]  # return 20 at most
 end
 
@@ -151,16 +179,14 @@ def all_teasers
   _out open
   # FIXME: Now do the magic...
   posts = _find_recent_posts
-# STDERR.puts "--- after frp: posts = #{posts.inspect}"
   wanted = [5, posts.size].min  # estimate how many we want?
   enum = posts.each
   wanted.times do
-    postid = enum.next
-# STDERR.puts "--- allt: postid = #{postid.inspect}"
+    postid = File.basename(enum.next)
+STDERR.puts "---- all/teasers loop: postid = #{postid.inspect}"
     postid = postid.to_i
     _teaser(postid)
   end
-# 40.times { _out "Lots of stuff missing here. " }
   _out close
 end
 
@@ -168,8 +194,13 @@ def _post_lookup(postid)
   # .. = templates, ../.. = views/thisview
   slug = title = date = teaser_text = nil
 
-  posts = Dir.entries(".").grep(/^\d\d\d\d/).select {|x| File.directory?(x) }
-  post = posts.select {|x| x.to_i == postid }
+  dir_posts = @vdir + "posts"
+  posts = Dir.entries(dir_posts).grep(/^\d\d\d\d/).map {|x| dir_posts + "/" + x }
+  posts.select! {|x| File.directory?(x) }
+
+  post = posts.select {|x| File.basename(x).to_i == postid }
+STDERR.puts "===== postid sought = #{postid.inspect}"
+STDERR.puts "===== _pl: post = #{post.inspect}"
   raise "Error: More than one post #{postid}" if post.size > 1
   postdir = post.first
   fname = "#{postdir}/teaser.txt"
@@ -189,24 +220,22 @@ def _interpolate(str, context)   # FIXME move this later
 end
 
 def _teaser(slug)
+STDERR.puts slug.inspect
   id = slug.to_i
   text = nil
-  @_post_entry ||= File.read("_postentry.lt3")
+  post_entry_name = @theme + "blog/_postentry.lt3"
+STDERR.puts "============================"
+STDERR.puts post_entry_name.inspect
+  @_post_entry ||= File.read(post_entry_name)
   slug = title = date = teaser_text = nil
-  Dir.chdir("../../..") do
-    slug, title, date, teaser_text = _post_lookup(id)
-  end
-# STDERR.puts "--- _teaser looked up: #{[slug, title, date, teaser_text].inspect}"
-  vdir = File.expand_path("../../..")
-  url = "#{vdir}/#{slug}.html"
+  slug, title, date, teaser_text = _post_lookup(id)
+  # vdir = File.expand_path("../../..")
+  url = "#@vdir/#{slug}.html"
 STDERR.puts "Making url... pwd = #{Dir.pwd}    url = #{url}"
-# STDERR.puts :_teas01
     date = Date.parse(date)
     date = date.strftime("%B %e<br>%Y")
     text = _interpolate(@_post_entry, binding)
-# STDERR.puts "Hmm, pwd = #{Dir.pwd}"
-    File.write("../../../generated/#{slug}.html", text)
-# STDERR.puts "-- _teaser: TEXT = #{text.inspect}"
+#   File.write("../../../generated/#{slug}.html", text)
   _out text
 end
 
@@ -320,3 +349,10 @@ def navbar
   _out close
 end
 
+def init_experimental
+  @blog = RuneBlog.new
+  @version = RuneBlog::VERSION
+  @view = @blog.view
+  @vdir = @view.dir
+  @theme = @vdir + "/themes/standard/"
+end

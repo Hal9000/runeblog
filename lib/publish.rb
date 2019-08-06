@@ -1,4 +1,4 @@
-require 'helpers-blog'
+# require 'helpers-blog'
 # require 'runeblog'
 require 'global'
 

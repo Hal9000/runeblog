@@ -1,4 +1,4 @@
-require 'helpers-blog'
+# require 'helpers-blog'
 # require 'runeblog'
 require 'global'
 
@@ -14,7 +14,7 @@ class RuneBlog::View
     @name = name
     @can_publish = false
     pub_file = @blog.root + "/views/#@name/publish"
-    unless File.size(pub_file) == 0
+    if File.exist?(pub_file) && File.size(pub_file) != 0
       @publisher = RuneBlog::Publishing.new(read_config(pub_file))
       @can_publish = true
     end
@@ -40,6 +40,7 @@ class RuneBlog::View
     vdir = dir()
     files = [local_index()]
     others = Dir.entries(vdir + "/generated").grep(/^\d\d\d\d/).map {|x| "#{vdir}/generated/#{x}" }
+abort "FIXME... publishable_files"
     deep_assets = Dir["#{vdir}/themes/standard/assets/*"]
     deep_assets.each do |file|   # Do this at view creation
       cmd = "cp #{file} #{vdir}/assets"

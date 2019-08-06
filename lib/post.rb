@@ -1,10 +1,12 @@
-require 'helpers-blog'
-# require 'runeblog'
+# require 'helpers-blog'
+require 'runeblog'
 require 'global'
 
 class RuneBlog::Post
 
   attr_reader :num, :title, :date, :views, :num, :slug
+
+  attr_accessor :meta, :blog, :draft
 
   include RuneBlog::Helpers
 
@@ -15,6 +17,7 @@ class RuneBlog::Post
   end
   
   def self.load(post)
+    raise "Doesn't work right now"
     raise NoBlogAccessor if RuneBlog.blog.nil?
     # "post" is a slug
     pdir = RuneBlog.blog.view.dir + "/" + post
@@ -22,8 +25,8 @@ class RuneBlog::Post
     meta = nil
     Dir.chdir(pdir) do
       verify(File.exist?("metadata.txt") => "metadata.txt not found",
-             File.exist?("teaser.txt") => "teaser.txt not found",
-             File.exist?("body.txt") => "body.txt not found")
+             File.exist?("teaser.txt") => "teaser.txt not found")
+#            File.exist?("body.txt") => "body.txt not found")
       meta = read_config("metadata.txt")
       verify(meta.date  => "meta.date is nil",
              meta.views => "meta.views is nil",
@@ -32,26 +35,20 @@ class RuneBlog::Post
       meta.views = meta.views.split
       meta.tags = meta.tags.split
       meta.teaser = File.read("teaser.txt")
-      meta.body = File.read("body.txt")
+#     meta.body = File.read("body.txt")
     end
     meta
   end
 
-  def create_post_subtree(viewname = nil) 
-    # FIXME Doesn't really do anything - refactor
-    debug "=== create_post_subtree #{viewname.inspect}  pwd = #{Dir.pwd}"
-    # We are INSIDE views/myview/000n-mytitle dir now - FIXME later? how did that happen?
-    create_dir("assets")
-  end
-
-  def write_metadata(meta)
+  def write_metadata(meta)   # FIXME ???
     debug "=== write_metadata:"
     debug "-----\n#{meta.inspect}\n-----"
     fname2 = "metadata.txt"
     hash = meta.to_h
 
     File.write("teaser.txt", hash[:teaser])
-    File.write("body.txt", hash[:body])
+# STDERR.puts ">>>> #{__method__}: writing #{@live.body.size} bytes to #{Dir.pwd}/body.txt"
+#     File.write("body.txt", hash[:body])
     hash.delete(:teaser)
     hash.delete(:body)
 
@@ -67,48 +64,36 @@ class RuneBlog::Post
 
   def initialize
     @blog = RuneBlog.blog || raise(NoBlogAccessor)
+    @meta = OpenStruct.new
   end
 
-  def self.create(title, teaser = "", body = "")
-    debug "=== Post.create #{title.inspect}   pwd = #{Dir.pwd}"
+  def self.create(title:, teaser:, body:, pubdate: Time.now.strftime("%Y-%m-%d"),
+                  other_views:[])
     post = self.new
-    post.new_metadata(title.chomp, teaser.chomp, body.chomp)
-    post.create_draft
-    post.create_post_subtree
-    # post.build is not called here! It is called
-    # in runeblog.rb:create_new_post AFTER post.edit
-    post
-  end
-
-  def new_metadata(title, teaser = nil, body = nil)
-    verify(title.is_a?(String) => "Title #{title.inspect} is not a string")
-    meta = OpenStruct.new
-    meta.title = title
-    meta.teaser ||= teaser
-    meta.body   ||= body
-    meta.pubdate = Time.now.strftime("%Y-%m-%d")
-    meta.date = meta.pubdate  # fix later
-    meta.views = [@blog.view.to_s]
-    meta.tags = []
     # ONLY place next_sequence is called!
-    meta.num   = @blog.next_sequence
-    @blog.make_slug(meta)  # adds to meta
-    @meta = meta
-  end
+    num = post.meta.num   = post.blog.next_sequence
 
-  def create_draft
-# FIXME obsolete
-# STDERR.puts "-- create_draft: teaser = #{@meta.teaser.inspect} body = #{@meta.body.inspect}"
-    viewhome = @blog.view.publisher.url
-    html = RuneBlog.post_template(title: @meta.title, date: @meta.pubdate, 
-               view: @meta.view, teaser: @meta.teaser, body: @meta.body,
-               views: @meta.views, tags: @meta.tags, home: viewhome)
-    srcdir = "#{@blog.root}/drafts/"
+    # new_metadata
+    post.meta.title, post.meta.teaser, post.meta.body, post.meta.pubdate = 
+      title, teaser, body, pubdate
+    post.meta.views = [post.blog.view.to_s] + other_views
+    post.meta.tags = []
+    post.blog.make_slug(post.meta)  # adds to meta
+
+    # create_draft
+    viewhome = post.blog.view.publisher.url
+    meta = post.meta
+    text = RuneBlog.post_template(num: meta.num, title: meta.title, date: meta.pubdate, 
+               view: meta.view, teaser: meta.teaser, body: meta.body,
+               views: meta.views, tags: meta.tags, home: viewhome)
+    srcdir = "#{post.blog.root}/drafts/"
+    vpdir = "#{post.blog.root}/drafts/"
     verify(Dir.exist?(srcdir) => "#{srcdir} not found",
-           @meta.slug.is_a?(String) => "slug #{@meta.slug.inspect} is invalid")
-    fname  = @meta.slug + ".lt3"
-    @draft = srcdir + fname
-    dump(html, @draft)
+           meta.slug.is_a?(String) => "slug #{meta.slug.inspect} is invalid")
+    fname  = meta.slug + ".lt3"
+    post.draft = srcdir + fname
+    dump(text, post.draft)
+    return post
   end
 
   def edit
@@ -120,32 +105,31 @@ class RuneBlog::Post
     error(err)
   end 
 
-  def build
-    debug "=== build"
-    views = @meta.views
+  def build   # THIS CODE WILL GO AWAY
+    post = self
+    views = post.meta.views
     text = File.read(@draft)
-# STDERR.puts "-- build: draft = #{@draft.inspect}"
-    livetext = Livetext.new(STDOUT)
-    Livetext.parameters = [@blog, @meta.num, livetext]
-    meta = livetext.process_text(text)
-    raise RuneBlog::LivetextError(@draft) if meta.nil?
 
-    meta.num = File.basename(@draft).to_i
-    # FIXME what if title changes? slug should change?
-    meta.views = views  # FIXME
+@blog.generate_post(@draft)
+return
 
-    meta.views.each do |view_name|   
+STDERR.puts "-- Post#build starts in #{Dir.pwd} ..."
+
+    @meta.views.each do |view_name|   
       # Create dir using slug (index.html, metadata?)
-      vdir = "#{@blog.root}/views/#{view_name}/"
-      dir = vdir + meta.slug + "/"
-      create_dir(dir) unless Dir.exist?(dir)
-      Dir.chdir(dir) do
-        create_post_subtree(view_name)  # unless existing??
-        system("cp body.txt index.html")
-        @blog.generate_index(view_name)
+      dir = "#{@blog.root}/views/#{view_name}/posts/"
+      pdir = dir + meta.slug + "/"
+      create_dir(pdir) unless Dir.exist?(pdir)
+      Dir.chdir(pdir) do
+        title_name  = pdir + (meta.slug + ".lt3").sub(/^\d{4}-/, "")
+        dump(text, title_name)
+        cmd = "livetext #{title_name} >#{title_name.sub(/.lt3$/, ".html")}"
+STDERR.puts "---  In #{pdir}"
+STDERR.puts "---  cmd = #{cmd}\n "
+        system(cmd)
       end
     end
-    meta
+    @meta
   rescue => err
     p err
     puts err.backtrace.join("\n")
