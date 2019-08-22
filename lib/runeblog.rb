@@ -1,4 +1,3 @@
-#equire 'find'
 require 'livetext'
 
 require 'runeblog_version'
@@ -9,8 +8,6 @@ require 'view'
 require 'publish'
 require 'post'
 
-# ::Home = Dir.pwd unless defined?(::Home)
-
 ###
 
 class RuneBlog
@@ -18,8 +15,6 @@ class RuneBlog
   DotDir     = ".blogs"
   ConfigFile = "config"
   GemData    = RuneBlog::Path + "/../data"
-
-# ::Home     = Dir.pwd
 
   make_exception(:FileNotFound,      "File $1 was not found")
   make_exception(:BlogRepoAlreadyExists, "Blog repo $1 already exists")
@@ -51,7 +46,6 @@ class RuneBlog
     raise BlogRepoAlreadyExists if Dir.exist?(root_dir)
     new_dotfile(root: root_dir, current_view: first_view)
     create_dir(dir)
-# New code goes here! 
     Dir.chdir(dir) do
       create_dir("drafts")
       create_dir("views")
@@ -66,8 +60,7 @@ class RuneBlog
   end
 
   def initialize(top = true)   # at top? always assumes existing blog
-    # Crude - FIXME later - 
-    # What views are there? Publishing, etc.
+    # Crude - FIXME later -  # What views are there? Publishing, etc.
     self.class.blog = self   # Weird. Like a singleton - dumbass circular dependency?
     $_blog = self            # Dumber still?
     dir = ""
@@ -78,11 +71,11 @@ class RuneBlog
     file = dir.empty? ? ConfigFile : dir + "/" + ConfigFile
     errmsg = "No config file! file = #{file.inspect}  dir = #{Dir.pwd}" 
     raise errmsg unless File.exist?(file)
-# Hmm. current_view doesn't belong?
+    # Hmm. current_view doesn't belong?
     @root, @view_name, @editor = read_config(file, :root, :current_view, :editor)
+
     md = Dir.pwd.match(%r[.*/views/(.*?)/])
     @view_name = md[1] if md
-# STDERR.puts "---- vname = #@view_name"
     @views = get_views
     @view = str2view(@view_name)
     @sequence = get_sequence
@@ -173,7 +166,6 @@ class RuneBlog
     Dir.chdir(vdir)
     x = RuneBlog::Default
     create_dir('themes')
-#   create_dir("generated")
     create_dir('assets')
     create_dir('posts')
 
@@ -183,7 +175,7 @@ class RuneBlog
     pub = "user: xxx\nserver: xxx\ndocroot: xxx\npath: xxx\nproto: xxx\n"
     dump(pub, "publish")
 
-# Add to global.lt3 here?  FIXME
+    # Add to global.lt3 here?  FIXME
 
     view = RuneBlog::View.new(arg)
     self.view = view
@@ -223,17 +215,12 @@ class RuneBlog
     Dir.chdir(self.view.dir)
     # change to create_draft ?
     post = Post.create(title: title, teaser: teaser, body: body, other_views: other_views)
-puts "cnp: num = #{post.meta.num}"
     post.edit unless testing
     post.build
     meta = post.meta
     Dir.chdir(save)
-puts "cnp: title = #{title.inspect}\n meta = #{meta.inspect}"
-    meta.num ||= 999
-return meta.num
-    Dir.chdir(save)
-    meta.num = 999
-    meta.num
+    meta.num ||= 999   # ??
+    return meta.num
   rescue => err
     puts err
     puts err.backtrace.join("\n")
@@ -268,37 +255,18 @@ return meta.num
     self.view = view   # error checking?
   end
 
-  def process_post(file)
-    raise ArgumentError unless file.is_a?(String)
-    path = @root + "/drafts/#{file}"
-    raise FileNotFound(path) unless File.exist?(path)
-    num = file.to_i       # e.g. 0098-this-is-a-title
-    live = Livetext.new # (STDOUT) # (nil)
-    Livetext.parameters = [self, num, live]
-    text = File.read(path)
-    live.process_text(text)
-  rescue => err
-    error(err)
-    getch
-  end
-
-  def generate_index(view)
-# FIXME
+  def generate_index(view) # FIXME  delete?
     debug "=== generate_index view = #{view.to_s}"
     raise ArgumentError unless view.is_a?(String) || view.is_a?(RuneBlog::View)
 
     vdir = self.view.dir
     dir0 = "#{vdir}/themes/standard/blog"
-#   dir1 = "#{vdir}/generated"
-#   system("livetext #{dir0}/generate.lt3 >#{dir1}/index.html 2>#{dir1}/errors.txt")
   rescue => err
     error(err)
     exit
   end
 
-######## New code
-
-  def generate_view(view)
+  def generate_view(view)  # huh?
   end
 
   def _get_views(draft)
@@ -306,7 +274,6 @@ return meta.num
     view_line = File.readlines(draft).grep(/^.views /)
     raise "More than one .views call!" if view_line.size > 1
     raise "No .views call!" if view_line.size < 1
-# STDERR.puts view_line.inspect
     view_line = view_line.first
     views = view_line[7..-1].split
   end
@@ -314,18 +281,18 @@ return meta.num
   # Remember: A post in multiple views will trigger multiple
   #   views needing to be rebuilt (and published)
 
-# generate a post:
-#   given draft 9999-title.lt3
-#   create VIEW/posts/9999-title/index.lt3
-# LATER: metadata!! or is it in head?
-#   Generate VIEW/posts/9999-title/head.lt3?
-#   livetext draft_wrapper_plain.lt3  >generated/posts/plain-title.html  # unframed
-#   livetext draft_generate.lt3       >generated/posts/real-title.html   # framed
-#   livetext draft_wrapper_perma.lt3  >generated/posts/perma-title.html  # permaframed
-#
-# Generate associated views:
-#   livetext ??/recent.lt3 >VIEW/working/recent.html
-#   livetext VIEW/blog/generate.lt3 ??
+  # generate a post:
+  #   given draft 9999-title.lt3
+  #   create VIEW/posts/9999-title/index.lt3
+  # LATER: metadata!! or is it in head?
+  #   Generate VIEW/posts/9999-title/head.lt3?
+  #   livetext draft_wrapper_plain.lt3  >generated/posts/plain-title.html  # unframed
+  #   livetext draft_generate.lt3       >generated/posts/real-title.html   # framed
+  #   livetext draft_wrapper_perma.lt3  >generated/posts/perma-title.html  # permaframed
+  #
+  # Generate associated views:
+  #   livetext ??/recent.lt3 >VIEW/working/recent.html
+  #   livetext VIEW/blog/generate.lt3 ??
 
   def _copy_get_dirs(draft, view)
     fname = File.basename(draft)
@@ -345,13 +312,12 @@ return meta.num
       noext, viewdir, slugdir, aslug, theme = _copy_get_dirs(draft, view)
       Dir.chdir(slugdir) do 
         html = noext[5..-1] + ".html"
-STDERR.puts "--- NEW gp into #{slugdir}: livetext #{draft} >#{html}"
         system("livetext #{draft} >#{html}")
 
         Dir.mkdir("sidebar") unless Dir.exist?("sidebar")
         system("cp #{theme}/sidebar/*.lt3 ./sidebar/")
         files = ["blog-generate.lt3", "blog-index.lt3", "global.lt3", "blog-head.lt3", 
-                 "meta.lt3", "navbar.lt3"]
+                 "meta.lt3", "navbar.lt3", "blog-application.css"]
         files2 = files.map {|x| theme + "/" + x }
         files2.each do |f| 
           system("cp #{f} .")
@@ -364,53 +330,6 @@ STDERR.puts "--- NEW gp into #{slugdir}: livetext #{draft} >#{html}"
       # create framed pure slug (where?)
     end
   end
-
-  def old_generate_post(draft)
-    dir = File.dirname(draft)
-    fname = File.basename(draft)
-# STDERR.puts "--- gp01 dir/fname = #{dir}  #{fname}"
-    # FIXME dumb code
-    view_line = File.readlines(draft).grep(/^.views /)
-    raise "More than one .views call!" if view_line.size > 1
-    raise "No .views call!" if view_line.size < 1
-    view_line = view_line.first
-
-    views = view_line[7..-1].split
-    slug_dir = fname.sub(/.lt3$/, "")
-    views.each do |view|
-      vdir = "#@root/views/#{view}"
-      dir = "#{vdir}/posts/#{slug_dir}/"
-      Dir.mkdir(dir) unless Dir.exist?(dir)
-      system("cp #{draft} #{dir}")
-      Dir.chdir(dir) do 
-        html = draft.sub(/.lt3$/, ".html")
-STDERR.puts "--- gp05 into #{dir}: livetext #{draft} >#{html}"
-        system("livetext #{draft} >#{html}")
-
-        # copy from theme?
-        theme = vdir + "/themes/standard"
-        Dir.mkdir("sidebar") unless Dir.exist?("sidebar")
-        system("cp #{theme}/sidebar/*.lt3 ./sidebar/")
-        files = ["blog-generate.lt3", "blog-index.lt3", "global.lt3", "blog-head.lt3", 
-                 "meta.lt3", "navbar.lt3"]
-        files2 = files.map {|x| theme + "/" + x }
-        # STDERR.puts "---- gp06: In #{Dir.pwd}: files = #{files.inspect}"
-        files2.each do |f| 
-          # STDERR.puts "---- gp07: cp #{f} ."
-          system("cp #{f} .")
-        end
-        # STDERR.puts "---- gp08: Files copied from theme"
-
-        system("livetext blog-generate.lt3 >bgen.html")
-        # STDERR.puts "---- gp09: Files went thru livetext"
-#       files.each {|fname| system("rm ./#{fname}") }
-#       system("rm -rf ./sidebar/")
-      end
-      # create framed pure slug (where?)
-    end
-  end
-
-########
 
   def relink
     self.views.each {|view| generate_index(view) }
@@ -437,11 +356,10 @@ STDERR.puts "--- gp05 into #{dir}: livetext #{draft} >#{html}"
   end
 
   def rebuild_post(file)
+    raise "Doesn't currently work"
     debug "Called rebuild_post(#{file.inspect})"
     raise ArgumentError unless file.is_a?(String)
     meta = process_post(file)
-# p meta
-# sleep 4
     @views_dirty ||= []
     @views_dirty << meta.views
     @views_dirty.flatten!
@@ -494,8 +412,6 @@ STDERR.puts "--- gp05 into #{dir}: livetext #{draft} >#{html}"
   end
 
   def make_slug(meta)
-#   check_meta(meta, "makeslug")
-#   meta.num = 9999   # FIXME
     raise ArgumentError unless meta.title.is_a?(String)
     label = '%04d' % meta.num   # FIXME can do better
     slug0 = meta.title.downcase.strip.gsub(' ', '-').gsub(/[^\w-]/, '')

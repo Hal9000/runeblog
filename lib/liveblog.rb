@@ -8,8 +8,6 @@ require 'runeblog'
 errfile = File.new("liveblog.out", "w")
 STDERR.reopen(errfile)
 
-# ::Home = Dir.pwd unless defined?(::Home)
-
 =begin 
 123:def title    # side-effect
 133:def pubdate    # side-effect
@@ -21,11 +19,19 @@ STDERR.reopen(errfile)
 491:def _post_lookup(postid)    # side-effect
 =end
 
+def init_liveblog    # FIXME - a lot of this logic sucks
+  @blog = $_blog = RuneBlog.new(false)
+  @root = @blog.root
+  @view = @blog.view
+  @view_name = @blog.view.name
+  @vdir = @blog.view.dir
+  @version = RuneBlog::VERSION
+  @theme = @vdir + "/themes/standard/"
+end
+
 def post
   @meta = OpenStruct.new
   @meta.num = _args[0]
-# @live = ::Livetext.new
-# STDERR.puts ">>> #{__method__}: @meta = #{@meta.to_h.inspect}"
 end
 
 def _view_from_cwd
@@ -95,31 +101,6 @@ def inset
   _optional_blank_line
 end
 
-### copy_asset
-
-# def copy_asset(asset)
-#   vdir = @blog.view.dir
-#   return if File.exist?(vdir + "/assets/" + asset)
-#   top = vdir + "/../../assets/"
-#   if File.exist?(top + asset)
-#     system("cp #{top}/#{asset} #{vdir}/assets/#{asset}")
-#     return
-#   end
-#   raise "Can't find #{asset.inspect}"
-# end
-
-#############
-
-def init_liveblog    # FIXME - a lot of this logic sucks
-  @blog = $_blog = RuneBlog.new(false)
-  @root = @blog.root
-  @view = @blog.view
-  @view_name = @blog.view.name
-  @vdir = @blog.view.dir
-  @version = RuneBlog::VERSION
-  @theme = @vdir + "/themes/standard/"
-end
-
 def _errout(*args)
   ::STDERR.puts *args
 end
@@ -142,8 +123,6 @@ def title    # side-effect
   raise "'post' was not called" unless @meta
   title = @_data.chomp
   @meta.title = title
-# STDERR.puts ">>> #{__method__}: @meta = #{@meta.to_h.inspect}"
-# @live.setvar :title, title
   setvar :title, title
   _out %[<h1 class="post-title">#{title}</h1><br>]
   _optional_blank_line
@@ -158,7 +137,6 @@ def pubdate    # side-effect
   y, m, d = y.to_i, m.to_i, d.to_i
   @meta.date = ::Date.new(y, m, d)
   @meta.pubdate = "%04d-%02d-%02d" % [y, m, d]
-# STDERR.puts ">>> #{__method__}: @meta = #{@meta.to_h.inspect}"
   _optional_blank_line
 end
 
@@ -174,7 +152,6 @@ def tags    # side-effect
   raise "'post' was not called" unless @meta
   _debug "args = #{_args}"
   @meta.tags = _args.dup || []
-# STDERR.puts ">>> #{__method__}: @meta = #{@meta.to_h.inspect}"
   _optional_blank_line
 end
 
@@ -182,7 +159,6 @@ def views    # side-effect
   raise "'post' was not called" unless @meta
   _debug "data = #{_args}"
   @meta.views = _args.dup # + ["main"]
-# STDERR.puts ">>> #{__method__}: @meta = #{@meta.to_h.inspect}"
   _optional_blank_line
 end
 
@@ -191,12 +167,8 @@ def pin    # side-effect
   _debug "data = #{_args}"
   # verify only already-specified views?
   @meta.pinned = _args.dup
-# STDERR.puts ">>> #{__method__}: @meta = #{@meta.to_h.inspect}"
   _optional_blank_line
 end
-
-# def liveblog_version
-# end
 
 def list
   _out "<ul>"
@@ -221,38 +193,14 @@ def list!
   _optional_blank_line
 end
 
-def asset
-  raise "'post' was not called" unless @meta
-  @meta.assets ||= {}
-# STDERR.puts ">>> #{__method__}: @meta = #{@meta.to_h.inspect}"
-  list = _args
-  # For now: copies, doesn't keep record
-  # Later: Add to file and uniq; use in publishing
-  list.each {|asset| copy_asset(asset) }
-  _optional_blank_line
-end
-
-def assets
-  raise "'post' was not called" unless @meta
-  @meta.assets ||= []
-  @meta.assets += _body
-# STDERR.puts ">>> #{__method__}: @meta = #{@meta.to_h.inspect}"
-  _optional_blank_line
-end
-
 def write_post    # side-effect
   raise "'post' was not called" unless @meta
-# return
   save = Dir.pwd
   @postdir.gsub!(/\/\//, "/")  # FIXME unneeded?
   Dir.mkdir(@postdir) unless Dir.exist?(@postdir) # FIXME remember assets!
   Dir.chdir(@postdir)
-STDERR.puts "------ cd into #@postdir"
   @meta.views = @meta.views.join(" ")
   @meta.tags  = @meta.tags.join(" ") rescue ""
-# STDERR.puts ">>>> #{__method__}: writing #{@live.body.size} bytes to #{Dir.pwd}/body.txt"
-#  File.write("body.txt", @live.body)  # Actually HTML...
-# p Dir.pwd
   File.write("teaser.txt", @meta.teaser)
   
   fields = [:num, :title, :date, :pubdate, :views, :tags]
@@ -261,7 +209,6 @@ STDERR.puts "------ cd into #@postdir"
   f2 = File.open(fname2, "w") do |f2| 
     fields.each {|fld| f2.puts "#{fld}: #{@meta.send(fld)}" }
   end
-STDERR.puts ">>> #{__method__}: @meta = #{@meta.to_h.inspect}"
   Dir.chdir(save)
 rescue => err
   puts "err = #{err}"
@@ -271,11 +218,8 @@ end
 def teaser
   raise "'post' was not called" unless @meta
   @meta.teaser = _body_text
-STDERR.puts ">>> #{__method__}: @meta = #{@meta.to_h.inspect}"
   _out @meta.teaser + "\n"
 STDERR.puts "TEASER cwd = #{Dir.pwd}"
-# file = @vdir + "/teaser.txt"
-# File.write(file, @meta.teaser)
   # FIXME
 end
 
@@ -291,7 +235,6 @@ def finalize
   @slug = @blog.make_slug(@meta)
   slug_dir = @slug
   @postdir = @blog.view.dir + "/posts/#{slug_dir}"
-STDERR.puts "Got here!"
   write_post
   @meta
 end
@@ -340,13 +283,6 @@ class Livetext::Functions
     %[<link type="application/atom+xml" rel="alternate" href="#{_var(:host)}#{file}" title="#{_var(:title)}">]
   end
 
-end
-
-###############
-
-
-def _var(name)  # FIXME later
-  ::Livetext::Vars[name] || "[:#{name} is undefined]"
 end
 
 def head
@@ -423,11 +359,8 @@ STDERR.puts "--- inside #main: which = #{which.inspect}"
   case which
     when "recent_posts"
       all_teasers
-    when "post"   # FIXME!!!
-#     _out "<iframe src='./0001-whats-at-stubbs/whats-at-stubbs.html'><iframe>"
+    when "post"   # No longer needed??
       _out %[<iframe style="width: 100vw;height: 100vh;position: relative;" src='whats-at-stubbs.html' width=100% frameborder="0" allowfullscreen></iframe>]
-#     self.data = "post-index.lt3"
-#     _include 
   end
   _out %[</div>]
 end
@@ -484,12 +417,10 @@ end
 ### 
 
 def _find_recent_posts
-STDERR.puts "--- frp: $FileDir = #{_var(:FileDir)}"
   @vdir = _var(:FileDir).match(%r[(^.*/views/.*?)/])[1]
   posts = nil
   dir_posts = @vdir + "/posts"
   entries = Dir.entries(dir_posts)
-STDERR.puts "--- frp: dir_posts = #{dir_posts}  ent = #{entries.inspect}"
   posts = entries.grep(/^\d\d\d\d/).map {|x| dir_posts + "/" + x }
   posts.select! {|x| File.directory?(x) }
   # directories that start with four digits
@@ -498,7 +429,6 @@ STDERR.puts "--- frp: dir_posts = #{dir_posts}  ent = #{entries.inspect}"
 end
 
 def all_teasers
-STDERR.puts "-- inside #all_teasers..."
   open = <<-HTML
       <section class="posts">
   HTML
@@ -511,7 +441,6 @@ STDERR.puts "-- inside #all_teasers..."
     <head><link rel="stylesheet" href="blog-application.css"></head>
     <body>
   HTML
-# _out open
   posts = _find_recent_posts
   wanted = [5, posts.size].min  # estimate how many we want?
   enum = posts.each
@@ -522,8 +451,6 @@ STDERR.puts "-- inside #all_teasers..."
   end
   text << "</body></html>"
   File.write("recent.html", text)
-# _out close
-# _out "<iframe src='./recent.html'><iframe>"
   _out %[<iframe style="width: 100vw;height: 100vh;position: relative;" src='recent.html' width=100% frameborder="0" allowfullscreen></iframe>]
 end
 
@@ -556,14 +483,10 @@ def _teaser(slug)
   nslug, aslug, title, date, teaser_text = 
     vp.nslug, vp.aslug, vp.title, vp.date, vp.teaser_text
   path = vp.path
-STDERR.puts [">>>>> vp = ", vp].inspect
   url = "#{path}/#{aslug}.html"    # Should be relative to .blogs!! FIXME
-STDERR.puts [slug, url].inspect
     date = Date.parse(date)
     date = date.strftime("%B %e<br>%Y")
     text = _interpolate(@_post_entry, binding)
-#   File.write("../../../generated/#{slug}.html", text)
-# _out text
   text
 end
 
