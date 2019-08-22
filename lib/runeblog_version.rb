@@ -2,7 +2,7 @@
 if ! (Object.constants.include?(:RuneBlog) && RuneBlog.constants.include?(:Path))
 
 class RuneBlog
-  VERSION = "0.1.78"
+  VERSION = "0.1.79"
 
   Path  = File.expand_path(File.join(File.dirname(__FILE__)))
 end

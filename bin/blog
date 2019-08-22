@@ -9,6 +9,9 @@ require 'repl'
 
 include RuneBlog::REPL
 
+errfile = File.new("stderr.out", "w")
+STDERR.reopen(errfile)
+
 def get_started
   puts
   puts fx(<<-TEXT, :bold)

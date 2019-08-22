@@ -5,6 +5,9 @@ require 'date'
 require 'livetext'
 require 'runeblog'
 
+errfile = File.new("liveblog.out", "w")
+STDERR.reopen(errfile)
+
 # ::Home = Dir.pwd unless defined?(::Home)
 
 =begin 
@@ -288,6 +291,7 @@ def finalize
   @slug = @blog.make_slug(@meta)
   slug_dir = @slug
   @postdir = @blog.view.dir + "/posts/#{slug_dir}"
+STDERR.puts "Got here!"
   write_post
   @meta
 end
@@ -359,7 +363,7 @@ def head
                "linkc"          => %[<link rel="canonical" href="#{_var(:host)}">],
                "og:url"         => %[<meta property="og:url" content="#{_var(:host)}">],
                "og:site_name"   => %[<meta property="og:site_name" content="#{_var(:title)}">],
-               "style"          => %[<link rel="stylesheet" href="../assets/application.css">],
+               "style"          => %[<link rel="stylesheet" href="blog-application.css">],
                "feed"           => %[<link type="application/atom+xml" rel="alternate" href="#{_var(:host)}/feed.xml" title="#{_var(:title)}">],
                "favicon"        => %[<link rel="shortcut icon" type="image/x-icon" href="../assets/favicon.ico">\n <link rel="apple-touch-icon" href="../assets/favicon.ico">]
              }
@@ -418,10 +422,12 @@ def main    # side-effect
 STDERR.puts "--- inside #main: which = #{which.inspect}"
   case which
     when "recent_posts"
-      all_teasers    # FIXME does nothing yet
-    when "post"
-      self.data = "post-index.lt3"
-      _include 
+      all_teasers
+    when "post"   # FIXME!!!
+#     _out "<iframe src='./0001-whats-at-stubbs/whats-at-stubbs.html'><iframe>"
+      _out %[<iframe style="width: 100vw;height: 100vh;position: relative;" src='whats-at-stubbs.html' width=100% frameborder="0" allowfullscreen></iframe>]
+#     self.data = "post-index.lt3"
+#     _include 
   end
   _out %[</div>]
 end
@@ -499,26 +505,26 @@ STDERR.puts "-- inside #all_teasers..."
   close = <<-HTML
       </section>
   HTML
-STDERR.puts "=== at01"
-  _out open
-  # FIXME: Now do the magic...
-STDERR.puts "=== at02"
+
+  text = <<-HTML
+    <html>
+    <head><link rel="stylesheet" href="blog-application.css"></head>
+    <body>
+  HTML
+# _out open
   posts = _find_recent_posts
-STDERR.puts "=== at03"
   wanted = [5, posts.size].min  # estimate how many we want?
-STDERR.puts "=== at04"
   enum = posts.each
-STDERR.puts "=== at05"
   wanted.times do
-STDERR.puts "=== at06 (loop)"
     postid = File.basename(enum.next)
-STDERR.puts "=== at07"
     postid = postid.to_i
-STDERR.puts "=== at08"
-    _teaser(postid)
-STDERR.puts "=== at09"
+    text << _teaser(postid)    # side effect! calls _out
   end
-  _out close
+  text << "</body></html>"
+  File.write("recent.html", text)
+# _out close
+# _out "<iframe src='./recent.html'><iframe>"
+  _out %[<iframe style="width: 100vw;height: 100vh;position: relative;" src='recent.html' width=100% frameborder="0" allowfullscreen></iframe>]
 end
 
 def _post_lookup(postid)    # side-effect
@@ -532,15 +538,8 @@ def _post_lookup(postid)    # side-effect
   post = posts.select {|x| File.basename(x).to_i == postid }
   raise "Error: More than one post #{postid}" if post.size > 1
   postdir = post.first
-  fname = "#{postdir}/teaser.txt"
-  teaser_text = File.read(fname).chomp
-  # FIXME dumb hacks...
-  mdfile = "#{postdir}/metadata.txt"
-  lines = File.readlines(mdfile)
-  title = lines.grep(/title:/).first[7..-1].chomp
-  date  = lines.grep(/pubdate:/).first[9..-1].chomp
-  slug  = postdir
-  [slug, title, date, teaser_text]
+  vp = RuneBlog::ViewPost.new(@blog.view, postdir)
+  vp
 end
 
 def _interpolate(str, context)   # FIXME move this later
@@ -553,15 +552,19 @@ def _teaser(slug)
   text = nil
   post_entry_name = @theme + "blog-_postentry.lt3"
   @_post_entry ||= File.read(post_entry_name)
-  slug = title = date = teaser_text = nil
-  slug, title, date, teaser_text = _post_lookup(id)
-  # vdir = File.expand_path("../../..")
-  url = "#@vdir/#{slug}.html"
+  vp = _post_lookup(id)
+  nslug, aslug, title, date, teaser_text = 
+    vp.nslug, vp.aslug, vp.title, vp.date, vp.teaser_text
+  path = vp.path
+STDERR.puts [">>>>> vp = ", vp].inspect
+  url = "#{path}/#{aslug}.html"    # Should be relative to .blogs!! FIXME
+STDERR.puts [slug, url].inspect
     date = Date.parse(date)
     date = date.strftime("%B %e<br>%Y")
     text = _interpolate(@_post_entry, binding)
 #   File.write("../../../generated/#{slug}.html", text)
-  _out text
+# _out text
+  text
 end
 
 def card_iframe

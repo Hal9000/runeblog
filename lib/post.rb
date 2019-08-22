@@ -134,5 +134,24 @@ STDERR.puts "---  cmd = #{cmd}\n "
     p err
     puts err.backtrace.join("\n")
   end
-
 end
+
+class RuneBlog::ViewPost
+  attr_reader :path, :nslug, :aslug, :title, :date,
+              :teaser_text
+  def initialize(view, postdir)
+    # Assumes already parsed/processed
+    @blog = RuneBlog.blog || raise(NoBlogAccessor)
+    @path = postdir.dup
+    @nslug = @path.split("/").last
+    @aslug = @nslug[5..-1]
+    fname = "#{postdir}/teaser.txt"
+    @teaser_text = File.read(fname).chomp
+    # FIXME dumb hacks...
+    mdfile = "#{postdir}/metadata.txt"
+    lines = File.readlines(mdfile)
+    @title = lines.grep(/title:/).first[7..-1].chomp
+    @date  = lines.grep(/pubdate:/).first[9..-1].chomp
+  end
+end
+

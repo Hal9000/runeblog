@@ -1,4 +1,4 @@
-require 'find'
+#equire 'find'
 require 'livetext'
 
 require 'runeblog_version'
@@ -223,9 +223,13 @@ class RuneBlog
     Dir.chdir(self.view.dir)
     # change to create_draft ?
     post = Post.create(title: title, teaser: teaser, body: body, other_views: other_views)
+puts "cnp: num = #{post.meta.num}"
     post.edit unless testing
-    meta = post.build
+    post.build
+    meta = post.meta
     Dir.chdir(save)
+puts "cnp: title = #{title.inspect}\n meta = #{meta.inspect}"
+    meta.num ||= 999
 return meta.num
     Dir.chdir(save)
     meta.num = 999
@@ -297,6 +301,16 @@ return meta.num
   def generate_view(view)
   end
 
+  def _get_views(draft)
+    # FIXME dumb code
+    view_line = File.readlines(draft).grep(/^.views /)
+    raise "More than one .views call!" if view_line.size > 1
+    raise "No .views call!" if view_line.size < 1
+# STDERR.puts view_line.inspect
+    view_line = view_line.first
+    views = view_line[7..-1].split
+  end
+
   # Remember: A post in multiple views will trigger multiple
   #   views needing to be rebuilt (and published)
 
@@ -313,7 +327,45 @@ return meta.num
 #   livetext ??/recent.lt3 >VIEW/working/recent.html
 #   livetext VIEW/blog/generate.lt3 ??
 
+  def _copy_get_dirs(draft, view)
+    fname = File.basename(draft)
+    noext = fname.sub(/.lt3$/, "")
+    vdir = "#@root/views/#{view}"
+    dir = "#{vdir}/posts/#{noext}/"
+    Dir.mkdir(dir) unless Dir.exist?(dir)
+    system("cp #{draft} #{dir}")
+    viewdir, slugdir, aslug = vdir, dir, noext[5..-1]
+    theme = viewdir + "/themes/standard"
+    [noext, viewdir, slugdir, aslug, theme]
+  end
+
   def generate_post(draft)
+    views = _get_views(draft)
+    views.each do |view|
+      noext, viewdir, slugdir, aslug, theme = _copy_get_dirs(draft, view)
+      Dir.chdir(slugdir) do 
+        html = noext[5..-1] + ".html"
+STDERR.puts "--- NEW gp into #{slugdir}: livetext #{draft} >#{html}"
+        system("livetext #{draft} >#{html}")
+
+        Dir.mkdir("sidebar") unless Dir.exist?("sidebar")
+        system("cp #{theme}/sidebar/*.lt3 ./sidebar/")
+        files = ["blog-generate.lt3", "blog-index.lt3", "global.lt3", "blog-head.lt3", 
+                 "meta.lt3", "navbar.lt3"]
+        files2 = files.map {|x| theme + "/" + x }
+        files2.each do |f| 
+          system("cp #{f} .")
+        end
+
+#       system("livetext blog-generate.lt3 >bgen.html")
+#       files.each {|fname| system("rm ./#{fname}") }
+#       system("rm -rf ./sidebar/")
+      end
+      # create framed pure slug (where?)
+    end
+  end
+
+  def old_generate_post(draft)
     dir = File.dirname(draft)
     fname = File.basename(draft)
 # STDERR.puts "--- gp01 dir/fname = #{dir}  #{fname}"
@@ -323,37 +375,36 @@ return meta.num
     raise "No .views call!" if view_line.size < 1
     view_line = view_line.first
 
-# STDERR.puts "--- gp01b view_line = #{view_line}"
     views = view_line[7..-1].split
     slug_dir = fname.sub(/.lt3$/, "")
-# STDERR.puts "--- gp02 preloop"
     views.each do |view|
-# STDERR.puts "--- gp03 view = #{view}"
       vdir = "#@root/views/#{view}"
       dir = "#{vdir}/posts/#{slug_dir}/"
-STDERR.puts "--- gp03b vdir = #{vdir} dir = #{dir}"
       Dir.mkdir(dir) unless Dir.exist?(dir)
-puts 
-#  --- gp04 system: cp /Users/Hal/Dropbox/files/runeblog/.blogs/data/drafts/0007-the-graffiti-wall.lt3 
-#                      /Users/Hal/Dropbox/files/runeblog/.blogs/data/around_austin/posts/0007-the-graffiti-wall.lt3/
-STDERR.puts "--- gp04 system: cp #{draft} #{dir}"
-STDERR.puts 
       system("cp #{draft} #{dir}")
       Dir.chdir(dir) do 
-STDERR.puts "--- gp05 into #{dir}: livetext #{draft} >#{draft}.html"
-        system("livetext #{draft} >#{draft}.html")
+        html = draft.sub(/.lt3$/, ".html")
+STDERR.puts "--- gp05 into #{dir}: livetext #{draft} >#{html}"
+        system("livetext #{draft} >#{html}")
+
         # copy from theme?
         theme = vdir + "/themes/standard"
-        files = ["blog-generate.lt3", "blog-index.lt3", "global.lt3", "blog-head.lt3", "meta.lt3", "navbar.lt3"]
-        files = files.map {|x| theme + "/" + x }
-STDERR.puts "---- Files = #{files.inspect}"
-        files.each do |f| 
-STDERR.puts "---- cp #{f} ."
+        Dir.mkdir("sidebar") unless Dir.exist?("sidebar")
+        system("cp #{theme}/sidebar/*.lt3 ./sidebar/")
+        files = ["blog-generate.lt3", "blog-index.lt3", "global.lt3", "blog-head.lt3", 
+                 "meta.lt3", "navbar.lt3"]
+        files2 = files.map {|x| theme + "/" + x }
+        # STDERR.puts "---- gp06: In #{Dir.pwd}: files = #{files.inspect}"
+        files2.each do |f| 
+          # STDERR.puts "---- gp07: cp #{f} ."
           system("cp #{f} .")
         end
-STDERR.puts "---- Files copied from theme"
+        # STDERR.puts "---- gp08: Files copied from theme"
+
         system("livetext blog-generate.lt3 >bgen.html")
-STDERR.puts "---- Files went thru livetext"
+        # STDERR.puts "---- gp09: Files went thru livetext"
+#       files.each {|fname| system("rm ./#{fname}") }
+#       system("rm -rf ./sidebar/")
       end
       # create framed pure slug (where?)
     end

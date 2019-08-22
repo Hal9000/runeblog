@@ -233,7 +233,8 @@ module RuneBlog::REPL
     # Simplify this
     tag = "#{'%04d' % id}"
     files = Find.find(@blog.root+"/drafts").to_a
-    files = files.grep(/#{tag}-/)
+p files
+    files = files.grep(/#{tag}-.*lt3/)
     files = files.map {|f| File.basename(f) }
     if files.size > 1
       msg = "Multiple files: #{files}"
