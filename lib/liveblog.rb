@@ -272,17 +272,18 @@ end
 ###### experimental...
 
 class Livetext::Functions
-
   def _var(name)
     ::Livetext::Vars[name] || "[:#{name} is undefined]"
   end
-
 
   def link
     file, cdata = self.class.param.split("||", 2)
     %[<link type="application/atom+xml" rel="alternate" href="#{_var(:host)}#{file}" title="#{_var(:title)}">]
   end
+end
 
+def _var(name)  # FIXME scope issue!
+  ::Livetext::Vars[name] || "[:#{name} is undefined]"
 end
 
 def head
