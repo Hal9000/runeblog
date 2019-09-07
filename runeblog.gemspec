@@ -27,11 +27,7 @@ spec = Gem::Specification.new do |s|
   main = Find.find("bin").to_a  + 
          Find.find("lib").to_a
 
-  Dir.chdir("data") do 
-    system("tar zcvf standard.tgz standard/ >/dev/null 2>&1")
-  end
-
-  std_theme = ["data/standard.tgz"]
+  std_theme = ["themes/standard.tgz"]
 
   misc = %w[./README.lt3 ./README.md ./runeblog.gemspec]
   test = Find.find("test").to_a
