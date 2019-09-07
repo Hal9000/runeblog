@@ -4,6 +4,20 @@ require 'runeblog_version'
 
 module RuneBlog::Helpers
 
+  def copy(src, dst)
+    system("cp #{src}  #{dst}")
+  end
+
+  def copy!(src, dst)
+    system("cp -r #{src}  #{dst}")
+  end
+
+  def livetext(src, dst)
+    src << ".lt3" unless src.end_with?(".lt3")
+    dst << ".html" unless src.end_with?(".html")
+    system("livetext #{src} >#{dst}")
+  end
+
   def get_root
     if $_blog
       if $_blog.root
@@ -114,9 +128,9 @@ module RuneBlog::Helpers
     raise CantCreateDir(dir) unless result
   end
 
-  def interpolate(str)
+  def interpolate(str, binding)
     wrap = "<<-EOS\n#{str}\nEOS"
-    eval wrap
+    eval wrap, binding
   end
 
   def error(err)  # Hmm, this is duplicated

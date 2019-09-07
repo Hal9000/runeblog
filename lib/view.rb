@@ -25,7 +25,7 @@ class RuneBlog::View
   end
 
   def local_index
-    dir + "/generated/index.html"
+    dir + "/remote/index.html"
   end
 
   def index
@@ -39,7 +39,7 @@ class RuneBlog::View
   def publishable_files
     vdir = dir()
     files = [local_index()]
-    others = Dir.entries(vdir + "/generated").grep(/^\d\d\d\d/).map {|x| "#{vdir}/generated/#{x}" }
+    others = Dir.entries(vdir + "/remote").grep(/^\d\d\d\d/).map {|x| "#{vdir}/remote/#{x}" }
 abort "FIXME... publishable_files"
     deep_assets = Dir["#{vdir}/themes/standard/assets/*"]
     deep_assets.each do |file|   # Do this at view creation

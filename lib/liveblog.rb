@@ -32,6 +32,7 @@ end
 def post
   @meta = OpenStruct.new
   @meta.num = _args[0]
+  _out "  <!-- Post number #{@meta.num} -->\n "
 end
 
 def _view_from_cwd
@@ -300,7 +301,7 @@ def head
                "linkc"          => %[<link rel="canonical" href="#{_var(:host)}">],
                "og:url"         => %[<meta property="og:url" content="#{_var(:host)}">],
                "og:site_name"   => %[<meta property="og:site_name" content="#{_var(:title)}">],
-               "style"          => %[<link rel="stylesheet" href="blog-application.css">],
+               "style"          => %[<link rel="stylesheet" href="assets/blog.css">],
                "feed"           => %[<link type="application/atom+xml" rel="alternate" href="#{_var(:host)}/feed.xml" title="#{_var(:title)}">],
                "favicon"        => %[<link rel="shortcut icon" type="image/x-icon" href="../assets/favicon.ico">\n <link rel="apple-touch-icon" href="../assets/favicon.ico">]
              }
@@ -325,7 +326,7 @@ def head
     end
   end
   hash = defaults.dup.update(result)  # FIXME collisions?
-  _out "<html lang=en_US>"
+#  _out "<html lang=en_US>"
   _out "<head>"
   hash.each_value {|x| _out "  " + x }
   _out "</head>"
@@ -402,6 +403,7 @@ def script
   _out %[<script src="#{url}" integrity="#{integ}" crossorigin="#{cross}"></script>]
 end
 
+
 ### How this next bit works:
 ### 
 ###   all_teasers will call _find_recent_posts
@@ -439,7 +441,7 @@ def all_teasers
 
   text = <<-HTML
     <html>
-    <head><link rel="stylesheet" href="blog-application.css"></head>
+    <head><link rel="stylesheet" href="assets/blog.css"></head>
     <body>
   HTML
   posts = _find_recent_posts
@@ -490,6 +492,7 @@ def _teaser(slug)
     text = _interpolate(@_post_entry, binding)
   text
 end
+
 
 def card_iframe
   title = _data

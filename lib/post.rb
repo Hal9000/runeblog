@@ -153,5 +153,18 @@ class RuneBlog::ViewPost
     @title = lines.grep(/title:/).first[7..-1].chomp
     @date  = lines.grep(/pubdate:/).first[9..-1].chomp
   end
+
+  def get_dirs
+    fname = File.basename(draft)
+    noext = fname.sub(/.lt3$/, "")
+    vdir = "#@root/views/#{view}"
+    dir = "#{vdir}/posts/#{noext}/"
+    Dir.mkdir(dir) unless Dir.exist?(dir)
+    system("cp #{draft} #{dir}")
+    viewdir, slugdir, aslug = vdir, dir, noext[5..-1]
+    theme = viewdir + "/themes/standard"
+    [noext, viewdir, slugdir, aslug, theme]
+  end
+
 end
 

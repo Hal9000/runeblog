@@ -1,4 +1,5 @@
-require 'livetext'
+require 'date'
+# require 'livetext'
 
 require 'runeblog_version'
 require 'global'
@@ -24,7 +25,7 @@ class RuneBlog
   make_exception(:CantCreateDir,     "Can't create directory $1")
   make_exception(:EditorProblem,     "Could not edit $1")
   make_exception(:NoSuchView,        "No such view: $1")
-  make_exception(:LivetextError,     "Livetext#process_file returned nil for $1")
+# make_exception(:LivetextError,     "Livetext#process_file returned nil for $1")
   make_exception(:NoBlogAccessor, "Runeblog.blog is not set")
 
   
@@ -169,8 +170,14 @@ class RuneBlog
     create_dir('assets')
     create_dir('posts')
 
+    create_dir('staging')
+    create_dir('staging/assets')
+    create_dir('remote')
+    create_dir('remote/assets')
+
     Dir.chdir("themes") { system("tar zxvf #{GemData}/standard.tgz >/dev/null 2>&1") }
-#   system("cp themes/standard/blog/assets/* assets/")
+    copy!("themes/standard/*", "staging/")
+    copy("themes/standard/assets/*", "remote/assets/")
     
     pub = "user: xxx\nserver: xxx\ndocroot: xxx\npath: xxx\nproto: xxx\n"
     dump(pub, "publish")
@@ -208,6 +215,71 @@ class RuneBlog
     tag = prefix(id)
     result = files.grep(/#{tag}-/)
     result
+  end
+
+  def post_lookup(postid)    # side-effect?
+    # .. = templates, ../.. = views/thisview
+    slug = title = date = teaser_text = nil
+
+    dir_posts = @vdir + "/posts"
+    posts = Dir.entries(dir_posts).grep(/^\d\d\d\d/).map {|x| dir_posts + "/" + x }
+    posts.select! {|x| File.directory?(x) }
+
+    post = posts.select {|x| File.basename(x).to_i == postid }
+    raise "Error: More than one post #{postid}" if post.size > 1
+    postdir = post.first
+    vp = RuneBlog::ViewPost.new(self.view, postdir)
+    vp
+  end
+
+  def teaser(slug)
+    id = slug.to_i
+    text = nil
+    post_entry_name = @theme + "/blog-_postentry.lt3"
+    @_post_entry ||= File.read(post_entry_name)
+    vp = post_lookup(id)
+    nslug, aslug, title, date, teaser_text = 
+      vp.nslug, vp.aslug, vp.title, vp.date, vp.teaser_text
+    path = vp.path
+#   url = "#{path}/#{aslug}.html"    # Should be relative to .blogs!! FIXME
+    url = "#{aslug}.html"    # Should be relative to .blogs!! FIXME
+      date = ::Date.parse(date)
+      date = date.strftime("%B %e<br>%Y")
+      text = interpolate(@_post_entry, binding)
+    text
+  end
+
+  def collect_recent_posts(file)
+    @vdir = ".."
+    posts = nil
+    dir_posts = @vdir + "/posts"
+    entries = Dir.entries(dir_posts)
+    posts = entries.grep(/^\d\d\d\d/).map {|x| dir_posts + "/" + x }
+    posts.select! {|x| File.directory?(x) }
+    # directories that start with four digits
+    posts = posts.sort {|a, b| b.to_i <=> a.to_i }  # sort descending
+    posts = posts[0..19]  # return 20 at most
+    text = <<-HTML
+      <html>
+      <head><link rel="stylesheet" href="assets/blog.css"></head>
+      <body>
+    HTML
+    # posts = _find_recent_posts
+    wanted = [5, posts.size].min  # estimate how many we want?
+    enum = posts.each
+    wanted.times do
+      postid = File.basename(enum.next)
+      postid = postid.to_i
+      text << teaser(postid)    # side effect! calls _out
+    end
+    text << "</body></html>"
+    File.write(file, text) # FIXME ???
+    iframe_text = <<-HTML
+      <iframe style="width: 100vw;height: 100vh;position: relative;" 
+              src='recent.html' width=100% frameborder="0" allowfullscreen>
+      </iframe>
+    HTML
+    # _out iframe_text # FIXME ??
   end
 
   def create_new_post(title, testing = false, teaser: nil, body: nil, other_views: [])
@@ -309,25 +381,26 @@ class RuneBlog
   def generate_post(draft)
     views = _get_views(draft)
     views.each do |view|
-      noext, viewdir, slugdir, aslug, theme = _copy_get_dirs(draft, view)
+      noext, viewdir, slugdir, aslug, @theme = _copy_get_dirs(draft, view)
+      staging = viewdir + "/staging"
       Dir.chdir(slugdir) do 
-        html = noext[5..-1] + ".html"
-        system("livetext #{draft} >#{html}")
-
-        Dir.mkdir("sidebar") unless Dir.exist?("sidebar")
-        system("cp #{theme}/sidebar/*.lt3 ./sidebar/")
-        files = ["blog-generate.lt3", "blog-index.lt3", "global.lt3", "blog-head.lt3", 
-                 "meta.lt3", "navbar.lt3", "blog-application.css"]
-        files2 = files.map {|x| theme + "/" + x }
-        files2.each do |f| 
-          system("cp #{f} .")
+        copy(draft, ".")
+        lt3 = draft.split("/")[-1]
+        # Remember: Some posts may be in more than one view -- careful with links back
+        # system("livetext #{draft} >staging/#{name}/index.html")  # permalink?
+# Structure is borked?
+        copy!("#{@theme}/*", "#{staging}")
+        copy(lt3, staging)
+        html = noext[5..-1]
+        Dir.chdir(staging) do 
+          livetext draft, html
+          # link to POST??
+          copy html, "../remote"
+          collect_recent_posts("recent.html")
+          copy("recent.html", "../remote")
+          livetext "blog-generate",  "../remote/index"
         end
-
-#       system("livetext blog-generate.lt3 >bgen.html")
-#       files.each {|fname| system("rm ./#{fname}") }
-#       system("rm -rf ./sidebar/")
       end
-      # create framed pure slug (where?)
     end
   end
 

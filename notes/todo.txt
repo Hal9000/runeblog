@@ -1,53 +1,46 @@
-   - VIEW/posts dir
-   - make sure posts go into 'generated'
-   - alternate config file format
-   - get rid of 'generated/blog'?
-   - must fix blog title issue!
+   - add permalinks (with no Back, add link to view)
+   - add header data to post!
+   - add CSS ref to post?
    - also query for title when view is created
-   - allow test code to add to post
-   - fix "Keep Reading" CSS
-   - add views to lsd/lsp output
    - revamp dirs (see dir.struct)
-   - work on .banner!
- x - improve HTML (eg DIV not TABLE)
-   - setup wizard?
-   - create "posts" dir
-   - rename source to drafts?
-   - tag pools are dumb??
- x - put CSS into templates?
-   - Livetext: support CSS
+   - improve gemspec
+   - verify preview/browse still work
+   - alternate config file format
+   - verify image assets
+   - update only "stale" items
    - create tag cloud
+   - add views to lsd/lsp output
+   - start using keyword parameters as needed
+   - rethink remove/delete/kill and other verbs
+   - remove dead code!!
+   - factor generic HTML out of liveblog.rb
+   - work on .banner!
+   - commands to edit templates, config, etc.? ('config' command?) (See notes.txt)
+   - "pinned" or favorite posts? ("best" tag? or pin command that understands views?)
+
+   - work on sidebar "cards"!
+
+   - allow test code to add to post?
+   - setup wizard?
+   - tag pools are dumb??
    - Better navigation/etc for default?
    - Select themes/styles for blog??
    - Move some pieces into "snippets" (e.g. Facebook/Twitter integration)
- x - Convert HTML to Livetext (??)
    - real support for tags (persist, etc.)
-   - fix unnecessary rebuild_post/generate_index calls
-   - make hierarchy of publish files?
-x - Problematic: store initial content as .lt3 rather than .html
    - more tests!
    - special tags: intra-blog, gist, github, youtube, vimeo, twitter, fb?, reddit?, ...
    - verify view is publishable before trying
-   - resolve issues: draft vs post, kill, etc.
    - allow for post title changing
    - add post template capability (create, edit, post)
-   - "pinned" or favorite posts? ("best" tag? or pin command that understands views?)
    - methods such as get_post_template?
    - rethink helper libs?
-   - improve gemspec
-   - remember runeblog fixes
-   - weaponize rubytext (gemspec, etc.)
    - handle larger output for lsp, lsd
-   - rethink remove/delete/kill and other verbs
+   - make hierarchy of publish files?
    - safe way to delete a view?
    - modifiable global defaults for publishing info/etc.?
    - distinguish view and view_name
-   - start using keyword parameters as needed
    - test credentials for publishing?
 
-   - move some logic into liveblog?
-
-   - commands to edit templates, config, etc.? ('config' command?) (See notes.txt)
    - maybe add (default) publishing info to config?
    - shorten commands?
    - undo last post?
@@ -64,13 +57,10 @@ x - Problematic: store initial content as .lt3 rather than .html
    - changes in liveblog for snippets??
 
    - Fix/rewrite asset handling? .asset and .asset! tags?
-   - Readline completion for views
-   - possibly change: relink, rebuild, etc.?
-   - permalinks??
    - use a database???
+   - possibly change: relink, rebuild, etc.?
    - back-sync with remote?
    - explicitly document use of ssh/scp
-   - deal with CSS??
    - update docs
 
    - true command line options?
@@ -87,6 +77,28 @@ x - Problematic: store initial content as .lt3 rather than .html
 
 ---
 
+ x - post ID into HTML as comment
+ x - add Back to post
+ x - no */.lt3 in remote/ 
+ x - copy CSS into remote (/assets ?)
+ x - VIEW/posts dir
+ x - make sure posts go into 'generated'
+ x - get rid of 'generated/blog'?
+ x - must fix blog title issue!
+ x - fix "Keep Reading" CSS
+ x - improve HTML (eg DIV not TABLE)
+ x - create "posts" dir
+ x - rename source to drafts?
+ x - put CSS into templates?
+ x - Livetext: support CSS
+ x - Convert HTML to Livetext (??)
+ x - Readline completion for views
+ x - deal with CSS??
+ x - fix unnecessary rebuild_post/generate_index calls
+ x - Problematic: store initial content as .lt3 rather than .html
+ x - remember runeblog fixes
+ x - weaponize rubytext (gemspec, etc.)
+ x - move some logic into liveblog?
 x  - try new code with old data
 x  - DBC code?
 x  - work on: rebuild, relink, link_post, generate, ...

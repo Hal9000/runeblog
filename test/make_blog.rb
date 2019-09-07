@@ -19,7 +19,8 @@ def debug(str)
 end
 
 def make_post(x, title, teaser, body, views=[])
-STDERR.puts "\n========= make_post '#{title}'"
+# STDERR.puts "\n========= make_post '#{title}'"
+  print "."
   meta = OpenStruct.new
   num = x.create_new_post(title, true, teaser: teaser, body: body, other_views: views)
   num
@@ -31,6 +32,10 @@ def show_lines(text)
   lines.each {|line| str << "  #{line.inspect}\n" }
   str
 end
+
+
+
+puts
 
 system("rm -rf .blogs")
 RuneBlog.create_new_blog_repo('test_view', ".blogs/data")
@@ -61,36 +66,36 @@ EXCERPT
 Now, depending on what you consider "major," blah blah blah...
 BODY
 
-# x.change_view("computing")     # 3 5 6
-# 
-# make_post(x, "Elixir Conf coming up...", <<-EXCERPT, <<-BODY)
-# The next Elixir Conf is always coming up. 
-# EXCERPT
-# I mean, unless the previous one was the last one ever, which I don't expect to 
-# happen for a couple of decades.
-# BODY
-# 
-# x.change_view("music")    # 4 10
-# 
-# make_post(x, "Does indie still matter?", <<-EXCERPT, <<-BODY)
-# Indie msic blah blah blah blah....
-# EXCERPT
-# And more about indie music.
-# BODY
-# 
-# x.change_view("computing")
-# 
-# make_post(x, "The genius of Scenic", <<-EXCERPT, <<-BODY)
-# Boyd Multerer is a genius.
-# EXCERPT
-# And so is Scenic.
-# BODY
-# 
-# make_post(x, "The future of coding", <<-EXCERPT, <<-BODY)
-# Someday you can forget your text editor entirely.
-# EXCERPT
-# But that day hasn't come yet.
-# BODY
+x.change_view("computing")     # 3 5 6
+
+make_post(x, "Elixir Conf coming up...", <<-EXCERPT, <<-BODY)
+The next Elixir Conf is always coming up. 
+EXCERPT
+I mean, unless the previous one was the last one ever, which I don't expect to 
+happen for a couple of decades.
+BODY
+
+x.change_view("music")    # 4 10
+
+make_post(x, "Does indie still matter?", <<-EXCERPT, <<-BODY)
+Indie msic blah blah blah blah....
+EXCERPT
+And more about indie music.
+BODY
+
+x.change_view("computing")
+
+make_post(x, "The genius of Scenic", <<-EXCERPT, <<-BODY)
+Boyd Multerer is a genius.
+EXCERPT
+And so is Scenic.
+BODY
+
+make_post(x, "The future of coding", <<-EXCERPT, <<-BODY)
+Someday you can forget your text editor entirely.
+EXCERPT
+But that day hasn't come yet.
+BODY
 
 x.change_view("around_austin")
 
@@ -124,3 +129,4 @@ BODY
 
 x.change_view("around_austin")
 
+puts
