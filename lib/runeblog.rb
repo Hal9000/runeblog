@@ -15,7 +15,7 @@ class RuneBlog
  
   DotDir     = ".blogs"
   ConfigFile = "config"
-  GemData    = RuneBlog::Path + "/../data"
+  GemData    = RuneBlog::Path + "/../themes"
 
   make_exception(:FileNotFound,      "File $1 was not found")
   make_exception(:BlogRepoAlreadyExists, "Blog repo $1 already exists")

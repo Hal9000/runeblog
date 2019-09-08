@@ -1,3 +1,6 @@
+   - livetext -m
+   - ditch .blogs/data
+   - deepen structure of theme
    - add permalinks (with no Back, add link to view)
    - add header data to post!
    - add CSS ref to post?
