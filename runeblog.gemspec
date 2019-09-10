@@ -26,7 +26,7 @@ spec = Gem::Specification.new do |s|
   # Files...
   main = Find.find("bin").to_a + 
          Find.find("lib").to_a + 
-         Find.find("themes") 
+         Find.find("themes").to_a
   test = Find.find("test").to_a
   misc = %w[./README.lt3 ./README.md ./runeblog.gemspec]
 
