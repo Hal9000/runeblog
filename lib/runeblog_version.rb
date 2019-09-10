@@ -2,9 +2,10 @@
 if ! (Object.constants.include?(:RuneBlog) && RuneBlog.constants.include?(:Path))
 
 class RuneBlog
-  VERSION = "0.1.85"
+  VERSION = "0.1.86"
 
-  Path  = File.expand_path(File.join(File.dirname(__FILE__)))
+  path = Gem.find_files("runeblog").grep(/runeblog-/).first
+  Path  = File.dirname(path)
 end
 
 end

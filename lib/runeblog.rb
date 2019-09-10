@@ -15,7 +15,7 @@ class RuneBlog
  
   DotDir     = ".blogs"
   ConfigFile = "config"
-  GemData    = RuneBlog::Path + "/../themes"
+  Themes     = RuneBlog::Path + "/../themes"
 
   make_exception(:FileNotFound,      "File $1 was not found")
   make_exception(:BlogRepoAlreadyExists, "Blog repo $1 already exists")
@@ -84,7 +84,6 @@ class RuneBlog
 
     @root = root_dir
     file = @root + "/" + ConfigFile
-STDERR.puts "--- init: file = #{file}"
     errmsg = "No config file! file = #{file.inspect}  dir = #{Dir.pwd}" 
     raise errmsg unless File.exist?(file)
 
@@ -180,7 +179,8 @@ STDERR.puts "--- init: file = #{file}"
 
     Dir.chdir(vdir)
     x = RuneBlog::Default
-    create_dir('themes')
+#   create_dir('themes')
+    copy!("#{Themes}", "themes")
     create_dir('assets')
     create_dir('posts')
 
@@ -189,10 +189,9 @@ STDERR.puts "--- init: file = #{file}"
     create_dir('remote')
     create_dir('remote/assets')
 
-    Dir.chdir("themes") { system("tar zxvf #{GemData}/standard.tgz >/dev/null 2>&1") }
     copy!("themes/standard/*", "staging/")
     copy("themes/standard/assets/*", "remote/assets/")
-    
+
     pub = "user: xxx\nserver: xxx\ndocroot: xxx\npath: xxx\nproto: xxx\n"
     dump(pub, "publish")
 
@@ -362,7 +361,6 @@ STDERR.puts "--- init: file = #{file}"
     raise "No .views call!" if view_line.size < 1
     view_line = view_line.first
     views = view_line[7..-1].split
-STDERR.puts "--- gv: #{views.inspect}"
     views 
   end
 
@@ -409,7 +407,6 @@ STDERR.puts "--- gv: #{views.inspect}"
         copy(lt3, staging)
         html = noext[5..-1]
         Dir.chdir(staging) do 
-          STDERR.puts "--- gp: pwd = #{Dir.pwd}  draft = #{draft}  html = #{html}"
           livetext draft, html
           # link to POST??
           copy html, "../remote"

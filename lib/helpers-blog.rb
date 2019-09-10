@@ -113,10 +113,8 @@ end
   end
 
   def subdirs(dir)
-STDERR.puts "== SUB dir = #{dir}"
     verify(Dir.exist?(dir) => "Directory #{dir} not found")
     dirs = Dir.entries(dir) - %w[. ..]
-STDERR.puts "== SUB   dirs = #{dirs.inspect}"
     dirs.reject! {|x| ! File.directory?("#@root/views/#{x}") }
     dirs
   end
