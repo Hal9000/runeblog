@@ -65,6 +65,17 @@ module RuneBlog::Helpers
     vals
   end
 
+def put_config(root:, view:"test_view", editor: "/bin/vim")
+  Dir.mkdir(root) unless Dir.exist?(root)
+  Dir.chdir(root) do 
+    File.open("config", "w") do |cfg|
+      cfg.puts "root: #{root}"
+      cfg.puts "current_view: #{view}"
+      cfg.puts "editor: #{editor}"
+    end
+  end
+end 
+
   def write_config(obj, file)
     hash = obj.to_h
 # Dir.chdir(::Home)
@@ -86,9 +97,10 @@ module RuneBlog::Helpers
 #   end
   end
 
-  def new_dotfile(root: "./.blogs/data", current_view: "no_default", editor: "vi")
-    raise BlogAlreadyExists if Dir.exist?(".blogs")
-    Dir.mkdir(".blogs")
+  def new_dotfile(root: ".blogs", current_view: "test_view", editor: "vi")
+#   raise BlogAlreadyExists if Dir.exist?(".blogs")
+#   Dir.mkdir(".blogs")
+    root = Dir.pwd + "/" + root
     x = OpenStruct.new
     x.root, x.current_view, x.editor = root, current_view, editor
     write_config(x, ".blogs/" + RuneBlog::ConfigFile)
@@ -101,8 +113,10 @@ module RuneBlog::Helpers
   end
 
   def subdirs(dir)
+STDERR.puts "== SUB dir = #{dir}"
     verify(Dir.exist?(dir) => "Directory #{dir} not found")
     dirs = Dir.entries(dir) - %w[. ..]
+STDERR.puts "== SUB   dirs = #{dirs.inspect}"
     dirs.reject! {|x| ! File.directory?("#@root/views/#{x}") }
     dirs
   end

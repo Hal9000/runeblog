@@ -41,40 +41,54 @@ class RuneBlog
 
   include Helpers
 
-  def self.create_new_blog_repo(first_view, dir = ".blogs/data")
+  def self.create_new_blog_repo(dir = ".blogs")
     raise ArgumentError unless dir.is_a?(String) && ! dir.empty?
     root_dir = Dir.pwd + "/" + dir
-    raise BlogRepoAlreadyExists if Dir.exist?(root_dir)
-    new_dotfile(root: root_dir, current_view: first_view)
-    create_dir(dir)
-    Dir.chdir(dir) do
-      create_dir("drafts")
-      create_dir("views")
-#?    create_dir("assets")
-      new_sequence
-    end
-    blog = self.new
-    blog.create_view(first_view)
+    self.create(dir)
   rescue => err
     puts "Can't create blog repo: '#{dir}' - #{err}"
     puts err.backtrace.join("\n")
   end
 
-  def initialize(top = true)   # at top? always assumes existing blog
+  def self.create(root = ".blogs")
+    # Crude - FIXME later -  # What views are there? Publishing, etc.
+    self.blog = self   # Weird. Like a singleton - dumbass circular dependency?
+    $_blog = self            # Dumber still?
+    root = Dir.pwd + "/" + root
+    raise BlogRepoAlreadyExists if Dir.exist?(root)
+    create_dir(root)
+    Dir.chdir(root) do
+      create_dir("drafts")
+      create_dir("views")
+#?    create_dir("assets")
+      new_sequence
+    end
+    put_config(root: root)
+    @blog = self.new(root)
+    @blog.create_view("test_view")
+    @blog
+  end
+
+  def self.open(root = ".blogs")
+    # Crude - FIXME later -  # What views are there? Publishing, etc.
+    self.blog = self   # Weird. Like a singleton - dumbass circular dependency?
+    $_blog = self            # Dumber still?
+    root = Dir.pwd + "/" + root
+    blog = self.new(root)
+  end
+
+  def initialize(root_dir = ".blogs")   # always assumes existing blog
     # Crude - FIXME later -  # What views are there? Publishing, etc.
     self.class.blog = self   # Weird. Like a singleton - dumbass circular dependency?
     $_blog = self            # Dumber still?
-    dir = ""
-    unless top
-      md = Dir.pwd.match(%r[.*.blogs])
-      dir = md[0]
-    end
-    file = dir.empty? ? ConfigFile : dir + "/" + ConfigFile
+
+    @root = root_dir
+    file = @root + "/" + ConfigFile
+STDERR.puts "--- init: file = #{file}"
     errmsg = "No config file! file = #{file.inspect}  dir = #{Dir.pwd}" 
     raise errmsg unless File.exist?(file)
-    # Hmm. current_view doesn't belong?
-    @root, @view_name, @editor = read_config(file, :root, :current_view, :editor)
 
+    @root, @view_name, @editor = read_config(file, :root, :current_view, :editor)
     md = Dir.pwd.match(%r[.*/views/(.*?)/])
     @view_name = md[1] if md
     @views = get_views
@@ -348,6 +362,8 @@ class RuneBlog
     raise "No .views call!" if view_line.size < 1
     view_line = view_line.first
     views = view_line[7..-1].split
+STDERR.puts "--- gv: #{views.inspect}"
+    views 
   end
 
   # Remember: A post in multiple views will trigger multiple
@@ -393,6 +409,7 @@ class RuneBlog
         copy(lt3, staging)
         html = noext[5..-1]
         Dir.chdir(staging) do 
+          STDERR.puts "--- gp: pwd = #{Dir.pwd}  draft = #{draft}  html = #{html}"
           livetext draft, html
           # link to POST??
           copy html, "../remote"

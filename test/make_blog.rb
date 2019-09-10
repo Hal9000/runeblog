@@ -38,14 +38,14 @@ end
 puts
 
 system("rm -rf .blogs")
-RuneBlog.create_new_blog_repo('test_view', ".blogs/data")
-x = RuneBlog.new
+RuneBlog.create_new_blog_repo(".blogs")
+x = RuneBlog.new(".blogs")
 
 x.create_view("around_austin")   # FIXME remember view title!
 
 # Hack:
 if File.exist?("publish")
-  system("cp publish .blogs/data/views/around_austin/publish")
+  system("cp publish .blogs/views/around_austin/publish")
 end
 
 x.create_view("computing")

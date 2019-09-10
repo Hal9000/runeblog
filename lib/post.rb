@@ -139,6 +139,7 @@ end
 class RuneBlog::ViewPost
   attr_reader :path, :nslug, :aslug, :title, :date,
               :teaser_text
+              
   def initialize(view, postdir)
     # Assumes already parsed/processed
     @blog = RuneBlog.blog || raise(NoBlogAccessor)

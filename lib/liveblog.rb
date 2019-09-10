@@ -20,7 +20,11 @@ STDERR.reopen(errfile)
 =end
 
 def init_liveblog    # FIXME - a lot of this logic sucks
-  @blog = $_blog = RuneBlog.new(false)
+  here = Dir.pwd
+  dir = here
+  loop { dir = Dir.pwd; break if File.exist?("config"); Dir.chdir("..") }
+  Dir.chdir(here)
+  @blog = $_blog = RuneBlog.new(dir)
   @root = @blog.root
   @view = @blog.view
   @view_name = @blog.view.name
@@ -236,6 +240,7 @@ def finalize
   @slug = @blog.make_slug(@meta)
   slug_dir = @slug
   @postdir = @blog.view.dir + "/posts/#{slug_dir}"
+  STDERR.puts "--- finalize: pwd = #{Dir.pwd} postdir = #@postdir"
   write_post
   @meta
 end
