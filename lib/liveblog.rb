@@ -8,16 +8,14 @@ require 'runeblog'
 errfile = File.new("liveblog.out", "w")
 STDERR.reopen(errfile)
 
-=begin 
-123:def title    # side-effect
-133:def pubdate    # side-effect
-153:def tags    # side-effect
-160:def views    # side-effect
-167:def pin    # side-effect
-218:def write_post    # side-effect
-393:def main    # side-effect
-491:def _post_lookup(postid)    # side-effect
-=end
+# def title                   # side-effect
+# def pubdate                 # side-effect
+# def tags                    # side-effect
+# def views                   # side-effect
+# def pin                     # side-effect
+# def write_post              # side-effect
+# def main                    # side-effect
+# def _post_lookup(postid)    # side-effect
 
 def init_liveblog    # FIXME - a lot of this logic sucks
   here = Dir.pwd
@@ -224,7 +222,6 @@ def teaser
   raise "'post' was not called" unless @meta
   @meta.teaser = _body_text
   _out @meta.teaser + "\n"
-STDERR.puts "TEASER cwd = #{Dir.pwd}"
   # FIXME
 end
 
@@ -362,7 +359,6 @@ end
 def main    # side-effect
   _out %[<div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">]
   which = _args[0]
-STDERR.puts "--- inside #main: which = #{which.inspect}"
   case which
     when "recent_posts"
       all_teasers
@@ -498,50 +494,57 @@ def _teaser(slug)
   text
 end
 
-
-def card_iframe
-  title = _data
-  lines = _body
-  url = lines[0].chomp
-  stuff = lines[1..-1].join(" ")  # FIXME later
-  text = <<-HTML
-        <div class="card mb-3">
-          <div class="card-body">
-            <h5 class="card-title">#{title}</h5>
-            <iframe src="#{url}" #{stuff} 
-                    style="border: 0" height="350" 
-                    frameborder="0" scrolling="no">
-            </iframe>
-          </div>
-        </div>
-  HTML
-  _out text
-rescue
-  puts @live.body
-end
-
-def card1
-  card_title = _data
-  lines = _body
-  lines.map!(&:chomp)
-  card_text = lines[0]
-  url, target, classname, cdata = lines[1].split(",", 4)
-  text = <<-HTML
-    <div class="card bg-dark text-white mb-3">
+def _card_generic(card_title:, middle:, extra: "")
+  front = <<-HTML
+    <div class="card #{extra} mb-3">
       <div class="card-body">
         <h5 class="card-title">#{card_title}</h5>
-        <p class="card-text">#{card_text}</p>
-        <a href="#{url}" target="#{target}" class="#{classname}">#{cdata}</a>
+  HTML
+
+  tail = <<-HTML
       </div>
     </div>
   HTML
+  text = front + middle + tail
   _out text + "\n "
-rescue
-  puts @live.body
+end
+
+def card_iframe
+  title, lines = _data, _body
+  lines.map!(&:chomp)
+  url = lines[0].chomp
+  stuff = lines[1..-1].join(" ")  # FIXME later
+  middle = <<-HTML
+    <iframe src="#{url}" #{stuff} 
+            style="border: 0" height="350" 
+            frameborder="0" scrolling="no">
+    </iframe>
+  HTML
+
+  _card_generic(card_title: title, middle: middle, extra: "bg-dark text-white")
+
+end
+
+def card1
+  title, lines = _data, _body
+  lines.map!(&:chomp)
+
+  card_text = lines[0]
+  url, target, classname, cdata = lines[1].split(",", 4)
+
+  middle = <<-HTML
+    <p class="card-text">#{card_text}</p>
+    <a href="#{url}" target="#{target}" class="#{classname}">#{cdata}</a>
+  HTML
+
+  _card_generic(card_title: title, middle: middle, extra: "bg-dark text-white")
 end
 
 def card2
   card_title = _data
+
+# FIXME is this wrong??
+
   open = <<-HTML
     <div class="card mb-3">
       <div class="card-body">
