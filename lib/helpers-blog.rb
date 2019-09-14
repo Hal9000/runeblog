@@ -133,11 +133,14 @@ end
     files
   end
 
-  def create_dir(dir)
-    return if Dir.exist?(dir)  #  && File.directory?(dir)
-    cmd = "mkdir -p #{dir} >/dev/null"  #  2>&1"
-    result = system(cmd) 
-    raise CantCreateDir(dir) unless result
+  def create_dirs(*dirs)
+    dirs.each do |dir|
+      dir = dir.to_s  # symbols allowed
+      next if Dir.exist?(dir)
+      cmd = "mkdir -p #{dir} >/dev/null"
+      result = system(cmd) 
+      raise CantCreateDir(dir) unless result
+    end
   end
 
   def interpolate(str, binding)

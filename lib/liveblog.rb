@@ -8,15 +8,6 @@ require 'runeblog'
 errfile = File.new("liveblog.out", "w")
 STDERR.reopen(errfile)
 
-# def title                   # side-effect
-# def pubdate                 # side-effect
-# def tags                    # side-effect
-# def views                   # side-effect
-# def pin                     # side-effect
-# def write_post              # side-effect
-# def main                    # side-effect
-# def _post_lookup(postid)    # side-effect
-
 def init_liveblog    # FIXME - a lot of this logic sucks
   here = Dir.pwd
   dir = here
@@ -122,7 +113,7 @@ def _passthru_noline(line)
   _out "<p>" if line.empty? && ! @_nopara
 end
 
-def title    # side-effect
+def title
   raise "'post' was not called" unless @meta
   title = @_data.chomp
   @meta.title = title
@@ -131,7 +122,7 @@ def title    # side-effect
   _optional_blank_line
 end
 
-def pubdate    # side-effect 
+def pubdate
   raise "'post' was not called" unless @meta
   _debug "data = #@_data"
   # Check for discrepancy?
@@ -151,21 +142,21 @@ def image   # primitive so far
   _optional_blank_line
 end
 
-def tags    # side-effect
+def tags
   raise "'post' was not called" unless @meta
   _debug "args = #{_args}"
   @meta.tags = _args.dup || []
   _optional_blank_line
 end
 
-def views    # side-effect
+def views
   raise "'post' was not called" unless @meta
   _debug "data = #{_args}"
-  @meta.views = _args.dup # + ["main"]
+  @meta.views = _args.dup
   _optional_blank_line
 end
 
-def pin    # side-effect  
+def pin
   raise "'post' was not called" unless @meta
   _debug "data = #{_args}"
   # verify only already-specified views?
@@ -196,7 +187,7 @@ def list!
   _optional_blank_line
 end
 
-def write_post    # side-effect
+def write_post
   raise "'post' was not called" unless @meta
   save = Dir.pwd
   @postdir.gsub!(/\/\//, "/")  # FIXME unneeded?
@@ -231,7 +222,7 @@ def finalize
     return
   end
   if @blog.nil?
-    return @meta  # @live.body
+    return @meta
   end
 
   @slug = @blog.make_slug(@meta)
@@ -361,15 +352,16 @@ def meta
   _out str
 end
 
-def main    # side-effect
+def recent_posts    # side-effect
   _out %[<div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">]
-  which = _args[0]
-  case which
-    when "recent_posts"
-      all_teasers
-    when "post"   # No longer needed??
-      _out %[<iframe style="width: 100vw;height: 100vh;position: relative;" src='whats-at-stubbs.html' width=100% frameborder="0" allowfullscreen></iframe>]
-  end
+  all_teasers
+  ## which = _args[0]
+  ## case which
+  ##   when "recent_posts"
+  ##     all_teasers
+  ##   when "post"   # No longer needed??
+  ##     _out %[<iframe style="width: 100vw;height: 100vh;position: relative;" src='whats-at-stubbs.html' width=100% frameborder="0" allowfullscreen></iframe>]
+  ## end
   _out %[</div>]
 end
 

@@ -54,11 +54,9 @@ class RuneBlog
     $_blog = self            # Dumber still?
     root = Dir.pwd + "/" + root
     raise BlogRepoAlreadyExists if Dir.exist?(root)
-    create_dir(root)
+    create_dirs(root)
     Dir.chdir(root) do
-      create_dir("drafts")
-      create_dir("views")
-#?    create_dir("assets")
+      create_dirs(:drafts, :views)
       new_sequence
     end
     put_config(root: root)
@@ -172,36 +170,27 @@ class RuneBlog
 
     vdir = "#@root/views/#{arg}/"
     raise DirAlreadyExists(vdir) if Dir.exist?(vdir)
-    create_dir(vdir)
+    create_dirs(vdir)
     up = Dir.pwd
 
-    Dir.chdir(vdir)
-    x = RuneBlog::Default
-#   create_dir('themes')
-    copy!("#{Themes}", "themes")
-    create_dir('assets')
-    create_dir('posts')
+    Dir.chdir(vdir) do
+      x = RuneBlog::Default
+      copy!("#{Themes}", "themes")
+      create_dirs(:assets, :posts)
+      create_dirs(:staging, :remote)
+      copy!("themes/standard/*", "staging/")
+      copy!("themes/standard/*", "remote/")
 
-    create_dir('staging')
-#   create_dir('staging/assets')
-#   create_dir('staging/blog')
-    create_dir('remote')
-#   create_dir('remote/assets')
+      pub = "user: xxx\nserver: xxx\ndocroot: xxx\npath: xxx\nproto: xxx\n"
+      dump(pub, "publish")
 
-    copy!("themes/standard/*", "staging/")
-#   copy!("themes/standard/blog/*", "staging/blog/")
-    copy!("themes/standard/*", "remote/")
+      # Add to global.lt3 here?  FIXME
 
-    pub = "user: xxx\nserver: xxx\ndocroot: xxx\npath: xxx\nproto: xxx\n"
-    dump(pub, "publish")
-
-    # Add to global.lt3 here?  FIXME
-
-    view = RuneBlog::View.new(arg)
-    self.view = view
-    vdir = self.view.dir
-    dump("Initial creation", "last_published")
-    Dir.chdir(up)
+      view = RuneBlog::View.new(arg)
+      self.view = view
+      vdir = self.view.dir
+      dump("Initial creation", "last_published")
+    end  
     @views << view
     @views
   end

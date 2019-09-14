@@ -1,17 +1,18 @@
    - add header data to post!
    - add CSS ref to post?
-   - deepen structure of theme
    - add permalinks (with no Back, add link to view)
    - verify preview/browse still work
    - css/ directory?
    - bootstrap_etc file? css or lt3?
+   - Fix: navbar, pages?, links?
+   - alternate config file format
 
    - livetext: open/close
    - livetext: $$incr ?
    - livetext -m
-   - livetext: mixin as module
    - livetext: dotted variables
    - livetexxt: better way to do _include
+   - livetext: mixin as module
    - start using keyword parameters as needed
    - rethink remove/delete/kill and other verbs
    - remove dead code!!
@@ -22,7 +23,6 @@
    - links manager
    - also query for title when view is created
    - revamp dirs (see dir.struct)
-   - alternate config file format
    - verify image assets
    - update only "stale" items
    - commands to edit templates, config, etc.? ('config' command?) (See notes.txt)
@@ -86,6 +86,7 @@
 
 ---
 
+ x - deepen structure of theme
  x - fix themes/standard issue
  x - improve gemspec
  x - work on sidebar "cards"!

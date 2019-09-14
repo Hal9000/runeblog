@@ -8,9 +8,13 @@
 
 .include global.lt3
 .include blog/head.lt3
+. post head stuff...
+
+. html/body mismatch?
+
 <section class="post">
   <div class="entry-content">
-    $.include post-index.lt3
+    $.include post/index.lt3
   </div>
 </section>
 </body>
