@@ -1,5 +1,17 @@
+.mixin liveblog
+
+. FIXME?
+
+<html>
+  <!-- Editing this file is not recommended.   -->
+  <!-- It was generated from $File on $$date.  -->
+
+.include global.lt3
+.include blog/head.lt3
 <section class="post">
   <div class="entry-content">
-  POST
+    $.include post-index.lt3
   </div>
 </section>
+</body>
+</html>

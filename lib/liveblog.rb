@@ -290,6 +290,12 @@ def _var(name)  # FIXME scope issue!
 end
 
 def head
+  _out "<head>"
+  args = _args
+  args.each do |inc|
+    self.data = inc
+    _include
+  end
   # Depends on vars: title, desc, host
   defaults = {}
   defaults = { "charset"        => %[<meta charset="utf-8">],
@@ -315,7 +321,7 @@ def head
     case word
       when "viewport"
         result["viewport"] = %[<meta name="viewport" content="#{remain}">]
-      when "script"
+      when "script"  # FIXME this is broken
         file = remain
         text = File.read(file)
         result["script"] = Livetext.new.transform(text)
@@ -329,7 +335,6 @@ def head
   end
   hash = defaults.dup.update(result)  # FIXME collisions?
 #  _out "<html lang=en_US>"
-  _out "<head>"
   hash.each_value {|x| _out "  " + x }
   _out "</head>"
   _out "<body>"
@@ -481,7 +486,7 @@ end
 def _teaser(slug)
   id = slug.to_i
   text = nil
-  post_entry_name = @theme + "blog-_postentry.lt3"
+  post_entry_name = @theme + "blog/post_entry.lt3"
   @_post_entry ||= File.read(post_entry_name)
   vp = _post_lookup(id)
   nslug, aslug, title, date, teaser_text = 

@@ -105,34 +105,11 @@ class RuneBlog::Post
     error(err)
   end 
 
-  def build   # THIS CODE WILL GO AWAY
+  def build
     post = self
     views = post.meta.views
     text = File.read(@draft)
-
-@blog.generate_post(@draft)
-return
-
-STDERR.puts "-- Post#build starts in #{Dir.pwd} ..."
-
-    @meta.views.each do |view_name|   
-      # Create dir using slug (index.html, metadata?)
-      dir = "#{@blog.root}/views/#{view_name}/posts/"
-      pdir = dir + meta.slug + "/"
-      create_dir(pdir) unless Dir.exist?(pdir)
-      Dir.chdir(pdir) do
-        title_name  = pdir + (meta.slug + ".lt3").sub(/^\d{4}-/, "")
-        dump(text, title_name)
-        cmd = "livetext #{title_name} >#{title_name.sub(/.lt3$/, ".html")}"
-STDERR.puts "---  In #{pdir}"
-STDERR.puts "---  cmd = #{cmd}\n "
-        system(cmd)
-      end
-    end
-    @meta
-  rescue => err
-    p err
-    puts err.backtrace.join("\n")
+    @blog.generate_post(@draft)
   end
 end
 

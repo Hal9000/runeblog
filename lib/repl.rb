@@ -233,7 +233,6 @@ module RuneBlog::REPL
     # Simplify this
     tag = "#{'%04d' % id}"
     files = Find.find(@blog.root+"/drafts").to_a
-p files
     files = files.grep(/#{tag}-.*lt3/)
     files = files.map {|f| File.basename(f) }
     if files.size > 1
@@ -252,27 +251,7 @@ p files
     file = files.first
     draft = "#{@blog.root}/drafts/#{file}"
     result = edit_file(draft)
-
-STDERR.puts "Calling gp: pwd = #{Dir.pwd}  draft = #{draft}"
-puts
-
     @blog.generate_post(draft)
-return
-
-# NEW code...
-    view = @blog.view
-    # livetext source > naked post 9999-slug (dir?)
-    draft = @blog.root + "/drafts/#{file}"
-#   theme = "#{@blog.view.dir}/themes/standard"
-#   src = "#{theme}/post-index.lt3"
-    
-    system("cp #{draft} #{src}") # terms are confusing
-    file2 = file.sub(/.lt3$/, ".html")
-    Dir.chdir(theme) do 
-      system("livetext index.lt3 >#{file2}")
-    end
-#   @blog.rebuild_post(file)
-    @out
   end
 
   def cmd_list_views(arg, testing = false)

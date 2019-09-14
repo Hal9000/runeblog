@@ -1,23 +1,30 @@
-   - fix themes/standard issue
-   - deepen structure of theme
-   - improve gemspec
-   - livetext -m
-   - add permalinks (with no Back, add link to view)
    - add header data to post!
    - add CSS ref to post?
+   - deepen structure of theme
+   - add permalinks (with no Back, add link to view)
    - verify preview/browse still work
-   - work on sidebar "cards"!
+   - css/ directory?
+   - bootstrap_etc file? css or lt3?
+
+   - livetext: open/close
+   - livetext: $$incr ?
+   - livetext -m
+   - livetext: mixin as module
+   - livetext: dotted variables
+   - livetexxt: better way to do _include
    - start using keyword parameters as needed
    - rethink remove/delete/kill and other verbs
    - remove dead code!!
    - factor generic HTML out of liveblog.rb
    - work on .banner!
+   - create tag cloud
+   - page manager
+   - links manager
    - also query for title when view is created
    - revamp dirs (see dir.struct)
    - alternate config file format
    - verify image assets
    - update only "stale" items
-   - create tag cloud
    - commands to edit templates, config, etc.? ('config' command?) (See notes.txt)
    - "pinned" or favorite posts? ("best" tag? or pin command that understands views?)
    - add views to lsd/lsp output
@@ -79,6 +86,9 @@
 
 ---
 
+ x - fix themes/standard issue
+ x - improve gemspec
+ x - work on sidebar "cards"!
  x - ditch .blogs/data
  x - post ID into HTML as comment
  x - add Back to post

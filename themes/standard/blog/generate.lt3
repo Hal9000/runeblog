@@ -5,7 +5,7 @@
   <!-- It was generated from $File on $$date.  -->
 
 .include global.lt3
-.include blog-head.lt3
+.include blog/head.lt3
   <body>
     $.include navbar.lt3
     <div class="content container-fluid mt-4">

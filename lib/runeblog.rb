@@ -1,5 +1,4 @@
 require 'date'
-# require 'livetext'
 
 require 'runeblog_version'
 require 'global'
@@ -25,7 +24,6 @@ class RuneBlog
   make_exception(:CantCreateDir,     "Can't create directory $1")
   make_exception(:EditorProblem,     "Could not edit $1")
   make_exception(:NoSuchView,        "No such view: $1")
-# make_exception(:LivetextError,     "Livetext#process_file returned nil for $1")
   make_exception(:NoBlogAccessor, "Runeblog.blog is not set")
 
   
@@ -185,12 +183,14 @@ class RuneBlog
     create_dir('posts')
 
     create_dir('staging')
-    create_dir('staging/assets')
+#   create_dir('staging/assets')
+#   create_dir('staging/blog')
     create_dir('remote')
-    create_dir('remote/assets')
+#   create_dir('remote/assets')
 
     copy!("themes/standard/*", "staging/")
-    copy("themes/standard/assets/*", "remote/assets/")
+#   copy!("themes/standard/blog/*", "staging/blog/")
+    copy!("themes/standard/*", "remote/")
 
     pub = "user: xxx\nserver: xxx\ndocroot: xxx\npath: xxx\nproto: xxx\n"
     dump(pub, "publish")
@@ -248,7 +248,7 @@ class RuneBlog
   def teaser(slug)
     id = slug.to_i
     text = nil
-    post_entry_name = @theme + "/blog-_postentry.lt3"
+    post_entry_name = @theme + "/blog/post_entry.lt3"
     @_post_entry ||= File.read(post_entry_name)
     vp = post_lookup(id)
     nslug, aslug, title, date, teaser_text = 
@@ -412,7 +412,7 @@ class RuneBlog
           copy html, "../remote"
           collect_recent_posts("recent.html")
           copy("recent.html", "../remote")
-          livetext "blog-generate",  "../remote/index"
+          livetext "blog/generate",  "../remote/index"
         end
       end
     end
