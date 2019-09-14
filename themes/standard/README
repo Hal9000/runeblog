@@ -1,3 +1,36 @@
+New structire:
+
+.
+├── README
+├── assets
+├── banner
+├── blog
+│   ├── generate.lt3
+│   ├── head.lt3
+│   ├── index.lt3
+│   └── post_entry.lt3
+├── etc
+│   ├── blog.css
+│   ├── externals.lt3
+│   └── favicon.ico
+├── global.lt3
+├── head.lt3
+├── liveblog.out
+├── meta.lt3
+├── navbar
+│   ├── about.html
+│   └── navbar.lt3
+├── pages
+├── post
+│   ├── generate.lt3
+│   ├── head.lt3
+│   └── index.lt3
+└── sidebar
+    ├── ad.lt3
+    ├── calendar.lt3
+    ├── news.lt3
+    └── tag-cloud.lt3
+
 
 templates                     The first "default theme" - more later
 ├── README                    This file

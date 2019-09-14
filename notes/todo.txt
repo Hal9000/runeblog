@@ -2,11 +2,14 @@
    - add CSS ref to post?
    - add permalinks (with no Back, add link to view)
    - verify preview/browse still work
-   - css/ directory?
-   - bootstrap_etc file? css or lt3?
    - Fix: navbar, pages?, links?
    - alternate config file format
 
+   - livetext: .variables (for config)
+   - livetext: permit omission of .lt3
+   - livetext: permit # comments on end of line?
+   - livetext: .include dir/    # refs dir/main.lt3 ?
+   - livetext: escape bug  \.this
    - livetext: open/close
    - livetext: $$incr ?
    - livetext -m
@@ -86,6 +89,8 @@
 
 ---
 
+ x - css/ directory?
+ x - bootstrap_etc file? css or lt3?
  x - deepen structure of theme
  x - fix themes/standard issue
  x - improve gemspec

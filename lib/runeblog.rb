@@ -263,7 +263,7 @@ class RuneBlog
     posts = posts[0..19]  # return 20 at most
     text = <<-HTML
       <html>
-      <head><link rel="stylesheet" href="assets/blog.css"></head>
+      <head><link rel="stylesheet" href="etc/blog.css"></head>
       <body>
     HTML
     # posts = _find_recent_posts

@@ -46,7 +46,7 @@ end
 
 def style
   fname = _args[0]
-  _passthru %[<link rel="stylesheet" href="???/assets/#{fname}')">]
+  _passthru %[<link rel="stylesheet" href="???/etc/#{fname}')">]
 end
 
 # Move elsewhere later!
@@ -280,8 +280,7 @@ def _var(name)  # FIXME scope issue!
   ::Livetext::Vars[name] || "[:#{name} is undefined]"
 end
 
-def head
-  _out "<head>"
+def head  # Does NOT output <head> tags
   args = _args
   args.each do |inc|
     self.data = inc
@@ -300,9 +299,9 @@ def head
                "linkc"          => %[<link rel="canonical" href="#{_var(:host)}">],
                "og:url"         => %[<meta property="og:url" content="#{_var(:host)}">],
                "og:site_name"   => %[<meta property="og:site_name" content="#{_var(:title)}">],
-               "style"          => %[<link rel="stylesheet" href="assets/blog.css">],
+               "style"          => %[<link rel="stylesheet" href="etc/blog.css">],
                "feed"           => %[<link type="application/atom+xml" rel="alternate" href="#{_var(:host)}/feed.xml" title="#{_var(:title)}">],
-               "favicon"        => %[<link rel="shortcut icon" type="image/x-icon" href="../assets/favicon.ico">\n <link rel="apple-touch-icon" href="../assets/favicon.ico">]
+               "favicon"        => %[<link rel="shortcut icon" type="image/x-icon" href="../etc/favicon.ico">\n <link rel="apple-touch-icon" href="../etc/favicon.ico">]
              }
   result = {}
   lines = _body
@@ -317,7 +316,7 @@ def head
         text = File.read(file)
         result["script"] = Livetext.new.transform(text)
       when "style"
-        result["style"] = %[<link rel="stylesheet" href="('/assets/#{remain}')">]
+        result["style"] = %[<link rel="stylesheet" href="('/etc/#{remain}')">]
       # Later: allow other overrides
       when ""; break
       else
@@ -327,7 +326,6 @@ def head
   hash = defaults.dup.update(result)  # FIXME collisions?
 #  _out "<html lang=en_US>"
   hash.each_value {|x| _out "  " + x }
-  _out "</head>"
   _out "<body>"
 end
 
@@ -355,13 +353,6 @@ end
 def recent_posts    # side-effect
   _out %[<div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">]
   all_teasers
-  ## which = _args[0]
-  ## case which
-  ##   when "recent_posts"
-  ##     all_teasers
-  ##   when "post"   # No longer needed??
-  ##     _out %[<iframe style="width: 100vw;height: 100vh;position: relative;" src='whats-at-stubbs.html' width=100% frameborder="0" allowfullscreen></iframe>]
-  ## end
   _out %[</div>]
 end
 
@@ -439,7 +430,7 @@ def all_teasers
 
   text = <<-HTML
     <html>
-    <head><link rel="stylesheet" href="assets/blog.css"></head>
+    <head><link rel="stylesheet" href="etc/blog.css"></head>
     <body>
   HTML
   posts = _find_recent_posts
