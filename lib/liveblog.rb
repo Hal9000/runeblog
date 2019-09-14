@@ -383,7 +383,7 @@ def sidebar
   _out %[</div>]
 end
 
-def sidebar2
+def sidebar!
   _out %[<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">]
   _args do |line|
     tag = line.chomp.strip
