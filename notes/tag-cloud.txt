@@ -1,0 +1,9 @@
+The command .tags specifies any/all tags for a post
+When a draft is processed, the tags will be collected
+Backend Idea: 
+  - somewhere there is a "tags" directory
+  - each file in it is named for a tag
+  - each file has a list of drafts (uniq'd in case of reprocessing)
+Frontend: Who knows??
+  - reads all the tag files
+  - turns into magic HTML (see tag-cloud mockup)
