@@ -1,11 +1,12 @@
-   - cards as .lt3 files
-   - add header data to post!
-   - add CSS ref to post?
-   - add permalinks (with no Back, add link to view)
+h  - add header data to post!
+h  - add CSS ref to post?
+h  - add permalinks (with no Back, add link to view)
    - verify preview/browse still work
    - Fix: navbar, pages?, links?
    - alternate config file format
+   - cards as .lt3 files
 
+   - create tag cloud
    - livetext: .variables (for config)
    - livetext: permit omission of .lt3
    - livetext: permit # comments on end of line?
@@ -22,7 +23,6 @@
    - remove dead code!!
    - factor generic HTML out of liveblog.rb
    - work on .banner!
-   - create tag cloud
    - page manager
    - links manager
    - also query for title when view is created
