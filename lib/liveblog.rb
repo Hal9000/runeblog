@@ -510,7 +510,6 @@ def card_iframe
   HTML
 
   _card_generic(card_title: title, middle: middle, extra: "bg-dark text-white")
-
 end
 
 def card1

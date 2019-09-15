@@ -179,7 +179,8 @@ class RuneBlog
       create_dirs(:assets, :posts)
       create_dirs(:staging, :remote)
       copy!("themes/standard/*", "staging/")
-      copy!("themes/standard/*", "remote/")
+      copy!("themes/standard/etc", "remote/")
+      copy!("themes/standard/assets", "remote/")
 
       pub = "user: xxx\nserver: xxx\ndocroot: xxx\npath: xxx\nproto: xxx\n"
       dump(pub, "publish")

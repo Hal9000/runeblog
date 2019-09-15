@@ -1,3 +1,4 @@
+   - cards as .lt3 files
    - add header data to post!
    - add CSS ref to post?
    - add permalinks (with no Back, add link to view)
