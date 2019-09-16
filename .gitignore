@@ -3,3 +3,9 @@ runeblog*.gem
 out-stats
 .idea/
 binblog.txt
+banner/
+config
+foo.*
+junk?/
+publish
+stderr.out

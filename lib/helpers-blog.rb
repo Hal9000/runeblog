@@ -14,7 +14,7 @@ module RuneBlog::Helpers
 
   def livetext(src, dst)
     src << ".lt3" unless src.end_with?(".lt3")
-    dst << ".html" unless src.end_with?(".html")
+    dst << ".html" unless dst.end_with?(".html")
     system("livetext #{src} >#{dst}")
   end
 

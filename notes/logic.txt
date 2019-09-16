@@ -1,0 +1,3 @@
+When a post is created (in drafts):
+  - it should be copied to each view
+  - it should be built in each view?

@@ -396,9 +396,17 @@ class RuneBlog
         copy!("#{@theme}/*", "#{staging}")
         copy(lt3, staging)
         html = noext[5..-1]
+        livetext draft, html
+STDERR.puts "pwd = #{Dir.pwd}"
+        copy(draft, "../../staging/post/index.html")
+        title_line = File.readlines(draft).grep(/^.title /).first
+        title = title_line.split(" ", 2)[1]
+        excerpt = File.read("teaser.txt")
+        vars = %[.set title="#{title.chomp}"\n] + 
+               %[.set teaser="#{excerpt.chomp}"]
         Dir.chdir(staging) do 
-          livetext draft, html
-          # link to POST??
+          File.open("vars.lt3", "w") {|f| f.puts vars }
+          livetext "post/generate.lt3", html
           copy html, "../remote"
           collect_recent_posts("recent.html")
           copy("recent.html", "../remote")

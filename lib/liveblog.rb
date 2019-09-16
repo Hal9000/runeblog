@@ -193,8 +193,8 @@ def write_post
   @postdir.gsub!(/\/\//, "/")  # FIXME unneeded?
   Dir.mkdir(@postdir) unless Dir.exist?(@postdir) # FIXME remember assets!
   Dir.chdir(@postdir)
-  @meta.views = @meta.views.join(" ")
-  @meta.tags  = @meta.tags.join(" ") rescue ""
+  @meta.views = @meta.views.join(" ") if @meta.views.is_a? Array
+  @meta.tags  = @meta.tags.join(" ") if @meta.tags.is_a? Array
   File.write("teaser.txt", @meta.teaser)
   
   fields = [:num, :title, :date, :pubdate, :views, :tags]
@@ -212,6 +212,7 @@ end
 def teaser
   raise "'post' was not called" unless @meta
   @meta.teaser = _body_text
+  setvar :teaser, @meta.teaser
   _out @meta.teaser + "\n"
   # FIXME
 end
@@ -290,17 +291,17 @@ def head  # Does NOT output <head> tags
   defaults = {}
   defaults = { "charset"        => %[<meta charset="utf-8">],
                "http-equiv"     => %[<meta http-equiv="X-UA-Compatible" content="IE=edge">],
-               "title"          => %[<title>\n  #{_var(:title)} | #{_var(:desc)}\n  </title>],
+               "title"          => %[<title>\n  #{_var(:blog)} | #{_var(:blog_desc)}\n  </title>],
                "generator"      => %[<meta name="generator" content="Runeblog v #@version">],
-               "og:title"       => %[<meta property="og:title" content="#{_var(:title)}">],
-               "og:locale"      => %[<meta property="og:locale" content="en_US">],
-               "description"    => %[<meta name="description" content="#{_var(:desc)}">],
-               "og:description" => %[<meta property="og:description" content="#{_var(:desc)}">],
+               "og:title"       => %[<meta property="og:title" content="#{_var(:blog)}">],
+               "og:locale"      => %[<meta property="og:locale" content="#{_var(:locale)}">],
+               "description"    => %[<meta name="description" content="#{_var(:blog_desc)}">],
+               "og:description" => %[<meta property="og:description" content="#{_var(:blog_desc)}">],
                "linkc"          => %[<link rel="canonical" href="#{_var(:host)}">],
                "og:url"         => %[<meta property="og:url" content="#{_var(:host)}">],
-               "og:site_name"   => %[<meta property="og:site_name" content="#{_var(:title)}">],
+               "og:site_name"   => %[<meta property="og:site_name" content="#{_var(:blog)}">],
                "style"          => %[<link rel="stylesheet" href="etc/blog.css">],
-               "feed"           => %[<link type="application/atom+xml" rel="alternate" href="#{_var(:host)}/feed.xml" title="#{_var(:title)}">],
+               "feed"           => %[<link type="application/atom+xml" rel="alternate" href="#{_var(:host)}/feed.xml" title="#{_var(:blog)}">],
                "favicon"        => %[<link rel="shortcut icon" type="image/x-icon" href="../etc/favicon.ico">\n <link rel="apple-touch-icon" href="../etc/favicon.ico">]
              }
   result = {}
@@ -319,12 +320,19 @@ def head  # Does NOT output <head> tags
         result["style"] = %[<link rel="stylesheet" href="('/etc/#{remain}')">]
       # Later: allow other overrides
       when ""; break
+    else
+STDERR.puts "-- got '#{word}'; old value = #{result[word].inspect}"
+      if defaults[word]
+        result[word] = %[<meta property="#{word}" content="#{remain}">]
+STDERR.puts "-- new value = #{result[word].inspect}"
       else
         puts "Unknown tag '#{word}'"
+      end
     end
   end
   hash = defaults.dup.update(result)  # FIXME collisions?
-#  _out "<html lang=en_US>"
+
+# _out "<!-- "; _out hash.inspect; _out "--> "
   hash.each_value {|x| _out "  " + x }
   _out "<body>"
 end
@@ -569,7 +577,7 @@ rescue
 end
 
 def navbar
-  title = _var(:title)
+  title = _var(:blog)
   open = <<-HTML
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <a class="navbar-brand" href="index.html">#{title}</a>

@@ -1,0 +1,61 @@
+Template stuff...
+-----------------
+_postentry.lt3           ?
+application.css          
+blog-generate.lt3         
+blog-meta.lt3                  
+blog-head.lt3             
+global.lt3                
+
+Tasks...
+--------
+Create or edit a post:  generate index (entries), post
+
+
+
+HAL9000:runeblog Hal$ ls -l .blogs/data/views/around_austin/themes/standard/
+ 1658 Jul  6 20:59 README
+   74 Jul  6 20:59 about.html
+  156 Jul  6 20:59 assets-application.css
+  318 Jul  6 20:59 assets-favicon.ico
+  494 Jul  6 20:59 blog-_postentry.lt3
+  274 Jul  6 20:59 blog-application.css
+  348 Jul  6 20:59 blog-generate.lt3
+  105 Jul  6 20:59 blog-index.lt3
+  146 Jul  6 20:59 blog-meta.lt3
+   78 Jul  6 20:59 blog-navbar.lt3
+  179 Jul  6 20:59 global.lt3
+  707 Jul  6 20:59 head.lt3
+  146 Jul  6 20:59 meta.lt3
+   80 Jul  6 20:59 post-generate.lt3
+   91 Jul  6 20:59 post-head.lt3
+  277 Jul  6 20:59 post-index.lt3
+  135 Jul  6 20:59 sidebar-ad.lt3
+  161 Jul  6 20:59 sidebar-calendar.lt3
+  462 Jul  6 20:59 sidebar-news.lt3
+  407 Jul  6 20:59 sidebar-tag-cloud.lt3
+
+.
+├── README
+├── blog
+│   ├── assets
+│   │   ├── application.css
+│   │   └── favicon.ico
+│   ├── _postentry.lt3
+│   ├── application.css
+│   ├── blog-generate.lt3
+│   ├── index.lt3
+│   ├── blog-meta.lt3    SAME
+│   ├── navbar.lt3
+│   └── sidebar
+│       ├── ad.lt3
+│       ├── calendar.lt3
+│       ├── news.lt3
+│       └── tag-cloud.lt3
+├── global.lt3
+├── head.lt3
+├── meta.lt3
+└── post
+    ├── generate.lt3
+    ├── head.lt3
+    └── index.lt3

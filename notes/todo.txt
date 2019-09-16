@@ -1,10 +1,10 @@
-h  - add header data to post!
-h  - add CSS ref to post?
-h  - add permalinks (with no Back, add link to view)
+   - add permalinks (with no Back, add link to view)
+   - get publish to work
    - verify preview/browse still work
    - Fix: navbar, pages?, links?
    - alternate config file format
    - cards as .lt3 files
+   - add CSS ref to post?
 
    - create tag cloud
    - livetext: .variables (for config)
@@ -90,6 +90,7 @@ h  - add permalinks (with no Back, add link to view)
 
 ---
 
+ x - add header data to post!
  x - css/ directory?
  x - bootstrap_etc file? css or lt3?
  x - deepen structure of theme

@@ -1,7 +1,13 @@
-.set author="Hal Fulton"
-.set title="My Blog (and Welcome To It)"
-.set desc="All the stuff you never needed to know"
-.set host=localhost:4000//
+.variables
+author      Hal Fulton
+blog        My Blog (and Welcome To It)
+blog_desc   All the stuff you never needed to know
+host        localhost:4000//
+charset     utf-8
+site        rubyhacker.com
+url         localhost:4000//
+locale      en_US
+.end
 
 .  Maybe move publish info here?
 
