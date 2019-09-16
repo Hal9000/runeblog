@@ -1,5 +1,5 @@
 runeblog*.gem
-.blogs
+/.blogs
 out-stats
 .idea/
 binblog.txt
@@ -9,3 +9,5 @@ foo.*
 junk?/
 publish
 stderr.out
+/config
+/tags
