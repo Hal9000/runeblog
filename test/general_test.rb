@@ -2,7 +2,7 @@ $LOAD_PATH << "."
 # require "test_helper"
 
 require "minitest/autorun"
-require "minitest/fail_fast"
+#require "minitest/fail_fast"
 
 require 'runeblog'
 require 'lib/repl'
