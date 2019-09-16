@@ -1,22 +1,17 @@
-   - add permalinks (with no Back, add link to view)
-   - get publish to work
-   - verify preview/browse still work
    - Fix: navbar, pages?, links?
-   - alternate config file format
+   - variables inside blog.css
    - cards as .lt3 files
    - add CSS ref to post?
+   - fix post and blog headers
 
    - create tag cloud
-   - livetext: .variables (for config)
    - livetext: permit omission of .lt3
    - livetext: permit # comments on end of line?
    - livetext: .include dir/    # refs dir/main.lt3 ?
-   - livetext: escape bug  \.this
    - livetext: open/close
    - livetext: $$incr ?
    - livetext -m
    - livetext: dotted variables
-   - livetexxt: better way to do _include
    - livetext: mixin as module
    - start using keyword parameters as needed
    - rethink remove/delete/kill and other verbs
@@ -90,7 +85,14 @@
 
 ---
 
+ x - alternate config file format (.variables)
+ x - add permalinks (with no Back, add link to view)
+ x - get publish to work
+ x - verify preview/browse still work
  x - add header data to post!
+ x - livetext: .variables (for config)
+ x - livetext: escape bug  \.this
+ x - livetext: better way to do _include
  x - css/ directory?
  x - bootstrap_etc file? css or lt3?
  x - deepen structure of theme

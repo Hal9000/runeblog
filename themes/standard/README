@@ -1,36 +1,36 @@
-New structire:
+New structure:
 
-.
-├── README
-├── assets
-├── banner
-├── blog
-│   ├── generate.lt3
-│   ├── head.lt3
-│   ├── index.lt3
-│   └── post_entry.lt3
-├── etc
-│   ├── blog.css
-│   ├── externals.lt3
-│   └── favicon.ico
-├── global.lt3
-├── head.lt3
-├── liveblog.out
-├── meta.lt3
-├── navbar
-│   ├── about.html
-│   └── navbar.lt3
-├── pages
-├── post
-│   ├── generate.lt3
-│   ├── head.lt3
-│   └── index.lt3
-└── sidebar
-    ├── ad.lt3
-    ├── calendar.lt3
-    ├── news.lt3
-    └── tag-cloud.lt3
+themes/standard           The first "default theme" - more later
+├── README                This file
+├── assets                Assets (images/videos/etc) for entire view
+├── banner                Top banner for the view
+├── blog                  All files/info for view
+│   ├── generate.lt3      Generate index.html from wrapper (rarely edited)
+│   ├── head.lt3          Header info for index.html
+│   ├── index.lt3         "Guts" of view (user-edited, wrapped by generate.lt3) 
+│   └── post_entry.lt3          
+├── etc          
+│   ├── blog.css          
+│   ├── externals.lt3          
+│   └── favicon.ico          
+├── global.lt3          
+├── navbar          
+│   ├── about.html          
+│   └── navbar.lt3          
+├── pages          
+├── post          
+│   ├── generate.lt3          
+│   ├── head.lt3          
+│   ├── index.lt3          
+│   └── permalink.lt3          
+└── sidebar          
+    ├── ad.lt3          
+    ├── calendar.lt3          
+    ├── news.lt3          
+    └── tag-cloud.lt3          
 
+
+Old structure:
 
 templates                     The first "default theme" - more later
 ├── README                    This file

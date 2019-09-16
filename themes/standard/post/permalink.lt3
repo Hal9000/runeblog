@@ -21,6 +21,6 @@ description $teaser
 </section>
 
 <br>
-<a href="javascript:history.go(-1)">[Back]</a>
+<a href="../index.html">[Home: $blog]</a>
 </body>
 </html>

@@ -23,9 +23,6 @@ def RuneBlog.post_template(num: 0, title: "No title", date: nil, view: "test_vie
 #{teaser}
 .end
 #{body}
-
-<br>
-<a href="javascript:history.go(-1)">[Back]</a>
 TEXT
 
 end

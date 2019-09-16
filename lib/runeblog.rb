@@ -177,7 +177,7 @@ class RuneBlog
       x = RuneBlog::Default
       copy!("#{Themes}", "themes")
       create_dirs(:assets, :posts)
-      create_dirs(:staging, :remote)
+      create_dirs(:staging, "remote/permalink")
       copy!("themes/standard/*", "staging/")
       copy!("themes/standard/etc", "remote/")
       copy!("themes/standard/assets", "remote/")
@@ -392,12 +392,10 @@ class RuneBlog
         lt3 = draft.split("/")[-1]
         # Remember: Some posts may be in more than one view -- careful with links back
         # system("livetext #{draft} >staging/#{name}/index.html")  # permalink?
-# Structure is borked?
         copy!("#{@theme}/*", "#{staging}")
         copy(lt3, staging)
         html = noext[5..-1]
         livetext draft, html
-STDERR.puts "pwd = #{Dir.pwd}"
         copy(draft, "../../staging/post/index.html")
         title_line = File.readlines(draft).grep(/^.title /).first
         title = title_line.split(" ", 2)[1]
@@ -408,6 +406,7 @@ STDERR.puts "pwd = #{Dir.pwd}"
           File.open("vars.lt3", "w") {|f| f.puts vars }
           livetext "post/generate.lt3", html
           copy html, "../remote"
+          livetext "post/permalink.lt3", "../remote/permalink/#{html}"
           collect_recent_posts("recent.html")
           copy("recent.html", "../remote")
           livetext "blog/generate",  "../remote/index"
