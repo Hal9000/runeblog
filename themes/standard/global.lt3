@@ -7,6 +7,15 @@ charset     utf-8
 site        rubyhacker.com
 url         localhost:4000//
 locale      en_US
+
+post_title_color  #010101
+post_title_size   28px
+
+post_text_color   #0101a1
+post_text_size    22px
+
+post_date_color   #9a9a9a
+post_date_size    15px
 .end
 
 .  Maybe move publish info here?

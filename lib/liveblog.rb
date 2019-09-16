@@ -451,7 +451,7 @@ def all_teasers
   end
   text << "</body></html>"
   File.write("recent.html", text)
-  _out %[<iframe style="width: 100vw;height: 100vh;position: relative;" src='recent.html' width=100% frameborder="0" allowfullscreen></iframe>]
+  _out %[<iframe id="main" style="width: 100vw;height: 100vh;position: relative;" src='recent.html' width=100% frameborder="0" allowfullscreen></iframe>]
 end
 
 def _post_lookup(postid)    # side-effect
@@ -578,6 +578,7 @@ end
 
 def navbar
   title = _var(:blog)
+
   open = <<-HTML
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <a class="navbar-brand" href="index.html">#{title}</a>
@@ -590,7 +591,6 @@ def navbar
               aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-
       <div class="collapse navbar-collapse pull-right" 
            id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
@@ -605,11 +605,14 @@ def navbar
   _out open
   _body do |line|
     href, cdata = line.chomp.strip.split(" ", 2)
+# <!-- href="javascript:void(0);" onClick="urlChange('www.mypdf.com/test.pdf')" -->
     if first
       first = false
       _out %[<li class="nav-item active"> <a class="nav-link" href="#{href}">#{cdata}<span class="sr-only">(current)</span></a> </li>]
     else
-      _out %[<li class="nav-item"> <a class="nav-link" href="#{href}">#{cdata}</a> </li>]
+      href = "navbar/#{href}"
+      href_click = %[href="javascript:void(0)" onclick="javascript:open_main('#{href}')"]
+      _out %[<li class="nav-item"> <a class="nav-link" #{href_click}>#{cdata}</a> </li>]
     end
   end
   _out close

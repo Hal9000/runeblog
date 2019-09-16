@@ -12,9 +12,16 @@ module RuneBlog::Helpers
     system("cp -r #{src}  #{dst}")
   end
 
+  def stale?(src, dst)
+    return true unless File.exist?(dst)
+    return true if File.mtime(src) > File.mtime(dst)
+    return false
+  end
+
   def livetext(src, dst)
     src << ".lt3" unless src.end_with?(".lt3")
     dst << ".html" unless dst.end_with?(".html")
+    return unless stale?(src, dst)
     system("livetext #{src} >#{dst}")
   end
 
@@ -65,7 +72,7 @@ module RuneBlog::Helpers
     vals
   end
 
-def put_config(root:, view:"test_view", editor: "/bin/vim")
+def put_config(root:, view:"test_view", editor: "/usr/local/bin/vim")
   Dir.mkdir(root) unless Dir.exist?(root)
   Dir.chdir(root) do 
     File.open("config", "w") do |cfg|

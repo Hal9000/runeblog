@@ -1,15 +1,16 @@
-# require 'runeblog'
+require 'runeblog'
 require 'global'
 require 'ostruct'
 require 'helpers-repl'  # FIXME structure
 
 make_exception(:PublishError,  "Error during publishing")
-# make_exception(:EditorProblem, "Could not edit $1")
+make_exception(:EditorProblem, "Could not edit $1")
 
 module RuneBlog::REPL
 
   def edit_file(file)
     result = system("#{@blog.editor} #{file}")
+STDERR.puts "editor = #{@blog.editor} FILE = #{file}"
     raise EditorProblem(file) unless result
     sleep 0.1
     STDSCR.clear

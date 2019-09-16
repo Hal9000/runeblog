@@ -177,15 +177,14 @@ class RuneBlog
       x = RuneBlog::Default
       copy!("#{Themes}", "themes")
       create_dirs(:assets, :posts)
-      create_dirs(:staging, "remote/permalink")
+      create_dirs(:staging, "remote/permalink", "remote/navbar")
+      livetext "themes/standard/etc/blog.css.lt3", "themes/standard/etc/blog.css"   # simplify this
       copy!("themes/standard/*", "staging/")
       copy!("themes/standard/etc", "remote/")
       copy!("themes/standard/assets", "remote/")
 
       pub = "user: xxx\nserver: xxx\ndocroot: xxx\npath: xxx\nproto: xxx\n"
       dump(pub, "publish")
-
-      # Add to global.lt3 here?  FIXME
 
       view = RuneBlog::View.new(arg)
       self.view = view
@@ -210,14 +209,6 @@ class RuneBlog
     files += posts.map {|x| "#{vdir}/#{x}" }
     # Huh? 
     files.reject! {|f| File.mtime(f) < File.mtime("#{vdir}/last_published") }
-  end
-
-  def files_by_id(id)   # FIXME get rid of this later
-    raise ArgumentError unless id.is_a?(Integer)
-    files = Find.find(self.view.dir).to_a
-    tag = prefix(id)
-    result = files.grep(/#{tag}-/)
-    result
   end
 
   def post_lookup(postid)    # side-effect?
@@ -278,11 +269,10 @@ class RuneBlog
     text << "</body></html>"
     File.write(file, text) # FIXME ???
     iframe_text = <<-HTML
-      <iframe style="width: 100vw;height: 100vh;position: relative;" 
+      <iframe name="main" style="width: 100vw;height: 100vh;position: relative;" 
               src='recent.html' width=100% frameborder="0" allowfullscreen>
       </iframe>
     HTML
-    # _out iframe_text # FIXME ??
   end
 
   def create_new_post(title, testing = false, teaser: nil, body: nil, other_views: [])
@@ -409,6 +399,7 @@ class RuneBlog
           livetext "post/permalink.lt3", "../remote/permalink/#{html}"
           collect_recent_posts("recent.html")
           copy("recent.html", "../remote")
+          copy!("navbar/*html", "../remote/navbar/")
           livetext "blog/generate",  "../remote/index"
         end
       end
@@ -424,7 +415,7 @@ class RuneBlog
     check_meta(meta, "index_entry1")
     raise ArgumentError unless view.is_a?(String) || view.is_a?(RuneBlog::View)
     check_meta(meta, "index_entry2")
-    self.make_slug(meta)    # RuneBlog#index_entry
+    self.make_slug(meta)
     check_meta(meta, "index_entry3")
     # FIXME clean up and generalize
     ref = "#{view}/#{meta.slug}/index.html"
@@ -487,12 +478,6 @@ class RuneBlog
     raise ArgumentError unless num.is_a?(Integer)
     tag = prefix(num)
     system("rm -rf #@root/drafts/#{tag}-*")
-  end
-
-  def post_exists?(num)
-    raise ArgumentError unless num.is_a?(Integer)
-    list = files_by_id(num)  # FIXME search under view dirs
-    list.empty? ? nil : list
   end
 
   def make_slug(meta)

@@ -1,5 +1,4 @@
    - Fix: navbar, pages?, links?
-   - variables inside blog.css
    - cards as .lt3 files
    - add CSS ref to post?
    - fix post and blog headers
@@ -10,9 +9,7 @@
    - livetext: .include dir/    # refs dir/main.lt3 ?
    - livetext: open/close
    - livetext: $$incr ?
-   - livetext -m
-   - livetext: dotted variables
-   - livetext: mixin as module
+   - livetext: mixin as module (livetext -m)
    - start using keyword parameters as needed
    - rethink remove/delete/kill and other verbs
    - remove dead code!!
@@ -85,6 +82,9 @@
 
 ---
 
+ x - navbar into main portion of front page
+ x - livetext: dotted variables
+ x - variables inside blog.css
  x - alternate config file format (.variables)
  x - add permalinks (with no Back, add link to view)
  x - get publish to work
