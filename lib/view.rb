@@ -38,14 +38,10 @@ class RuneBlog::View
 
   def publishable_files
     vdir = dir()
-    files = [local_index()]
-    others = Dir.entries(vdir + "/remote").grep(/^\d\d\d\d/).map {|x| "#{vdir}/remote/#{x}" }
-abort "FIXME... publishable_files"
-    deep_assets = Dir["#{vdir}/themes/standard/assets/*"]
-    deep_assets.each do |file|   # Do this at view creation
-      cmd = "cp #{file} #{vdir}/assets"
-      system(cmd)
-    end
+    remote = local_index()
+    files = [remote]
+    others = Dir.entries(vdir + "/remote").map {|x| "#{vdir}/remote/#{x}" }
+
     assets = Dir.entries("#{vdir}/assets") - %w[. ..]
     assets.map! {|x| "#{vdir}/assets/#{x}" }
     assets.reject! {|x| File.directory?(x) }
