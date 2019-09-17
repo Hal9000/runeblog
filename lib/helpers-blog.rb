@@ -18,9 +18,13 @@ module RuneBlog::Helpers
     return false
   end
 
-  def livetext(src, dst)
+  def livetext(src, dst=nil)
     src << ".lt3" unless src.end_with?(".lt3")
-    dst << ".html" unless dst.end_with?(".html")
+    if dst
+      dst << ".html" unless dst.end_with?(".html")
+    else
+      dst = src.sub(/.lt3$/, "")
+    end
     return unless stale?(src, dst)
     system("livetext #{src} >#{dst}")
   end

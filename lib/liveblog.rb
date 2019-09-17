@@ -368,8 +368,11 @@ def sidebar
   _out %[<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">]
   _body do |line|
     tag = line.chomp.strip
-    self.data = "sidebar/#{tag.downcase}.lt3"
-    _include 
+    source = "sidebar/#{tag.downcase}.lt3"
+    unless File.exist?(source)
+      source = "widgets/#{tag.downcase}.lt3"
+    end
+    _include_file source
   end
   _out %[</div>]
 end
@@ -378,8 +381,11 @@ def sidebar!
   _out %[<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">]
   _args do |line|
     tag = line.chomp.strip
-    self.data = "sidebar/#{tag.downcase}.lt3"
-    _include 
+    source = "sidebar/#{tag.downcase}.lt3"
+    unless File.exist?(source)
+      source = "widgets/#{tag.downcase}/main.lt3"
+    end
+    _include_file source
   end
   _out %[</div>]
 end
@@ -520,16 +526,21 @@ def card_iframe
   _card_generic(card_title: title, middle: middle, extra: "bg-dark text-white")
 end
 
+def _main(url)
+  %[href="javascript: void(0)" onclick="javascript:open_main('#{url}')"]
+end
+
 def card1
   title, lines = _data, _body
   lines.map!(&:chomp)
 
   card_text = lines[0]
   url, target, classname, cdata = lines[1].split(",", 4)
+  main = _main(url)
 
   middle = <<-HTML
     <p class="card-text">#{card_text}</p>
-    <a href="#{url}" target="#{target}" class="#{classname}">#{cdata}</a>
+    <a #{main} class="#{classname}">#{cdata}</a>
   HTML
 
   _card_generic(card_title: title, middle: middle, extra: "bg-dark text-white")
@@ -550,7 +561,8 @@ def card2
   _out open
   _body do |line|
     url, target, cdata = line.chomp.split(",", 3)
-    _out %[<li class="list-group-item"><a href="#{url}" target="#{target}">#{cdata}</a> </li>]
+    main = _main(url)
+    _out %[<li class="list-group-item"><a #{main}}">#{cdata}</a> </li>]
   end
   close = %[       </ul>\n    </div>]
   _out close
@@ -570,7 +582,8 @@ def tag_cloud
   _body do |line|
     line.chomp!
     url, target, classname, cdata = line.split(",", 4)
-    _out %[<a href="#{url}" target="#{target}" class="#{classname}">#{cdata}</a>]
+    main = _main(url)
+    _out %[<a #{main} class="#{classname}">#{cdata}</a>]
   end
 rescue
   puts @live.body
@@ -605,14 +618,13 @@ def navbar
   _out open
   _body do |line|
     href, cdata = line.chomp.strip.split(" ", 2)
-# <!-- href="javascript:void(0);" onClick="urlChange('www.mypdf.com/test.pdf')" -->
+    main = _main(href)
     if first
       first = false
       _out %[<li class="nav-item active"> <a class="nav-link" href="#{href}">#{cdata}<span class="sr-only">(current)</span></a> </li>]
     else
-      href = "navbar/#{href}"
-      href_click = %[href="javascript:void(0)" onclick="javascript:open_main('#{href}')"]
-      _out %[<li class="nav-item"> <a class="nav-link" #{href_click}>#{cdata}</a> </li>]
+      main = _main("navbar/#{href}")
+      _out %[<li class="nav-item"> <a class="nav-link" #{main}>#{cdata}</a> </li>]
     end
   end
   _out close

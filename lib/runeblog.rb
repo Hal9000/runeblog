@@ -178,7 +178,7 @@ class RuneBlog
       copy!("#{Themes}", "themes")
       create_dirs(:assets, :posts)
       create_dirs(:staging, "remote/permalink", "remote/navbar")
-      livetext "themes/standard/etc/blog.css.lt3", "themes/standard/etc/blog.css"   # simplify this
+      livetext "themes/standard/etc/blog.css.lt3" # strip ext
       copy!("themes/standard/*", "staging/")
       copy!("themes/standard/etc", "remote/")
       copy!("themes/standard/assets", "remote/")
