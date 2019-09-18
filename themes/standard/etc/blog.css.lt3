@@ -2,8 +2,8 @@
 .include themes/standard/global.lt3
 
 \.post-title a {
-  color: $post_title_color;
-  font-size: $post_title_size;
+  color: $post.title.color;
+  font-size: $post.title.size;
   float: right;
   display: inline-block;
   text-align: top;
@@ -15,8 +15,8 @@
 }
 
 \.post-title-text a {
-  color: $post_text_color;
-  font-size: $post_text_size; 
+  color: $post.text.color;
+  font-size: $post.text.size; 
 # float: right;
   display: block;
   text-decoration: none;
@@ -27,8 +27,8 @@
 }
 
 \.post-date {
-  color: $post_date_color;
-  font-size: $post_date_size;
+  color: $post.date.color;
+  font-size: $post.date.size;
   display: block;
   float: left;
   text-align: top;
