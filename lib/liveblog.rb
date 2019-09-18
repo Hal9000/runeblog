@@ -518,7 +518,7 @@ def card_iframe
   stuff = lines[1..-1].join(" ")  # FIXME later
   middle = <<-HTML
     <iframe src="#{url}" #{stuff} 
-            style="border: 0" height="350" 
+            style="border: 0" #{stuff}
             frameborder="0" scrolling="no">
     </iframe>
   HTML
@@ -535,7 +535,7 @@ def card1
   lines.map!(&:chomp)
 
   card_text = lines[0]
-  url, target, classname, cdata = lines[1].split(",", 4)
+  url, classname, cdata = lines[1].split(",", 4)
   main = _main(url)
 
   middle = <<-HTML
@@ -560,14 +560,12 @@ def card2
   HTML
   _out open
   _body do |line|
-    url, target, cdata = line.chomp.split(",", 3)
+    url, cdata = line.chomp.split(",", 3)
     main = _main(url)
     _out %[<li class="list-group-item"><a #{main}}">#{cdata}</a> </li>]
   end
   close = %[       </ul>\n    </div>]
   _out close
-rescue
-  puts @live.body
 end
 
 def tag_cloud
@@ -581,12 +579,10 @@ def tag_cloud
   _out open
   _body do |line|
     line.chomp!
-    url, target, classname, cdata = line.split(",", 4)
+    url, classname, cdata = line.split(",", 4)
     main = _main(url)
     _out %[<a #{main} class="#{classname}">#{cdata}</a>]
   end
-rescue
-  puts @live.body
 end
 
 def navbar
