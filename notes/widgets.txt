@@ -1,0 +1,37 @@
+1.  Originally my concept of a "widget" was a self-contained item that would
+    display in a box in the sidebar.
+
+2.  Examples of widgets: 
+      - pages (list of my own pages)
+      - links (list of other sites/blogs that I recommend)
+      - search (search for posts in title, body, tags, etc.)
+      - bydates (browse posts by date in a calendar style)
+
+2.  Then I started thinking: But these don't really differ from a sidebar item?
+    So maybe I should generalize.
+
+3.  Then I thought: But there are potentially different varieties of these and
+    different behaviors (so I got confused).
+ 
+4.  Example: A search box *could* live in the sidebar (opening results in the 
+    main area)
+
+5.  Or it could be a "Search" link in the navbar, opening the search box in the
+    main area and overlaying it when it finds results.
+
+6.  For that matter, any widget *could* just be a single link in the sidebar, 
+    opening into the main area when it's clicked.
+
+7.  Similarly, I notice that "Recent News" only displays a few news items. 
+    Maybe clicking the actual header should open the full list in the main area?
+
+8.  Also: The sidebar items themselves (which work) are confusing to me. There has
+    to be some templating and some logic, and when I try to separate those out, I
+    find myself screwing up.
+
+9.  Re confusing sidebar -- I recommend doing things like this to see what is 
+    going on:
+      $ vi -O themes/standard/sidebar/news.lt3       lib/liveblog.rb  .blogs/views/around_austin/remote/index.html
+      $ vi -O themes/standard/sidebar/tag-cloud.lt3  lib/liveblog.rb  .blogs/views/around_austin/remote/index.html
+      $ vi -O themes/standard/sidebar/calendar.lt3   lib/liveblog.rb  .blogs/views/around_austin/remote/index.html
+

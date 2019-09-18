@@ -1,0 +1,15 @@
+Hal 9/17/2019
+
+1.  We can use dotted variables now (see global.lt3)
+2.  Links can open in the "main" area by changing the iframe "src="
+    (try About, Contact in navbar; also "Recent News" items)
+3.  blog.css is now built from blog.css.lt3 (using variables in global.lt3)
+4.  Primitive permalinks exist now (http://whatever.com/myblog/permalink/blah-blah-blah.html)
+5.  Command "preview" works in the REPL
+6.  Given a valid "publish" file and keys set up, "publish" and "browse" also work
+7.  Some/most header issues are fixed (posts have their own metadata)
+8.  Moved some very basic stuff out of [view]/assets into [view]/etc
+9.  Added an etc/misc.js (for open_main and maybe future stuff)
+10. Started playing with [view]/widgets concept (and widgets/pages under it);
+    *very* confused how this would/should relate to sidebar
+11. For more on that, see notes/widgets.txt
