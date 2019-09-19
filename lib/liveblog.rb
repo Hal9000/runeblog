@@ -537,7 +537,7 @@ end
 def card2
   str = _data
   file, card_title = str.chomp.split(" ", 2) 
-  card_title = %[<a #{_main(file)} style="text-decoration: none">#{card_title}</a>]
+  card_title = %[<a #{_main(file)} style="text-decoration: none; color: black">#{card_title}</a>]
 
 # FIXME is this wrong??
 
@@ -545,7 +545,6 @@ def card2
     <div class="card mb-3">
       <div class="card-body">
         <h5 class="card-title">#{card_title}</h5>
-      </div>
       <ul class="list-group list-group-flush">
   HTML
   _out open
@@ -554,7 +553,7 @@ def card2
     main = _main(url)
     _out %[<li class="list-group-item"><a #{main}}">#{cdata}</a> </li>]
   end
-  close = %[       </ul>\n    </div>]
+  close = %[       </ul>\n    </div>\n  </div>]
   _out close
 end
 
