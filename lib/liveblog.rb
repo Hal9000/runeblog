@@ -28,12 +28,6 @@ def post
   _out "  <!-- Post number #{@meta.num} -->\n "
 end
 
-def _view_from_cwd
-  md = Dir.pwd.match(%r[.*/views/(.*?)/])
-  return md[1] if md
-  nil
-end
-
 def quote
   _passthru "<blockquote>"
   _passthru _body
@@ -60,12 +54,27 @@ def h6; _passthru "<h6>#{@_data}</h6>"; end
 
 def hr; _passthru "<hr>"; end
 
-def emit   # send to STDOUT?
-  @emit = true
-  case _args.first
-    when "off";  @emit = false
-    when "on";   @emit = true
+def list
+  _out "<ul>"
+  _body {|line| _out "<li>#{line}</li>" }
+  _out "</ul>"
+  _optional_blank_line
+end
+
+def list!
+  _out "<ul>"
+  lines = _body.each 
+  loop do 
+    line = lines.next
+    line = _format(line)
+    if line[0] == " "
+      _out line
+    else
+      _out "<li>#{line}</li>"
+    end
   end
+  _out "</ul>"
+  _optional_blank_line
 end
 
 ### inset
@@ -164,29 +173,6 @@ def pin
   _optional_blank_line
 end
 
-def list
-  _out "<ul>"
-  _body {|line| _out "<li>#{line}</li>" }
-  _out "</ul>"
-  _optional_blank_line
-end
-
-def list!
-  _out "<ul>"
-  lines = _body.each 
-  loop do 
-    line = lines.next
-    line = _format(line)
-    if line[0] == " "
-      _out line
-    else
-      _out "<li>#{line}</li>"
-    end
-  end
-  _out "</ul>"
-  _optional_blank_line
-end
-
 def write_post
   raise "'post' was not called" unless @meta
   save = Dir.pwd
@@ -276,6 +262,8 @@ class Livetext::Functions
     %[<link type="application/atom+xml" rel="alternate" href="#{_var(:host)}#{file}" title="#{_var(:title)}">]
   end
 end
+
+###
 
 def _var(name)  # FIXME scope issue!
   ::Livetext::Vars[name] || "[:#{name} is undefined]"
@@ -457,7 +445,7 @@ def all_teasers
   end
   text << "</body></html>"
   File.write("recent.html", text)
-  _out %[<iframe id="main" style="width: 100vw;height: 100vh;position: relative;" src='recent.html' width=100% frameborder="0" allowfullscreen></iframe>]
+  _out %[<iframe id="main" style="width: 100vw; height: 100vh; position: relative;" src='recent.html' width=100% frameborder="0" allowfullscreen></iframe>]
 end
 
 def _post_lookup(postid)    # side-effect
@@ -547,7 +535,9 @@ def card1
 end
 
 def card2
-  card_title = _data
+  str = _data
+  file, card_title = str.chomp.split(" ", 2) 
+  card_title = %[<a #{_main(file)} style="text-decoration: none">#{card_title}</a>]
 
 # FIXME is this wrong??
 

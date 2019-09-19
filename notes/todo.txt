@@ -1,4 +1,5 @@
-   - Fix: navbar, pages?, links?
+   - fix card2 problem with "$" in cdata
+   - fix: navbar, pages?, links?
    - cards as .lt3 files
    - add CSS ref to post?
    - fix post and blog headers
