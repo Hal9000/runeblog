@@ -21,9 +21,7 @@ end
 def make_post(x, title, teaser, body, views=[])
 # STDERR.puts "\n========= make_post '#{title}'"
   print "."
-  meta = OpenStruct.new
   num = x.create_new_post(title, true, teaser: teaser, body: body, other_views: views)
-  num
 end
 
 def show_lines(text)

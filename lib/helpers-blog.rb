@@ -1,15 +1,24 @@
 require 'runeblog_version'
+require 'fileutils'
 
 # Home = Dir.pwd # unless Home
 
 module RuneBlog::Helpers
 
   def copy(src, dst)
-    system("cp #{src}  #{dst}")
+    if src =~ /\*/
+      system("cp #{src}  #{dst}")
+    else
+      FileUtils.cp(src, dst)
+    end
   end
 
   def copy!(src, dst)
-    system("cp -r #{src}  #{dst}")
+    if src =~ /\*/
+      system("cp -r #{src}  #{dst}")
+    else
+      FileUtils.cp_r(src, dst)
+    end
   end
 
   def stale?(src, dst)

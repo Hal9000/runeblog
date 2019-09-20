@@ -1,4 +1,3 @@
 .mixin liveblog
 .nopara
-.make_magic_links list.data card-news main-news Recent News
-.end
+.make_news_links list.data card-news main-news Recent News

@@ -102,7 +102,7 @@ def html_body(file)
   file.puts "  </body>\n</html>"
 end
 
-def make_magic_links
+def make_news_links
   # FIXME remember strings may not be safe
   line = _data.chomp
   input, cardfile, mainfile, card_title = *line.split(" ", 4)
@@ -111,18 +111,19 @@ def make_magic_links
   File.open("#{mainfile}.html", "w") do |f|
     html_body(f) do
       f.puts "<h1>#{card_title}</h1>"
-      pairs.each {|file, title| f.puts %[<a href="#{file}">#{title}</a> <br>] }
+      pairs.each do |file, title| 
+        f.puts %[<a style="text-decoration: none; font-size: 24px" href="#{file}">#{title}</a> <br>]
+      end
     end
   end
   # HTML for sidebar card
-STDERR.puts %[File is: 'widgets/#{tag}/#{mainfile}.html']
   File.open("#{cardfile}.html", "w") do |f|
     f.puts <<-EOS
       <div class="card mb-3">
         <div class="card-body">
           <h5 class="card-title">
             <a href="javascript: void(0)" 
-               onclick="javascript:open_main('widgets/#{tag}/#{mainfile}.html')" 
+               onclick="javascript:open_main('widgets/news/#{mainfile}.html')" 
                style="text-decoration: none; color: black">#{card_title}</a>
           </h5>
     EOS

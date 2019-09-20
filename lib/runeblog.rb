@@ -278,15 +278,13 @@ class RuneBlog
   end
 
   def create_new_post(title, testing = false, teaser: nil, body: nil, other_views: [])
-    save = Dir.pwd
-    Dir.chdir(self.view.dir)
-    # change to create_draft ?
-    post = Post.create(title: title, teaser: teaser, body: body, other_views: other_views)
-    post.edit unless testing
-    post.build
-    meta = post.meta
-    Dir.chdir(save)
-    meta.num ||= 999   # ??
+    meta = nil
+    Dir.chdir(self.view.dir) do
+      post = Post.create(title: title, teaser: teaser, body: body, other_views: other_views)
+      post.edit unless testing
+      post.build
+      meta = post.meta
+    end
     return meta.num
   rescue => err
     puts err
@@ -402,6 +400,7 @@ class RuneBlog
           collect_recent_posts("recent.html")
           copy("recent.html", "../remote")
           copy!("navbar/*html", "../remote/navbar/")
+          copy!("widgets", "../remote/")  # really copies too much...
           livetext "blog/generate",  "../remote/index"
         end
       end
