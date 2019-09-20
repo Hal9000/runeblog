@@ -5,7 +5,7 @@ require 'date'
 require 'livetext'
 require 'runeblog'
 
-errfile = File.new("liveblog.out", "w")
+errfile = File.new("/tmp/liveblog.out", "w")
 STDERR.reopen(errfile)
 
 def init_liveblog    # FIXME - a lot of this logic sucks
@@ -75,6 +75,48 @@ def list!
   end
   _out "</ul>"
   _optional_blank_line
+end
+
+def html_body(file)
+  file.puts "<html>\n  <body>"
+  yield
+  file.puts "  </body>\n</html>"
+end
+
+def make_magic_links
+  # FIXME remember strings may not be safe
+  line = _data.chomp
+  input, cardfile, mainfile, card_title = *line.split(" ", 4)
+  pairs = File.readlines(input).map {|line| line.chomp.split(",", 2) }
+  # HTML for main area (iframe)
+  File.open("#{mainfile}.html", "w") do |f|
+    html_body(f) do
+      f.puts "<h1>#{card_title}</h1>"
+      pairs.each {|file, title| f.puts %[<a href="#{file}">#{title}</a> <br>] }
+    end
+  end
+  # HTML for sidebar card
+  File.open("#{cardfile}.html", "w") do |f|
+    f.puts <<-EOS
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">
+            <a href="javascript: void(0)" 
+               onclick="javascript:open_main('#{mainfile}')" 
+               style="text-decoration: none; color: black">#{card_title}</a>
+          </h5>
+    EOS
+    pairs.each do |file, title| 
+      f.puts <<-EOS
+        <li class="list-group-item"> <a href="javascript: void(0)" 
+        onclick="javascript:open_main('#{file}')">#{title}</a> </li>
+      EOS
+    end
+    f.puts <<-EOS
+        </div>
+      </div>
+    EOS
+  end
 end
 
 ### inset
@@ -355,12 +397,12 @@ end
 def sidebar
   _out %[<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">]
   _body do |line|
-    tag = line.chomp.strip
-    source = "sidebar/#{tag.downcase}.lt3"
-    unless File.exist?(source)
-      source = "widgets/#{tag.downcase}.lt3"
+    tag = line.chomp.strip.downcase
+    Dir.chdir("widgets/#{tag}") do
+      source = "#{tag}.lt3"
+      livetext source, "/dev/null"
+      _include_file "card-#{source}.html"
     end
-    _include_file source
   end
   _out %[</div>]
 end

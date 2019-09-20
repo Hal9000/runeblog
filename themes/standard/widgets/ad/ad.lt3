@@ -1,0 +1,11 @@
+. This is the "card" (sidebar) version.
+
+. In real life, there may be complex code here
+. referencing some advertiser or ad network 
+. which will bring up a random ad.
+
+.card1 Advertisement
+Build your amazing website with blabla.com.
+https://google.com/,btn btn-light float-right,Visit Page
+.end
+

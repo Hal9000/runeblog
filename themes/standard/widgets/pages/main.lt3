@@ -1,4 +1,4 @@
-.card_iframe
+ .card_iframe
 <h1>Pages</h1>
 
 .def make_links
@@ -15,4 +15,4 @@
 .make_links
 
 .include generated.lt3
-.end
+ .end
