@@ -25,6 +25,6 @@ system("cp -r themes #{lib}/..")
 
 # Exception in dir structure
 cmd = "cp bin/* #{lib.sub(/lib$/, "bin/")}"
-puts cmd
+# puts cmd
 system(cmd)
-puts
+# puts

@@ -22,6 +22,25 @@ def init_liveblog    # FIXME - a lot of this logic sucks
   @theme = @vdir + "/themes/standard/"
 end
 
+# FIXME - stale? and livetext are duplicated from helpers-blog
+
+  def stale?(src, dst)
+    return true unless File.exist?(dst)
+    return true if File.mtime(src) > File.mtime(dst)
+    return false
+  end
+
+  def livetext(src, dst=nil)
+    src += ".lt3" unless src.end_with?(".lt3")
+    if dst
+      dst += ".html" unless dst.end_with?(".html")
+    else
+      dst = src.sub(/.lt3$/, "")
+    end
+    return unless stale?(src, dst)
+    system("livetext #{src} >#{dst}")
+  end
+
 def post
   @meta = OpenStruct.new
   @meta.num = _args[0]
@@ -96,13 +115,14 @@ def make_magic_links
     end
   end
   # HTML for sidebar card
+STDERR.puts %[File is: 'widgets/#{tag}/#{mainfile}.html']
   File.open("#{cardfile}.html", "w") do |f|
     f.puts <<-EOS
       <div class="card mb-3">
         <div class="card-body">
           <h5 class="card-title">
             <a href="javascript: void(0)" 
-               onclick="javascript:open_main('#{mainfile}')" 
+               onclick="javascript:open_main('widgets/#{tag}/#{mainfile}.html')" 
                style="text-decoration: none; color: black">#{card_title}</a>
           </h5>
     EOS
@@ -396,26 +416,12 @@ end
 
 def sidebar
   _out %[<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">]
-  _body do |line|
-    tag = line.chomp.strip.downcase
+  _args do |token|
+    tag = token.chomp.strip.downcase
     Dir.chdir("widgets/#{tag}") do
-      source = "#{tag}.lt3"
-      livetext source, "/dev/null"
-      _include_file "card-#{source}.html"
+      livetext tag, "card-#{tag}.html"
+      _include_file "card-#{tag}.html"
     end
-  end
-  _out %[</div>]
-end
-
-def sidebar!
-  _out %[<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">]
-  _args do |line|
-    tag = line.chomp.strip
-    source = "sidebar/#{tag.downcase}.lt3"
-    unless File.exist?(source)
-      source = "widgets/#{tag.downcase}/main.lt3"
-    end
-    _include_file source
   end
   _out %[</div>]
 end
@@ -614,6 +620,8 @@ def tag_cloud
     main = _main(url)
     _out %[<a #{main} class="#{classname}">#{cdata}</a>]
   end
+  close = %[       </div>\n  </div>]
+  _out close
 end
 
 def navbar

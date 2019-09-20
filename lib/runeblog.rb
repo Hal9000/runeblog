@@ -180,8 +180,10 @@ class RuneBlog
       create_dirs(:staging, "remote/permalink", "remote/navbar")
       livetext "themes/standard/etc/blog.css.lt3" # strip ext
       copy!("themes/standard/*", "staging/")
+
       copy!("themes/standard/etc", "remote/")
       copy!("themes/standard/assets", "remote/")
+      copy!("themes/standard/widgets", "remote/")
 
       pub = "user: xxx\nserver: xxx\ndocroot: xxx\npath: xxx\nproto: xxx\n"
       dump(pub, "publish")

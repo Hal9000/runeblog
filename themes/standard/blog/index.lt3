@@ -1,6 +1,6 @@
 .recent_posts
 
-.sidebar! news ad tag-cloud
+.sidebar news tag-cloud
 
 . for now, skip: ad calendar tag-cloud
 

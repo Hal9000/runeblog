@@ -1,3 +1,5 @@
+.mixin liveblog
+
 .tag_cloud
 https://google.com/,btn btn-dark m-1,Programming
 https://google.com/,btn btn-danger m-1,Science Fiction
