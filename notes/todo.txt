@@ -1,11 +1,12 @@
-   - fix card2 problem with "$" in cdata
-   - fix "missing post" problem
+ x - fix "missing post" problem
    - fix: navbar, pages?, links?
-   - cards as .lt3 files
+   - fix card2 problem with "$" in cdata
+   - cards as .lt3 files?
    - add CSS ref to post?
+   - create tag cloud
    - fix post and blog headers
 
-   - create tag cloud
+   - livetext: fix bug .set var="this, that"
    - livetext: permit omission of .lt3
    - livetext: permit # comments on end of line?
    - livetext: .include dir/    # refs dir/main.lt3 ?

@@ -385,8 +385,8 @@ class RuneBlog
         copy!("#{@theme}/*", "#{staging}")
         copy(lt3, staging)
         html = noext[5..-1]
-        livetext draft, html
-        copy(draft, "../../staging/post/index.html")
+        livetext draft, html  # livetext "foobar.lt3", "foobar.html"
+        copy(html, "../../staging/post/index.html")
         title_line = File.readlines(draft).grep(/^.title /).first
         title = title_line.split(" ", 2)[1]
         excerpt = File.read("teaser.txt")

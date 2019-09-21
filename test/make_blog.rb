@@ -98,7 +98,7 @@ BODY
 x.change_view("around_austin")
 
 make_post(x, "The graffiti wall", <<-EXCERPT, <<-BODY)
-RIP, Hope Gallery
+RIP Hope Gallery
 EXCERPT
 It's been a while since I was there. They say it was torn down
 while I wasn't looking.
