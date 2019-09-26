@@ -1,0 +1,18 @@
+ .card_iframe
+<h1>Pages</h1>
+
+.def make_links
+  pairs = File.readlines("list.data").map {|line| line.chomp.split(" ", 2) }
+  File.open("generated.lt3", "w") do |f|
+    pairs.each do |file, title| 
+      f.puts <<-EOS
+        <a href="#{file}">#{title}</a> <br>
+      EOS
+    end
+  end
+.end
+
+.make_links
+
+.include generated.lt3
+ .end

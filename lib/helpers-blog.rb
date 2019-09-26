@@ -6,39 +6,52 @@ require 'fileutils'
 module RuneBlog::Helpers
 
   def copy(src, dst)
-    if src =~ /\*/
-      system("cp #{src}  #{dst}")
-    else
-      FileUtils.cp(src, dst)
-    end
+    log!(enter: __method__, args: [src, dst])
+    cmd = "cp #{src}  #{dst} 2>/dev/null"
+#   puts "\n--- pwd = #{Dir.pwd}  \n  Trying: #{cmd}"
+#   if src =~ /\*/
+      rc = system(cmd)
+      puts "    FROM #{caller[0]}" unless rc
+exit unless rc
+#   else
+#     FileUtils.cp(src, dst)
+#   end
   end
 
   def copy!(src, dst)
-    if src =~ /\*/
-      system("cp -r #{src}  #{dst}")
-    else
-      FileUtils.cp_r(src, dst)
-    end
+    log!(enter: __method__, args: [src, dst])
+    cmd = "cp -r #{src}  #{dst} 2>/dev/null"
+#   puts "\n--- pwd = #{Dir.pwd}  \n  Trying: #{cmd}"
+#   if src =~ /\*/
+      rc = system(cmd)
+      puts "    FROM #{caller[0]}" unless rc
+exit unless rc
+#   else
+#     FileUtils.cp_r(src, dst)
+#   end
   end
 
   def stale?(src, dst)
+    log!(enter: __method__, args: [src, dst])
     return true unless File.exist?(dst)
     return true if File.mtime(src) > File.mtime(dst)
     return false
   end
 
   def livetext(src, dst=nil)
+    log!(enter: __method__, args: [src, dst])
     src << ".lt3" unless src.end_with?(".lt3")
     if dst
       dst << ".html" unless dst.end_with?(".html")
     else
       dst = src.sub(/.lt3$/, "")
     end
-    return unless stale?(src, dst)
+#   return unless stale?(src, dst)
     system("livetext #{src} >#{dst}")
   end
 
   def get_root
+    log!(enter: __method__)
     if $_blog
       if $_blog.root
         puts "0. Returned: #{$_blog.root}/"
@@ -54,7 +67,7 @@ module RuneBlog::Helpers
   end
 
   def read_config(file, *syms)
-# puts "dir   = #{Dir.pwd}"
+    log!(enter: __method__, args: [file, *syms])
     lines = File.readlines(file).map(&:chomp)
     obj = ::OpenStruct.new
     lines.each do |line|
@@ -79,6 +92,7 @@ module RuneBlog::Helpers
   end
 
   def try_read_config(file, hash)
+    log!(enter: __method__, args: [file, hash])
     return hash.values unless File.exist?(file)
     vals = read_config(file, *hash.keys)
 # STDERR.puts vals.inspect
@@ -86,6 +100,7 @@ module RuneBlog::Helpers
   end
 
 def put_config(root:, view:"test_view", editor: "/usr/local/bin/vim")
+  log!(enter: __method__, args: [root, view, editor])
   Dir.mkdir(root) unless Dir.exist?(root)
   Dir.chdir(root) do 
     File.open("config", "w") do |cfg|
@@ -97,6 +112,7 @@ def put_config(root:, view:"test_view", editor: "/usr/local/bin/vim")
 end 
 
   def write_config(obj, file)
+    log!(enter: __method__, args: [obj, file])
     hash = obj.to_h
 # Dir.chdir(::Home)
 # puts "--- wc: pwd = #{Dir.pwd}"
@@ -108,6 +124,7 @@ end
   end
 
   def get_views   # read from filesystem
+    log!(enter: __method__)
 #   Dir.chdir(::Home) do
       verify(@root => "#@root is nil",
              Dir.exist?(@root) => "#@root doesn't exist",
@@ -118,6 +135,7 @@ end
   end
 
   def new_dotfile(root: ".blogs", current_view: "test_view", editor: "vi")
+    log!(enter: __method__, args: [root, current_view, editor])
 #   raise BlogAlreadyExists if Dir.exist?(".blogs")
 #   Dir.mkdir(".blogs")
     root = Dir.pwd + "/" + root
@@ -127,12 +145,14 @@ end
   end
 
   def new_sequence
+    log!(enter: __method__)
     dump(0, "sequence")
     version_info = "#{RuneBlog::VERSION}\nBlog created: #{Time.now.to_s}"
     dump(version_info, "VERSION")
   end
 
   def subdirs(dir)
+    log!(enter: __method__, args: [dir])
     verify(Dir.exist?(dir) => "Directory #{dir} not found")
     dirs = Dir.entries(dir) - %w[. ..]
     dirs.reject! {|x| ! File.directory?("#@root/views/#{x}") }
@@ -140,6 +160,7 @@ end
   end
 
   def find_draft_slugs
+    log!(enter: __method__)
     verify(@root => "#@root is nil",
            Dir.exist?(@root) => "#@root doesn't exist",
            Dir.exist?("#@root/drafts") => "#@root/drafts doesn't exist")
@@ -154,6 +175,7 @@ end
   end
 
   def create_dirs(*dirs)
+    log!(enter: __method__, args: [*dirs])
     dirs.each do |dir|
       dir = dir.to_s  # symbols allowed
       next if Dir.exist?(dir)
@@ -163,24 +185,28 @@ end
     end
   end
 
-  def interpolate(str, binding)
+  def interpolate(str, bind)
+    log!(enter: __method__, args: [str, bind])
     wrap = "<<-EOS\n#{str}\nEOS"
-    eval wrap, binding
+    eval wrap, bind
   end
 
   def error(err)  # Hmm, this is duplicated
+    log!(str: "duplicated method", enter: __method__, args: [err])
     str = "\n  Error: #{err}"
     puts str
     puts err.backtrace.join("\n")
   end
 
   def dump(obj, name)
+    log!(enter: __method__, args: [obj, name])
     File.write(name, obj)
   end
 
 end
 
 def dump(obj, name)      # FIXME scope
+  log!(str: "scope problem", enter: __method__, args: [obj, name])
   File.write(name, obj)
 end
 

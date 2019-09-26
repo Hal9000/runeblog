@@ -1,6 +1,5 @@
+.mixin liveblog
+
 .recent_posts
-
-.sidebar news tag-cloud ad
-
-. for now, skip: calendar
+.sidebar ad
 

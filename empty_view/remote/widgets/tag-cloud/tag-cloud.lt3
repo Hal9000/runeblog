@@ -1,0 +1,12 @@
+.mixin liveblog
+
+.tag_cloud
+https://google.com/,btn btn-dark m-1,Programming
+https://google.com/,btn btn-danger m-1,Science Fiction
+https://google.com/,btn btn-light m-1,Art
+https://google.com/,btn btn-dark m-1,Robotics
+https://google.com/,btn btn-warning m-1,Food and Travel
+https://google.com/,btn btn-light m-1,DIY Hacks
+https://google.com/,btn btn-info m-1,Surfing
+.end
+

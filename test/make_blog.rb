@@ -22,6 +22,7 @@ def make_post(x, title, teaser, body, views=[])
 # STDERR.puts "\n========= make_post '#{title}'"
   print "."
   num = x.create_new_post(title, true, teaser: teaser, body: body, other_views: views)
+  views.each {|view| x.generate_index(view) }  # recent.html
 end
 
 def show_lines(text)
@@ -31,15 +32,19 @@ def show_lines(text)
   str
 end
 
+#  "Main"...
 
-
-puts
+puts Time.now
 
 system("rm -rf .blogs")
 RuneBlog.create_new_blog_repo(".blogs")
 x = RuneBlog.new(".blogs")
 
 x.create_view("around_austin")   # FIXME remember view title!
+
+# puts "=== about to call: x.generate_view('around_austin')"
+x.generate_view("around_austin")
+# puts "=== ...returned"
 
 # Hack:
 if File.exist?("publish")
@@ -127,4 +132,5 @@ BODY
 
 x.change_view("around_austin")
 
+puts Time.now
 puts

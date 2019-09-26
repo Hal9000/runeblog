@@ -1,5 +1,7 @@
 require 'date'
 
+require 'logging'
+
 require 'runeblog_version'
 require 'global'
 require 'helpers-blog'
@@ -26,7 +28,6 @@ class RuneBlog
   make_exception(:NoSuchView,        "No such view: $1")
   make_exception(:NoBlogAccessor, "Runeblog.blog is not set")
 
-  
   class << self
     attr_accessor :blog
     include Helpers
@@ -40,6 +41,7 @@ class RuneBlog
   include Helpers
 
   def self.create_new_blog_repo(dir = ".blogs")
+    log!(enter: __method__, args: [dir])
     raise ArgumentError unless dir.is_a?(String) && ! dir.empty?
     root_dir = Dir.pwd + "/" + dir
     self.create(dir)
@@ -49,6 +51,7 @@ class RuneBlog
   end
 
   def self.create(root = ".blogs")
+    log!(enter: __method__, args: [root])
     # Crude - FIXME later -  # What views are there? Publishing, etc.
     self.blog = self   # Weird. Like a singleton - dumbass circular dependency?
     $_blog = self            # Dumber still?
@@ -56,6 +59,8 @@ class RuneBlog
     raise BlogRepoAlreadyExists if Dir.exist?(root)
     create_dirs(root)
     Dir.chdir(root) do
+#     puts "  pwd = #{Dir.pwd}  Trying: cp #{RuneBlog::Path}/../empty_view.tgz ."
+      system("cp #{RuneBlog::Path}/../empty_view.tgz .")
       create_dirs(:drafts, :views)
       new_sequence
     end
@@ -66,6 +71,7 @@ class RuneBlog
   end
 
   def self.open(root = ".blogs")
+    log!(enter: __method__, args: [root])
     # Crude - FIXME later -  # What views are there? Publishing, etc.
     self.blog = self   # Weird. Like a singleton - dumbass circular dependency?
     $_blog = self            # Dumber still?
@@ -74,6 +80,7 @@ class RuneBlog
   end
 
   def initialize(root_dir = ".blogs")   # always assumes existing blog
+    log!(enter: "initialize", args: [root_dir])
     # Crude - FIXME later -  # What views are there? Publishing, etc.
     self.class.blog = self   # Weird. Like a singleton - dumbass circular dependency?
     $_blog = self            # Dumber still?
@@ -94,32 +101,37 @@ class RuneBlog
   end
 
   def inspect
-    str = "[["
+    log!(enter: __method__)
+    str = "blog: "
     ivars = ["@root", "@sequence"]   # self.instance_variables
     ivars.each do |iv| 
       val = self.instance_variable_get(iv)
-      str << "#{iv} = #{val}  "
+      str << "#{iv}: #{val}  "
     end
-    str << "]]"
+#   str << "]]"
     str
   end
 
   def view?(name)
+    log!(enter: __method__, args: [name])
     raise ArgumentError unless name.is_a?(String) && ! name.empty?
     views.any? {|x| x.name == name }
   end
 
   def view(name = nil)
+    log!(enter: __method__, args: [name])
     raise ArgumentError unless name.nil? || (name.is_a?(String) && ! name.empty?)
     name.nil? ? @view : str2view(name)
   end
 
   def str2view(str)
+    log!(enter: __method__, args: [str])
     raise ArgumentError unless str.is_a?(String) && ! str.empty?
     @views.find {|x| x.name == str }
   end
 
   def _set_publisher
+    log!(enter: __method__)
     file = @view.dir + "/publish"
     @view.publisher = nil
     return unless File.exist?(file)
@@ -127,6 +139,7 @@ class RuneBlog
   end
 
   def view=(arg)
+    log!(enter: __method__, args: [arg])
     case arg
       when RuneBlog::View
         @view = arg
@@ -142,16 +155,19 @@ class RuneBlog
   end
 
   def get_sequence
+    log!(enter: __method__)
     File.read(root + "/sequence").to_i
   end
 
   def next_sequence
+    log!(enter: __method__)
     @sequence += 1
     dump(@sequence, "#@root/sequence")
     @sequence
   end
 
   def viewdir(v = nil)   # delete?
+    log!(enter: __method__, args: [v])
     v = str2view(v) if v.is_a?(String)
     raise ArgumentError unless v.nil? || v.is_a?(RuneBlog::View)
     v ||= @view
@@ -159,38 +175,62 @@ class RuneBlog
   end
 
   def self.exist?
+    log!(enter: __method__)
     Dir.exist?(DotDir) && File.exist?(DotDir + "/" + ConfigFile)
   end
 
+  def _copy_to_staging
+    copy!("themes/standard/", "staging/")
+    copy!("themes/standard/widgets/", "staging/")
+  end
+
+  def _copy_to_remote
+    copy!("themes/standard/etc", "remote/")
+    copy!("themes/standard/assets", "remote/")
+    copy!("themes/standard/widgets", "remote/")
+  end
+
   def create_view(arg)
+    log!(enter: __method__, args: [arg])
     raise ArgumentError unless arg.is_a?(String) && ! arg.empty?
 
     names = self.views.map(&:to_s)
     raise ViewAlreadyExists(arg) if names.include?(arg)
 
-    vdir = "#@root/views/#{arg}/"
+    vdir = arg.dup
     raise DirAlreadyExists(vdir) if Dir.exist?(vdir)
-    create_dirs(vdir)
-    up = Dir.pwd
 
-    Dir.chdir(vdir) do
-      x = RuneBlog::Default
-      copy!("#{Themes}", "themes")
-      create_dirs(:assets, :posts)
-      create_dirs(:staging, "remote/permalink", "remote/navbar")
-      livetext "themes/standard/etc/blog.css.lt3" # strip ext
-      copy!("themes/standard/*", "staging/")
+# puts "cv: pwd = #{Dir.pwd}  file = #{`ls`}"
+  Dir.chdir(@root) do
+#   puts "---- (#{arg}) tar operation..."
 
-      copy!("themes/standard/etc", "remote/")
-      copy!("themes/standard/assets", "remote/")
-      copy!("themes/standard/widgets", "remote/")
+# system("bash")
+    cmd1 = "tar zxvf empty_view.tgz >/dev/null 2>&1"
+    cmd2 = "cp -r empty_view views/#{arg}"
+    system(cmd1)
+#   puts "    pwd = #{Dir.pwd}"
+#   puts "    . => #{`echo *`}"
+#   puts "    ./views => #{`ls views`}"
+#   puts "    #{cmd1}\n    #{cmd2}"
+    system(cmd2)
+  end
+#   create_dirs(vdir)
 
+# puts "vdir = #{vdir}  pwd = #{Dir.pwd}"
+    Dir.chdir("#@root/views/#{vdir}") do
+# system("bash")
+#      x = RuneBlog::Default
+#      copy!("#{Themes}", "themes")
+#      create_dirs(:assets, :posts, :staging, "remote/permalink", "remote/navbar")
+#      livetext "themes/standard/etc/blog.css.lt3" # strip ext
+#      _copy_to_staging
+#      _copy_to_remote
+      livetext "themes/standard/blog/generate", "remote/index"
       pub = "user: xxx\nserver: xxx\ndocroot: xxx\npath: xxx\nproto: xxx\n"
       dump(pub, "publish")
 
       view = RuneBlog::View.new(arg)
       self.view = view
-      vdir = self.view.dir
       dump("Initial creation", "last_published")
     end  
     @views << view
@@ -198,6 +238,7 @@ class RuneBlog
   end
 
   def delete_view(name, force = false)
+    log!(enter: __method__, args: [name, force])
     raise ArgumentError unless name.is_a?(String) && ! name.empty?
     if force
       system("rm -rf #@root/views/#{name}") 
@@ -206,6 +247,7 @@ class RuneBlog
   end
 
   def view_files
+    log!(enter: __method__)
     vdir = self.view.dir
     files = ["#{vdir}/index.html"]
     files += posts.map {|x| "#{vdir}/#{x}" }
@@ -214,6 +256,7 @@ class RuneBlog
   end
 
   def post_lookup(postid)    # side-effect?
+    log!(enter: __method__, args: [postid])
     # .. = templates, ../.. = views/thisview
     slug = title = date = teaser_text = nil
 
@@ -229,6 +272,7 @@ class RuneBlog
   end
 
   def teaser(slug)
+    log!(enter: __method__, args: [slug])
     id = slug.to_i
     text = nil
     post_entry_name = @theme + "/blog/post_entry.lt3"
@@ -246,7 +290,7 @@ class RuneBlog
   end
 
   def collect_recent_posts(file)
-    @vdir = ".."
+    log!(enter: __method__, args: [file])
     posts = nil
     dir_posts = @vdir + "/posts"
     entries = Dir.entries(dir_posts)
@@ -269,15 +313,17 @@ class RuneBlog
       text << teaser(postid)    # side effect! calls _out
     end
     text << "</body></html>"
-    File.write(file, text) # FIXME ???
+    File.write("#@vdir/remote/"+file, text) # FIXME ???
     iframe_text = <<-HTML
       <iframe name="main" style="width: 100vw;height: 100vh;position: relative;" 
               src='recent.html' width=100% frameborder="0" allowfullscreen>
       </iframe>
     HTML
+    # FIXME  ^ serves no purpose??
   end
 
   def create_new_post(title, testing = false, teaser: nil, body: nil, other_views: [])
+    log!(enter: __method__, args: [title, testing, teaser, body, other_views])
     meta = nil
     Dir.chdir(self.view.dir) do
       post = Post.create(title: title, teaser: teaser, body: body, other_views: other_views)
@@ -292,6 +338,7 @@ class RuneBlog
   end
 
   def edit_initial_post(file, testing = false)
+    log!(enter: __method__, args: [file, testing])
     debug "=== edit_initial_post #{file.inspect}  => #{sourcefile}"
     sourcefile = "#@root/drafts/#{file}"
     result = system("#@editor #{sourcefile} +8") unless testing
@@ -302,17 +349,20 @@ class RuneBlog
   end
 
   def posts
+    log!(enter: __method__)
     dir = self.view.dir + "/posts"
     posts = Dir.entries(dir).grep(/^\d{4}/)
     posts
   end
 
   def drafts
+    log!(enter: __method__)
     dir = "#@root/drafts"
     drafts = Dir.entries(dir).grep(/^\d{4}.*/)
   end
 
   def change_view(view)
+    log!(enter: __method__, args: [view])
     raise ArgumentError unless view.is_a?(String) || view.is_a?(RuneBlog::View)
     x = OpenStruct.new
     x.root, x.current_view, x.editor = @root, view.to_s, @editor   # dumb - FIXME later
@@ -321,20 +371,22 @@ class RuneBlog
   end
 
   def generate_index(view) # FIXME  delete?
-    debug "=== generate_index view = #{view.to_s}"
+    log!(enter: __method__, args: [view], pwd: true, dir: true)
     raise ArgumentError unless view.is_a?(String) || view.is_a?(RuneBlog::View)
-
-    vdir = self.view.dir
-    dir0 = "#{vdir}/themes/standard/blog"
-  rescue => err
-    error(err)
-    exit
+    @vdir = @root + "/views/#{view}"
+    collect_recent_posts("recent.html")
   end
 
   def generate_view(view)  # huh?
+    log!(enter: __method__, args: [view])
+    generate_index(view)
+    Dir.chdir(@root + "/views/#{view}/themes/standard") do
+      livetext "blog/generate.lt3", "../../remote/index.html"
+    end
   end
 
   def _get_views(draft)
+    log!(enter: __method__, args: [draft])
     # FIXME dumb code
     view_line = File.readlines(draft).grep(/^.views /)
     raise "More than one .views call!" if view_line.size > 1
@@ -361,6 +413,7 @@ class RuneBlog
   #   livetext VIEW/blog/generate.lt3 ??
 
   def _copy_get_dirs(draft, view)
+    log!(enter: __method__, args: [draft, view])
     fname = File.basename(draft)
     noext = fname.sub(/.lt3$/, "")
     vdir = "#@root/views/#{view}"
@@ -373,45 +426,56 @@ class RuneBlog
   end
 
   def generate_post(draft)
+    log!(enter: __method__, args: [draft])
     views = _get_views(draft)
     views.each do |view|
       noext, viewdir, slugdir, aslug, @theme = _copy_get_dirs(draft, view)
-      staging = viewdir + "/staging"
+#     staging = viewdir + "/staging"
+      remote = viewdir + "/remote"
       Dir.chdir(slugdir) do 
         copy(draft, ".")
         lt3 = draft.split("/")[-1]
         # Remember: Some posts may be in more than one view -- careful with links back
         # system("livetext #{draft} >staging/#{name}/index.html")  # permalink?
-        copy!("#{@theme}/*", "#{staging}")
-        copy(lt3, staging)
+#       copy!("#{@theme}/*", "#{staging}")
+#       copy(lt3, staging)
+        copy(lt3, remote)
         html = noext[5..-1]
         livetext draft, html  # livetext "foobar.lt3", "foobar.html"
-        copy(html, "../../staging/post/index.html")
+#       copy(html, "../../staging/post/index.html")
+        copy(html, "../../remote/post/index.html")
         title_line = File.readlines(draft).grep(/^.title /).first
         title = title_line.split(" ", 2)[1]
         excerpt = File.read("teaser.txt")
         vars = %[.set title="#{title.chomp}"\n] + 
                %[.set teaser="#{excerpt.chomp}"]
-        Dir.chdir(staging) do 
-          File.open("vars.lt3", "w") {|f| f.puts vars }
-          livetext "post/generate.lt3", html
-          copy html, "../remote"
-          livetext "post/permalink.lt3", "../remote/permalink/#{html}"
-          collect_recent_posts("recent.html")
-          copy("recent.html", "../remote")
-          copy!("navbar/*html", "../remote/navbar/")
-          copy!("widgets", "../remote/")  # really copies too much...
-          livetext "blog/generate",  "../remote/index"
+        theme = "../../theme/standard"
+        File.open("vars.lt3", "w") {|f| f.puts vars }
+        livetext "#{theme}/post/generate.lt3", "#{remote}/#{html}"
+        livetext "#{theme}/post/permalink.lt3", "#{remote}/permalink/#{html}"
+# puts <<-TEXT
+#   File.open("vars.lt3", "w") {|f| f.puts vars }
+#   livetext "../post/generate.lt3", "#{remote}/#{html}"
+#   livetext "../post/permalink.lt3", "#{remote}/permalink/#{html}"
+# TEXT
+# system("bash")
+        log!(str: "About to enter remote/", pwd: true, dir: true)
+        Dir.chdir(remote) do 
+          log!(str: "Now in remote/", pwd: true, dir: true)
+          system("cp -r ../themes/standard/widgets .")
+          log!(str: "finished with remote/", pwd: true, dir: true)
         end
       end
     end
   end
 
   def relink
+    log!(enter: __method__)
     self.views.each {|view| generate_index(view) }
   end
 
   def index_entry(view, meta)
+    log!(enter: __method__, args: [view, meta])
     debug "=== index_entry #{view.to_s.inspect}  #{meta.num} #{meta.title.inspect}"
     check_meta(meta, "index_entry1")
     raise ArgumentError unless view.is_a?(String) || view.is_a?(RuneBlog::View)
@@ -432,6 +496,7 @@ class RuneBlog
   end
 
   def rebuild_post(file)
+    log!(enter: __method__, args: [file])
     raise "Doesn't currently work"
     debug "Called rebuild_post(#{file.inspect})"
     raise ArgumentError unless file.is_a?(String)
@@ -446,6 +511,7 @@ class RuneBlog
   end
 
   def remove_post(num)
+    log!(enter: __method__, args: [num])
     raise ArgumentError unless num.is_a?(Integer)
     tag = prefix(num)
     files = Find.find(self.view.dir).to_a
@@ -461,6 +527,7 @@ class RuneBlog
   end
 
   def undelete_post(num)
+    log!(enter: __method__, args: [num])
     raise ArgumentError unless num.is_a?(Integer)
     files = Find.find("#@root/views/").to_a
     tag = prefix(num)
@@ -476,12 +543,14 @@ class RuneBlog
   end
 
   def delete_draft(num)
+    log!(enter: __method__, args: [num])
     raise ArgumentError unless num.is_a?(Integer)
     tag = prefix(num)
     system("rm -rf #@root/drafts/#{tag}-*")
   end
 
   def make_slug(meta)
+    log!(enter: __method__, args: [meta])
     raise ArgumentError unless meta.title.is_a?(String)
     label = '%04d' % meta.num   # FIXME can do better
     slug0 = meta.title.downcase.strip.gsub(' ', '-').gsub(/[^\w-]/, '')

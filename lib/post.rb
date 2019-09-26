@@ -11,12 +11,14 @@ class RuneBlog::Post
   include RuneBlog::Helpers
 
   def self.files(num, root)
+    log!(enter: __method__, args: [num, root])
     files = Find.find(root).to_a
     result = files.grep(/#{prefix(num)}-/)
     result
   end
   
   def self.load(post)
+    log!(enter: __method__, args: [post])
     raise "Doesn't work right now"
     raise NoBlogAccessor if RuneBlog.blog.nil?
     # "post" is a slug
@@ -41,6 +43,7 @@ class RuneBlog::Post
   end
 
   def write_metadata(meta)   # FIXME ???
+    log!(enter: __method__, args: [meta])
     debug "=== write_metadata:"
     debug "-----\n#{meta.inspect}\n-----"
     fname2 = "metadata.txt"
@@ -63,12 +66,14 @@ class RuneBlog::Post
   end
 
   def initialize
+    log!(enter: __method__)
     @blog = RuneBlog.blog || raise(NoBlogAccessor)
     @meta = OpenStruct.new
   end
 
   def self.create(title:, teaser:, body:, pubdate: Time.now.strftime("%Y-%m-%d"),
                   other_views:[])
+    log!(enter: __method__, args: [title, teaser, body, pubdate, other_views])
     post = self.new
     # ONLY place next_sequence is called!
     num = post.meta.num   = post.blog.next_sequence
@@ -97,6 +102,7 @@ class RuneBlog::Post
   end
 
   def edit
+    log!(enter: __method__)
     verify(File.exist?(@draft) => "File #{@draft} not found")
     result = system("vi #@draft +8")  # TODO improve this
     raise EditorProblem(draft) unless result
@@ -106,6 +112,7 @@ class RuneBlog::Post
   end 
 
   def build
+    log!(enter: __method__)
     post = self
     views = post.meta.views
     text = File.read(@draft)
@@ -118,6 +125,7 @@ class RuneBlog::ViewPost
               :teaser_text
               
   def initialize(view, postdir)
+    log!(enter: __method__, args: [view, postdir])
     # Assumes already parsed/processed
     @blog = RuneBlog.blog || raise(NoBlogAccessor)
     @path = postdir.dup
@@ -133,6 +141,7 @@ class RuneBlog::ViewPost
   end
 
   def get_dirs
+    log!(enter: __method__, args: [view, postdir])
     fname = File.basename(draft)
     noext = fname.sub(/.lt3$/, "")
     vdir = "#@root/views/#{view}"

@@ -410,9 +410,13 @@ def meta
 end
 
 def recent_posts    # side-effect
-  _out %[<div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">]
-  all_teasers
-  _out %[</div>]
+  _out <<-HTML
+    <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
+      <iframe id="main" style="width: 100vw; height: 100vh; position: relative;" 
+       src='recent.html' width=100% frameborder="0" allowfullscreen>
+      </iframe>
+    </div>
+  HTML
 end
 
 def sidebar

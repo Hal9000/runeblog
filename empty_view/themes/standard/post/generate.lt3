@@ -1,0 +1,24 @@
+.mixin liveblog
+
+<html>
+  <!-- Editing this file is not recommended.   -->
+  <!-- It was generated from $File on $$date.  -->
+
+.include ../../themes/standard/global.lt3
+.include vars.lt3
+
+.head
+og:title    $title
+description $teaser
+.end
+
+<section class="post">
+  <div class="entry-content">
+    $.include ../../remote/post/index.html
+  </div>
+</section>
+
+<br>
+<a href="javascript:history.go(-1)">[Back]</a>
+</body>
+</html>

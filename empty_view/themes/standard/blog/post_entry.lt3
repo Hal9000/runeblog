@@ -1,0 +1,19 @@
+<div class="post">
+  <table width=100%>
+    <tr>
+      <td width=8% valign=top>
+        <span class="post-date mt-1 mb-1">
+          <b>#{date}</b>
+        </span>
+      </td>
+      <td> <!--        <span class="post-title-box"> -->
+          <span class="post-title-text"><a href="#{url}">#{title}</a></span>
+          <p><b>#{teaser_text}</b>
+          <br>
+          <a style="text-decoration: none" href="#{url}"><small>Keep reading...</small></a></p> <!--        </span>  -->
+      </td>
+    </tr>
+  </table>
+  <br>
+  <br>
+</div>
