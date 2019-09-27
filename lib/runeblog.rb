@@ -59,7 +59,6 @@ class RuneBlog
     raise BlogRepoAlreadyExists if Dir.exist?(root)
     create_dirs(root)
     Dir.chdir(root) do
-#     puts "  pwd = #{Dir.pwd}  Trying: cp #{RuneBlog::Path}/../empty_view.tgz ."
       system("cp #{RuneBlog::Path}/../empty_view.tgz .")
       create_dirs(:drafts, :views)
       new_sequence
@@ -108,7 +107,6 @@ class RuneBlog
       val = self.instance_variable_get(iv)
       str << "#{iv}: #{val}  "
     end
-#   str << "]]"
     str
   end
 
@@ -200,31 +198,14 @@ class RuneBlog
     vdir = arg.dup
     raise DirAlreadyExists(vdir) if Dir.exist?(vdir)
 
-# puts "cv: pwd = #{Dir.pwd}  file = #{`ls`}"
   Dir.chdir(@root) do
-#   puts "---- (#{arg}) tar operation..."
-
-# system("bash")
     cmd1 = "tar zxvf empty_view.tgz >/dev/null 2>&1"
     cmd2 = "cp -r empty_view views/#{arg}"
     system(cmd1)
-#   puts "    pwd = #{Dir.pwd}"
-#   puts "    . => #{`echo *`}"
-#   puts "    ./views => #{`ls views`}"
-#   puts "    #{cmd1}\n    #{cmd2}"
     system(cmd2)
   end
-#   create_dirs(vdir)
 
-# puts "vdir = #{vdir}  pwd = #{Dir.pwd}"
     Dir.chdir("#@root/views/#{vdir}") do
-# system("bash")
-#      x = RuneBlog::Default
-#      copy!("#{Themes}", "themes")
-#      create_dirs(:assets, :posts, :staging, "remote/permalink", "remote/navbar")
-#      livetext "themes/standard/etc/blog.css.lt3" # strip ext
-#      _copy_to_staging
-#      _copy_to_remote
       livetext "themes/standard/blog/generate", "remote/index"
       pub = "user: xxx\nserver: xxx\ndocroot: xxx\npath: xxx\nproto: xxx\n"
       dump(pub, "publish")
@@ -257,7 +238,6 @@ class RuneBlog
 
   def post_lookup(postid)    # side-effect?
     log!(enter: __method__, args: [postid])
-    # .. = templates, ../.. = views/thisview
     slug = title = date = teaser_text = nil
 
     dir_posts = @vdir + "/posts"
@@ -281,7 +261,6 @@ class RuneBlog
     nslug, aslug, title, date, teaser_text = 
       vp.nslug, vp.aslug, vp.title, vp.date, vp.teaser_text
     path = vp.path
-#   url = "#{path}/#{aslug}.html"    # Should be relative to .blogs!! FIXME
     url = "#{aslug}.html"    # Should be relative to .blogs!! FIXME
       date = ::Date.parse(date)
       date = date.strftime("%B %e<br>%Y")
@@ -396,22 +375,6 @@ class RuneBlog
     views 
   end
 
-  # Remember: A post in multiple views will trigger multiple
-  #   views needing to be rebuilt (and published)
-
-  # generate a post:
-  #   given draft 9999-title.lt3
-  #   create VIEW/posts/9999-title/index.lt3
-  # LATER: metadata!! or is it in head?
-  #   Generate VIEW/posts/9999-title/head.lt3?
-  #   livetext draft_wrapper_plain.lt3  >generated/posts/plain-title.html  # unframed
-  #   livetext draft_generate.lt3       >generated/posts/real-title.html   # framed
-  #   livetext draft_wrapper_perma.lt3  >generated/posts/perma-title.html  # permaframed
-  #
-  # Generate associated views:
-  #   livetext ??/recent.lt3 >VIEW/working/recent.html
-  #   livetext VIEW/blog/generate.lt3 ??
-
   def _copy_get_dirs(draft, view)
     log!(enter: __method__, args: [draft, view])
     fname = File.basename(draft)
@@ -430,19 +393,14 @@ class RuneBlog
     views = _get_views(draft)
     views.each do |view|
       noext, viewdir, slugdir, aslug, @theme = _copy_get_dirs(draft, view)
-#     staging = viewdir + "/staging"
       remote = viewdir + "/remote"
       Dir.chdir(slugdir) do 
         copy(draft, ".")
         lt3 = draft.split("/")[-1]
         # Remember: Some posts may be in more than one view -- careful with links back
-        # system("livetext #{draft} >staging/#{name}/index.html")  # permalink?
-#       copy!("#{@theme}/*", "#{staging}")
-#       copy(lt3, staging)
         copy(lt3, remote)
         html = noext[5..-1]
         livetext draft, html  # livetext "foobar.lt3", "foobar.html"
-#       copy(html, "../../staging/post/index.html")
         copy(html, "../../remote/post/index.html")
         title_line = File.readlines(draft).grep(/^.title /).first
         title = title_line.split(" ", 2)[1]
@@ -453,12 +411,6 @@ class RuneBlog
         File.open("vars.lt3", "w") {|f| f.puts vars }
         livetext "#{theme}/post/generate.lt3", "#{remote}/#{html}"
         livetext "#{theme}/post/permalink.lt3", "#{remote}/permalink/#{html}"
-# puts <<-TEXT
-#   File.open("vars.lt3", "w") {|f| f.puts vars }
-#   livetext "../post/generate.lt3", "#{remote}/#{html}"
-#   livetext "../post/permalink.lt3", "#{remote}/permalink/#{html}"
-# TEXT
-# system("bash")
         log!(str: "About to enter remote/", pwd: true, dir: true)
         Dir.chdir(remote) do 
           log!(str: "Now in remote/", pwd: true, dir: true)

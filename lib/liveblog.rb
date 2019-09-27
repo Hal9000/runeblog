@@ -423,6 +423,7 @@ def sidebar
   _out %[<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">]
   _args do |token|
     tag = token.chomp.strip.downcase
+# Doesn't handle "split personality" widgets yet
     Dir.chdir("widgets/#{tag}") do
       livetext tag, "card-#{tag}.html"
       _include_file "card-#{tag}.html"
@@ -447,59 +448,43 @@ def script
   _out %[<script src="#{url}" integrity="#{integ}" crossorigin="#{cross}"></script>]
 end
 
-
-### How this next bit works:
-### 
-###   all_teasers will call _find_recent_posts
-### 
-###   _find_recent_posts will search higher in the directory structure
-###   for where the posts are (0001, 0002, ...) NOTE: This implies you
-###   must be in some specific place when this code is run.
-###   It returns the 20 most recent posts.
-### 
-###   all_teasers will then pick a small number of posts and call _teaser
-
-###   on each one. (The code in _teaser really belongs in a small template
-###   somewhere.)
-### 
-
-def _find_recent_posts
-  @vdir = _var(:FileDir).match(%r[(^.*/views/.*?)/])[1]
-  posts = nil
-  dir_posts = @vdir + "/posts"
-  entries = Dir.entries(dir_posts)
-  posts = entries.grep(/^\d\d\d\d/).map {|x| dir_posts + "/" + x }
-  posts.select! {|x| File.directory?(x) }
-  # directories that start with four digits
-  posts = posts.sort {|a, b| b.to_i <=> a.to_i }  # sort descending
-  posts[0..19]  # return 20 at most
-end
-
-def all_teasers
-  open = <<-HTML
-      <section class="posts">
-  HTML
-  close = <<-HTML
-      </section>
-  HTML
-
-  text = <<-HTML
-    <html>
-    <head><link rel="stylesheet" href="etc/blog.css"></head>
-    <body>
-  HTML
-  posts = _find_recent_posts
-  wanted = [5, posts.size].min  # estimate how many we want?
-  enum = posts.each
-  wanted.times do
-    postid = File.basename(enum.next)
-    postid = postid.to_i
-    text << _teaser(postid)    # side effect! calls _out
-  end
-  text << "</body></html>"
-  File.write("recent.html", text)
-  _out %[<iframe id="main" style="width: 100vw; height: 100vh; position: relative;" src='recent.html' width=100% frameborder="0" allowfullscreen></iframe>]
-end
+# def _find_recent_posts
+#   @vdir = _var(:FileDir).match(%r[(^.*/views/.*?)/])[1]
+#   posts = nil
+#   dir_posts = @vdir + "/posts"
+#   entries = Dir.entries(dir_posts)
+#   posts = entries.grep(/^\d\d\d\d/).map {|x| dir_posts + "/" + x }
+#   posts.select! {|x| File.directory?(x) }
+#   # directories that start with four digits
+#   posts = posts.sort {|a, b| b.to_i <=> a.to_i }  # sort descending
+#   posts[0..19]  # return 20 at most
+# end
+# 
+# def all_teasers
+#   open = <<-HTML
+#       <section class="posts">
+#   HTML
+#   close = <<-HTML
+#       </section>
+#   HTML
+# 
+#   text = <<-HTML
+#     <html>
+#     <head><link rel="stylesheet" href="etc/blog.css"></head>
+#     <body>
+#   HTML
+#   posts = _find_recent_posts
+#   wanted = [5, posts.size].min  # estimate how many we want?
+#   enum = posts.each
+#   wanted.times do
+#     postid = File.basename(enum.next)
+#     postid = postid.to_i
+#     text << _teaser(postid)    # side effect! calls _out
+#   end
+#   text << "</body></html>"
+#   File.write("recent.html", text)
+#   _out %[<iframe id="main" style="width: 100vw; height: 100vh; position: relative;" src='recent.html' width=100% frameborder="0" allowfullscreen></iframe>]
+# end
 
 def _post_lookup(postid)    # side-effect
   # .. = templates, ../.. = views/thisview
@@ -521,21 +506,21 @@ def _interpolate(str, context)   # FIXME move this later
   eval(wrapped, context)
 end
 
-def _teaser(slug)
-  id = slug.to_i
-  text = nil
-  post_entry_name = @theme + "blog/post_entry.lt3"
-  @_post_entry ||= File.read(post_entry_name)
-  vp = _post_lookup(id)
-  nslug, aslug, title, date, teaser_text = 
-    vp.nslug, vp.aslug, vp.title, vp.date, vp.teaser_text
-  path = vp.path
-  url = "#{path}/#{aslug}.html"    # Should be relative to .blogs!! FIXME
-    date = Date.parse(date)
-    date = date.strftime("%B %e<br>%Y")
-    text = _interpolate(@_post_entry, binding)
-  text
-end
+# def _teaser(slug)
+#   id = slug.to_i
+#   text = nil
+#   post_entry_name = @theme + "blog/post_entry.lt3"
+#   @_post_entry ||= File.read(post_entry_name)
+#   vp = _post_lookup(id)
+#   nslug, aslug, title, date, teaser_text = 
+#     vp.nslug, vp.aslug, vp.title, vp.date, vp.teaser_text
+#   path = vp.path
+#   url = "#{path}/#{aslug}.html"    # Should be relative to .blogs!! FIXME
+#     date = Date.parse(date)
+#     date = date.strftime("%B %e<br>%Y")
+#     text = _interpolate(@_post_entry, binding)
+#   text
+# end
 
 def _card_generic(card_title:, middle:, extra: "")
   front = <<-HTML

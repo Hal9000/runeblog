@@ -132,5 +132,6 @@ BODY
 
 x.change_view("around_austin")
 
+puts
 puts Time.now
 puts
