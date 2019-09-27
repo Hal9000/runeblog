@@ -198,12 +198,12 @@ class RuneBlog
     vdir = arg.dup
     raise DirAlreadyExists(vdir) if Dir.exist?(vdir)
 
-  Dir.chdir(@root) do
-    cmd1 = "tar zxvf empty_view.tgz >/dev/null 2>&1"
-    cmd2 = "cp -r empty_view views/#{arg}"
-    system(cmd1)
-    system(cmd2)
-  end
+    Dir.chdir(@root) do
+      cmd1 = "tar zxvf empty_view.tgz >/dev/null 2>&1"
+      cmd2 = "cp -r empty_view views/#{arg}"
+      system(cmd1)
+      system(cmd2)
+    end
 
     Dir.chdir("#@root/views/#{vdir}") do
       livetext "themes/standard/blog/generate", "remote/index"
@@ -358,7 +358,7 @@ class RuneBlog
 
   def generate_view(view)  # huh?
     log!(enter: __method__, args: [view])
-    generate_index(view)
+    generate_index(view)   # recent posts (recent.html)
     Dir.chdir(@root + "/views/#{view}/themes/standard") do
       livetext "blog/generate.lt3", "../../remote/index.html"
     end

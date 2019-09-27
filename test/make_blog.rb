@@ -21,7 +21,7 @@ end
 def make_post(x, title, teaser, body, views=[])
 # STDERR.puts "\n========= make_post '#{title}'"
   print "."
-  num = x.create_new_post(title, true, teaser: teaser, body: body, other_views: views)
+  x.create_new_post(title, true, teaser: teaser, body: body, other_views: views)
   views.each {|view| x.generate_index(view) }  # recent.html
 end
 

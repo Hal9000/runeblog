@@ -10,7 +10,8 @@
     $.include navbar/navbar.lt3
     <div class="content container-fluid mt-4">
       <div class="row">
-        $.include blog/index.lt3
+        $.recent_posts
+        $.sidebar ad
       </div>
     </div>
   </body>
