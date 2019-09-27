@@ -30,7 +30,7 @@ spec = Gem::Specification.new do |s|
   test = Find.find("test").to_a
   misc = %w[./README.lt3 ./README.md ./runeblog.gemspec]
 
-  system("tar zcvf empty_view.tgz empty_view")
+# system("tar zcvf empty_view.tgz empty_view")
 
   s.files       =  main + misc + test + ["empty_view.tgz"]
   s.homepage    = 'https://github.com/Hal9000/runeblog'
