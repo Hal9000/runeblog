@@ -206,7 +206,7 @@ class RuneBlog
     end
 
     Dir.chdir("#@root/views/#{vdir}") do
-      livetext "themes/standard/blog/generate", "remote/index"
+      livetext "generate", "../../../remote/index", "themes/standard/blog"
       pub = "user: xxx\nserver: xxx\ndocroot: xxx\npath: xxx\nproto: xxx\n"
       dump(pub, "publish")
 
@@ -388,37 +388,73 @@ class RuneBlog
     [noext, viewdir, slugdir, aslug, theme]
   end
 
+  def _handle_post(draft, view)
+    noext, viewdir, slugdir, aslug, @theme = _copy_get_dirs(draft, view)
+    html = noext[5..-1]    # strip "nnnn-"
+    remote = viewdir + "/remote"
+    Dir.chdir(slugdir) do 
+      copy(draft, ".")              # copy source into slugdir
+      lt3 = draft.split("/")[-1]    # Remember: Some posts may be in more than 
+      copy(lt3, remote)             #    one view -- careful with links back
+STDERR.puts "1  pwd = #{Dir.pwd}"
+      livetext! draft, html         
+STDERR.puts "    copy #{html}, #{remote}/#{html}"
+      copy(html, "#{remote}/#{html}")
+
+      title_line = File.readlines(draft).grep(/^.title /).first
+      title = title_line.split(" ", 2)[1]
+      excerpt = File.read("teaser.txt")
+      vars = %[.set title="#{title.chomp}"\n] + 
+             %[.set teaser="#{excerpt.chomp}"]
+      theme = "#{viewdir}/themes/standard"
+      File.open("#{theme}/post/vars.lt3", "w") {|f| f.puts vars }
+
+      livetext! "generate.lt3", "#{remote}/html", "#{theme}/post"
+      copy("#{remote}/#{html}", "#{theme}/post")
+
+      livetext! "permalink.lt3", "#{remote}/permalink/#{html}", "#{theme}/post"
+      log!(str: "About to enter remote/", pwd: true, dir: true)
+      Dir.chdir(remote) do 
+        log!(str: "Now in remote/", pwd: true, dir: true)
+        system("cp -r ../themes/standard/widgets .")
+        log!(str: "finished with remote/", pwd: true, dir: true)
+      end
+    end
+  end
+
   def generate_post(draft)
     log!(enter: __method__, args: [draft])
     views = _get_views(draft)
     views.each do |view|
-      noext, viewdir, slugdir, aslug, @theme = _copy_get_dirs(draft, view)
-      remote = viewdir + "/remote"
-      Dir.chdir(slugdir) do 
-        copy(draft, ".")
-        lt3 = draft.split("/")[-1]
-        # Remember: Some posts may be in more than one view -- careful with links back
-        copy(lt3, remote)
-        html = noext[5..-1]
-        livetext draft, html  # livetext "foobar.lt3", "foobar.html"
-        copy(html, "../../remote/post/index.html")
-        title_line = File.readlines(draft).grep(/^.title /).first
-        title = title_line.split(" ", 2)[1]
-        excerpt = File.read("teaser.txt")
-        vars = %[.set title="#{title.chomp}"\n] + 
-               %[.set teaser="#{excerpt.chomp}"]
-        theme = "../../theme/standard"
-        File.open("vars.lt3", "w") {|f| f.puts vars }
-        livetext "#{theme}/post/generate.lt3", "#{remote}/#{html}"
-        livetext "#{theme}/post/permalink.lt3", "#{remote}/permalink/#{html}"
-        log!(str: "About to enter remote/", pwd: true, dir: true)
-        Dir.chdir(remote) do 
-          log!(str: "Now in remote/", pwd: true, dir: true)
-          system("cp -r ../themes/standard/widgets .")
-          log!(str: "finished with remote/", pwd: true, dir: true)
-        end
-      end
+      _handle_post(draft, view)
     end
+#      noext, viewdir, slugdir, aslug, @theme = _copy_get_dirs(draft, view)
+#      remote = viewdir + "/remote"
+#      Dir.chdir(slugdir) do 
+#        copy(draft, ".")
+#        lt3 = draft.split("/")[-1]
+#        # Remember: Some posts may be in more than one view -- careful with links back
+#        copy(lt3, remote)
+#        html = noext[5..-1]    # strip "nnnn-"
+#        livetext! draft, html
+#        copy(html, "#{remote}/#{html}")
+#        title_line = File.readlines(draft).grep(/^.title /).first
+#        title = title_line.split(" ", 2)[1]
+#        excerpt = File.read("teaser.txt")
+#        vars = %[.set title="#{title.chomp}"\n] + 
+#               %[.set teaser="#{excerpt.chomp}"]
+#        theme = "#{viewdir}/themes/standard"
+#        File.open("#{theme}/post/vars.lt3", "w") {|f| f.puts vars }
+#        livetext! "generate.lt3", "#{remote}/html", "#{theme}/post"
+#        copy("#{remote}/html", "#{theme}/post")
+#        livetext! "permalink.lt3", "#{remote}/permalink/#{html}", "#{theme}/post"
+#        log!(str: "About to enter remote/", pwd: true, dir: true)
+#        Dir.chdir(remote) do 
+#          log!(str: "Now in remote/", pwd: true, dir: true)
+#          system("cp -r ../themes/standard/widgets .")
+#          log!(str: "finished with remote/", pwd: true, dir: true)
+#        end
+#      end
   end
 
   def relink

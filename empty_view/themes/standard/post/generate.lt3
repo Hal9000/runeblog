@@ -4,7 +4,7 @@
   <!-- Editing this file is not recommended.   -->
   <!-- It was generated from $File on $$date.  -->
 
-.include global.lt3
+.seek global.lt3
 .include vars.lt3
 
 .head

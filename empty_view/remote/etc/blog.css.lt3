@@ -1,5 +1,5 @@
 .nopara
-.include themes/standard/global.lt3
+.seek themes/standard/global.lt3
 
 \.post-title a {
   color: $post.title.color;

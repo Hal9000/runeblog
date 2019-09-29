@@ -38,7 +38,7 @@ exit unless rc
     return false
   end
 
-  def livetext(src, dst=nil)
+  def livetext(src, dst=nil, dir=".")
     log!(enter: __method__, args: [src, dst])
     src << ".lt3" unless src.end_with?(".lt3")
     if dst
@@ -47,7 +47,21 @@ exit unless rc
       dst = src.sub(/.lt3$/, "")
     end
 #   return unless stale?(src, dst)
-    system("livetext #{src} >#{dst}")
+    Dir.chdir(dir) { system("livetext #{src} >#{dst}") }
+  end
+
+  def livetext!(src, dst=nil, dir=".")
+    log!(enter: __method__, args: [src, dst])
+    src << ".lt3" unless src.end_with?(".lt3")
+    if dst
+      dst << ".html" unless dst.end_with?(".html")
+    else
+      dst = src.sub(/.lt3$/, "")
+    end
+#   return unless stale?(src, dst)
+STDERR.puts "-- livetext #{src} >#{dst} \n       in: #{Dir.pwd}\n      from: #{caller[0]}"
+    Dir.chdir(dir) { system("livetext #{src} >#{dst}") }
+STDERR.puts "... completed"
   end
 
   def get_root

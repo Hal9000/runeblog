@@ -6,7 +6,7 @@
   <!-- Editing this file is not recommended.   -->
   <!-- It was generated from $File on $$date.  -->
 
-.include global.lt3
+.seek    global.lt3
 .include vars.lt3
 
 .head
@@ -16,7 +16,7 @@ description $teaser
 
 <section class="post">
   <div class="entry-content">
-    $.include post/index.html
+    $.include index.html
   </div>
 </section>
 
