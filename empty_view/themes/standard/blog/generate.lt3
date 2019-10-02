@@ -12,6 +12,6 @@
       <div class="row">
         $.include blog/index.lt3
       </div>
-    </div>
+    </di>
   </body>
 </html>

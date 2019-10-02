@@ -3,6 +3,8 @@ require 'fileutils'
 
 # Home = Dir.pwd # unless Home
 
+LEXT = ".lt3"
+
 module RuneBlog::Helpers
 
   def copy(src, dst)
@@ -31,37 +33,57 @@ exit unless rc
 #   end
   end
 
-  def stale?(src, dst)
+  def stale?(src, dst, force = false)
     log!(enter: __method__, args: [src, dst])
+    raise "Source #{src} not found in #{Dir.pwd}" unless File.exist?(src)
+    return true if force
     return true unless File.exist?(dst)
     return true if File.mtime(src) > File.mtime(dst)
     return false
   end
 
-  def livetext(src, dst=nil, dir=".")
-    log!(enter: __method__, args: [src, dst])
-    src << ".lt3" unless src.end_with?(".lt3")
-    if dst
-      dst << ".html" unless dst.end_with?(".html")
-    else
-      dst = src.sub(/.lt3$/, "")
-    end
-#   return unless stale?(src, dst)
-    Dir.chdir(dir) { system("livetext #{src} >#{dst}") }
-  end
+#  def livetext(src, dst=nil, dir=".")
+#    log!(enter: __method__, args: [src, dst])
+#    src << ".lt3" unless src.end_with?(".lt3")
+#    if dst
+#      dst << ".html" unless dst.end_with?(".html")
+#    else
+#      dst = src.sub(/.lt3$/, "")
+#    end
+##   return unless stale?(src, dst)
+#    Dir.chdir(dir) { system("livetext #{src} >#{dst}") }
+#  end
+#
+#  def livetext!(src, dst=nil, dir=".")
+#    log!(enter: __method__, args: [src, dst])
+#    src << ".lt3" unless src.end_with?(".lt3")
+#    if dst
+#      dst << ".html" unless dst.end_with?(".html")
+#    else
+#      dst = src.sub(/.lt3$/, "")
+#    end
+##   return unless stale?(src, dst)
+#STDERR.puts "-- livetext #{src} >#{dst} \n       in: #{Dir.pwd}\n      from: #{caller[0]}"
+#    Dir.chdir(dir) { system("livetext #{src} >#{dst}") }
+#STDERR.puts "... completed"
+#  end
 
-  def livetext!(src, dst=nil, dir=".")
-    log!(enter: __method__, args: [src, dst])
-    src << ".lt3" unless src.end_with?(".lt3")
-    if dst
-      dst << ".html" unless dst.end_with?(".html")
-    else
-      dst = src.sub(/.lt3$/, "")
+  def xlate(cwd: Dir.pwd, src:, 
+            dst: (strip = true; src.sub(/.lt3$/,"")), 
+            copy: nil, debug: false, force: false)
+    src += LEXT unless src.end_with?(LEXT)
+    dst += ".html" unless dst.end_with?(".html") || strip
+    Dir.chdir(cwd) do
+      return unless stale?(src, dst, force)
+      if debug
+        STDERR.puts "-- xlate #{src} >#{dst}"
+        STDERR.puts "     in:   #{Dir.pwd}"
+        STDERR.puts "     from: #{caller[0]}"
+        STDERR.puts "     copy: #{copy}" if copy
+      end
+      rc = system("livetext #{src} >#{dst}")
     end
-#   return unless stale?(src, dst)
-STDERR.puts "-- livetext #{src} >#{dst} \n       in: #{Dir.pwd}\n      from: #{caller[0]}"
-    Dir.chdir(dir) { system("livetext #{src} >#{dst}") }
-STDERR.puts "... completed"
+    STDERR.puts "...completed (shell returned #{rc})" if debug
   end
 
   def get_root

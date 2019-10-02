@@ -14,7 +14,7 @@ description $teaser
 
 <section class="post">
   <div class="entry-content">
-    $.include post/index.html
+    $.copy guts.html
   </div>
 </section>
 

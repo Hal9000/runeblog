@@ -60,7 +60,7 @@ class RuneBlog
     create_dirs(root)
     Dir.chdir(root) do
       system("cp #{RuneBlog::Path}/../empty_view.tgz .")
-      create_dirs(:drafts, :views)
+      create_dirs(:drafts, :views, :posts)
       new_sequence
     end
     put_config(root: root)
@@ -97,6 +97,23 @@ class RuneBlog
     @sequence = get_sequence
     @post_views = []
     @post_tags = []
+  end
+
+  def _deploy_local(dir)
+    log!(enter: __method__, args: [dir])
+    Dir.chdir(dir) do
+      views = File.readlines("metadata.txt").grep(/^.views /).first[7..-1].split
+      views.each {|v| system("cp *html #@root/views/#{v}/remote") }
+    end
+  end
+
+  def process_post(sourcefile)
+    log!(enter: __method__, args: [dir])
+    nslug = sourcefile.sub(/.lt3/, "")
+    dir = @root + "/posts/#{nslug}"
+    create_dir(dir)
+    xlate cwd: dir, src: sourcefile, debug: true
+    _deploy_local(dir)
   end
 
   def inspect
@@ -177,45 +194,59 @@ class RuneBlog
     Dir.exist?(DotDir) && File.exist?(DotDir + "/" + ConfigFile)
   end
 
-  def _copy_to_staging
-    copy!("themes/standard/", "staging/")
-    copy!("themes/standard/widgets/", "staging/")
+  def make_dummy_publish_file(view_name)
+    log!(enter: __method__, args: [view_name])
+    vdir = "#@root/views/#{view_name}"
+    pub = [:user, :server, :docroot, :path, :proto]
+    pub = pub.map {|x| x.to_s + ": undefined" }
+    pub = pub.join("\n") + "\n"
+    dump(pub, "#{vdir}/publish")
   end
 
-  def _copy_to_remote
-    copy!("themes/standard/etc", "remote/")
-    copy!("themes/standard/assets", "remote/")
-    copy!("themes/standard/widgets", "remote/")
+  def mark_last_published(str)
+    log!(enter: __method__, args: [str])
+    dump(str, "last_published")
   end
 
-  def create_view(arg)
-    log!(enter: __method__, args: [arg])
-    raise ArgumentError unless arg.is_a?(String) && ! arg.empty?
+  def add_view(view_name)
+    log!(enter: __method__, args: [view_name])
+    view = RuneBlog::View.new(view_name)
+    @view = view    # current view
+    @views << view  # all views
+    view
+  end
 
-    names = self.views.map(&:to_s)
-    raise ViewAlreadyExists(arg) if names.include?(arg)
-
-    vdir = arg.dup
-    raise DirAlreadyExists(vdir) if Dir.exist?(vdir)
-
+  def make_empty_view_tree(view_name)
+    log!(enter: __method__, args: [view_name])
     Dir.chdir(@root) do
       cmd1 = "tar zxvf empty_view.tgz >/dev/null 2>&1"
-      cmd2 = "cp -r empty_view views/#{arg}"
+      cmd2 = "cp -r empty_view views/#{view_name}"
       system(cmd1)
       system(cmd2)
     end
+  end
 
-    Dir.chdir("#@root/views/#{vdir}") do
-      livetext "generate", "../../../remote/index", "themes/standard/blog"
-      pub = "user: xxx\nserver: xxx\ndocroot: xxx\npath: xxx\nproto: xxx\n"
-      dump(pub, "publish")
+  def check_valid_new_view(view_name)
+    log!(enter: __method__, args: [view_name])
+    raise ArgumentError unless view_name.is_a?(String)
+    raise ArgumentError if view_name.empty?
+    names = self.views.map(&:to_s)
+    bad = names.include?(view_name)
+    raise ViewAlreadyExists(view_name) if bad
+    vdir = "@root/views/#{view_name}"
+    raise DirAlreadyExists(view_name) if Dir.exist?(vdir)
+    return true   # hm?
+  end
 
-      view = RuneBlog::View.new(arg)
-      self.view = view
-      dump("Initial creation", "last_published")
-    end  
-    @views << view
-    @views
+  def create_view(view_name)
+    log!(enter: __method__, args: [view_name])
+    check_valid_new_view(view_name)
+    make_empty_view_tree(view_name)
+#   xlate cwd: "#@root/views/#{view_name}/themes/standard/blog",
+#         src: "generate", dst: "../../../remote/index"
+    make_dummy_publish_file(view_name)
+    mark_last_published("Initial creation")
+    add_view(view_name)
   end
 
   def delete_view(name, force = false)
@@ -304,7 +335,7 @@ class RuneBlog
   def create_new_post(title, testing = false, teaser: nil, body: nil, other_views: [])
     log!(enter: __method__, args: [title, testing, teaser, body, other_views])
     meta = nil
-    Dir.chdir(self.view.dir) do
+    Dir.chdir("#@root/posts/") do
       post = Post.create(title: title, teaser: teaser, body: body, other_views: other_views)
       post.edit unless testing
       post.build
@@ -322,6 +353,7 @@ class RuneBlog
     sourcefile = "#@root/drafts/#{file}"
     result = system("#@editor #{sourcefile} +8") unless testing
     raise EditorProblem(sourcefile) unless result
+    process_post(sourcefile)
     nil
   rescue => err
     error(err)
@@ -359,9 +391,9 @@ class RuneBlog
   def generate_view(view)  # huh?
     log!(enter: __method__, args: [view])
     generate_index(view)   # recent posts (recent.html)
-    Dir.chdir(@root + "/views/#{view}/themes/standard") do
-      livetext "blog/generate.lt3", "../../remote/index.html"
-    end
+    vdir = "#@root/views/#{view}"
+    xlate cwd: "#{vdir}/themes/standard",
+          src: "blog/generate.lt3", dst: "#{vdir}/remote/index.html"
   end
 
   def _get_views(draft)
@@ -388,73 +420,66 @@ class RuneBlog
     [noext, viewdir, slugdir, aslug, theme]
   end
 
-  def _handle_post(draft, view)
-    noext, viewdir, slugdir, aslug, @theme = _copy_get_dirs(draft, view)
-    html = noext[5..-1]    # strip "nnnn-"
-    remote = viewdir + "/remote"
-    Dir.chdir(slugdir) do 
-      copy(draft, ".")              # copy source into slugdir
-      lt3 = draft.split("/")[-1]    # Remember: Some posts may be in more than 
-      copy(lt3, remote)             #    one view -- careful with links back
-STDERR.puts "1  pwd = #{Dir.pwd}"
-      livetext! draft, html         
-STDERR.puts "    copy #{html}, #{remote}/#{html}"
-      copy(html, "#{remote}/#{html}")
-
-      title_line = File.readlines(draft).grep(/^.title /).first
-      title = title_line.split(" ", 2)[1]
+  def _post_metadata(draft, pdraft)
+    log!(enter: __method__, args: [draft, pdraft])
+    title_line = File.readlines(draft).grep(/^.title /).first
+    title = title_line.split(" ", 2)[1]
+#   pdir = "
+    Dir.chdir(pdraft) do 
       excerpt = File.read("teaser.txt")
       vars = %[.set title="#{title.chomp}"\n] + 
              %[.set teaser="#{excerpt.chomp}"]
-      theme = "#{viewdir}/themes/standard"
-      File.open("#{theme}/post/vars.lt3", "w") {|f| f.puts vars }
-
-      livetext! "generate.lt3", "#{remote}/html", "#{theme}/post"
-      copy("#{remote}/#{html}", "#{theme}/post")
-
-      livetext! "permalink.lt3", "#{remote}/permalink/#{html}", "#{theme}/post"
-      log!(str: "About to enter remote/", pwd: true, dir: true)
-      Dir.chdir(remote) do 
-        log!(str: "Now in remote/", pwd: true, dir: true)
-        system("cp -r ../themes/standard/widgets .")
-        log!(str: "finished with remote/", pwd: true, dir: true)
-      end
+      File.open("#{pdraft}/vars.lt3", "w") {|f| f.puts vars }
     end
+  end
+
+  def copy_widget_html   # FIXME make better?
+    log!(enter: __method__)
+    wdir = "../themes/standard/widgets"
+    widgets = Dir["#{wdir}/*"].select {|w| File.directory?(w) }
+    widgets.each do |w|
+      dir = File.basename(w)
+      rem = "#{remote}/#{w}" 
+      create_dirs(rem)
+      system("cp #{w}/*html  #{rem}")
+    end
+  end
+
+  def _handle_post(draft, view)
+    log!(enter: __method__, args: [draft, view])
+
+    fname = File.basename(draft)       # 0001-this-is-a-post.lt3
+    nslug = fname.sub(/.lt3$/, "")     # 0001-this-is-a-post
+    aslug = nslug.sub(/\d\d\d\d-/, "") # this-is-a-post
+    ahtml = aslug + ".html"            # this-is-a-post.html
+    pdraft = "#@root/posts/#{nslug}"
+    remote = "#@root/views/#{view}/remote"
+    @theme = "#@root/views/#{view}/themes/standard"
+    # Step 1...
+    create_dirs(pdraft)
+    xlate cwd: pdraft, src: draft, dst: "guts.html"
+    _post_metadata(draft, pdraft)
+    # Step 2...
+    vposts = "#@root/views/#{view}/posts/"
+    copy!(pdraft, vposts)    # ??
+    # Step 3..
+    copy(pdraft + "/guts.html", "#@theme/post") 
+    copy(pdraft + "/vars.lt3",  "#@theme/post") 
+    # Step 4...
+    xlate cwd: "#{@theme}/post", src: "generate.lt3", 
+          dst: "#{remote}/#{ahtml}", copy: "#{@theme}/post"
+    xlate cwd: "#{@theme}/post", src: "permalink.lt3", 
+          dst: "#{remote}/permalink/#{ahtml}"
+    copy_widget_html
   end
 
   def generate_post(draft)
     log!(enter: __method__, args: [draft])
     views = _get_views(draft)
-    views.each do |view|
+    views.each do |view| 
       _handle_post(draft, view)
+      generate_view(view)
     end
-#      noext, viewdir, slugdir, aslug, @theme = _copy_get_dirs(draft, view)
-#      remote = viewdir + "/remote"
-#      Dir.chdir(slugdir) do 
-#        copy(draft, ".")
-#        lt3 = draft.split("/")[-1]
-#        # Remember: Some posts may be in more than one view -- careful with links back
-#        copy(lt3, remote)
-#        html = noext[5..-1]    # strip "nnnn-"
-#        livetext! draft, html
-#        copy(html, "#{remote}/#{html}")
-#        title_line = File.readlines(draft).grep(/^.title /).first
-#        title = title_line.split(" ", 2)[1]
-#        excerpt = File.read("teaser.txt")
-#        vars = %[.set title="#{title.chomp}"\n] + 
-#               %[.set teaser="#{excerpt.chomp}"]
-#        theme = "#{viewdir}/themes/standard"
-#        File.open("#{theme}/post/vars.lt3", "w") {|f| f.puts vars }
-#        livetext! "generate.lt3", "#{remote}/html", "#{theme}/post"
-#        copy("#{remote}/html", "#{theme}/post")
-#        livetext! "permalink.lt3", "#{remote}/permalink/#{html}", "#{theme}/post"
-#        log!(str: "About to enter remote/", pwd: true, dir: true)
-#        Dir.chdir(remote) do 
-#          log!(str: "Now in remote/", pwd: true, dir: true)
-#          system("cp -r ../themes/standard/widgets .")
-#          log!(str: "finished with remote/", pwd: true, dir: true)
-#        end
-#      end
   end
 
   def relink

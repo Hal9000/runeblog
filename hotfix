@@ -28,4 +28,6 @@ system("cp -r themes #{lib}/..")
 cmd = "cp bin/* #{lib.sub(/lib$/, "bin/")}"
 puts cmd
 system(cmd)
+
 # puts
+

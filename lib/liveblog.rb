@@ -236,23 +236,20 @@ def pin
   _optional_blank_line
 end
 
-def write_post
-  raise "'post' was not called" unless @meta
-  save = Dir.pwd
-  @postdir.gsub!(/\/\//, "/")  # FIXME unneeded?
-  Dir.mkdir(@postdir) unless Dir.exist?(@postdir) # FIXME remember assets!
-  Dir.chdir(@postdir)
-  @meta.views = @meta.views.join(" ") if @meta.views.is_a? Array
-  @meta.tags  = @meta.tags.join(" ") if @meta.tags.is_a? Array
+def _write_metadata
   File.write("teaser.txt", @meta.teaser)
-  
   fields = [:num, :title, :date, :pubdate, :views, :tags]
-  
   fname2 = "metadata.txt"
   f2 = File.open(fname2, "w") do |f2| 
     fields.each {|fld| f2.puts "#{fld}: #{@meta.send(fld)}" }
   end
-  Dir.chdir(save)
+end
+
+def write_post
+  raise "'post' was not called" unless @meta
+  @meta.views = @meta.views.join(" ") if @meta.views.is_a? Array
+  @meta.tags  = @meta.tags.join(" ") if @meta.tags.is_a? Array
+  _write_metadata
 rescue => err
   puts "err = #{err}"
   puts err.backtrace.join("\n")
@@ -267,19 +264,25 @@ def teaser
 end
 
 def finalize
+STDERR.puts :cp1
   unless @meta
     puts @live.body
     return
   end
+STDERR.puts :cp4
   if @blog.nil?
     return @meta
   end
 
+STDERR.puts :cp6
   @slug = @blog.make_slug(@meta)
+STDERR.puts :cp7
   slug_dir = @slug
   @postdir = @blog.view.dir + "/posts/#{slug_dir}"
   STDERR.puts "--- finalize: pwd = #{Dir.pwd} postdir = #@postdir"
+STDERR.puts :cp8
   write_post
+STDERR.puts :cp9
   @meta
 end
  

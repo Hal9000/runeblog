@@ -42,10 +42,6 @@ x = RuneBlog.new(".blogs")
 
 x.create_view("around_austin")   # FIXME remember view title!
 
-# puts "=== about to call: x.generate_view('around_austin')"
-x.generate_view("around_austin")
-# puts "=== ...returned"
-
 # Hack:
 if File.exist?("publish")
   system("cp publish .blogs/views/around_austin/publish")
@@ -129,6 +125,8 @@ EXCERPT
 But I first heard of them
 in 2005.
 BODY
+
+x.generate_view("around_austin")
 
 x.change_view("around_austin")
 

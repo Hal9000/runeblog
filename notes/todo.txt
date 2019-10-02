@@ -1,10 +1,12 @@
- x - fix "missing post" problem
-   - fix: navbar, pages?, links?
+   - livetext --> xlate (or whatever) everywhere
+   - bug: one post is truncated (life-...)
+   - bug: permalinks are broken
+   - move global.lt3 into etc?
+   - fix generalized widget
    - fix card2 problem with "$" in cdata
    - cards as .lt3 files?
    - add CSS ref to post?
    - create tag cloud
-   - fix post and blog headers
 
    - livetext: fix bug .set var="this, that"
    - livetext: permit omission of .lt3
@@ -85,6 +87,13 @@
 
 ---
 
+ x - use .copy for guts.html
+ x - introduce guts.html
+ x - use .seek for global.lt3
+ x - "livetext" method is "xlate" for now
+ x - removed staging dir
+ x - fix "missing post" problem
+ x - fix post and blog headers
  x - navbar into main portion of front page
  x - livetext: dotted variables
  x - variables inside blog.css
