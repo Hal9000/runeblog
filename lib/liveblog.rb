@@ -96,48 +96,70 @@ def list!
   _optional_blank_line
 end
 
-def html_body(file)
+def _html_body(file)
   file.puts "<html>\n  <body>"
   yield
   file.puts "  </body>\n</html>"
 end
 
-def make_news_links
-  # FIXME remember strings may not be safe
-  line = _data.chomp
-  input, cardfile, mainfile, card_title = *line.split(" ", 4)
-  pairs = File.readlines(input).map {|line| line.chomp.split(",", 2) }
-  # HTML for main area (iframe)
-  File.open("#{mainfile}.html", "w") do |f|
-    html_body(f) do
-      f.puts "<h1>#{card_title}</h1>"
-      pairs.each do |file, title| 
-        f.puts %[<a style="text-decoration: none; font-size: 24px" href="#{file}">#{title}</a> <br>]
-      end
-    end
-  end
+def _write_card(cardfile, mainfile, pairs, card_title, tag, relative: true)
   # HTML for sidebar card
+  log!(str: "Creating #{cardfile}.html", pwd: true)
+  TTY.puts "Creating #{cardfile}.html - pwd = #{Dir.pwd}"
   File.open("#{cardfile}.html", "w") do |f|
     f.puts <<-EOS
       <div class="card mb-3">
         <div class="card-body">
           <h5 class="card-title">
             <a href="javascript: void(0)" 
-               onclick="javascript:open_main('widgets/news/#{mainfile}.html')" 
+               onclick="javascript:open_main('widgets/#{tag}/#{mainfile}.html')" 
                style="text-decoration: none; color: black">#{card_title}</a>
           </h5>
+<!--          <ul class="list-group list-group-flush"> -->
     EOS
+    log!(str: "Writing data pairs to #{cardfile}.html", pwd: true)
+    top = relative ? "widgets/#{tag}/" : ""
     pairs.each do |file, title| 
       f.puts <<-EOS
         <li class="list-group-item"> <a href="javascript: void(0)" 
-        onclick="javascript:open_main('#{file}')">#{title}</a> </li>
+        onclick="javascript:open_main('#{top}#{file}')">#{title}</a> </li>
       EOS
     end
     f.puts <<-EOS
+<!--          </ul> -->
         </div>
       </div>
     EOS
   end
+end
+
+def _write_main(mainfile, pairs, card_title)
+  # HTML for main area (iframe)
+  log!(str: "Creating #{mainfile}.html", pwd: true)
+  TTY.puts "Creating #{mainfile}.html - pwd = #{Dir.pwd}"
+  File.open("#{mainfile}.html", "w") do |f|
+    _html_body(f) do
+      f.puts "<h1>#{card_title}</h1>"
+      pairs.each do |file, title| 
+        f.puts %[<a style="text-decoration: none; font-size: 24px" href="#{file}">#{title}</a> <br>]
+      end
+    end
+  end
+end
+
+def make_main_links
+  log!(enter: __method__)
+  # FIXME remember strings may not be safe
+  line = _data.chomp
+  tag, card_title = *line.split(" ", 2)
+  cardfile, mainfile = "card-#{tag}", "main-#{tag}"
+  input = "list.data"
+  log!(str: "Reading #{input}", pwd: true)
+  pairs = File.readlines(input).map {|line| line.chomp.split(",", 2) }
+  _write_main(mainfile, pairs, card_title)
+  widget_relative = false  # (tag != "news")  # FIXME kludge!!!
+  _write_card(cardfile, mainfile, pairs, card_title, tag, relative: widget_relative)
+  log!(str: "...returning from method", pwd: true)
 end
 
 ### inset

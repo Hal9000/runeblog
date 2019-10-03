@@ -112,7 +112,7 @@ Blah blah Waller Creek blah blah...
 BODY
 
 make_post(x, "Life on Sabine Street", <<-EXCERPT, <<-BODY)
-It's like Pooh Corner, except not.
+It's like Pooh Corner (except not).
 EXCERPT
 This is about Sabine St, blah blah lorem ipsum dolor...
 BODY
