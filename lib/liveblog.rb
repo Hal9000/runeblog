@@ -19,7 +19,7 @@ def init_liveblog    # FIXME - a lot of this logic sucks
   @view_name = @blog.view.name
   @vdir = @blog.view.dir
   @version = RuneBlog::VERSION
-  @theme = @vdir + "/themes/standard/"
+  @theme = @vdir/:themes/:standard
 end
 
 # FIXME - stale? and livetext are duplicated from helpers-blog
@@ -117,11 +117,12 @@ def _write_card(cardfile, mainfile, pairs, card_title, tag, relative: true)
           </h5>
     EOS
     log!(str: "Writing data pairs to #{cardfile}.html", pwd: true)
-    top = "widgets/#{tag}/"  # FIXME ???
+    top = :widgets/tag    # FIXME ???
     pairs.each do |file, title| 
+    # took out #{top}#{file}
       f.puts <<-EOS
         <li class="list-group-item"> <a href="javascript: void(0)" 
-        onclick="javascript:open_main('#{top}#{file}')">#{title}</a> </li>
+        onclick="javascript:open_main('#{file}')">#{title}</a> </li>
       EOS
     end
     f.puts <<-EOS
@@ -134,12 +135,12 @@ end
 def _write_main(mainfile, pairs, card_title)
   # HTML for main area (iframe)
   log!(str: "Creating #{mainfile}.html", pwd: true)
-# TTY.puts "Creating #{mainfile}.html - pwd = #{Dir.pwd}"
   File.open("#{mainfile}.html", "w") do |f|
     _html_body(f) do
       f.puts "<h1>#{card_title}</h1>"
       pairs.each do |file, title| 
-        f.puts %[<a style="text-decoration: none; font-size: 24px" href="#{file}">#{title}</a> <br>]
+        main = _main(file)
+        f.puts %[<a style="text-decoration: none; font-size: 24px" #{main}>#{title}</a> <br>]
       end
     end
   end
@@ -229,7 +230,7 @@ end
 def image   # primitive so far
   _debug "img: huh? <img src=#{_args.first}></img>"
   fname = _args.first
-  path = "assets/#{fname}"
+  path = :assets/fname
   _out "<img src=#{path}></img>"
   _optional_blank_line
 end
@@ -298,7 +299,7 @@ STDERR.puts :cp6
   @slug = @blog.make_slug(@meta)
 STDERR.puts :cp7
   slug_dir = @slug
-  @postdir = @blog.view.dir + "/posts/#{slug_dir}"
+  @postdir = @blog.view.dir/:posts/slug_dir
   STDERR.puts "--- finalize: pwd = #{Dir.pwd} postdir = #@postdir"
 STDERR.puts :cp8
   write_post
@@ -446,7 +447,7 @@ def sidebar
   _out %[<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">]
   _args do |token|
     tag = token.chomp.strip.downcase
-    wtag = "widgets/#{tag}"
+    wtag = :widgets/tag
     raise "Can't find #{wtag}" unless Dir.exist?(wtag)
     Dir.chdir(wtag) do
       tcard = "#{tag}-card.html"
@@ -515,8 +516,8 @@ def _post_lookup(postid)    # side-effect
   # .. = templates, ../.. = views/thisview
   slug = title = date = teaser_text = nil
 
-  dir_posts = @vdir + "/posts"
-  posts = Dir.entries(dir_posts).grep(/^\d\d\d\d/).map {|x| dir_posts + "/" + x }
+  dir_posts = @vdir/:posts
+  posts = Dir.entries(dir_posts).grep(/^\d\d\d\d/).map {|x| dir_posts/x }
   posts.select! {|x| File.directory?(x) }
 
   post = posts.select {|x| File.basename(x).to_i == postid }
@@ -673,7 +674,7 @@ def navbar
       first = false
       _out %[<li class="nav-item active"> <a class="nav-link" href="#{href}">#{cdata}<span class="sr-only">(current)</span></a> </li>]
     else
-      main = _main("navbar/#{href}")
+      main = _main(:navbar/href)
       _out %[<li class="nav-item"> <a class="nav-link" #{main}>#{cdata}</a> </li>]
     end
   end
