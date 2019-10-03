@@ -445,8 +445,12 @@ def recent_posts    # side-effect
 end
 
 def sidebar
+  if _args.include? "off"
+    _body { }  # iterate, do nothing
+    return 
+  end
   _out %[<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">]
-  _args do |token|
+  _body do |token|
     tag = token.chomp.strip.downcase
     wtag = :widgets/tag
     raise "Can't find #{wtag}" unless Dir.exist?(wtag)
