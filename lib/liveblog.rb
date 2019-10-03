@@ -105,7 +105,7 @@ end
 def _write_card(cardfile, mainfile, pairs, card_title, tag, relative: true)
   # HTML for sidebar card
   log!(str: "Creating #{cardfile}.html", pwd: true)
-  TTY.puts "Creating #{cardfile}.html - pwd = #{Dir.pwd}"
+# TTY.puts "Creating #{cardfile}.html - pwd = #{Dir.pwd}"
   File.open("#{cardfile}.html", "w") do |f|
     f.puts <<-EOS
       <div class="card mb-3">
@@ -115,10 +115,9 @@ def _write_card(cardfile, mainfile, pairs, card_title, tag, relative: true)
                onclick="javascript:open_main('widgets/#{tag}/#{mainfile}.html')" 
                style="text-decoration: none; color: black">#{card_title}</a>
           </h5>
-<!--          <ul class="list-group list-group-flush"> -->
     EOS
     log!(str: "Writing data pairs to #{cardfile}.html", pwd: true)
-    top = relative ? "widgets/#{tag}/" : ""
+    top = "widgets/#{tag}/"  # FIXME ???
     pairs.each do |file, title| 
       f.puts <<-EOS
         <li class="list-group-item"> <a href="javascript: void(0)" 
@@ -126,7 +125,6 @@ def _write_card(cardfile, mainfile, pairs, card_title, tag, relative: true)
       EOS
     end
     f.puts <<-EOS
-<!--          </ul> -->
         </div>
       </div>
     EOS
@@ -136,7 +134,7 @@ end
 def _write_main(mainfile, pairs, card_title)
   # HTML for main area (iframe)
   log!(str: "Creating #{mainfile}.html", pwd: true)
-  TTY.puts "Creating #{mainfile}.html - pwd = #{Dir.pwd}"
+# TTY.puts "Creating #{mainfile}.html - pwd = #{Dir.pwd}"
   File.open("#{mainfile}.html", "w") do |f|
     _html_body(f) do
       f.puts "<h1>#{card_title}</h1>"
@@ -152,7 +150,7 @@ def make_main_links
   # FIXME remember strings may not be safe
   line = _data.chomp
   tag, card_title = *line.split(" ", 2)
-  cardfile, mainfile = "card-#{tag}", "main-#{tag}"
+  cardfile, mainfile = "#{tag}-card", "#{tag}-main"
   input = "list.data"
   log!(str: "Reading #{input}", pwd: true)
   pairs = File.readlines(input).map {|line| line.chomp.split(",", 2) }
@@ -448,10 +446,12 @@ def sidebar
   _out %[<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">]
   _args do |token|
     tag = token.chomp.strip.downcase
-# Doesn't handle "split personality" widgets yet
-    Dir.chdir("widgets/#{tag}") do
-      livetext tag, "card-#{tag}.html"
-      _include_file "card-#{tag}.html"
+    wtag = "widgets/#{tag}"
+    raise "Can't find #{wtag}" unless Dir.exist?(wtag)
+    Dir.chdir(wtag) do
+      tcard = "#{tag}-card.html"
+      livetext tag, tcard
+      _include_file tcard
     end
   end
   _out %[</div>]
@@ -631,7 +631,7 @@ def tag_cloud
   _out open
   _body do |line|
     line.chomp!
-    url, classname, cdata = line.split(",", 4)
+    url, classname, cdata = line.split(",", 3)
     main = _main(url)
     _out %[<a #{main} class="#{classname}">#{cdata}</a>]
   end

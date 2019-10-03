@@ -433,15 +433,19 @@ class RuneBlog
     end
   end
 
-  def copy_widget_html   # FIXME make better?
+  def copy_widget_html(view)
     log!(enter: __method__)
-    wdir = "../themes/standard/widgets"
+    vdir = "#@root/views/#{view}"
+    remote = vdir + "/remote"
+    wdir = vdir + "/themes/standard/widgets"
     widgets = Dir["#{wdir}/*"].select {|w| File.directory?(w) }
     widgets.each do |w|
       dir = File.basename(w)
-      rem = "#{remote}/#{w}" 
+      rem = w.sub(/themes.standard/, "remote")
       create_dirs(rem)
-      system("cp #{w}/*html  #{rem}")
+      next unless Dir[w+"/*"].any? {|x| x =~ /html$/ }
+#     STDERR.puts "---- cp #{w}/*html #{rem}"
+      system("cp #{w}/*html #{rem}")
     end
   end
 
@@ -470,7 +474,7 @@ class RuneBlog
           dst: "#{remote}/#{ahtml}", copy: "#{@theme}/post"
     xlate cwd: "#{@theme}/post", src: "permalink.lt3", 
           dst: "#{remote}/permalink/#{ahtml}"
-    copy_widget_html
+    copy_widget_html(view)
   end
 
   def generate_post(draft)

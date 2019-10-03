@@ -1,9 +1,0 @@
-<head>
-.include etc/externals.lt3
-.include etc/misc.js
-
-. fix/remove later
-.head  
-.end
-
-</head>
