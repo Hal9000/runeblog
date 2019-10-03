@@ -22,7 +22,6 @@ abort "\nYou'll need to re-run\n " if bad
 
 system("cp lib/* #{lib}/")
 system("cp empty_view.tgz #{lib}/..")
-system("cp -r themes #{lib}/..")
 
 # Exception in dir structure
 cmd = "cp bin/* #{lib.sub(/lib$/, "bin/")}"

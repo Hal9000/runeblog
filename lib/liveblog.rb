@@ -117,12 +117,13 @@ def _write_card(cardfile, mainfile, pairs, card_title, tag, relative: true)
           </h5>
     EOS
     log!(str: "Writing data pairs to #{cardfile}.html", pwd: true)
-    top = :widgets/tag    # FIXME ???
+    top = ""
+    top = :widgets/tag + "/" unless tag == "news"   # FIXME !!
     pairs.each do |file, title| 
     # took out #{top}#{file}
       f.puts <<-EOS
         <li class="list-group-item"> <a href="javascript: void(0)" 
-        onclick="javascript:open_main('#{file}')">#{title}</a> </li>
+        onclick="javascript:open_main('#{top}#{file}')">#{title}</a> </li>
       EOS
     end
     f.puts <<-EOS
