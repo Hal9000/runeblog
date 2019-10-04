@@ -1,11 +1,10 @@
-# require 'helpers-blog'
 require 'runeblog'
 require 'global'
+require 'pathmagic'
 
 class RuneBlog::Post
 
   attr_reader :num, :title, :date, :views, :num, :slug
-
   attr_accessor :meta, :blog, :draft
 
   include RuneBlog::Helpers
@@ -22,17 +21,11 @@ class RuneBlog::Post
     raise "Doesn't work right now"
     raise NoBlogAccessor if RuneBlog.blog.nil?
     # "post" is a slug
-    pdir = RuneBlog.blog.view.dir + "/" + post
+    pdir = RuneBlog.blog.view.dir/post
     verify(Dir.exist?(pdir) => "Directory #{pdir} not found")
     meta = nil
     Dir.chdir(pdir) do
-      verify(File.exist?("metadata.txt") => "metadata.txt not found",
-             File.exist?("teaser.txt") => "teaser.txt not found")
-#            File.exist?("body.txt") => "body.txt not found")
       meta = read_config("metadata.txt")
-      verify(meta.date  => "meta.date is nil",
-             meta.views => "meta.views is nil",
-             meta.tags  => "meta.tags is nil")
       meta.date = Date.parse(meta.date)
       meta.views = meta.views.split
       meta.tags = meta.tags.split
@@ -50,8 +43,6 @@ class RuneBlog::Post
     hash = meta.to_h
 
     File.write("teaser.txt", hash[:teaser])
-# STDERR.puts ">>>> #{__method__}: writing #{@live.body.size} bytes to #{Dir.pwd}/body.txt"
-#     File.write("body.txt", hash[:body])
     hash.delete(:teaser)
     hash.delete(:body)
 
@@ -75,7 +66,7 @@ class RuneBlog::Post
                   other_views:[])
     log!(enter: __method__, args: [title, teaser, body, pubdate, other_views])
     post = self.new
-    # ONLY place next_sequence is called!
+    # NOTE: This is the ONLY place next_sequence is called!
     num = post.meta.num   = post.blog.next_sequence
 
     # new_metadata
@@ -91,10 +82,8 @@ class RuneBlog::Post
     text = RuneBlog.post_template(num: meta.num, title: meta.title, date: meta.pubdate, 
                view: meta.view, teaser: meta.teaser, body: meta.body,
                views: meta.views, tags: meta.tags, home: viewhome)
-    srcdir = "#{post.blog.root}/drafts/"
-    vpdir = "#{post.blog.root}/drafts/"
-    verify(Dir.exist?(srcdir) => "#{srcdir} not found",
-           meta.slug.is_a?(String) => "slug #{meta.slug.inspect} is invalid")
+    srcdir = post.blog.root/:drafts + "/"
+    vpdir = post.blog.root/:drafts + "/"
     fname  = meta.slug + ".lt3"
     post.draft = srcdir + fname
     dump(text, post.draft)
@@ -134,7 +123,7 @@ class RuneBlog::ViewPost
     fname = "#{postdir}/teaser.txt"
     @teaser_text = File.read(fname).chomp
     # FIXME dumb hacks...
-    mdfile = "#{postdir}/metadata.txt"
+    mdfile = postdir/"metadata.txt"
     lines = File.readlines(mdfile)
     @title = lines.grep(/title:/).first[7..-1].chomp
     @date  = lines.grep(/pubdate:/).first[9..-1].chomp
@@ -144,12 +133,12 @@ class RuneBlog::ViewPost
     log!(enter: __method__, args: [view, postdir])
     fname = File.basename(draft)
     noext = fname.sub(/.lt3$/, "")
-    vdir = "#@root/views/#{view}"
-    dir = "#{vdir}/posts/#{noext}/"
+    vdir = @root/:views/view
+    dir = vdir/:posts/noext + "/"
     Dir.mkdir(dir) unless Dir.exist?(dir)
     system("cp #{draft} #{dir}")
     viewdir, slugdir, aslug = vdir, dir, noext[5..-1]
-    theme = viewdir + "/themes/standard"
+    theme = viewdir/:themes/:standard
     [noext, viewdir, slugdir, aslug, theme]
   end
 

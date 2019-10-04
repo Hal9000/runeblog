@@ -114,7 +114,7 @@ class RuneBlog
     nslug = sourcefile.sub(/.lt3/, "")
     dir = @root/:posts/nslug
     create_dir(dir)
-    xlate cwd: dir, src: sourcefile, debug: true
+    xlate cwd: dir, src: sourcefile  # , debug: true
     _deploy_local(dir)
   end
 
@@ -323,12 +323,6 @@ class RuneBlog
     end
     text << "</body></html>"
     File.write(@vdir/:remote/file, text)
-#    iframe_text = <<-HTML
-#      <iframe name="main" style="width: 100vw;height: 100vh;position: relative;" 
-#              src='recent.html' width=100% frameborder="0" allowfullscreen>
-#      </iframe>
-#    HTML
-    # FIXME  ^ serves no purpose??
   end
 
   def create_new_post(title, testing = false, teaser: nil, body: nil, other_views: [])
@@ -380,7 +374,7 @@ class RuneBlog
     self.view = view   # error checking?
   end
 
-  def generate_index(view) # FIXME  delete?
+  def generate_index(view)
     log!(enter: __method__, args: [view], pwd: true, dir: true)
     raise ArgumentError unless view.is_a?(String) || view.is_a?(RuneBlog::View)
     @vdir = @root/:views/view
@@ -423,7 +417,6 @@ class RuneBlog
     log!(enter: __method__, args: [draft, pdraft])
     title_line = File.readlines(draft).grep(/^.title /).first
     title = title_line.split(" ", 2)[1]
-#   pdir = "
     Dir.chdir(pdraft) do 
       excerpt = File.read("teaser.txt")
       vars = %[.set title="#{title.chomp}"\n] + 
@@ -439,16 +432,26 @@ class RuneBlog
     wdir = vdir/:themes/:standard/:widgets
     widgets = Dir[wdir/"*"].select {|w| File.directory?(w) }
     widgets.each do |w|
+STDERR.puts "==== WIDGET = #{File.basename(w)}  @ #{Time.now}"
       dir = File.basename(w)
       rem = w.sub(/themes.standard/, "remote")
+# STDERR.puts "==>>     w   = #{w}"
+# STDERR.puts "==>>     rem = #{rem}"
       create_dirs(rem)
-      next unless Dir[w/"*"].any? {|x| x =~ /html$/ }
+      files = Dir[w/"*"]
+STDERR.puts "====     pwd   = #{w}"
+STDERR.puts "====     files = #{`ls #{w}`}"
+      next unless files.any? {|x| x =~ /html$/ }
+STDERR.puts "====         CONFIRMED there were HTML files"
+# STDERR.puts "====     cp #{w}/*html #{rem}"
       system("cp #{w}/*html #{rem}")
+STDERR.puts
     end
   end
 
   def _handle_post(draft, view)
     log!(enter: __method__, args: [draft, view])
+    # break into separate methods?
 
     fname = File.basename(draft)       # 0001-this-is-a-post.lt3
     nslug = fname.sub(/.lt3$/, "")     # 0001-this-is-a-post
@@ -468,11 +471,14 @@ class RuneBlog
     copy(pdraft/"guts.html", @theme/:post) 
     copy(pdraft/"vars.lt3",  @theme/:post) 
     # Step 4...
+STDERR.puts "#{Time.now}  STARTING post/generate   view = #{view}"
     xlate cwd: @theme/:post, src: "generate.lt3", 
-          dst: remote/ahtml, copy: @theme/:post
+          dst: remote/ahtml, copy: @theme/:post  # , debug: true
     xlate cwd: @theme/:post, src: "permalink.lt3", 
-          dst: remote/:permalink/ahtml
+          dst: remote/:permalink/ahtml  # , debug: true
+STDERR.puts "#{Time.now}  FINISHED post/generate, calling COPY_WIDGETS..."
     copy_widget_html(view)
+STDERR.puts
   end
 
   def generate_post(draft)
@@ -480,11 +486,11 @@ class RuneBlog
     views = _get_views(draft)
     views.each do |view| 
       _handle_post(draft, view)
-      generate_view(view)
+      generate_view(view)  # FIXME leads to inefficiency?
     end
   end
 
-  def relink
+  def relink   # FIXME no longer used?
     log!(enter: __method__)
     self.views.each {|view| generate_index(view) }
   end

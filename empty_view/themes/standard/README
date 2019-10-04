@@ -12,8 +12,8 @@ themes/standard           The first "default theme" - more later
 ├── etc          
 │   ├── blog.css          
 │   ├── externals.lt3          
+│   ├── global.lt3          
 │   └── favicon.ico          
-├── global.lt3          
 ├── navbar          
 │   ├── about.html          
 │   └── navbar.lt3          
@@ -49,7 +49,7 @@ templates                     The first "default theme" - more later
 │       ├── calendar.lt3        Code for a calendar
 │       ├── news.lt3            Recent news
 │       └── tag-cloud.lt3       Tag cloud (generated automatically of course)
-├── global.lt3                Some global settings
+├── global.lt3                Some global settings (MOVED TO etc)
 ├── head.lt3                  A standard <head> section
 ├── meta.lt3                  Standard meta tags
 └── post                

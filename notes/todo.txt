@@ -1,31 +1,40 @@
+   - let test code log to screen
+   - fix/delete Runeblog::Default
+   - tricky? put navbar inside blog/index.lt3
+   - tricky? move global.lt3 into etc
    - livetext --> xlate (or whatever) everywhere
-   - bug: one post is truncated (life-...)
    - bug: permalinks are broken
-   - move global.lt3 into etc?
-   - fix generalized widget
+   - remove duplicated and double-scoped code
+   - move badly-scoped methods (e.g., runeblog.rb to post.rb)
    - fix card2 problem with "$" in cdata
+   - livetext: fix bug .set var="this, that"
+   - update only "stale" items
+   - repl commands for widgets, etc.
+   - fix $_blog
+   - fix $DotDir
+   - dynamically add commands/code to repl
    - cards as .lt3 files?
    - add CSS ref to post?
+   - CSS for widgets?
    - create tag cloud
+   - page manager
+   - links manager
+   - also query for title when view is created
+   - work on .banner!
 
-   - livetext: fix bug .set var="this, that"
+   - livetext: mixin as module (livetext -m)
+   - livetext: other command line options? nopara? debug? ...
+   - livetext: $$incr ?
+   - livetext: open/close
    - livetext: permit omission of .lt3
    - livetext: permit # comments on end of line?
    - livetext: .include dir/    # refs dir/main.lt3 ?
-   - livetext: open/close
-   - livetext: $$incr ?
-   - livetext: mixin as module (livetext -m)
+
    - start using keyword parameters as needed
    - rethink remove/delete/kill and other verbs
    - remove dead code!!
    - factor generic HTML out of liveblog.rb
-   - work on .banner!
-   - page manager
-   - links manager
-   - also query for title when view is created
-   - revamp dirs (see dir.struct)
    - verify image assets
-   - update only "stale" items
    - commands to edit templates, config, etc.? ('config' command?) (See notes.txt)
    - "pinned" or favorite posts? ("best" tag? or pin command that understands views?)
    - add views to lsd/lsp output
@@ -87,6 +96,9 @@
 
 ---
 
+ x - revamp dirs (see dir.struct)
+ x - bug: one post is truncated (life-...)
+ x - fix generalized widget
  x - use .copy for guts.html
  x - introduce guts.html
  x - use .seek for global.lt3

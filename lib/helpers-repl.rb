@@ -161,7 +161,6 @@ module RuneBlog::REPL
     n.times { @out << "\n" }
   end
 
-
   def check_empty(arg)
     raise InternalError(caller[0], arg.inspect)  unless arg.nil?
   end
@@ -209,8 +208,6 @@ module RuneBlog::REPL
   end
 
   def ask_publishing_info   # returns Publishing object
-    verify(@blog => "@blog is nil", 
-           @blog.view => "@blog.view is nil")
     # user, server, root, path, protocol = "http"
     puts "Please enter publishing data for view #{@blog.view}..."
     user = ask("User: ")
@@ -241,28 +238,4 @@ module RuneBlog::REPL
     all.sort + ["NEW TAG"]
   end
 
-  ### find_asset
-
-  # FIXME is this per-post?
-
-  def find_asset(asset_name)    # , views)
-    search_path = proc do |path| 
-      full_path = path + asset_name
-      return full_path if File.exist?(full_path)
-    end 
-    check_meta(@meta, "find_asset")
-    views = @meta.views
-    views.each do |view| search_path.call("#{view.dir}/#{@meta.slug}/assets/") end
-    views.each do |view| search_path.call(view.dir + "/assets/") end
-    search_path.call(@root + "/assets/", asset_name)
-    # If all fail... return nil
-    return nil
-  end
-
-  ### find_all_assets
-
-  def find_all_assets(list, views)
-    list ||= []
-    list.each {|asset| puts "#{asset} => #{find_asset(asset, views)}" }
-  end
 end

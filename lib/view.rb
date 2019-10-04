@@ -1,6 +1,5 @@
-# require 'helpers-blog'
-# require 'runeblog'
 require 'global'
+require 'logging'
 
 class RuneBlog::View
   attr_reader :name, :state
@@ -22,7 +21,7 @@ class RuneBlog::View
   end
 
   def dir
-#   log!(enter: __method__)
+    log!(enter: __method__)
     @blog.root + "/views/#@name/"
   end
 

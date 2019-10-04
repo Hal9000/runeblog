@@ -15,14 +15,17 @@ def getch
 end
 
 def debug(str)
-# STDERR.puts str
+  STDERR.puts ">>> #{str} #{Time.now}"
 end
 
 def make_post(x, title, teaser, body, views=[])
-# STDERR.puts "\n========= make_post '#{title}'"
+  debug "     make_post '#{title}'"
   print "."
   x.create_new_post(title, true, teaser: teaser, body: body, other_views: views)
-  views.each {|view| x.generate_index(view) }  # recent.html
+  views.each do |view| 
+    debug "      generate_index #{view}"
+    x.generate_index(view) 
+  end  # recent.html
 end
 
 def show_lines(text)
@@ -40,6 +43,7 @@ system("rm -rf .blogs")
 RuneBlog.create_new_blog_repo(".blogs")
 x = RuneBlog.new(".blogs")
 
+debug("create_view 'around_austin'")
 x.create_view("around_austin")   # FIXME remember view title!
 
 # Hack:
@@ -47,8 +51,10 @@ if File.exist?("publish")
   system("cp publish .blogs/views/around_austin/publish")
 end
 
+debug("create_view 'computing'")
 x.create_view("computing")
 
+debug("create_view 'music'")
 x.create_view("music")
 
 x.change_view("around_austin")    # 1 2 7 8 9 
@@ -126,6 +132,7 @@ But I first heard of them
 in 2005.
 BODY
 
+debug("GENERATE_view 'around_austin'")
 x.generate_view("around_austin")
 
 x.change_view("around_austin")

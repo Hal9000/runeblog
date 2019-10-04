@@ -10,7 +10,6 @@ module RuneBlog::REPL
 
   def edit_file(file)
     result = system("#{@blog.editor} #{file}")
-STDERR.puts "editor = #{@blog.editor} FILE = #{file}"
     raise EditorProblem(file) unless result
     sleep 0.1
     STDSCR.clear
@@ -222,7 +221,6 @@ STDERR.puts "editor = #{@blog.editor} FILE = #{file}"
     id = get_integer(arg)
     result = @blog.remove_post(id)
     output! "Post #{id} not found" if result.nil?
-#   puts "Post #{id} not found" if result.nil?
     @out
   end
 

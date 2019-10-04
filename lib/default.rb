@@ -2,7 +2,6 @@ class RuneBlog::Default
 
 # This will all become much more generic later.
 
-
 def RuneBlog.post_template(num: 0, title: "No title", date: nil, view: "test_view", 
                        teaser: "No teaser", body: "No body", tags: ["untagged"], 
                        views: [], back: "javascript:history.go(-1)", home: "no url")
