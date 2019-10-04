@@ -15,17 +15,23 @@ LEXT = ".lt3"
             copy: nil, debug: false, force: false)
     src += LEXT unless src.end_with?(LEXT)
     dst += ".html" unless dst.end_with?(".html") || strip
-    STDERR.puts "-- xlate: pwd = #{cwd}"
+    indent = " "*12
     Dir.chdir(cwd) do
-      return unless stale?(src, dst, force)
       if debug
-        STDERR.puts "-- xlate #{src} >#{dst}"
-        STDERR.puts "     in:   #{Dir.pwd}"
-        STDERR.puts "     from: #{caller[0]}"
-        STDERR.puts "     copy: #{copy}" if copy
+        STDERR.puts "#{indent} -- xlate #{src} >#{dst}"
+        STDERR.puts "#{indent}      in:   #{Dir.pwd}"
+        STDERR.puts "#{indent}      from: #{caller[0]}"
+        STDERR.puts "#{indent}      copy: #{copy}" if copy
+      end
+      if stale?(src, dst, force)
+        # do nothing
+      else
+        STDERR.puts "#{indent} -- ^ Already up to date!" if debug
+        return
       end
       rc = system("livetext #{src} >#{dst}")
       STDERR.puts "...completed (shell returned #{rc})" if debug
+      system("cp #{dst} #{copy}") if copy
     end
   end
 

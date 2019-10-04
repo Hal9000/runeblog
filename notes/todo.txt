@@ -1,9 +1,8 @@
-   - let test code log to screen
-   - fix/delete Runeblog::Default
+   - pathmagic bug
+   - fix/delete Runeblog::Default (post_template)
    - tricky? put navbar inside blog/index.lt3
    - tricky? move global.lt3 into etc
    - livetext --> xlate (or whatever) everywhere
-   - bug: permalinks are broken
    - remove duplicated and double-scoped code
    - move badly-scoped methods (e.g., runeblog.rb to post.rb)
    - fix card2 problem with "$" in cdata
@@ -96,6 +95,9 @@
 
 ---
 
+ x - let test code log to screen
+ x - whoa! some things won't open in an iframe? (workaround)
+ x - bug: permalinks are broken
  x - revamp dirs (see dir.struct)
  x - bug: one post is truncated (life-...)
  x - fix generalized widget

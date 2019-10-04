@@ -117,13 +117,25 @@ def _write_card(cardfile, mainfile, pairs, card_title, tag, relative: true)
           </h5>
     EOS
     log!(str: "Writing data pairs to #{cardfile}.html", pwd: true)
-    top = ""
-    top = :widgets/tag + "/" unless tag == "news"   # FIXME !!
     pairs.each do |file, title| 
-      f.puts <<-EOS
-        <li class="list-group-item"> <a href="javascript: void(0)" 
-        onclick="javascript:open_main('#{top}#{file}')">#{title}</a> </li>
-      EOS
+      url = file
+      if ["news", "links"].include? tag
+        frameable, title = title.split(/, */, 2)
+        frameable = (frameable.downcase == "yes")
+        if frameable
+          anchor = %[<a href="javascript: void(0)" onclick="javascript:open_main('#{url}')">#{title}</a>]
+        else
+          anchor = %[<a href='#{url}' target='_blank'>#{title}</a>]
+        end
+      else
+        url = :widgets/tag/file
+        anchor = %[<a href="javascript: void(0)" onclick="javascript:open_main('#{url}')">#{title}</a>]
+      end
+STDERR.puts [file, title].inspect
+STDERR.puts [tag, frameable, anchor].inspect
+STDERR.puts 
+      wrapper = %[<li class="list-group-item">#{anchor}</li>]
+      f.puts wrapper
     end
     f.puts <<-EOS
         </div>
@@ -138,7 +150,7 @@ def _write_main(mainfile, pairs, card_title)
     _html_body(f) do
       f.puts "<h1>#{card_title}</h1>"
       pairs.each do |file, title| 
-        main = _main(file)
+        main = (file.start_with?("http") ? _main(file) : file)
         f.puts %[<a style="text-decoration: none; font-size: 24px" #{main}>#{title}</a> <br>]
       end
     end
@@ -153,7 +165,7 @@ def make_main_links
   cardfile, mainfile = "#{tag}-card", "#{tag}-main"
   input = "list.data"
   log!(str: "Reading #{input}", pwd: true)
-  pairs = File.readlines(input).map {|line| line.chomp.split(",", 2) }
+  pairs = File.readlines(input).map {|line| line.chomp.split(/, */, 2) }
   _write_main(mainfile, pairs, card_title)
   widget_relative = false  # (tag != "news")  # FIXME kludge!!!
   _write_card(cardfile, mainfile, pairs, card_title, tag, relative: widget_relative)
@@ -440,26 +452,25 @@ STDERR.puts "---- SIDEBAR pwd = #{Dir.pwd}"
     wtag = :widgets/tag
     raise "Can't find #{wtag}" unless Dir.exist?(wtag)
     tcard = "#{tag}-card.html"
-#   livetext tag, tcard, wtag
-    xlate cwd: wtag, src: tag, dst: tcard, debug: true
+    xlate cwd: wtag, src: tag, dst: tcard
     _include_file wtag/tcard
   end
   _out %[</div>]
 end
 
 def sidebar!
-# if _args.include? "off"
-#   _body { }  # iterate, do nothing
-#   return 
-# end
+  if _args.include? "off"
+    _body { }  # iterate, do nothing
+    return 
+  end
+
   _out %[<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">]
   _args do |token|
     tag = token.chomp.strip.downcase
     wtag = :widgets/tag
     raise "Can't find #{wtag}" unless Dir.exist?(wtag)
     tcard = "#{tag}-card.html"
-#   livetext tag, tcard, wtag
-    xlate cwd: wtag, src: tag, dst: tcard, debug: true
+    xlate cwd: wtag, src: tag, dst: tcard
     _include_file wtag/tcard
   end
   _out %[</div>]

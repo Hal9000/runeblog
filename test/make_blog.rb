@@ -14,8 +14,8 @@ def getch
 # sleep 5
 end
 
-def debug(str)
-  STDERR.puts ">>> #{str} #{Time.now}"
+def debug(str = "")
+  STDERR.puts "#{Time.now.strftime("%H:%M:%S")} #{str}"
 end
 
 def make_post(x, title, teaser, body, views=[])
@@ -23,10 +23,10 @@ def make_post(x, title, teaser, body, views=[])
 # print "."
   x.create_new_post(title, true, teaser: teaser, body: body, other_views: views)
   views.each do |view| 
-    debug "      generate_index #{view}"
+    debug
+    debug "** generate_index #{view}"
     x.generate_index(view) 
   end  # recent.html
-  STDERR.puts
 end
 
 def show_lines(text)
@@ -44,7 +44,7 @@ system("rm -rf .blogs")
 RuneBlog.create_new_blog_repo(".blogs")
 x = RuneBlog.new(".blogs")
 
-debug("create_view 'around_austin'")
+debug("create_view: around_austin")
 x.create_view("around_austin")   # FIXME remember view title!
 
 # Hack:
@@ -52,12 +52,13 @@ if File.exist?("publish")
   system("cp publish .blogs/views/around_austin/publish")
 end
 
-debug("create_view 'computing'")
+debug("create_view: computing")
 x.create_view("computing")
 
-debug("create_view 'music'")
+debug("create_view: music")
 x.create_view("music")
 
+debug("-- change_view: around_austin")
 x.change_view("around_austin")    # 1 2 7 8 9 
 
 make_post(x, "What's at Stubbs...", <<-EXCERPT, <<-BODY, ["music"])
@@ -72,6 +73,7 @@ EXCERPT
 Now, depending on what you consider "major," blah blah blah...
 BODY
 
+debug("-- change_view: computing")
 x.change_view("computing")     # 3 5 6
 
 make_post(x, "Elixir Conf coming up...", <<-EXCERPT, <<-BODY)
@@ -81,6 +83,7 @@ I mean, unless the previous one was the last one ever, which I don't expect to
 happen for a couple of decades.
 BODY
 
+debug("-- change_view: music")
 x.change_view("music")    # 4 10
 
 make_post(x, "Does indie still matter?", <<-EXCERPT, <<-BODY)
@@ -89,6 +92,7 @@ EXCERPT
 And more about indie music.
 BODY
 
+debug("-- change_view: computing")
 x.change_view("computing")
 
 make_post(x, "The genius of Scenic", <<-EXCERPT, <<-BODY)
@@ -103,6 +107,7 @@ EXCERPT
 But that day hasn't come yet.
 BODY
 
+debug("-- change_view: around_austin")
 x.change_view("around_austin")
 
 make_post(x, "The graffiti wall", <<-EXCERPT, <<-BODY)
@@ -124,6 +129,7 @@ EXCERPT
 This is about Sabine St, blah blah lorem ipsum dolor...
 BODY
 
+debug("-- change_view: music")
 x.change_view("music")
 
 make_post(x, "Remember Modest Mouse?", <<-EXCERPT, <<-BODY, ["around_austin"])
@@ -133,11 +139,8 @@ But I first heard of them
 in 2005.
 BODY
 
-debug("GENERATE_view 'around_austin'")
+debug
+debug("** generate_view: around_austin")
 x.generate_view("around_austin")
 
-x.change_view("around_austin")
-
-puts
-puts Time.now
-puts
+debug

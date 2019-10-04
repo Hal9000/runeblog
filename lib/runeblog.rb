@@ -385,7 +385,9 @@ class RuneBlog
     log!(enter: __method__, args: [view])
     generate_index(view)   # recent posts (recent.html)
     vdir = @root/:views/view
-    xlate cwd: vdir/:themes/:standard,
+    xlate cwd: vdir/"themes/standard/etc",
+          src: "blog.css.lt3", copy: vdir/"remote/etc/blog.css" # , debug: true
+    xlate cwd: vdir/"themes/standard",
           src: "blog/generate.lt3", dst: vdir/:remote/"index.html"
   end
 

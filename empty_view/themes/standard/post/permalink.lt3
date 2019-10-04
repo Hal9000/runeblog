@@ -1,7 +1,5 @@
 .mixin liveblog
 
-. FIXME?
-
 <html>
   <!-- Editing this file is not recommended.   -->
   <!-- It was generated from $File on $$date.  -->
@@ -21,6 +19,6 @@ description $teaser
 </section>
 
 <br>
-<a href="../index.html">[Home: $blog]</a>
+<a href="../index.html" style="text-decoration: none">[Home: $blog]</a>
 </body>
 </html>
