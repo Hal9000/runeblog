@@ -1,6 +1,15 @@
 
 LEXT = ".lt3"
 
+  def stale?(src, dst, force = false)
+    log!(enter: __method__, args: [src, dst])
+    raise "Source #{src} not found in #{Dir.pwd}" unless File.exist?(src)
+    return true if force
+    return true unless File.exist?(dst)
+    return true if File.mtime(src) > File.mtime(dst)
+    return false
+  end
+
   def xlate(cwd: Dir.pwd, src:, 
             dst: (strip = true; src.sub(/.lt3$/,"")), 
             copy: nil, debug: false, force: false)

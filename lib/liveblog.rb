@@ -2,11 +2,15 @@ require 'ostruct'
 require 'pp'
 require 'date'
 
-require 'livetext'
+# require 'livetext'
 require 'runeblog'
 
-errfile = File.new("/tmp/liveblog.out", "w")
-STDERR.reopen(errfile)
+require 'pathmagic'
+
+require 'xlate'
+
+# errfile = File.new("/tmp/liveblog.out", "w")
+# STDERR.reopen(errfile)
 
 def init_liveblog    # FIXME - a lot of this logic sucks
   here = Dir.pwd
@@ -24,21 +28,17 @@ end
 
 # FIXME - stale? and livetext are duplicated from helpers-blog
 
-  def stale?(src, dst)
-    return true unless File.exist?(dst)
-    return true if File.mtime(src) > File.mtime(dst)
-    return false
-  end
-
-  def livetext(src, dst=nil)
-    src += ".lt3" unless src.end_with?(".lt3")
-    if dst
-      dst += ".html" unless dst.end_with?(".html")
-    else
-      dst = src.sub(/.lt3$/, "")
+  def livetext(src, dst=nil, cwd=Dir.pwd)
+    Dir.chdir(cwd) do 
+      src += ".lt3" unless src.end_with?(".lt3")
+      if dst
+        dst += ".html" unless dst.end_with?(".html")
+      else
+        dst = src.sub(/.lt3$/, "")
+      end
+      return unless stale?(src, dst)
+      system("livetext #{src} >#{dst}")
     end
-    return unless stale?(src, dst)
-    system("livetext #{src} >#{dst}")
   end
 
 def post
@@ -103,7 +103,7 @@ def _html_body(file)
 end
 
 def _write_card(cardfile, mainfile, pairs, card_title, tag, relative: true)
-  # HTML for sidebar card
+  # HTML for card
   log!(str: "Creating #{cardfile}.html", pwd: true)
 # TTY.puts "Creating #{cardfile}.html - pwd = #{Dir.pwd}"
   File.open("#{cardfile}.html", "w") do |f|
@@ -120,7 +120,6 @@ def _write_card(cardfile, mainfile, pairs, card_title, tag, relative: true)
     top = ""
     top = :widgets/tag + "/" unless tag == "news"   # FIXME !!
     pairs.each do |file, title| 
-    # took out #{top}#{file}
       f.puts <<-EOS
         <li class="list-group-item"> <a href="javascript: void(0)" 
         onclick="javascript:open_main('#{top}#{file}')">#{title}</a> </li>
@@ -134,7 +133,6 @@ def _write_card(cardfile, mainfile, pairs, card_title, tag, relative: true)
 end
 
 def _write_main(mainfile, pairs, card_title)
-  # HTML for main area (iframe)
   log!(str: "Creating #{mainfile}.html", pwd: true)
   File.open("#{mainfile}.html", "w") do |f|
     _html_body(f) do
@@ -286,25 +284,18 @@ def teaser
 end
 
 def finalize
-STDERR.puts :cp1
   unless @meta
     puts @live.body
     return
   end
-STDERR.puts :cp4
   if @blog.nil?
     return @meta
   end
 
-STDERR.puts :cp6
   @slug = @blog.make_slug(@meta)
-STDERR.puts :cp7
   slug_dir = @slug
   @postdir = @blog.view.dir/:posts/slug_dir
-  STDERR.puts "--- finalize: pwd = #{Dir.pwd} postdir = #@postdir"
-STDERR.puts :cp8
   write_post
-STDERR.puts :cp9
   @meta
 end
  
@@ -397,10 +388,8 @@ def head  # Does NOT output <head> tags
       # Later: allow other overrides
       when ""; break
     else
-STDERR.puts "-- got '#{word}'; old value = #{result[word].inspect}"
       if defaults[word]
         result[word] = %[<meta property="#{word}" content="#{remain}">]
-STDERR.puts "-- new value = #{result[word].inspect}"
       else
         puts "Unknown tag '#{word}'"
       end
@@ -408,7 +397,6 @@ STDERR.puts "-- new value = #{result[word].inspect}"
   end
   hash = defaults.dup.update(result)  # FIXME collisions?
 
-# _out "<!-- "; _out hash.inspect; _out "--> "
   hash.each_value {|x| _out "  " + x }
   _out "<body>"
 end
@@ -445,20 +433,34 @@ def recent_posts    # side-effect
 end
 
 def sidebar
-  if _args.include? "off"
-    _body { }  # iterate, do nothing
-    return 
-  end
+STDERR.puts "---- SIDEBAR pwd = #{Dir.pwd}"
   _out %[<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">]
   _body do |token|
     tag = token.chomp.strip.downcase
     wtag = :widgets/tag
     raise "Can't find #{wtag}" unless Dir.exist?(wtag)
-    Dir.chdir(wtag) do
-      tcard = "#{tag}-card.html"
-      livetext tag, tcard
-      _include_file tcard
-    end
+    tcard = "#{tag}-card.html"
+#   livetext tag, tcard, wtag
+    xlate cwd: wtag, src: tag, dst: tcard, debug: true
+    _include_file wtag/tcard
+  end
+  _out %[</div>]
+end
+
+def sidebar!
+# if _args.include? "off"
+#   _body { }  # iterate, do nothing
+#   return 
+# end
+  _out %[<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">]
+  _args do |token|
+    tag = token.chomp.strip.downcase
+    wtag = :widgets/tag
+    raise "Can't find #{wtag}" unless Dir.exist?(wtag)
+    tcard = "#{tag}-card.html"
+#   livetext tag, tcard, wtag
+    xlate cwd: wtag, src: tag, dst: tcard, debug: true
+    _include_file wtag/tcard
   end
   _out %[</div>]
 end
@@ -479,44 +481,6 @@ def script
   _out %[<script src="#{url}" integrity="#{integ}" crossorigin="#{cross}"></script>]
 end
 
-# def _find_recent_posts
-#   @vdir = _var(:FileDir).match(%r[(^.*/views/.*?)/])[1]
-#   posts = nil
-#   dir_posts = @vdir + "/posts"
-#   entries = Dir.entries(dir_posts)
-#   posts = entries.grep(/^\d\d\d\d/).map {|x| dir_posts + "/" + x }
-#   posts.select! {|x| File.directory?(x) }
-#   # directories that start with four digits
-#   posts = posts.sort {|a, b| b.to_i <=> a.to_i }  # sort descending
-#   posts[0..19]  # return 20 at most
-# end
-# 
-# def all_teasers
-#   open = <<-HTML
-#       <section class="posts">
-#   HTML
-#   close = <<-HTML
-#       </section>
-#   HTML
-# 
-#   text = <<-HTML
-#     <html>
-#     <head><link rel="stylesheet" href="etc/blog.css"></head>
-#     <body>
-#   HTML
-#   posts = _find_recent_posts
-#   wanted = [5, posts.size].min  # estimate how many we want?
-#   enum = posts.each
-#   wanted.times do
-#     postid = File.basename(enum.next)
-#     postid = postid.to_i
-#     text << _teaser(postid)    # side effect! calls _out
-#   end
-#   text << "</body></html>"
-#   File.write("recent.html", text)
-#   _out %[<iframe id="main" style="width: 100vw; height: 100vh; position: relative;" src='recent.html' width=100% frameborder="0" allowfullscreen></iframe>]
-# end
-
 def _post_lookup(postid)    # side-effect
   # .. = templates, ../.. = views/thisview
   slug = title = date = teaser_text = nil
@@ -536,22 +500,6 @@ def _interpolate(str, context)   # FIXME move this later
   wrapped = "%[" + str.dup + "]"  # could fail...
   eval(wrapped, context)
 end
-
-# def _teaser(slug)
-#   id = slug.to_i
-#   text = nil
-#   post_entry_name = @theme + "blog/post_entry.lt3"
-#   @_post_entry ||= File.read(post_entry_name)
-#   vp = _post_lookup(id)
-#   nslug, aslug, title, date, teaser_text = 
-#     vp.nslug, vp.aslug, vp.title, vp.date, vp.teaser_text
-#   path = vp.path
-#   url = "#{path}/#{aslug}.html"    # Should be relative to .blogs!! FIXME
-#     date = Date.parse(date)
-#     date = date.strftime("%B %e<br>%Y")
-#     text = _interpolate(@_post_entry, binding)
-#   text
-# end
 
 def _card_generic(card_title:, middle:, extra: "")
   front = <<-HTML

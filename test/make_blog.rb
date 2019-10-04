@@ -20,12 +20,13 @@ end
 
 def make_post(x, title, teaser, body, views=[])
   debug "     make_post '#{title}'"
-  print "."
+# print "."
   x.create_new_post(title, true, teaser: teaser, body: body, other_views: views)
   views.each do |view| 
     debug "      generate_index #{view}"
     x.generate_index(view) 
   end  # recent.html
+  STDERR.puts
 end
 
 def show_lines(text)

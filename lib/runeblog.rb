@@ -432,20 +432,12 @@ class RuneBlog
     wdir = vdir/:themes/:standard/:widgets
     widgets = Dir[wdir/"*"].select {|w| File.directory?(w) }
     widgets.each do |w|
-STDERR.puts "==== WIDGET = #{File.basename(w)}  @ #{Time.now}"
       dir = File.basename(w)
       rem = w.sub(/themes.standard/, "remote")
-# STDERR.puts "==>>     w   = #{w}"
-# STDERR.puts "==>>     rem = #{rem}"
       create_dirs(rem)
       files = Dir[w/"*"]
-STDERR.puts "====     pwd   = #{w}"
-STDERR.puts "====     files = #{`ls #{w}`}"
       next unless files.any? {|x| x =~ /html$/ }
-STDERR.puts "====         CONFIRMED there were HTML files"
-# STDERR.puts "====     cp #{w}/*html #{rem}"
       system("cp #{w}/*html #{rem}")
-STDERR.puts
     end
   end
 
@@ -471,14 +463,11 @@ STDERR.puts
     copy(pdraft/"guts.html", @theme/:post) 
     copy(pdraft/"vars.lt3",  @theme/:post) 
     # Step 4...
-STDERR.puts "#{Time.now}  STARTING post/generate   view = #{view}"
     xlate cwd: @theme/:post, src: "generate.lt3", 
           dst: remote/ahtml, copy: @theme/:post  # , debug: true
     xlate cwd: @theme/:post, src: "permalink.lt3", 
           dst: remote/:permalink/ahtml  # , debug: true
-STDERR.puts "#{Time.now}  FINISHED post/generate, calling COPY_WIDGETS..."
     copy_widget_html(view)
-STDERR.puts
   end
 
   def generate_post(draft)

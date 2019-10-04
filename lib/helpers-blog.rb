@@ -1,89 +1,22 @@
 require 'runeblog_version'
 require 'fileutils'
 
-# Home = Dir.pwd # unless Home
-
-LEXT = ".lt3"
+require 'xlate'
 
 module RuneBlog::Helpers
 
   def copy(src, dst)
     log!(enter: __method__, args: [src, dst])
-    cmd = "cp #{src}  #{dst} 2>/dev/null"
-#   puts "\n--- pwd = #{Dir.pwd}  \n  Trying: #{cmd}"
-#   if src =~ /\*/
-      rc = system(cmd)
-      puts "    FROM #{caller[0]}" unless rc
-exit unless rc
-#   else
-#     FileUtils.cp(src, dst)
-#   end
+    cmd = "cp #{src} #{dst} 2>/dev/null"
+    rc = system(cmd)
+    puts "    Failed: #{cmd} - from #{caller[0]}" unless rc
   end
 
   def copy!(src, dst)
     log!(enter: __method__, args: [src, dst])
-    cmd = "cp -r #{src}  #{dst} 2>/dev/null"
-#   puts "\n--- pwd = #{Dir.pwd}  \n  Trying: #{cmd}"
-#   if src =~ /\*/
-      rc = system(cmd)
-      puts "    FROM #{caller[0]}" unless rc
-exit unless rc
-#   else
-#     FileUtils.cp_r(src, dst)
-#   end
-  end
-
-  def stale?(src, dst, force = false)
-    log!(enter: __method__, args: [src, dst])
-    raise "Source #{src} not found in #{Dir.pwd}" unless File.exist?(src)
-    return true if force
-    return true unless File.exist?(dst)
-    return true if File.mtime(src) > File.mtime(dst)
-    return false
-  end
-
-#  def livetext(src, dst=nil, dir=".")
-#    log!(enter: __method__, args: [src, dst])
-#    src << ".lt3" unless src.end_with?(".lt3")
-#    if dst
-#      dst << ".html" unless dst.end_with?(".html")
-#    else
-#      dst = src.sub(/.lt3$/, "")
-#    end
-##   return unless stale?(src, dst)
-#    Dir.chdir(dir) { system("livetext #{src} >#{dst}") }
-#  end
-#
-#  def livetext!(src, dst=nil, dir=".")
-#    log!(enter: __method__, args: [src, dst])
-#    src << ".lt3" unless src.end_with?(".lt3")
-#    if dst
-#      dst << ".html" unless dst.end_with?(".html")
-#    else
-#      dst = src.sub(/.lt3$/, "")
-#    end
-##   return unless stale?(src, dst)
-#STDERR.puts "-- livetext #{src} >#{dst} \n       in: #{Dir.pwd}\n      from: #{caller[0]}"
-#    Dir.chdir(dir) { system("livetext #{src} >#{dst}") }
-#STDERR.puts "... completed"
-#  end
-
-  def xlate(cwd: Dir.pwd, src:, 
-            dst: (strip = true; src.sub(/.lt3$/,"")), 
-            copy: nil, debug: false, force: false)
-    src += LEXT unless src.end_with?(LEXT)
-    dst += ".html" unless dst.end_with?(".html") || strip
-    Dir.chdir(cwd) do
-      return unless stale?(src, dst, force)
-      if debug
-        STDERR.puts "-- xlate #{src} >#{dst}"
-        STDERR.puts "     in:   #{Dir.pwd}"
-        STDERR.puts "     from: #{caller[0]}"
-        STDERR.puts "     copy: #{copy}" if copy
-      end
-      rc = system("livetext #{src} >#{dst}")
-    end
-    STDERR.puts "...completed (shell returned #{rc})" if debug
+    cmd = "cp -r #{src} #{dst} 2>/dev/null"
+    rc = system(cmd)
+    puts "    Failed: #{cmd} - from #{caller[0]}" unless rc
   end
 
   def get_root
@@ -131,7 +64,6 @@ exit unless rc
     log!(enter: __method__, args: [file, hash])
     return hash.values unless File.exist?(file)
     vals = read_config(file, *hash.keys)
-# STDERR.puts vals.inspect
     vals
   end
 
@@ -150,30 +82,19 @@ end
   def write_config(obj, file)
     log!(enter: __method__, args: [obj, file])
     hash = obj.to_h
-# Dir.chdir(::Home)
-# puts "--- wc: pwd = #{Dir.pwd}"
-    File.open(file, "w") do |f| 
-      hash.each_pair do |key, val|
-        f.puts "#{key}: #{val}"
-      end
+    File.open(file, "w") do |out|
+      hash.each_pair {|key, val| out.puts "#{key}: #{val}" }
     end
   end
 
   def get_views   # read from filesystem
     log!(enter: __method__)
-#   Dir.chdir(::Home) do
-      verify(@root => "#@root is nil",
-             Dir.exist?(@root) => "#@root doesn't exist",
-             Dir.exist?("#@root/views") => "#@root/views doesn't exist")
-      dirs = subdirs("#@root/views/").sort
-      dirs.map {|name| RuneBlog::View.new(name) }
-#   end
+    dirs = subdirs("#@root/views/").sort
+    dirs.map {|name| RuneBlog::View.new(name) }
   end
 
   def new_dotfile(root: ".blogs", current_view: "test_view", editor: "vi")
     log!(enter: __method__, args: [root, current_view, editor])
-#   raise BlogAlreadyExists if Dir.exist?(".blogs")
-#   Dir.mkdir(".blogs")
     root = Dir.pwd + "/" + root
     x = OpenStruct.new
     x.root, x.current_view, x.editor = root, current_view, editor
@@ -189,7 +110,6 @@ end
 
   def subdirs(dir)
     log!(enter: __method__, args: [dir])
-    verify(Dir.exist?(dir) => "Directory #{dir} not found")
     dirs = Dir.entries(dir) - %w[. ..]
     dirs.reject! {|x| ! File.directory?("#@root/views/#{x}") }
     dirs
@@ -197,9 +117,6 @@ end
 
   def find_draft_slugs
     log!(enter: __method__)
-    verify(@root => "#@root is nil",
-           Dir.exist?(@root) => "#@root doesn't exist",
-           Dir.exist?("#@root/drafts") => "#@root/drafts doesn't exist")
     files = Dir["#@root/drafts/**"].grep /\d{4}.*.lt3$/
     flagfile = "#@root/drafts/last_rebuild"
     last = File.exist?(flagfile) ? File.mtime(flagfile) : (Time.now - 86_400)
