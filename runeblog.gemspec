@@ -37,3 +37,4 @@ spec = Gem::Specification.new do |s|
 end
 
 spec
+system("rm -f empty_view.tgz")
