@@ -1,3 +1,6 @@
+   - main list broken for all widgets
+   - need open_main, open_blank, open_local, etc.
+ x - navbar is broken (about, contact)
    - pathmagic bug
    - fix/delete Runeblog::Default (post_template)
    - tricky? put navbar inside blog/index.lt3

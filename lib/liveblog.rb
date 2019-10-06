@@ -103,16 +103,16 @@ def _html_body(file)
 end
 
 def _write_card(cardfile, mainfile, pairs, card_title, tag, relative: true)
-  # HTML for card
   log!(str: "Creating #{cardfile}.html", pwd: true)
-# TTY.puts "Creating #{cardfile}.html - pwd = #{Dir.pwd}"
+  url = mainfile
+  url = :widgets/tag/mainfile + ".html"  #  if tag == "pages"   # FIXME
   File.open("#{cardfile}.html", "w") do |f|
     f.puts <<-EOS
       <div class="card mb-3">
         <div class="card-body">
           <h5 class="card-title">
             <a href="javascript: void(0)" 
-               onclick="javascript:open_main('widgets/#{tag}/#{mainfile}.html')" 
+               onclick="javascript:open_main('#{url}')" 
                style="text-decoration: none; color: black">#{card_title}</a>
           </h5>
     EOS
@@ -131,9 +131,6 @@ def _write_card(cardfile, mainfile, pairs, card_title, tag, relative: true)
         url = :widgets/tag/file
         anchor = %[<a href="javascript: void(0)" onclick="javascript:open_main('#{url}')">#{title}</a>]
       end
-STDERR.puts [file, title].inspect
-STDERR.puts [tag, frameable, anchor].inspect
-STDERR.puts 
       wrapper = %[<li class="list-group-item">#{anchor}</li>]
       f.puts wrapper
     end
@@ -144,17 +141,23 @@ STDERR.puts
   end
 end
 
-def _write_main(mainfile, pairs, card_title)
+def _write_main(mainfile, pairs, card_title, tag)
   log!(str: "Creating #{mainfile}.html", pwd: true)
+STDERR.puts "---- tag = #{tag.inspect}"
   File.open("#{mainfile}.html", "w") do |f|
     _html_body(f) do
       f.puts "<h1>#{card_title}</h1>"
       pairs.each do |file, title| 
-        main = (file.start_with?("http") ? _main(file) : file)
-        f.puts %[<a style="text-decoration: none; font-size: 24px" #{main}>#{title}</a> <br>]
+        # FIXME please!
+STDERR.puts "----     title1 = #{title.inspect}"
+        yesno, title = title.split(/, */) if title =~ /^[yes|no]/
+STDERR.puts "----     title2 = #{title.inspect}"
+        url = (file.start_with?("http") ? _main(file) : :widgets/tag/file)
+        f.puts %[<a style="text-decoration: none; font-size: 24px" href='#{url}'>#{title}</a> <br>]
       end
     end
   end
+STDERR.puts 
 end
 
 def make_main_links
@@ -166,7 +169,7 @@ def make_main_links
   input = "list.data"
   log!(str: "Reading #{input}", pwd: true)
   pairs = File.readlines(input).map {|line| line.chomp.split(/, */, 2) }
-  _write_main(mainfile, pairs, card_title)
+  _write_main(mainfile, pairs, card_title, tag)
   widget_relative = false  # (tag != "news")  # FIXME kludge!!!
   _write_card(cardfile, mainfile, pairs, card_title, tag, relative: widget_relative)
   log!(str: "...returning from method", pwd: true)
@@ -543,7 +546,7 @@ def card_iframe
 end
 
 def _main(url)
-  %[href="javascript: void(0)" onclick="javascript:open_main('#{url}')"]
+  %["javascript: void(0)" onclick="javascript:open_main('#{url}')"]
 end
 
 def card1
@@ -605,6 +608,7 @@ def tag_cloud
 end
 
 def navbar
+  vdir = @blog.view.dir
   title = _var(:blog)
 
   open = <<-HTML
@@ -631,15 +635,17 @@ def navbar
 
   first = true
   _out open
-  _body do |line|
-    href, cdata = line.chomp.strip.split(" ", 2)
-    main = _main(href)
+  lines = _body
+  lines.each do |line|
+    basename, cdata = line.chomp.strip.split(" ", 2)
+    full = :navbar/basename+".html"
+    href_main = _main(full)
     if first
-      first = false
-      _out %[<li class="nav-item active"> <a class="nav-link" href="#{href}">#{cdata}<span class="sr-only">(current)</span></a> </li>]
+      first = false # hardcode this part??
+      _out %[<li class="nav-item active"> <a class="nav-link" href="index.html">#{cdata}<span class="sr-only">(current)</span></a> </li>]
     else
-      main = _main(:navbar/href)
-      _out %[<li class="nav-item"> <a class="nav-link" #{main}>#{cdata}</a> </li>]
+      xlate cwd: "navbar", src: basename, dst: vdir/"remote/navbar"/basename+".html" # , debug: true
+      _out %[<li class="nav-item"> <a class="nav-link" #{href_main}>#{cdata}</a> </li>]
     end
   end
   _out close

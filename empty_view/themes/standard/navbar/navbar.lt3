@@ -1,6 +1,6 @@
 .navbar
-  index.html   Home
-  about.html   About
-  contact.html Contact
+  index   Home
+  about   About
+  contact Contact
 .end
 
