@@ -3,10 +3,10 @@
 .recent_posts
 
 .sidebar
+  ad 
   links 
   news 
   pages 
-  ad 
   tag-cloud
 .end
 

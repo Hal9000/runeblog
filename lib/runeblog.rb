@@ -104,9 +104,35 @@ class RuneBlog
   def _deploy_local(dir)
     log!(enter: __method__, args: [dir])
     Dir.chdir(dir) do
-      views = File.readlines("metadata.txt").grep(/^.views /).first[7..-1].split
+#     views = File.readlines("metadata.txt").grep(/^views: /).first[7..-1].split
+      views = _retrieve_metadata(:views)
+STDERR.puts "---- deploy: views = #{views.inspect}"
       views.each {|v| system("cp *html #@root/views/#{v}/remote") }
     end
+  end
+
+  def _retrieve_metadata(key)
+    key = key.to_s
+STDERR.puts "--- retrieve:  key = #{key.inspect}"
+    lines = File.readlines("metadata.txt")
+    lines = lines.grep(/^#{key}: /)
+    case lines.size
+      when 0
+        result = nil  # not found
+      when 1
+        front = "#{key}: "
+        n = front.size + 1
+        str = lines.first.chomp[n..-1]
+        case key
+          when "views", "tags"   # plurals
+            result = str.split
+        else
+          result = str
+        end
+    else 
+      raise "Too many #{key} instances in metadata.txt!"
+    end
+    return result
   end
 
   def process_post(sourcefile)
@@ -417,10 +443,9 @@ class RuneBlog
 
   def _post_metadata(draft, pdraft)
     log!(enter: __method__, args: [draft, pdraft])
-    title_line = File.readlines(draft).grep(/^.title /).first
-    title = title_line.split(" ", 2)[1]
     Dir.chdir(pdraft) do 
       excerpt = File.read("teaser.txt")
+      title = _retrieve_metadata(:title)
       vars = %[.set title="#{title.chomp}"\n] + 
              %[.set teaser="#{excerpt.chomp}"]
       File.open(pdraft/"vars.lt3", "w") {|f| f.puts vars }

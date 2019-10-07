@@ -1,11 +1,12 @@
-   - main list broken for all widgets
-   - need open_main, open_blank, open_local, etc.
- x - navbar is broken (about, contact)
    - pathmagic bug
+   - scrollbar on iframe?
+   - minor main/iframe bug?
    - fix/delete Runeblog::Default (post_template)
    - tricky? put navbar inside blog/index.lt3
    - tricky? move global.lt3 into etc
    - livetext --> xlate (or whatever) everywhere
+   - header/trailer for widgets?
+   - liveblog: separate dot-commands from helpers
    - remove duplicated and double-scoped code
    - move badly-scoped methods (e.g., runeblog.rb to post.rb)
    - fix card2 problem with "$" in cdata
@@ -98,6 +99,10 @@
 
 ---
 
+ x - make cards collapsible!
+ x - main list broken for all widgets
+ x - need open_main, open_blank, open_local, etc.
+ x - navbar is broken (about, contact)
  x - let test code log to screen
  x - whoa! some things won't open in an iframe? (workaround)
  x - bug: permalinks are broken

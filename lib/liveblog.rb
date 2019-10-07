@@ -2,11 +2,8 @@ require 'ostruct'
 require 'pp'
 require 'date'
 
-# require 'livetext'
 require 'runeblog'
-
 require 'pathmagic'
-
 require 'xlate'
 
 # errfile = File.new("/tmp/liveblog.out", "w")
@@ -26,20 +23,24 @@ def init_liveblog    # FIXME - a lot of this logic sucks
   @theme = @vdir/:themes/:standard
 end
 
-# FIXME - stale? and livetext are duplicated from helpers-blog
+## FIXME - livetext is duplicated from helpers-blog
+#
+#  def livetext(src, dst=nil, cwd=Dir.pwd)
+#    Dir.chdir(cwd) do 
+#      src += ".lt3" unless src.end_with?(".lt3")
+#      if dst
+#        dst += ".html" unless dst.end_with?(".html")
+#      else
+#        dst = src.sub(/.lt3$/, "")
+#      end
+#      return unless stale?(src, dst)
+#      system("livetext #{src} >#{dst}")
+#    end
+#  end
 
-  def livetext(src, dst=nil, cwd=Dir.pwd)
-    Dir.chdir(cwd) do 
-      src += ".lt3" unless src.end_with?(".lt3")
-      if dst
-        dst += ".html" unless dst.end_with?(".html")
-      else
-        dst = src.sub(/.lt3$/, "")
-      end
-      return unless stale?(src, dst)
-      system("livetext #{src} >#{dst}")
-    end
-  end
+##################
+# "dot" commands
+##################
 
 def post
   @meta = OpenStruct.new
@@ -100,98 +101,6 @@ def list!
   _optional_blank_line
 end
 
-def _html_body(file)
-  file.puts "<html>\n  <body>"
-  yield
-  file.puts "  </body>\n</html>"
-end
-
-def _write_card(cardfile, mainfile, pairs, card_title, tag, relative: true)
-  log!(str: "Creating #{cardfile}.html", pwd: true)
-  url = mainfile
-  url = :widgets/tag/mainfile + ".html"
-  File.open("#{cardfile}.html", "w") do |f|
-    f.puts <<-EOS
-      <div class="card mb-3">
-        <div class="card-body">
-          <h5 class="card-title">
-            <a href="javascript: void(0)" 
-               onclick="javascript:open_main('#{url}')" 
-               style="text-decoration: none; color: black">#{card_title}</a>
-          </h5>
-    EOS
-    log!(str: "Writing data pairs to #{cardfile}.html", pwd: true)
-    local = _local_tag?(tag)
-    pairs.each do |file, title| 
-      url = file
-      yesno = "yes"
-      yesno, title = title.split(/, */) if title =~ /^[yes|no]/   # FIXME please!
-
-      case [yesno, local]
-        when ["yes", false]             # can iframe, remote file
-          which = 1
-          url_ref = "href='#{file}'"
-        when ["yes", true]              # can iframe, local file
-          which = 2
-          url_ref = _widget_card(file, tag)
-        when ["no", false]              # CAN'T iframe, remote file
-          which = 3
-          url_ref = _blank(file)
-        when ["no", true]               # CAN'T iframe, local file (possible?)
-          which = 4
-          url_ref = _blank(file)
-      end
-
-      anchor = %[<a #{url_ref}>#{title}</a>]
-      wrapper = %[<li class="list-group-item">#{anchor}</li>]
-      f.puts wrapper
-    end
-    f.puts <<-EOS
-        </div>
-      </div>
-    EOS
-  end
-end
-
-def _local_tag?(tag)
-  case tag.to_sym
-    when :pages
-      true
-    when :news, :links
-      false
-  else
-    true  # Hmmm...
-  end
-end
-
-def _write_main(mainfile, pairs, card_title, tag)
-  log!(str: "Creating #{mainfile}.html", pwd: true)
-  local = _local_tag?(tag)
-  File.open("#{mainfile}.html", "w") do |f|
-    _html_body(f) do
-      f.puts "<h1>#{card_title}</h1>"
-      pairs.each do |file, title| 
-        yesno = "yes"
-        yesno, title = title.split(/, */) if title =~ /^[yes|no]/   # FIXME please!
-        case [yesno, local]
-          when ["yes", false]             # can iframe, remote file
-            which = 1
-            url_ref = "href='#{file}'"
-          when ["yes", true]              # can iframe, local file
-            which = 2
-            url_ref = _widget_main(file, tag)
-          when ["no", false]              # CAN'T iframe, remote file
-            which = 3
-            url_ref = _blank(file)
-          when ["no", true]               # CAN'T iframe, local file (possible?)
-            which = 4
-            url_ref = _blank(file)
-        end
-        f.puts %[<a style="text-decoration: none; font-size: 24px" #{url_ref}>#{title}</a> <br>]
-      end
-    end
-  end
-end
 
 def make_main_links
   log!(enter: __method__)
@@ -233,24 +142,6 @@ def inset
   _passthru box
   _passthru_noline '</i></b></div>'
   _optional_blank_line
-end
-
-def _errout(*args)
-  ::STDERR.puts *args
-end
-
-def _passthru(line)
-  return if line.nil?
-  line = _format(line)
-  _out line + "\n"
-  _out "<p>" if line.empty? && ! @_nopara
-end
-
-def _passthru_noline(line)
-  return if line.nil?
-  line = _format(line)
-  _out line
-  _out "<p>" if line.empty? && ! @_nopara
 end
 
 def title
@@ -304,15 +195,6 @@ def pin
   _optional_blank_line
 end
 
-def _write_metadata
-  File.write("teaser.txt", @meta.teaser)
-  fields = [:num, :title, :date, :pubdate, :views, :tags]
-  fname2 = "metadata.txt"
-  f2 = File.open(fname2, "w") do |f2| 
-    fields.each {|fld| f2.puts "#{fld}: #{@meta.send(fld)}" }
-  end
-end
-
 def write_post
   raise "'post' was not called" unless @meta
   @meta.views = @meta.views.join(" ") if @meta.views.is_a? Array
@@ -332,6 +214,7 @@ def teaser
 end
 
 def finalize
+  # FIXME simplify this!
   unless @meta
     puts @live.body
     return
@@ -347,55 +230,6 @@ def finalize
   @meta
 end
  
-$Dot = self   # Clunky! for dot commands called from Functions class
-
-# Find a better way to do this?
-
-class Livetext::Functions
-
-  def br(n="1")
-    # Thought: Maybe make a way for functions to "simply" call the
-    #   dot command of the same name?? Is this trivial??
-    n = n.empty? ? 1 : n.to_i
-    "<br>"*n
-  end
-
-  def h1(param); "<h1>#{param}</h1>"; end
-  def h2(param); "<h2>#{param}</h2>"; end
-  def h3(param); "<h3>#{param}</h3>"; end
-  def h4(param); "<h4>#{param}</h4>"; end
-  def h5(param); "<h5>#{param}</h5>"; end
-  def h6(param); "<h6>#{param}</h6>"; end
-
-  def hr(param=nil)
-    $Dot.hr
-  end
-
-  def image(param)
-    "<img src='#{param}'></img>"
-  end
-
-end
-
-###### experimental...
-
-class Livetext::Functions
-  def _var(name)
-    ::Livetext::Vars[name] || "[:#{name} is undefined]"
-  end
-
-  def link
-    file, cdata = self.class.param.split("||", 2)
-    %[<link type="application/atom+xml" rel="alternate" href="#{_var(:host)}#{file}" title="#{_var(:title)}">]
-  end
-end
-
-###
-
-def _var(name)  # FIXME scope issue!
-  ::Livetext::Vars[name] || "[:#{name} is undefined]"
-end
-
 def head  # Does NOT output <head> tags
   args = _args
   args.each do |inc|
@@ -496,10 +330,10 @@ def sidebar
       children = Dir[wtag/"*.lt3"] - [wtag/tag+".lt3"]
       children.each do |child|
         dest = child.sub(/.lt3$/, ".html")
-        xlate src: child, dst: dest, debug: true
+        xlate src: child, dst: dest  # , debug: true
       end
     end
-    xlate cwd: wtag, src: tag, dst: tcard, debug: true
+    xlate cwd: wtag, src: tag, dst: tcard  # , debug: true
     _include_file wtag/tcard
   end
   _out %[</div>]
@@ -521,41 +355,6 @@ def script
   _out %[<script src="#{url}" integrity="#{integ}" crossorigin="#{cross}"></script>]
 end
 
-def _post_lookup(postid)    # side-effect
-  # .. = templates, ../.. = views/thisview
-  slug = title = date = teaser_text = nil
-
-  dir_posts = @vdir/:posts
-  posts = Dir.entries(dir_posts).grep(/^\d\d\d\d/).map {|x| dir_posts/x }
-  posts.select! {|x| File.directory?(x) }
-
-  post = posts.select {|x| File.basename(x).to_i == postid }
-  raise "Error: More than one post #{postid}" if post.size > 1
-  postdir = post.first
-  vp = RuneBlog::ViewPost.new(@blog.view, postdir)
-  vp
-end
-
-def _interpolate(str, context)   # FIXME move this later
-  wrapped = "%[" + str.dup + "]"  # could fail...
-  eval(wrapped, context)
-end
-
-def _card_generic(card_title:, middle:, extra: "")
-  front = <<-HTML
-    <div class="card #{extra} mb-3">
-      <div class="card-body">
-        <h5 class="card-title">#{card_title}</h5>
-  HTML
-
-  tail = <<-HTML
-      </div>
-    </div>
-  HTML
-  text = front + middle + tail
-  _out text + "\n "
-end
-
 def card_iframe
   title, lines = _data, _body
   lines.map!(&:chomp)
@@ -571,22 +370,50 @@ def card_iframe
   _card_generic(card_title: title, middle: middle, extra: "bg-dark text-white")
 end
 
-def _main(url)
-  %[href="javascript: void(0)" onclick="javascript:open_main('#{url}')"]
+$Dot = self   # Clunky! for dot commands called from Functions class
+
+# Find a better way to do this?
+
+class Livetext::Functions
+
+  def br(n="1")
+    # Thought: Maybe make a way for functions to "simply" call the
+    #   dot command of the same name?? Is this trivial??
+    n = n.empty? ? 1 : n.to_i
+    "<br>"*n
+  end
+
+  def h1(param); "<h1>#{param}</h1>"; end
+  def h2(param); "<h2>#{param}</h2>"; end
+  def h3(param); "<h3>#{param}</h3>"; end
+  def h4(param); "<h4>#{param}</h4>"; end
+  def h5(param); "<h5>#{param}</h5>"; end
+  def h6(param); "<h6>#{param}</h6>"; end
+
+  def hr(param=nil)
+    $Dot.hr
+  end
+
+  def image(param)
+    "<img src='#{param}'></img>"
+  end
+
 end
 
-def _blank(url)
-  %[href='#{url}' target='blank']
+###### experimental...
+
+class Livetext::Functions
+  def _var(name)
+    ::Livetext::Vars[name] || "[:#{name} is undefined]"
+  end
+
+  def link
+    file, cdata = self.class.param.split("||", 2)
+    %[<link type="application/atom+xml" rel="alternate" href="#{_var(:host)}#{file}" title="#{_var(:title)}">]
+  end
 end
 
-def _widget_main(url, tag)
-  %[href="#{url}"]
-end
-
-def _widget_card(url, tag)
-  url2 = :widgets/tag/url
-  %[href="#{url2}"]
-end
+###
 
 def card1
   title, lines = _data, _body
@@ -633,7 +460,11 @@ def tag_cloud
   open = <<-HTML
         <div class="card mb-3">
           <div class="card-body">
-            <h5 class="card-title">#{title}</h5>
+            <h5 class="card-title">
+              <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#tag-cloud">+</button>
+              #{title}
+            </h5>
+            <div class="collapse" id="tag-cloud">
   HTML
   _out open
   _body do |line|
@@ -642,7 +473,7 @@ def tag_cloud
     main = _main(url)
     _out %[<a #{main} class="#{classname}">#{cdata}</a>]
   end
-  close = %[       </div>\n  </div>]
+  close = %[       </div>\n    </div>\n  </div>]
   _out close
 end
 
@@ -688,5 +519,180 @@ def navbar
     end
   end
   _out close
+end
+
+##################
+# helper methods
+##################
+
+def _html_body(file)
+  file.puts "<html>\n  <body>"
+  yield
+  file.puts "  </body>\n</html>"
+end
+
+def _write_card(cardfile, mainfile, pairs, card_title, tag, relative: true)
+  log!(str: "Creating #{cardfile}.html", pwd: true)
+  url = mainfile
+  url = :widgets/tag/mainfile + ".html"
+  File.open("#{cardfile}.html", "w") do |f|
+    f.puts <<-EOS
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">
+            <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="##{tag}">+</button>
+            <a href="javascript: void(0)" 
+               onclick="javascript:open_main('#{url}')" 
+               style="text-decoration: none; color: black"> #{card_title}</a>
+          </h5>
+          <div class="collapse" id="#{tag}">
+    EOS
+    log!(str: "Writing data pairs to #{cardfile}.html", pwd: true)
+    local = _local_tag?(tag)
+    pairs.each do |file, title| 
+      url = file
+      yesno = "yes"
+      yesno, title = title.split(/, */) if title =~ /^[yes|no]/   # FIXME please!
+
+      case [yesno, local]
+        when ["yes", false]             # can iframe, remote file
+          url_ref = "href='#{file}'"
+        when ["yes", true]              # can iframe, local file
+          url_ref = _widget_card(file, tag)
+        when ["no", false]              # CAN'T iframe, remote file
+          url_ref = _blank(file)
+        when ["no", true]               # CAN'T iframe, local file (possible?)
+          url_ref = _blank(file)
+      end
+
+      anchor = %[<a #{url_ref}>#{title}</a>]
+      wrapper = %[<li class="list-group-item">#{anchor}</li>]
+      f.puts wrapper
+    end
+    f.puts <<-EOS
+          </div>
+        </div>
+      </div>
+    EOS
+  end
+end
+
+def _local_tag?(tag)
+  case tag.to_sym
+    when :pages
+      true
+    when :news, :links
+      false
+  else
+    true  # Hmmm...
+  end
+end
+
+def _write_main(mainfile, pairs, card_title, tag)
+  log!(str: "Creating #{mainfile}.html", pwd: true)
+  local = _local_tag?(tag)
+  File.open("#{mainfile}.html", "w") do |f|
+    _html_body(f) do
+      f.puts "<h1>#{card_title}</h1>"
+      pairs.each do |file, title| 
+        yesno = "yes"
+        yesno, title = title.split(/, */) if title =~ /^[yes|no]/   # FIXME please!
+        case [yesno, local]
+          when ["yes", false]             # can iframe, remote file
+            url_ref = "href='#{file}'"
+          when ["yes", true]              # can iframe, local file
+            url_ref = _widget_main(file, tag)
+          when ["no", false]              # CAN'T iframe, remote file
+            url_ref = _blank(file)
+          when ["no", true]               # CAN'T iframe, local file (possible?)
+            url_ref = _blank(file)
+        end
+        f.puts %[<a style="text-decoration: none; font-size: 24px" #{url_ref}>#{title}</a> <br>]
+      end
+    end
+  end
+end
+
+def _errout(*args)
+  ::STDERR.puts *args
+end
+
+def _passthru(line)
+  return if line.nil?
+  line = _format(line)
+  _out line + "\n"
+  _out "<p>" if line.empty? && ! @_nopara
+end
+
+def _passthru_noline(line)
+  return if line.nil?
+  line = _format(line)
+  _out line
+  _out "<p>" if line.empty? && ! @_nopara
+end
+
+def _write_metadata
+  File.write("teaser.txt", @meta.teaser)
+  fields = [:num, :title, :date, :pubdate, :views, :tags]
+  fname2 = "metadata.txt"
+  f2 = File.open(fname2, "w") do |f2| 
+    fields.each {|fld| f2.puts "#{fld}: #{@meta.send(fld)}" }
+  end
+end
+
+def _post_lookup(postid)    # side-effect
+  # .. = templates, ../.. = views/thisview
+  slug = title = date = teaser_text = nil
+
+  dir_posts = @vdir/:posts
+  posts = Dir.entries(dir_posts).grep(/^\d\d\d\d/).map {|x| dir_posts/x }
+  posts.select! {|x| File.directory?(x) }
+
+  post = posts.select {|x| File.basename(x).to_i == postid }
+  raise "Error: More than one post #{postid}" if post.size > 1
+  postdir = post.first
+  vp = RuneBlog::ViewPost.new(@blog.view, postdir)
+  vp
+end
+
+def _interpolate(str, context)   # FIXME move this later
+  wrapped = "%[" + str.dup + "]"  # could fail...
+  eval(wrapped, context)
+end
+
+def _card_generic(card_title:, middle:, extra: "")
+  front = <<-HTML
+    <div class="card #{extra} mb-3">
+      <div class="card-body">
+        <h5 class="card-title">#{card_title}</h5>
+  HTML
+
+  tail = <<-HTML
+      </div>
+    </div>
+  HTML
+  text = front + middle + tail
+  _out text + "\n "
+end
+
+def _var(name)  # FIXME scope issue!
+  ::Livetext::Vars[name] || "[:#{name} is undefined]"
+end
+
+def _main(url)
+  %[href="javascript: void(0)" onclick="javascript:open_main('#{url}')"]
+end
+
+def _blank(url)
+  %[href='#{url}' target='blank']
+end
+
+def _widget_main(url, tag)
+  %[href="#{url}"]
+end
+
+def _widget_card(url, tag)
+  url2 = :widgets/tag/url
+  %[href="#{url2}"]
 end
 
