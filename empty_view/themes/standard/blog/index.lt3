@@ -2,5 +2,11 @@
 
 .recent_posts
 
-.sidebar! ad links news pages tag-cloud
+.sidebar
+  links 
+  news 
+  pages 
+  ad 
+  tag-cloud
+.end
 

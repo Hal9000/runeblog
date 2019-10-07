@@ -47,6 +47,10 @@ def post
   _out "  <!-- Post number #{@meta.num} -->\n "
 end
 
+def backlink
+  _out %[<br><a href="javascript:history.go(-1)">[Back]</a>]
+end
+
 def quote
   _passthru "<blockquote>"
   _passthru _body
@@ -105,7 +109,7 @@ end
 def _write_card(cardfile, mainfile, pairs, card_title, tag, relative: true)
   log!(str: "Creating #{cardfile}.html", pwd: true)
   url = mainfile
-  url = :widgets/tag/mainfile + ".html"  #  if tag == "pages"   # FIXME
+  url = :widgets/tag/mainfile + ".html"
   File.open("#{cardfile}.html", "w") do |f|
     f.puts <<-EOS
       <div class="card mb-3">
@@ -117,20 +121,28 @@ def _write_card(cardfile, mainfile, pairs, card_title, tag, relative: true)
           </h5>
     EOS
     log!(str: "Writing data pairs to #{cardfile}.html", pwd: true)
+    local = _local_tag?(tag)
     pairs.each do |file, title| 
       url = file
-      if ["news", "links"].include? tag
-        frameable, title = title.split(/, */, 2)
-        frameable = (frameable.downcase == "yes")
-        if frameable
-          anchor = %[<a href="javascript: void(0)" onclick="javascript:open_main('#{url}')">#{title}</a>]
-        else
-          anchor = %[<a href='#{url}' target='_blank'>#{title}</a>]
-        end
-      else
-        url = :widgets/tag/file
-        anchor = %[<a href="javascript: void(0)" onclick="javascript:open_main('#{url}')">#{title}</a>]
+      yesno = "yes"
+      yesno, title = title.split(/, */) if title =~ /^[yes|no]/   # FIXME please!
+
+      case [yesno, local]
+        when ["yes", false]             # can iframe, remote file
+          which = 1
+          url_ref = "href='#{file}'"
+        when ["yes", true]              # can iframe, local file
+          which = 2
+          url_ref = _widget_card(file, tag)
+        when ["no", false]              # CAN'T iframe, remote file
+          which = 3
+          url_ref = _blank(file)
+        when ["no", true]               # CAN'T iframe, local file (possible?)
+          which = 4
+          url_ref = _blank(file)
       end
+
+      anchor = %[<a #{url_ref}>#{title}</a>]
       wrapper = %[<li class="list-group-item">#{anchor}</li>]
       f.puts wrapper
     end
@@ -141,23 +153,44 @@ def _write_card(cardfile, mainfile, pairs, card_title, tag, relative: true)
   end
 end
 
+def _local_tag?(tag)
+  case tag.to_sym
+    when :pages
+      true
+    when :news, :links
+      false
+  else
+    true  # Hmmm...
+  end
+end
+
 def _write_main(mainfile, pairs, card_title, tag)
   log!(str: "Creating #{mainfile}.html", pwd: true)
-STDERR.puts "---- tag = #{tag.inspect}"
+  local = _local_tag?(tag)
   File.open("#{mainfile}.html", "w") do |f|
     _html_body(f) do
       f.puts "<h1>#{card_title}</h1>"
       pairs.each do |file, title| 
-        # FIXME please!
-STDERR.puts "----     title1 = #{title.inspect}"
-        yesno, title = title.split(/, */) if title =~ /^[yes|no]/
-STDERR.puts "----     title2 = #{title.inspect}"
-        url = (file.start_with?("http") ? _main(file) : :widgets/tag/file)
-        f.puts %[<a style="text-decoration: none; font-size: 24px" href='#{url}'>#{title}</a> <br>]
+        yesno = "yes"
+        yesno, title = title.split(/, */) if title =~ /^[yes|no]/   # FIXME please!
+        case [yesno, local]
+          when ["yes", false]             # can iframe, remote file
+            which = 1
+            url_ref = "href='#{file}'"
+          when ["yes", true]              # can iframe, local file
+            which = 2
+            url_ref = _widget_main(file, tag)
+          when ["no", false]              # CAN'T iframe, remote file
+            which = 3
+            url_ref = _blank(file)
+          when ["no", true]               # CAN'T iframe, local file (possible?)
+            which = 4
+            url_ref = _blank(file)
+        end
+        f.puts %[<a style="text-decoration: none; font-size: 24px" #{url_ref}>#{title}</a> <br>]
       end
     end
   end
-STDERR.puts 
 end
 
 def make_main_links
@@ -448,32 +481,25 @@ def recent_posts    # side-effect
 end
 
 def sidebar
-STDERR.puts "---- SIDEBAR pwd = #{Dir.pwd}"
-  _out %[<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">]
-  _body do |token|
-    tag = token.chomp.strip.downcase
-    wtag = :widgets/tag
-    raise "Can't find #{wtag}" unless Dir.exist?(wtag)
-    tcard = "#{tag}-card.html"
-    xlate cwd: wtag, src: tag, dst: tcard
-    _include_file wtag/tcard
-  end
-  _out %[</div>]
-end
-
-def sidebar!
   if _args.include? "off"
     _body { }  # iterate, do nothing
     return 
   end
 
   _out %[<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">]
-  _args do |token|
+  _body do |token|
     tag = token.chomp.strip.downcase
     wtag = :widgets/tag
     raise "Can't find #{wtag}" unless Dir.exist?(wtag)
     tcard = "#{tag}-card.html"
-    xlate cwd: wtag, src: tag, dst: tcard
+    if File.exist?(wtag/"SUBFILES")
+      children = Dir[wtag/"*.lt3"] - [wtag/tag+".lt3"]
+      children.each do |child|
+        dest = child.sub(/.lt3$/, ".html")
+        xlate src: child, dst: dest, debug: true
+      end
+    end
+    xlate cwd: wtag, src: tag, dst: tcard, debug: true
     _include_file wtag/tcard
   end
   _out %[</div>]
@@ -546,7 +572,20 @@ def card_iframe
 end
 
 def _main(url)
-  %["javascript: void(0)" onclick="javascript:open_main('#{url}')"]
+  %[href="javascript: void(0)" onclick="javascript:open_main('#{url}')"]
+end
+
+def _blank(url)
+  %[href='#{url}' target='blank']
+end
+
+def _widget_main(url, tag)
+  %[href="#{url}"]
+end
+
+def _widget_card(url, tag)
+  url2 = :widgets/tag/url
+  %[href="#{url2}"]
 end
 
 def card1

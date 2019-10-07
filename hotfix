@@ -31,7 +31,7 @@ puts "tar operation..."
 rc = system("tar zcvf empty_view.tgz empty_view 2>/dev/null")
 puts "Error 1!" unless rc
 
-rc = system("mv empty_view.tgz #{lib}/..")
+rc = system("cp empty_view.tgz #{lib}/..")
 puts "Error 2!" unless rc
 
 puts "...finished"
