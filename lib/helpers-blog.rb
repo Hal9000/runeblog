@@ -19,21 +19,21 @@ module RuneBlog::Helpers
     puts "    Failed: #{cmd} - from #{caller[0]}" unless rc
   end
 
-  def get_root
-    log!(enter: __method__)
-    if $_blog
-      if $_blog.root
-        puts "0. Returned: #{$_blog.root}/"
-        return $_blog.root + "/"
-      else
-        puts "1. Returned: ./"
-        return "./"
-      end
-    else
-      puts "2. Returned: ./"
-      return "./"
-    end
-  end
+#  def get_root
+#    log!(enter: __method__)
+#    if $_blog
+#      if $_blog.root
+#        puts "0. Returned: #{$_blog.root}/"
+#        return $_blog.root + "/"
+#      else
+#        puts "1. Returned: ./"
+#        return "./"
+#      end
+#    else
+#      puts "2. Returned: ./"
+#      return "./"
+#    end
+#  end
 
   def read_config(file, *syms)
     log!(enter: __method__, args: [file, *syms])

@@ -56,7 +56,6 @@ class RuneBlog
     log!(enter: __method__, args: [root])
     # Crude - FIXME later -  # What views are there? Publishing, etc.
     self.blog = self   # Weird. Like a singleton - dumbass circular dependency?
-    $_blog = self            # Dumber still?
     root = Dir.pwd/root
     raise BlogRepoAlreadyExists if Dir.exist?(root)
     create_dirs(root)
@@ -75,7 +74,6 @@ class RuneBlog
     log!(enter: __method__, args: [root])
     # Crude - FIXME later -  # What views are there? Publishing, etc.
     self.blog = self   # Weird. Like a singleton - dumbass circular dependency?
-    $_blog = self            # Dumber still?
     root = Dir.pwd/root
     blog = self.new(root)
   end
@@ -84,7 +82,6 @@ class RuneBlog
     log!(enter: "initialize", args: [root_dir])
     # Crude - FIXME later -  # What views are there? Publishing, etc.
     self.class.blog = self   # Weird. Like a singleton - dumbass circular dependency?
-    $_blog = self            # Dumber still?
 
     @root = root_dir
     file = @root/ConfigFile
@@ -447,8 +444,8 @@ STDERR.puts "--- retrieve:  key = #{key.inspect}"
     Dir.chdir(pdraft) do 
       excerpt = File.read("teaser.txt")
       title = _retrieve_metadata(:title)
-      vars = %[.heredoc title\n"#{title.chomp}"\n.end\n] + 
-             %[.heredoc teaser\n"#{excerpt.chomp}"\n.end\n]
+      vars = %[.heredoc title\n#{title.chomp}\n.end\n] + 
+             %[.heredoc teaser\n#{excerpt.chomp}\n.end\n]
       File.open(pdraft/"vars.lt3", "w") {|f| f.puts vars }
     end
   end

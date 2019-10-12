@@ -14,7 +14,7 @@ def init_liveblog    # FIXME - a lot of this logic sucks
   dir = here
   loop { dir = Dir.pwd; break if File.exist?("config"); Dir.chdir("..") }
   Dir.chdir(here)
-  @blog = $_blog = RuneBlog.new(dir)
+  @blog = RuneBlog.new(dir)
   @root = @blog.root
   @view = @blog.view
   @view_name = @blog.view.name
