@@ -39,7 +39,7 @@ class RuneBlog::Publishing
   def url
     log!(enter: __method__)
     vname = @blog.view.name # .gsub(/_/, "\\_")
-    url = "#@proto://#@server/#@path/#{vname}"
+    url = "#@proto://#@server/#@path"  # /#{vname}"
   end
 
   def system!(str)
@@ -52,11 +52,11 @@ class RuneBlog::Publishing
     log!(enter: __method__, args: [files, assets])
     dir = @docroot/@path
     view_name = @blog.view.name
-    viewpath = dir/view_name
+    viewpath = dir # /view_name
 #   result = system!("ssh #@user@#@server -x mkdir -p #{viewpath}") 
     result = system!("ssh #@user@#@server -x mkdir -p #{viewpath}/assets") 
     files.each do |file|
-      dest = "#@user@#@server:" + dir/view_name
+      dest = "#@user@#@server:" + dir  # /view_name
       file.gsub!(/\/\//, "/")  # weird... :-/
       cmd = "scp -r #{file} #{dest} >/dev/null 2>/tmp/wtf"
       debug "cmd = #{cmd.inspect}  - see /tmp/wtf"

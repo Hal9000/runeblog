@@ -41,7 +41,8 @@ class RuneBlog::View
     vdir = dir()
     remote = local_index()
     files = [remote]
-    others = Dir.entries(vdir + "/remote").map {|x| "#{vdir}/remote/#{x}" }
+    others = Dir.entries(vdir/:remote) - %w[. ..]
+    others.map! {|x| "#{vdir}/remote/#{x}" }
 
     assets = Dir.entries("#{vdir}/assets") - %w[. ..]
     assets.map! {|x| "#{vdir}/assets/#{x}" }

@@ -1,8 +1,6 @@
    # Functionality
 
-
    - 1 Bug - whats-at-stubbs post missing
-   - 2 get publishing working again!
    - 3 FAQ opens two different ways (iframe)
    - .faq command
    - 3 blog command line
@@ -123,6 +121,9 @@
 
 ---
 
+ x - Publishing anomaly
+ x - current_view anomaly
+ x - get publishing working again!
  x - fix $_blog
  x - Bug - front of post title truncated
  x - publishing into globals?

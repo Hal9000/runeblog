@@ -27,18 +27,18 @@ system("livetext -i lib/liveblog.rb")
 
 system("cp lib/* #{lib}/")
 
-puts "tar operation..."
+# puts "tar operation..."
 rc = system("tar zcvf empty_view.tgz empty_view 2>/dev/null")
 puts "Error 1!" unless rc
 
 rc = system("cp empty_view.tgz #{lib}/..")
 puts "Error 2!" unless rc
 
-puts "...finished"
+# puts "...finished"
 
 # Exception in dir structure
 cmd = "cp bin/* #{lib.sub(/lib$/, "bin/")}"
-puts cmd
+# puts cmd
 system(cmd)
 
 # puts

@@ -46,7 +46,7 @@ end
 
 #  "Main"...
 
-puts Time.now
+puts bold("\nGenerating test blog...")
 
 system("rm -rf .blogs")
 RuneBlog.create_new_blog_repo(".blogs")
@@ -145,5 +145,7 @@ BODY
 debug
 debug("** generate_view: #{bold('around_austin')}")
 x.generate_view("around_austin")
+x.change_view("around_austin")
 
-debug
+puts bold("...finished.\n")
+
