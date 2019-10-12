@@ -14,7 +14,7 @@
 .include vars.lt3
 
 .head
-og:title    $title
+og:title    $title 
 description $teaser
 .end
 

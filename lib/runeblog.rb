@@ -118,7 +118,7 @@ class RuneBlog
         result = nil  # not found
       when 1
         front = "#{key}: "
-        n = front.size + 1
+        n = front.size
         str = lines.first.chomp[n..-1]
         case key
           when "views", "tags"   # plurals
@@ -297,7 +297,7 @@ class RuneBlog
     id = slug.to_i
     text = nil
     post_entry_name = @theme/"blog/post_entry.lt3"
-    xlate src: post_entry_name, dst: "/tmp/post_entry.html", debug: true
+    xlate src: post_entry_name, dst: "/tmp/post_entry.html" # , debug: true
     @_post_entry ||= File.read("/tmp/post_entry.html")
     vp = post_lookup(id)
     nslug, aslug, title, date, teaser_text = 
@@ -339,7 +339,6 @@ class RuneBlog
   def create_new_post(title, testing = false, teaser: nil, body: nil, other_views: [])
     log!(enter: __method__, args: [title, testing, teaser, body, other_views])
     meta = nil
-STDERR.puts other_views.inspect
     Dir.chdir(@root/:posts) do
       post = Post.create(title: title, teaser: teaser, body: body, other_views: other_views)
       post.edit unless testing

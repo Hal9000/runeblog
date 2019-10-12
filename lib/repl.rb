@@ -91,26 +91,18 @@ module RuneBlog::REPL
 
   def cmd_publish(arg, testing = false)
 # Future Hal says please refactor this
-STDERR.puts :CP1
     puts unless testing
-STDERR.puts :CP2
     reset_output
-STDERR.puts :CP3
     check_empty(arg)
-STDERR.puts :CP4
     unless @blog.view.can_publish?
-STDERR.puts :CP5
       msg = "Can't publish... see globals.lt3"
       puts msg unless testing
       output! msg
       return @out
     end
 
-STDERR.puts :CP6
     # Need to check dirty/clean status first
     dirty, all, assets = @blog.view.publishable_files
-STDERR.puts [dirty, all, assets].inspect
-sleep 8
     files = dirty
     if dirty.empty?
       puts fx("\n  No files are out of date." + " "*20, :bold)

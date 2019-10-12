@@ -1,11 +1,9 @@
    # Functionality
 
 
-   - 0 Bug - whats-at-stubbs post missing
+   - 1 Bug - whats-at-stubbs post missing
    - 2 get publishing working again!
    - 3 FAQ opens two different ways (iframe)
- x - publishing into globals?
- x - vars.lt3 — title as heredoc
    - .faq command
    - 3 blog command line
    - "local" CSS for each widget?
@@ -24,7 +22,6 @@
    - analytics?
    - add CSS ref to post?
    - CSS for widgets?
-   - head/tail for widget HTML?
    - create tag cloud
    - 8 page manager
    - 9 links manager
@@ -68,6 +65,7 @@
 
    # Prettier code
 
+   - head/tail for widget HTML?
    - fix/delete Runeblog::Default (post_template)
    - tricky? put navbar inside blog/index.lt3
    - tricky? move global.lt3 into etc
@@ -76,7 +74,6 @@
    - liveblog: separate dot-commands from helpers
    - remove duplicated and double-scoped code
    - move badly-scoped methods (e.g., runeblog.rb to post.rb)
-   - fix $_blog
    - fix $DotDir
    - cards as .lt3 files?
    - start using keyword parameters as needed
@@ -126,6 +123,10 @@
 
 ---
 
+ x - fix $_blog
+ x - Bug - front of post title truncated
+ x - publishing into globals?
+ x - vars.lt3 — title/teaser as heredoc
  x - make cards collapsible!
  x - main list broken for all widgets
  x - scrollbar on iframe?
