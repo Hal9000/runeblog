@@ -64,7 +64,10 @@ class RuneBlog
       create_dirs(:drafts, :views, :posts)
       new_sequence
     end
-    put_config(root: root)
+#   put_config(root: root)
+    x = OpenStruct.new
+    x.root, x.current_view, x.editor = root, "test_view", "/usr/bin/vim "   # dumb - FIXME later
+    write_config(x, root/ConfigFile)
     @blog = self.new(root)
     @blog.create_view("test_view")
     @blog
@@ -101,16 +104,13 @@ class RuneBlog
   def _deploy_local(dir)
     log!(enter: __method__, args: [dir])
     Dir.chdir(dir) do
-#     views = File.readlines("metadata.txt").grep(/^views: /).first[7..-1].split
       views = _retrieve_metadata(:views)
-STDERR.puts "---- deploy: views = #{views.inspect}"
       views.each {|v| system!("cp *html #@root/views/#{v}/remote") }
     end
   end
 
   def _retrieve_metadata(key)
     key = key.to_s
-STDERR.puts "--- retrieve:  key = #{key.inspect}"
     lines = File.readlines("metadata.txt")
     lines = lines.grep(/^#{key}: /)
     case lines.size
@@ -172,10 +172,7 @@ STDERR.puts "--- retrieve:  key = #{key.inspect}"
 
   def _set_publisher
     log!(enter: __method__)
-    file = @view.dir/:publish
-    @view.publisher = nil
-    return unless File.exist?(file)
-    @view.publisher = RuneBlog::Publishing.new(read_config(file))
+    @view.publisher = RuneBlog::Publishing.new(@view.to_s)  # FIXME refactor
   end
 
   def view=(arg)
@@ -219,15 +216,6 @@ STDERR.puts "--- retrieve:  key = #{key.inspect}"
     Dir.exist?(DotDir) && File.exist?(DotDir/ConfigFile)
   end
 
-  def make_dummy_publish_file(view_name)
-    log!(enter: __method__, args: [view_name])
-    vdir = @root/:views/view_name
-    pub = [:user, :server, :docroot, :path, :proto]
-    pub = pub.map {|x| x.to_s + ": undefined" }
-    pub = pub.join("\n") + "\n"
-    dump(pub, vdir/:publish)
-  end
-
   def mark_last_published(str)
     log!(enter: __method__, args: [str])
     dump(str, "last_published")
@@ -267,7 +255,6 @@ STDERR.puts "--- retrieve:  key = #{key.inspect}"
     log!(enter: __method__, args: [view_name])
     check_valid_new_view(view_name)
     make_empty_view_tree(view_name)
-    make_dummy_publish_file(view_name)
     mark_last_published("Initial creation")
     add_view(view_name)
   end
@@ -352,6 +339,7 @@ STDERR.puts "--- retrieve:  key = #{key.inspect}"
   def create_new_post(title, testing = false, teaser: nil, body: nil, other_views: [])
     log!(enter: __method__, args: [title, testing, teaser, body, other_views])
     meta = nil
+STDERR.puts other_views.inspect
     Dir.chdir(@root/:posts) do
       post = Post.create(title: title, teaser: teaser, body: body, other_views: other_views)
       post.edit unless testing
@@ -394,7 +382,7 @@ STDERR.puts "--- retrieve:  key = #{key.inspect}"
     raise ArgumentError unless view.is_a?(String) || view.is_a?(RuneBlog::View)
     x = OpenStruct.new
     x.root, x.current_view, x.editor = @root, view.to_s, @editor   # dumb - FIXME later
-    write_config(x, ConfigFile)
+    write_config(x, @root/ConfigFile)
     self.view = view   # error checking?
   end
 

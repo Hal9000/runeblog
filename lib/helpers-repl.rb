@@ -207,19 +207,6 @@ module RuneBlog::REPL
     error(err)
   end
 
-  def ask_publishing_info   # returns Publishing object
-    # user, server, root, path, protocol = "http"
-    puts "Please enter publishing data for view #{@blog.view}..."
-    user = ask("User: ")
-    root = ask("Doc root: ")
-    server = ask("Server: ")
-    path = ask("View path: ")
-    proto = ask("Protocol (ENTER for http): ")
-    [user, root, server, path, proto].each {|x| x.chomp! }
-    proto = "http" if proto.empty?
-    RuneBlog::Publishing.new(user, server, root, path, proto)
-  end
-
   def tags_for_view(vname = @blog.view)
     Dir.chdir(vname) do
       fname = "tagpool"

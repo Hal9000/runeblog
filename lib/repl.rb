@@ -39,10 +39,7 @@ module RuneBlog::REPL
   def cmd_config(arg, testing = false)
     check_empty(arg)
     dir = @blog.view.dir
-# FIXME bad path
-    items = ["publish", 
-             "themes/standard/blogview.lt3", 
-             "themes/standard/post-index.lt3"] 
+    items = ["themes/standard/blogview.lt3", "themes/standard/post-index.lt3"] 
     num, fname = STDSCR.menu(title: "Edit file:", items: items)
     edit_file("#{dir}/#{fname}")
   end
@@ -94,17 +91,26 @@ module RuneBlog::REPL
 
   def cmd_publish(arg, testing = false)
 # Future Hal says please refactor this
+STDERR.puts :CP1
     puts unless testing
+STDERR.puts :CP2
     reset_output
+STDERR.puts :CP3
     check_empty(arg)
+STDERR.puts :CP4
     unless @blog.view.can_publish?
-      puts "Can't publish without entries in #{@blog.view.name}/publish" unless testing
-      output! "Can't publish without entries in #{@blog.view.name}/publish"
+STDERR.puts :CP5
+      msg = "Can't publish... see globals.lt3"
+      puts msg unless testing
+      output! msg
       return @out
     end
 
+STDERR.puts :CP6
     # Need to check dirty/clean status first
     dirty, all, assets = @blog.view.publishable_files
+STDERR.puts [dirty, all, assets].inspect
+sleep 8
     files = dirty
     if dirty.empty?
       puts fx("\n  No files are out of date." + " "*20, :bold)
@@ -179,12 +185,6 @@ module RuneBlog::REPL
     reset_output
     @blog.create_view(arg)
     @blog.change_view(arg)
-    resp = yesno("Add publishing/hosting info now? (Y/N): ")
-    if resp
-      @blog.view.publisher = ask_publishing_info
-      out = @blog.view.dir + "/publish"
-      write_config(@blog.view.publisher, out)
-    end
     @out
   rescue ViewAlreadyExists
     puts 'Blog already exists'

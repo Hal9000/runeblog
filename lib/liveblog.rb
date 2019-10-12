@@ -13,7 +13,7 @@ def init_liveblog    # FIXME - a lot of this logic sucks
   here = Dir.pwd
   dir = here
   loop { dir = Dir.pwd; break if File.exist?("config"); Dir.chdir("..") }
-  Dir.chdir(here)
+  Dir.chdir(here)     #  here??? or dir??
   @blog = RuneBlog.new(dir)
   @root = @blog.root
   @view = @blog.view
@@ -22,21 +22,6 @@ def init_liveblog    # FIXME - a lot of this logic sucks
   @version = RuneBlog::VERSION
   @theme = @vdir/:themes/:standard
 end
-
-## FIXME - livetext is duplicated from helpers-blog
-#
-#  def livetext(src, dst=nil, cwd=Dir.pwd)
-#    Dir.chdir(cwd) do 
-#      src += ".lt3" unless src.end_with?(".lt3")
-#      if dst
-#        dst += ".html" unless dst.end_with?(".html")
-#      else
-#        dst = src.sub(/.lt3$/, "")
-#      end
-#      return unless stale?(src, dst)
-#      system("livetext #{src} >#{dst}")
-#    end
-#  end
 
 ##################
 # "dot" commands

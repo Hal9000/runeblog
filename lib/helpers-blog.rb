@@ -67,17 +67,17 @@ module RuneBlog::Helpers
     vals
   end
 
-def put_config(root:, view:"test_view", editor: "/usr/local/bin/vim")
-  log!(enter: __method__, args: [root, view, editor])
-  Dir.mkdir(root) unless Dir.exist?(root)
-  Dir.chdir(root) do 
-    File.open("config", "w") do |cfg|
-      cfg.puts "root: #{root}"
-      cfg.puts "current_view: #{view}"
-      cfg.puts "editor: #{editor}"
-    end
-  end
-end 
+# def put_config(root:, view:"test_view", editor: "/usr/local/bin/vim")
+#   log!(enter: __method__, args: [root, view, editor])
+#   Dir.mkdir(root) unless Dir.exist?(root)
+#   Dir.chdir(root) do 
+#     File.open("config", "w") do |cfg|
+#       cfg.puts "root: #{root}"
+#       cfg.puts "current_view: #{view}"
+#       cfg.puts "editor: #{editor}"
+#     end
+#   end
+# end 
 
   def write_config(obj, file)
     log!(enter: __method__, args: [obj, file])
@@ -95,10 +95,10 @@ end
 
   def new_dotfile(root: ".blogs", current_view: "test_view", editor: "vi")
     log!(enter: __method__, args: [root, current_view, editor])
-    root = Dir.pwd + "/" + root
+    root = Dir.pwd/root
     x = OpenStruct.new
     x.root, x.current_view, x.editor = root, current_view, editor
-    write_config(x, ".blogs/" + RuneBlog::ConfigFile)
+    write_config(x, root/RuneBlog::ConfigFile)
   end
 
   def new_sequence

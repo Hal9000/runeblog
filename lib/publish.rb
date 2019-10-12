@@ -7,18 +7,27 @@ class RuneBlog::Publishing
   BadRemoteLogin = Exception.new("Can't login remotely")
   BadRemotePerms = Exception.new("Bad remote permissions")
 
-  def initialize(*params)
-    log!(enter: __method__, args: [*params])
+  def initialize(view)
+    log!(enter: __method__, args: [view.to_s])
     @blog = RuneBlog.blog
-    # Clunky...
-    if params.size == 1 && params[0].is_a?(OpenStruct)
-      obj = params[0]
-      array = obj.to_h.values_at(:user, :server, :docroot, 
-                                 :path, :proto)
-      @user, @server, @docroot, @path, @proto = *array
-    else
-      @user, @server, @docroot, @path, @proto = *params
-    end
+#     # Clunky...
+#     if params.size == 1 && params[0].is_a?(OpenStruct)
+#       obj = params[0]
+#       array = obj.to_h.values_at(:user, :server, :docroot, 
+#                                  :path, :proto)
+#       @user, @server, @docroot, @path, @proto = *array
+#     else
+#       @user, @server, @docroot, @path, @proto = *params
+#     end
+    # find a better way?
+    gfile = @blog.root/:views/view/"themes/standard/global.lt3"
+    data = File.readlines(gfile)
+    grab = ->(var) { data.grep(/^#{var} /).first.chomp.split(" ", 2)[1] }
+    @user    = grab.call("publish.user")
+    @server  = grab.call("publish.server")
+    @docroot = grab.call("publish.docroot")
+    @path    = grab.call("publish.path")
+    @proto   = grab.call("publish.proto")
   end
 
   def to_h
@@ -44,7 +53,7 @@ class RuneBlog::Publishing
     dir = @docroot/@path
     view_name = @blog.view.name
     viewpath = dir/view_name
-    result = system!("ssh #@user@#@server -x mkdir -p #{viewpath}") 
+#   result = system!("ssh #@user@#@server -x mkdir -p #{viewpath}") 
     result = system!("ssh #@user@#@server -x mkdir -p #{viewpath}/assets") 
     files.each do |file|
       dest = "#@user@#@server:" + dir/view_name

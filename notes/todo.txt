@@ -1,14 +1,17 @@
    # Functionality
 
-   - 3 get publishing working again!
-   - 2 publishing into globals?
- x - 1 vars.lt3 — title as heredoc
+
+   - 0 Bug - whats-at-stubbs post missing
+   - 2 get publishing working again!
+   - 3 FAQ opens two different ways (iframe)
+ x - publishing into globals?
+ x - vars.lt3 — title as heredoc
    - .faq command
-   - 4 blog command line
+   - 3 blog command line
    - "local" CSS for each widget?
    - custom.rb gets included if present?
    - pathmagic bug
-   - 5 minor main/iframe bug?
+   - 4 minor main/iframe bug?
    - support pinned posts (as pages?)
    - 6 fix card2 problem with "$" in cdata
    - livetext: fix bug .set var="this, that"
@@ -23,10 +26,10 @@
    - CSS for widgets?
    - head/tail for widget HTML?
    - create tag cloud
-   - 9 page manager
-   - 10 links manager
+   - 8 page manager
+   - 9 links manager
    - bydates manager
-   - 11 show tags on posts
+   - 10 show tags on posts
    - backup/restore?
    - need categories??
    - automated news search

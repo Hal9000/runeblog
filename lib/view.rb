@@ -12,12 +12,8 @@ class RuneBlog::View
     raise NoBlogAccessor if RuneBlog.blog.nil?
     @blog = RuneBlog.blog
     @name = name
-    @can_publish = false
-    pub_file = @blog.root + "/views/#@name/publish"
-    if File.exist?(pub_file) && File.size(pub_file) != 0
-      @publisher = RuneBlog::Publishing.new(read_config(pub_file))
-      @can_publish = true
-    end
+    @publisher = RuneBlog::Publishing.new(name)
+    @can_publish = true  # FIXME
   end
 
   def dir

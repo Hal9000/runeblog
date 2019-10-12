@@ -219,7 +219,7 @@ class TestREPL < Minitest::Test
     @blog.undelete_post(7)
   end
 
-if File.exist?("testing.publish")
+if File.exist?("testing.publish")  # FIXME!!!
 
   def xtest_016_can_publish
 #   puts __method__

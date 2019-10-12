@@ -5,8 +5,8 @@
 
 .variables
 author      Hal Fulton
-blog        My Blog (and Welcome To It)
-blog.desc   All the stuff you never needed to know
+blog        Around Austin
+blog.desc   The view from downtown...
 host        localhost:4000//
 charset     utf-8
 site        rubyhacker.com
@@ -23,7 +23,12 @@ post.text.size    22px
 
 post.date.color   #9a9a9a
 post.date.size    15px
-.end
 
-.  Maybe move publish info here?
+
+publish.user      root
+publish.server    rubyhacker.com
+publish.docroot   /var/www/
+publish.path      around_austin
+publish.proto     http
+.end
 
