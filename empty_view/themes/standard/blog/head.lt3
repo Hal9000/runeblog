@@ -1,3 +1,10 @@
+. --------------------------------------------------
+. This file will usually not be edited by the user. 
+. It is used to generate the <HEAD> for the overall 
+. blog and for the individual post.                 
+. SUBJECT TO CHANGE, like everything else but moreso
+. --------------------------------------------------
+
 <head>
 .include etc/externals.lt3
 .include etc/misc.js

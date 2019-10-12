@@ -525,8 +525,14 @@ end
 # helper methods
 ##################
 
-def _html_body(file)
-  file.puts "<html>\n  <body>"
+def _html_body(file, css = nil)
+  file.puts "<html>"
+  if css
+    file.puts "    <head>"  
+    file.puts "        <style>\n#{css}\n          </style>"
+    file.puts "    </head>"  
+  end
+  file.puts "  <body>"
   yield
   file.puts "  </body>\n</html>"
 end
@@ -607,7 +613,8 @@ def _write_main(mainfile, pairs, card_title, tag)
           when ["no", true]               # CAN'T iframe, local file (possible?)
             url_ref = _blank(file)
         end
-        f.puts %[<a style="text-decoration: none; font-size: 24px" #{url_ref}>#{title}</a> <br>]
+        css = "color: #8888FF; text-decoration: none; font-size: 24px; font-family: verdana"
+        f.puts %[<a style="#{css}" #{url_ref}>#{title}</a> <br>]
       end
     end
   end

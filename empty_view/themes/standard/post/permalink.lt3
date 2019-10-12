@@ -1,3 +1,11 @@
+. --------------------------------------------------
+. A permalink differs very little from the original 
+. post except that it lacks "context" (navigation   
+. bar, banner, sidebar, etc.).
+. It does have a link back to the current front page
+. of the blog.
+. --------------------------------------------------
+
 .mixin liveblog
 
 <html>

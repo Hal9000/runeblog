@@ -8,14 +8,14 @@ module RuneBlog::Helpers
   def copy(src, dst)
     log!(enter: __method__, args: [src, dst])
     cmd = "cp #{src} #{dst} 2>/dev/null"
-    rc = system(cmd)
+    rc = system!(cmd)
     puts "    Failed: #{cmd} - from #{caller[0]}" unless rc
   end
 
   def copy!(src, dst)
     log!(enter: __method__, args: [src, dst])
     cmd = "cp -r #{src} #{dst} 2>/dev/null"
-    rc = system(cmd)
+    rc = system!(cmd)
     puts "    Failed: #{cmd} - from #{caller[0]}" unless rc
   end
 
@@ -133,7 +133,7 @@ end
       dir = dir.to_s  # symbols allowed
       next if Dir.exist?(dir)
       cmd = "mkdir -p #{dir} >/dev/null"
-      result = system(cmd) 
+      result = system!(cmd) 
       raise CantCreateDir(dir) unless result
     end
   end

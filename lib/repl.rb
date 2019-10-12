@@ -9,7 +9,7 @@ make_exception(:EditorProblem, "Could not edit $1")
 module RuneBlog::REPL
 
   def edit_file(file)
-    result = system("#{@blog.editor} #{file}")
+    result = system!("#{@blog.editor} #{file}")
     raise EditorProblem(file) unless result
     sleep 0.1
     STDSCR.clear
@@ -18,7 +18,7 @@ module RuneBlog::REPL
   def cmd_quit(arg, testing = false)
     check_empty(arg)
     RubyText.stop
-    system("tput clear")
+    system!("tput clear")
     exit
   end
 
@@ -66,7 +66,7 @@ module RuneBlog::REPL
   def cmd_import(arg, testing = false)
     check_empty(arg)
     files = ask("\n  File(s) = ")
-    system("cp #{files} #{@blog.root}/views/#{@blog.view.name}/assets/")
+    system!("cp #{files} #{@blog.root}/views/#{@blog.view.name}/assets/")
   end
 
   def cmd_browse(arg, testing = false)
@@ -78,7 +78,7 @@ module RuneBlog::REPL
       puts "\n  Publish first."
       return @out
     end
-    result = system("open '#{url}'")
+    result = system!("open '#{url}'")
     raise CantOpen(url) unless result
     return @out
   end
@@ -87,7 +87,7 @@ module RuneBlog::REPL
     reset_output
     check_empty(arg)
     local = @blog.view.local_index
-    result = system("open #{local}")
+    result = system!("open #{local}")
     raise CantOpen(local) unless result
     @out
   end
@@ -334,7 +334,7 @@ module RuneBlog::REPL
 
   def cmd_ssh(arg, testing = false)
     pub = @blog.view.publisher
-    system("ssh #{pub.user}@#{pub.server}")
+    system!("ssh #{pub.user}@#{pub.server}")
   end
 
   def cmd_INVALID(arg, testing = false)

@@ -1,3 +1,10 @@
+. --------------------------------------------------
+. This file will usually not be edited by the user. 
+. It is used to generate the top-level index.html   
+. The user will more often edit blog/index.lt3 in   
+. the process of blog setup.
+. --------------------------------------------------
+
 .mixin liveblog
 
 <html>

@@ -1,3 +1,11 @@
+. --------------------------------------------------
+. This file is overwritten and customized as the    
+. blog is maintained.
+. Currently there is no user-friendly way to change 
+. the "skeleton" of a post. When there is, this will
+. likely be the place.
+. --------------------------------------------------
+
 .mixin liveblog
 . ^ get rid of this later
 

@@ -1,3 +1,8 @@
+. --------------------------------------------------
+. This file describes the actual layout of the blog.
+. It is referenced from blog/generate.lt3           
+. --------------------------------------------------
+
 . figure out how to put navbar here
 
 .recent_posts

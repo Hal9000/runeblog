@@ -1,5 +1,12 @@
+. --------------------------------------------------
+. This file is processed to create blog.css         
+. Most of the global CSS goes here                  
+. --------------------------------------------------
 .nopara
+
 .seek themes/standard/global.lt3
+
+* { font-family: $font.family }
 
 \.post-title a {
   color: $post.title.color;

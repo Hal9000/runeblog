@@ -1,6 +1,70 @@
+   # Functionality
+
+   - 3 get publishing working again!
+   - 2 publishing into globals?
+ x - 1 vars.lt3 — title as heredoc
+   - .faq command
+   - 4 blog command line
+   - "local" CSS for each widget?
+   - custom.rb gets included if present?
    - pathmagic bug
-   - scrollbar on iframe?
-   - minor main/iframe bug?
+   - 5 minor main/iframe bug?
+   - support pinned posts (as pages?)
+   - 6 fix card2 problem with "$" in cdata
+   - livetext: fix bug .set var="this, that"
+   - update only "stale" items
+   - 8 repl commands for widgets, etc.
+   - 7 dynamically add commands/code to repl
+   - FB/Twitter icons on posts
+   - auto-notify on post (FB/Twitter)
+   - subscription?
+   - analytics?
+   - add CSS ref to post?
+   - CSS for widgets?
+   - head/tail for widget HTML?
+   - create tag cloud
+   - 9 page manager
+   - 10 links manager
+   - bydates manager
+   - 11 show tags on posts
+   - backup/restore?
+   - need categories??
+   - automated news search
+   - post analyzer - SEO, spell, wcount, etc.
+   - more params in globals
+   - ssh-copy-id in setup
+   - site map widget
+   - build top-down, respecting staleness
+   - permalink on post? ^C feature?
+   - also query for title when view is created
+   - work on .banner!
+   - footer? holding a widget?
+   - support for Windows?? (open, paths, ...)
+   - Twitter-embed widget
+   - livetext: mixin as module (livetext -m)
+   - livetext: other command line options? nopara? debug? ...
+   - livetext: $$incr ?
+   - livetext: open/close
+   - livetext: permit omission of .lt3
+   - livetext: permit # comments on end of line?
+   - livetext: .include dir/    # refs dir/main.lt3 ?
+   - rethink remove/delete/kill and other verbs
+   - verify image assets
+   - commands to edit templates, config, etc.? ('config' command?) (See notes.txt)
+   - "pinned" or favorite posts? ("best" tag? or pin command that understands views?)
+   - add views to lsd/lsp output
+   - more tests!
+   - maybe add (default) publishing info to config?
+   - shorten commands?
+   - connect to REST interface??
+   - up/down votes, etc.?
+   - undo last post?
+   - true command line options?
+   - setup wizard?
+   - handle larger output for lsp, lsd
+
+   # Prettier code
+
    - fix/delete Runeblog::Default (post_template)
    - tricky? put navbar inside blog/index.lt3
    - tricky? move global.lt3 into etc
@@ -9,89 +73,49 @@
    - liveblog: separate dot-commands from helpers
    - remove duplicated and double-scoped code
    - move badly-scoped methods (e.g., runeblog.rb to post.rb)
-   - fix card2 problem with "$" in cdata
-   - livetext: fix bug .set var="this, that"
-   - update only "stale" items
-   - repl commands for widgets, etc.
    - fix $_blog
    - fix $DotDir
-   - dynamically add commands/code to repl
    - cards as .lt3 files?
-   - add CSS ref to post?
-   - CSS for widgets?
-   - create tag cloud
-   - page manager
-   - links manager
-   - also query for title when view is created
-   - work on .banner!
-
-   - livetext: mixin as module (livetext -m)
-   - livetext: other command line options? nopara? debug? ...
-   - livetext: $$incr ?
-   - livetext: open/close
-   - livetext: permit omission of .lt3
-   - livetext: permit # comments on end of line?
-   - livetext: .include dir/    # refs dir/main.lt3 ?
-
    - start using keyword parameters as needed
-   - rethink remove/delete/kill and other verbs
    - remove dead code!!
    - factor generic HTML out of liveblog.rb
-   - verify image assets
-   - commands to edit templates, config, etc.? ('config' command?) (See notes.txt)
-   - "pinned" or favorite posts? ("best" tag? or pin command that understands views?)
-   - add views to lsd/lsp output
+   - rethink helper libs?
+   - distinguish view and view_name
+   - code coverage analysis
+
+   # Other?
 
    - allow test code to add to post?
-   - setup wizard?
    - tag pools are dumb??
-   - Better navigation/etc for default?
    - Select themes/styles for blog??
-   - Move some pieces into "snippets" (e.g. Facebook/Twitter integration)
    - real support for tags (persist, etc.)
-   - more tests!
+   - Move some pieces into "snippets" (e.g. Facebook/Twitter integration)
    - special tags: intra-blog, gist, github, youtube, vimeo, twitter, fb?, reddit?, ...
    - verify view is publishable before trying
    - allow for post title changing
    - add post template capability (create, edit, post)
    - methods such as get_post_template?
-   - rethink helper libs?
-   - handle larger output for lsp, lsd
    - make hierarchy of publish files?
    - safe way to delete a view?
-   - modifiable global defaults for publishing info/etc.?
-   - distinguish view and view_name
    - test credentials for publishing?
-
-   - maybe add (default) publishing info to config?
-   - shorten commands?
-   - undo last post?
-
-   - code coverage analysis
-
    - config files: persistent comments?
-
    - change interaction of liveblog and process_file (arbitrary ostruct?)
    - hash same as metadata??
    - allow templates to be .lt3 files?
    - snippets for templates?
    - facebook/twitter as snippets?
    - changes in liveblog for snippets??
-
    - Fix/rewrite asset handling? .asset and .asset! tags?
    - use a database???
    - possibly change: relink, rebuild, etc.?
    - back-sync with remote?
+
+   # Docs
+
    - explicitly document use of ssh/scp
    - update docs
-
-   - true command line options?
-   - special view 'all'?
-   - other vars in .blog?
    - out-of-the-box workflow
    - video tutorial
-   - figure out linked-list dependencies?
-
    - docs: getting started
    - docs: how-to
    - docs: how to write templates (incl main one)
@@ -101,6 +125,10 @@
 
  x - make cards collapsible!
  x - main list broken for all widgets
+ x - scrollbar on iframe?
+ x - other vars?
+ x - modifiable global defaults for publishing info/etc.?
+ x - Better navigation/etc for default?
  x - need open_main, open_blank, open_local, etc.
  x - navbar is broken (about, contact)
  x - let test code log to screen

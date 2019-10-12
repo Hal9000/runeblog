@@ -30,6 +30,19 @@ def make_exception(sym, str)
   end
 end
 
+  def system!(str)
+    log!(enter: __method__, args: [str])
+    rc = system(str)
+    if rc
+      return rc
+    else
+      STDERR.puts "FAILED: #{str.inspect}"
+      STDERR.puts "\ncaller = \n#{caller.join("\n  ")}\n"
+      return rc
+    end
+    rc
+  end
+
 def prefix(num)
   log!(enter: __method__, args: [num])
   "#{'%04d' % num.to_i}"

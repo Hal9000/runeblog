@@ -93,7 +93,7 @@ class RuneBlog::Post
   def edit
     log!(enter: __method__)
     verify(File.exist?(@draft) => "File #{@draft} not found")
-    result = system("vi #@draft +8")  # TODO improve this
+    result = system!("vi #@draft +8")  # TODO improve this
     raise EditorProblem(draft) unless result
     nil
   rescue => err
@@ -136,7 +136,7 @@ class RuneBlog::ViewPost
     vdir = @root/:views/view
     dir = vdir/:posts/noext + "/"
     Dir.mkdir(dir) unless Dir.exist?(dir)
-    system("cp #{draft} #{dir}")
+    system!("cp #{draft} #{dir}")
     viewdir, slugdir, aslug = vdir, dir, noext[5..-1]
     theme = viewdir/:themes/:standard
     [noext, viewdir, slugdir, aslug, theme]

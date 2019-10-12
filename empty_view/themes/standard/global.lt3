@@ -1,3 +1,8 @@
+. --------------------------------------------------
+. Global settings are stored here in the form       
+.   <variable>  <value>                             
+. --------------------------------------------------
+
 .variables
 author      Hal Fulton
 blog        My Blog (and Welcome To It)
@@ -7,6 +12,8 @@ charset     utf-8
 site        rubyhacker.com
 url         localhost:4000//
 locale      en_US
+
+font.family       verdana
 
 post.title.color  #010101
 post.title.size   28px

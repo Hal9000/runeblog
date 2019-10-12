@@ -1,0 +1,7 @@
+global.lt3            Global settings and configuration
+blog/index.lt3        Layout of blog front page
+blog/post_entry.lt3   Layout of "recent post" list entry
+navbar/navbar.lt3     Layout of navigation bar
+  navbar/about.lt3
+  navbar/contact.lt3
+

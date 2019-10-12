@@ -61,7 +61,7 @@ class RuneBlog
     raise BlogRepoAlreadyExists if Dir.exist?(root)
     create_dirs(root)
     Dir.chdir(root) do
-      system("cp #{RuneBlog::Path}/../empty_view.tgz .")
+      system!("cp #{RuneBlog::Path}/../empty_view.tgz .")
       create_dirs(:drafts, :views, :posts)
       new_sequence
     end
@@ -107,7 +107,7 @@ class RuneBlog
 #     views = File.readlines("metadata.txt").grep(/^views: /).first[7..-1].split
       views = _retrieve_metadata(:views)
 STDERR.puts "---- deploy: views = #{views.inspect}"
-      views.each {|v| system("cp *html #@root/views/#{v}/remote") }
+      views.each {|v| system!("cp *html #@root/views/#{v}/remote") }
     end
   end
 
@@ -249,8 +249,8 @@ STDERR.puts "--- retrieve:  key = #{key.inspect}"
     Dir.chdir(@root) do
       cmd1 = "tar zxvf empty_view.tgz >/dev/null 2>&1"
       cmd2 = "cp -r empty_view views/#{view_name}"
-      system(cmd1)
-      system(cmd2)
+      system!(cmd1)
+      system!(cmd2)
     end
   end
 
@@ -280,7 +280,7 @@ STDERR.puts "--- retrieve:  key = #{key.inspect}"
     raise ArgumentError unless name.is_a?(String) && ! name.empty?
     if force
       vname = @root/:views/name
-      system("rm -rf #{vname}")
+      system!("rm -rf #{vname}")
       @views -= [str2view(name)]
     end
   end
@@ -313,15 +313,16 @@ STDERR.puts "--- retrieve:  key = #{key.inspect}"
     id = slug.to_i
     text = nil
     post_entry_name = @theme/"blog/post_entry.lt3"
-    @_post_entry ||= File.read(post_entry_name)
+    xlate src: post_entry_name, dst: "/tmp/post_entry.html", debug: true
+    @_post_entry ||= File.read("/tmp/post_entry.html")
     vp = post_lookup(id)
     nslug, aslug, title, date, teaser_text = 
       vp.nslug, vp.aslug, vp.title, vp.date, vp.teaser_text
     path = vp.path
     url = aslug + ".html"
-      date = ::Date.parse(date)
-      date = date.strftime("%B %e<br>%Y")
-      text = interpolate(@_post_entry, binding)
+    date = ::Date.parse(date)
+    date = date.strftime("%B %e<br>%Y")
+    text = interpolate(@_post_entry, binding)
     text
   end
 
@@ -370,7 +371,7 @@ STDERR.puts "--- retrieve:  key = #{key.inspect}"
     log!(enter: __method__, args: [file, testing])
     debug "=== edit_initial_post #{file.inspect}  => #{sourcefile}"
     sourcefile = @root/:drafts/file
-    result = system("#@editor #{sourcefile} +8") unless testing
+    result = system!("#@editor #{sourcefile} +8") unless testing
     raise EditorProblem(sourcefile) unless result
     process_post(sourcefile)
     nil
@@ -435,7 +436,7 @@ STDERR.puts "--- retrieve:  key = #{key.inspect}"
     vdir = @root/:views/view
     dir = vdir/:posts/noext
     Dir.mkdir(dir) unless Dir.exist?(dir)
-    system("cp #{draft} #{dir}")
+    system!("cp #{draft} #{dir}")
     viewdir, slugdir, aslug = vdir, dir, noext[5..-1]
     theme = viewdir/:themes/:standard
     [noext, viewdir, slugdir, aslug, theme]
@@ -446,8 +447,8 @@ STDERR.puts "--- retrieve:  key = #{key.inspect}"
     Dir.chdir(pdraft) do 
       excerpt = File.read("teaser.txt")
       title = _retrieve_metadata(:title)
-      vars = %[.set title="#{title.chomp}"\n] + 
-             %[.set teaser="#{excerpt.chomp}"]
+      vars = %[.heredoc title\n"#{title.chomp}"\n.end\n] + 
+             %[.heredoc teaser\n"#{excerpt.chomp}"\n.end\n]
       File.open(pdraft/"vars.lt3", "w") {|f| f.puts vars }
     end
   end
@@ -464,7 +465,7 @@ STDERR.puts "--- retrieve:  key = #{key.inspect}"
       create_dirs(rem)
       files = Dir[w/"*"]
       next unless files.any? {|x| x =~ /html$/ }
-      system("cp #{w}/*html #{rem}")
+      system!("cp #{w}/*html #{rem}")
     end
   end
 
@@ -557,7 +558,7 @@ STDERR.puts "--- retrieve:  key = #{key.inspect}"
     dest = list.map {|f| f.sub(/(?<num>\d{4}-)/, "_\\k<num>") }
     list.each.with_index do |src, i| 
       cmd = "mv #{src} #{dest[i]} 2>/dev/null"
-      system(cmd)
+      system!(cmd)
     end
     # FIXME - update index/etc
     true
@@ -573,7 +574,7 @@ STDERR.puts "--- retrieve:  key = #{key.inspect}"
     dest = list.map {|f| f.sub(/_(?<num>\d{4}-)/, "\\k<num>") }
     list.each.with_index do |src, i| 
       cmd = "mv #{src} #{dest[i]} 2>/dev/null"
-      system(cmd)
+      system!(cmd)
     end
     # FIXME - update index/etc
     true
@@ -583,7 +584,7 @@ STDERR.puts "--- retrieve:  key = #{key.inspect}"
     log!(enter: __method__, args: [num])
     raise ArgumentError unless num.is_a?(Integer)
     tag = prefix(num)
-    system("rm -rf #@root/drafts/#{tag}-*")
+    system!("rm -rf #@root/drafts/#{tag}-*")
   end
 
   def make_slug(meta)

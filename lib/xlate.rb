@@ -29,9 +29,9 @@ LEXT = ".lt3"
         STDERR.puts "#{indent} -- ^ Already up to date!" if debug
         return
       end
-      rc = system("livetext #{src} >#{dst}")
+      rc = system!("livetext #{src} >#{dst}")
       STDERR.puts "...completed (shell returned #{rc})" if debug
-      system("cp #{dst} #{copy}") if copy
+      system!("cp #{dst} #{copy}") if copy
     end
   end
 

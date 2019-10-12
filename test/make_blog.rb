@@ -10,21 +10,29 @@ require 'global'
 require 'runeblog'
 require 'repl'
 
+def bold(str)
+  "\e[1m#{str}\e[0m"
+end
+
 def getch
 # sleep 5
 end
 
 def debug(str = "")
-  STDERR.puts "#{Time.now.strftime("%H:%M:%S")} #{str}"
+  t = Time.now
+  time = t.to_f.to_s
+  n = time.index(".")
+  msec = time[n..-1]
+  time = t.strftime("%H:%M:%S") + msec
+  STDERR.puts "#{'%-16s' % time}  #{str}"
 end
 
 def make_post(x, title, teaser, body, views=[])
-  debug "     make_post '#{title}'"
-# print "."
+  debug "      make_post #{bold(title)}"
   x.create_new_post(title, true, teaser: teaser, body: body, other_views: views)
   views.each do |view| 
     debug
-    debug "** generate_index #{view}"
+    debug "** generate_index #{bold(view)}"
     x.generate_index(view) 
   end  # recent.html
 end
@@ -44,21 +52,16 @@ system("rm -rf .blogs")
 RuneBlog.create_new_blog_repo(".blogs")
 x = RuneBlog.new(".blogs")
 
-debug("create_view: around_austin")
+debug("create_view: #{bold('around_austin')}")
 x.create_view("around_austin")   # FIXME remember view title!
 
-# Hack:
-if File.exist?("publish")
-  system("cp publish .blogs/views/around_austin/publish")
-end
-
-debug("create_view: computing")
+debug("create_view: #{bold('computing')}")
 x.create_view("computing")
 
-debug("create_view: music")
+debug("create_view: #{bold('music')}")
 x.create_view("music")
 
-debug("-- change_view: around_austin")
+debug("-- change_view: #{bold('around_austin')}")
 x.change_view("around_austin")    # 1 2 7 8 9 
 
 make_post(x, "What's at Stubbs...", <<-EXCERPT, <<-BODY, ["music"])
@@ -73,7 +76,7 @@ EXCERPT
 Now, depending on what you consider "major," blah blah blah...
 BODY
 
-debug("-- change_view: computing")
+debug("-- change_view: #{bold('computing')}")
 x.change_view("computing")     # 3 5 6
 
 make_post(x, "Elixir Conf coming up...", <<-EXCERPT, <<-BODY)
@@ -83,7 +86,7 @@ I mean, unless the previous one was the last one ever, which I don't expect to
 happen for a couple of decades.
 BODY
 
-debug("-- change_view: music")
+debug("-- change_view: #{bold('music')}")
 x.change_view("music")    # 4 10
 
 make_post(x, "Does indie still matter?", <<-EXCERPT, <<-BODY)
@@ -92,7 +95,7 @@ EXCERPT
 And more about indie music.
 BODY
 
-debug("-- change_view: computing")
+debug("-- change_view: #{bold('computing')}")
 x.change_view("computing")
 
 make_post(x, "The genius of Scenic", <<-EXCERPT, <<-BODY)
@@ -107,11 +110,11 @@ EXCERPT
 But that day hasn't come yet.
 BODY
 
-debug("-- change_view: around_austin")
+debug("-- change_view: #{bold('around_austin')}")
 x.change_view("around_austin")
 
 make_post(x, "The graffiti wall", <<-EXCERPT, <<-BODY)
-RIP Hope Gallery
+RIP, Hope Gallery
 EXCERPT
 It's been a while since I was there. They say it was torn down
 while I wasn't looking.
@@ -124,12 +127,12 @@ Blah blah Waller Creek blah blah...
 BODY
 
 make_post(x, "Life on Sabine Street", <<-EXCERPT, <<-BODY)
-It's like Pooh Corner (except not).
+It's like Pooh Corner, except not.
 EXCERPT
 This is about Sabine St, blah blah lorem ipsum dolor...
 BODY
 
-debug("-- change_view: music")
+debug("-- change_view: #{bold('music')}")
 x.change_view("music")
 
 make_post(x, "Remember Modest Mouse?", <<-EXCERPT, <<-BODY, ["around_austin"])
@@ -140,7 +143,7 @@ in 2005.
 BODY
 
 debug
-debug("** generate_view: around_austin")
+debug("** generate_view: #{bold('around_austin')}")
 x.generate_view("around_austin")
 
 debug
