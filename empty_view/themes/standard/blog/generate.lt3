@@ -13,6 +13,12 @@
 .seek global.lt3
 .include blog/head.lt3
   <body>
+<table width=100%>
+<tr>
+  <td width=30% color=lightblue><h1>Around Austin</h1><br>The view from downtown...</td>
+  <td><img src=assets/sky2.jpg width=100%></img>
+</tr>
+</table>
     $.include navbar/navbar.lt3
     <div class="content container-fluid mt-4">
       <div class="row">

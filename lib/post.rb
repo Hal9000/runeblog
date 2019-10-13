@@ -63,8 +63,8 @@ class RuneBlog::Post
   end
 
   def self.create(title:, teaser:, body:, pubdate: Time.now.strftime("%Y-%m-%d"),
-                  other_views:[])
-    log!(enter: __method__, args: [title, teaser, body, pubdate, other_views])
+                  views:[])
+    log!(enter: __method__, args: [title, teaser, body, pubdate, views])
     post = self.new
     # NOTE: This is the ONLY place next_sequence is called!
     num = post.meta.num   = post.blog.next_sequence
@@ -72,7 +72,8 @@ class RuneBlog::Post
     # new_metadata
     post.meta.title, post.meta.teaser, post.meta.body, post.meta.pubdate = 
       title, teaser, body, pubdate
-    post.meta.views = [post.blog.view.to_s] + other_views
+    post.meta.views = [post.blog.view.to_s] + views
+# STDERR.puts "Post.create: views = #{views.inspect}"
     post.meta.tags = []
     post.blog.make_slug(post.meta)  # adds to meta
 

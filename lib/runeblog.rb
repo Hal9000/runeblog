@@ -336,11 +336,12 @@ class RuneBlog
     File.write(@vdir/:remote/file, text)
   end
 
-  def create_new_post(title, testing = false, teaser: nil, body: nil, other_views: [])
-    log!(enter: __method__, args: [title, testing, teaser, body, other_views])
+  def create_new_post(title, testing = false, teaser: nil, body: nil, views: [])
+    log!(enter: __method__, args: [title, testing, teaser, body, views])
     meta = nil
+    views = views + [self.view.to_s]
     Dir.chdir(@root/:posts) do
-      post = Post.create(title: title, teaser: teaser, body: body, other_views: other_views)
+      post = Post.create(title: title, teaser: teaser, body: body, views: views)
       post.edit unless testing
       post.build
       meta = post.meta
@@ -400,6 +401,8 @@ class RuneBlog
           src: "blog.css.lt3", copy: vdir/"remote/etc/blog.css" # , debug: true
     xlate cwd: vdir/"themes/standard",
           src: "blog/generate.lt3", dst: vdir/:remote/"index.html"
+    copy("#{vdir}/assets/*", "#{vdir}/remote/assets/")
+
   end
 
   def _get_views(draft)
