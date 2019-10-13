@@ -118,8 +118,7 @@ def make_main_links
   log!(str: "Reading #{input}", pwd: true)
   pairs = File.readlines(input).map {|line| line.chomp.split(/, */, 2) }
   _write_main(mainfile, pairs, card_title, tag)
-  widget_relative = false  # (tag != "news")  # FIXME kludge!!!
-  _write_card(cardfile, mainfile, pairs, card_title, tag, relative: widget_relative)
+  _write_card(cardfile, mainfile, pairs, card_title, tag)
   log!(str: "...returning from method", pwd: true)
 end
 
@@ -543,7 +542,7 @@ def _html_body(file, css = nil)
   file.puts "  </body>\n</html>"
 end
 
-def _write_card(cardfile, mainfile, pairs, card_title, tag, relative: true)
+def _write_card(cardfile, mainfile, pairs, card_title, tag)
   log!(str: "Creating #{cardfile}.html", pwd: true)
   url = mainfile
   url = :widgets/tag/mainfile + ".html"
@@ -565,7 +564,7 @@ def _write_card(cardfile, mainfile, pairs, card_title, tag, relative: true)
       url = file
       type, title = page_type(tag, title)
       case type
-        when :local;   url_ref = _widget_main(file, tag)  # local always frameable
+        when :local;   url_ref = _widget_card(file, tag)  # local always frameable
         when :frame;   url_ref = _main(file)              # remote, frameable
         when :noframe; url_ref = _blank(file)             # remote, not frameable
       end
@@ -708,6 +707,6 @@ end
 
 def _widget_card(url, tag)
   url2 = :widgets/tag/url
-  %[href="#{url2}"]
+  %[href="javascript: void(0)" onclick="javascript:open_main('#{url2}')"]
 end
 

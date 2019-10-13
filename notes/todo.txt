@@ -1,6 +1,5 @@
    # Functionality
 
-   - pages (FAQ) bug
    - idea: code under widgets/FOO gets called to build?
    - custom.rb (livetext) gets included if present?
    - .faq command
@@ -119,6 +118,7 @@
 
 ---
 
+ x - pages (FAQ) bug
  x - rudimentary banner
  x - minor main/iframe bug?
  x - fix card2 problem with "$" in cdata
