@@ -136,7 +136,7 @@ toes. And may your snark never be a boojum.
 Contact light. Houston, this is Tranquility Base. The Eagle has
 landed. That's one small step for (a) man, one giant leap for 
 mankind.
-.inset left
+.inset left 20
 On a clean disk, you can seek forever.
 .end
 

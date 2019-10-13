@@ -6,7 +6,7 @@
 <div class="post">
   <table width=100%>
     <tr>
-      <td width=8% valign=top>
+      <td width=12% valign=top>
         <span class="post-date mt-1 mb-1">
           <b>#{date}</b>
         </span>
