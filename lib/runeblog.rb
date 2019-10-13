@@ -60,7 +60,6 @@ class RuneBlog
     raise BlogRepoAlreadyExists if Dir.exist?(root)
     create_dirs(root)
     Dir.chdir(root) do
-      system!("cp #{RuneBlog::Path}/../empty_view.tgz .")
       create_dirs(:drafts, :views, :posts)
       new_sequence
     end
@@ -218,7 +217,7 @@ class RuneBlog
 
   def mark_last_published(str)
     log!(enter: __method__, args: [str])
-    dump(str, "last_published")
+    dump(str, "#{self.view.dir}/last_published")
   end
 
   def add_view(view_name)
@@ -253,8 +252,8 @@ class RuneBlog
     log!(enter: __method__, args: [view_name])
     check_valid_new_view(view_name)
     make_empty_view_tree(view_name)
-    mark_last_published("Initial creation")
     add_view(view_name)
+    mark_last_published("Initial creation")
   end
 
   def delete_view(name, force = false)

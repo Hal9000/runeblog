@@ -61,7 +61,7 @@ class RuneBlog::View
 
   def recent?(file)
     log!(enter: __method__, args: [file])
-    File.mtime(file) > File.mtime("#{dir()}/last_published")
+    File.mtime(file) > File.mtime("#{self.dir()}/last_published")
   rescue
     true
   end

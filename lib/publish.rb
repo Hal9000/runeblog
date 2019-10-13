@@ -10,16 +10,6 @@ class RuneBlog::Publishing
   def initialize(view)
     log!(enter: __method__, args: [view.to_s])
     @blog = RuneBlog.blog
-#     # Clunky...
-#     if params.size == 1 && params[0].is_a?(OpenStruct)
-#       obj = params[0]
-#       array = obj.to_h.values_at(:user, :server, :docroot, 
-#                                  :path, :proto)
-#       @user, @server, @docroot, @path, @proto = *array
-#     else
-#       @user, @server, @docroot, @path, @proto = *params
-#     end
-    # find a better way?
     gfile = @blog.root/:views/view/"themes/standard/global.lt3"
     data = File.readlines(gfile)
     grab = ->(var) { data.grep(/^#{var} /).first.chomp.split(" ", 2)[1] }
