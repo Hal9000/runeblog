@@ -27,7 +27,6 @@ class TestREPL < Minitest::Test
   def setup
     # To be strictly correct in testing (though slower),
     #   run make_blog here.
-#   system("tar zcvf last-test.tgz .blog/ && rm -rf .blog")
     system("ruby test/make_blog.rb") if ARGV.first == "new"
     @blog = RuneBlog.new
   end

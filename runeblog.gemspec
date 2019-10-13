@@ -28,10 +28,10 @@ spec = Gem::Specification.new do |s|
          Find.find("lib").to_a
   test = Find.find("test").to_a
   misc = %w[./README.lt3 ./README.md ./runeblog.gemspec]
+  empty_view = Find.find("empty_view").to_a
 
-# system("tar zcvf empty_view.tgz empty_view")
 
-  s.files       =  main + misc + test + ["empty_view.tgz"]
+  s.files       =  main + misc + test + empty_view
   s.homepage    = 'https://github.com/Hal9000/runeblog'
   s.license     = "Ruby"
 end

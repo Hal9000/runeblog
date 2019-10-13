@@ -232,10 +232,8 @@ class RuneBlog
   def make_empty_view_tree(view_name)
     log!(enter: __method__, args: [view_name])
     Dir.chdir(@root) do
-      cmd1 = "tar zxvf empty_view.tgz >/dev/null 2>&1"
-      cmd2 = "cp -r empty_view views/#{view_name}"
-      system!(cmd1)
-      system!(cmd2)
+      cmd = "cp -r #{RuneBlog::Path}/../empty_view views/#{view_name}"
+      system!(cmd)
     end
   end
 
