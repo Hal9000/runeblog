@@ -4,12 +4,13 @@
 . --------------------------------------------------
 
 .variables
-author      Hal Fulton
-blog        Around Austin
-blog.desc   The view from downtown...
+author      Your name here
+blog        Blog title goes here
+blog.desc   Subtitle (if any) goes here
+site        rubyhacker.com
+
 host        localhost:4000//
 charset     utf-8
-site        rubyhacker.com
 url         localhost:4000//
 locale      en_US
 

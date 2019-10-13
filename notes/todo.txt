@@ -1,30 +1,26 @@
    # Functionality
 
-   - 1 Bug - whats-at-stubbs post missing
-   - 3 FAQ opens two different ways (iframe)
+   - pages (FAQ) bug
+   - idea: code under widgets/FOO gets called to build?
+   - custom.rb (livetext) gets included if present?
    - .faq command
-   - 3 blog command line
+   - 1 blog command line
+   - 2 repl commands for widgets, etc.
+   - 3 dynamically add commands/code to repl
+   - 4 page manager
+   - 5 links manager
+   - 6 show tags on posts
    - "local" CSS for each widget?
-   - custom.rb gets included if present?
    - pathmagic bug
-   - 4 minor main/iframe bug?
+   - more work on .banner!
    - support pinned posts (as pages?)
-   - 6 fix card2 problem with "$" in cdata
    - livetext: fix bug .set var="this, that"
    - update only "stale" items
-   - 8 repl commands for widgets, etc.
-   - 7 dynamically add commands/code to repl
    - FB/Twitter icons on posts
-   - auto-notify on post (FB/Twitter)
-   - subscription?
-   - analytics?
    - add CSS ref to post?
    - CSS for widgets?
    - create tag cloud
-   - 8 page manager
-   - 9 links manager
    - bydates manager
-   - 10 show tags on posts
    - backup/restore?
    - need categories??
    - automated news search
@@ -35,7 +31,6 @@
    - build top-down, respecting staleness
    - permalink on post? ^C feature?
    - also query for title when view is created
-   - work on .banner!
    - footer? holding a widget?
    - support for Windows?? (open, paths, ...)
    - Twitter-embed widget
@@ -60,6 +55,9 @@
    - true command line options?
    - setup wizard?
    - handle larger output for lsp, lsd
+   - auto-notify on post (FB/Twitter)
+   - subscription?
+   - analytics?
 
    # Prettier code
 
@@ -121,6 +119,11 @@
 
 ---
 
+ x - rudimentary banner
+ x - minor main/iframe bug?
+ x - fix card2 problem with "$" in cdata
+ x - Bug - whats-at-stubbs post missing
+ x - FAQ opens two different ways (iframe)
  x - Publishing anomaly
  x - current_view anomaly
  x - get publishing working again!

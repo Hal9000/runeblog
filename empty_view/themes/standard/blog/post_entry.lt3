@@ -13,12 +13,10 @@
       </td>
       <td> <!--        <span class="post-title-box"> -->
           <span class="post-title-text"><a href="#{url}">#{title}</a></span>
-          <p><b>#{teaser_text}</b>
+          <b>#{teaser_text}</b>
           <br>
           <a style="text-decoration: none" href="#{url}"><small>Keep reading...</small></a></p> <!--        </span>  -->
       </td>
     </tr>
   </table>
-  <br>
-  <br>
 </div>

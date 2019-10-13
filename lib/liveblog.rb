@@ -37,6 +37,27 @@ def backlink
   _out %[<br><a href="javascript:history.go(-1)">[Back]</a>]
 end
 
+def dropcap
+  # Bad form: adds another HEAD
+  _out <<-HTML
+<head>
+<style>
+p:first-child:first-letter {
+  color: #0000ff;
+  float: left;
+  font-family: Georgia;
+  font-size: 75px;
+  line-height: 60px;
+  padding-top: 4px;
+  padding-right: 8px;
+  padding-left: 3px;
+}
+</style>
+</head>
+HTML
+  _out " "
+end
+
 def quote
   _passthru "<blockquote>"
   _passthru _body
@@ -292,7 +313,7 @@ end
 def recent_posts    # side-effect
   _out <<-HTML
     <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
-      <iframe id="main" style="width: 100vw; height: 100vh; position: relative;" 
+      <iframe id="main" style="width: 70vw; height: 100vh; position: relative;" 
        src='recent.html' width=100% frameborder="0" allowfullscreen>
       </iframe>
     </div>
@@ -542,24 +563,17 @@ def _write_card(cardfile, mainfile, pairs, card_title, tag, relative: true)
     local = _local_tag?(tag)
     pairs.each do |file, title| 
       url = file
-      yesno = "yes"
-      yesno, title = title.split(/, */) if title =~ /^[yes|no]/   # FIXME please!
-
-      case [yesno, local]
-        when ["yes", false]             # can iframe, remote file
-          url_ref = "href='#{file}'"
-        when ["yes", true]              # can iframe, local file
-          url_ref = _widget_card(file, tag)
-        when ["no", false]              # CAN'T iframe, remote file
-          url_ref = _blank(file)
-        when ["no", true]               # CAN'T iframe, local file (possible?)
-          url_ref = _blank(file)
+      type, title = page_type(tag, title)
+      case type
+        when :local;   url_ref = _widget_main(file, tag)  # local always frameable
+        when :frame;   url_ref = _main(file)              # remote, frameable
+        when :noframe; url_ref = _blank(file)             # remote, not frameable
       end
-
       anchor = %[<a #{url_ref}>#{title}</a>]
       wrapper = %[<li class="list-group-item">#{anchor}</li>]
       f.puts wrapper
     end
+    _include_file cardfile+".html"
     f.puts <<-EOS
           </div>
         </div>
@@ -579,6 +593,20 @@ def _local_tag?(tag)
   end
 end
 
+def page_type(tag, title)
+  yesno = "yes"
+  yesno, title = title.split(/, */) if title =~ /^[yes|no]/
+  local = _local_tag?(tag)
+  frameable = (yesno == "yes")
+  if local
+    return [:local, title]
+  elsif frameable 
+    return [:frame, title]
+  else
+    return [:noframe, title]
+  end
+end
+
 def _write_main(mainfile, pairs, card_title, tag)
   log!(str: "Creating #{mainfile}.html", pwd: true)
   local = _local_tag?(tag)
@@ -586,17 +614,12 @@ def _write_main(mainfile, pairs, card_title, tag)
     _html_body(f) do
       f.puts "<h1>#{card_title}</h1>"
       pairs.each do |file, title| 
-        yesno = "yes"
-        yesno, title = title.split(/, */) if title =~ /^[yes|no]/   # FIXME please!
-        case [yesno, local]
-          when ["yes", false]             # can iframe, remote file
-            url_ref = "href='#{file}'"
-          when ["yes", true]              # can iframe, local file
-            url_ref = _widget_main(file, tag)
-          when ["no", false]              # CAN'T iframe, remote file
-            url_ref = _blank(file)
-          when ["no", true]               # CAN'T iframe, local file (possible?)
-            url_ref = _blank(file)
+        type, title = page_type(tag, title)
+        title = title.gsub(/\\/, "")  # kludge
+        case type
+          when :local;   url_ref = _widget_main(file, tag)  # local always frameable
+          when :frame;   url_ref = "href = '#{file}'"       # local always frameable
+          when :noframe; url_ref = _blank(file)             # local always frameable
         end
         css = "color: #8888FF; text-decoration: none; font-size: 24px; font-family: verdana"
         f.puts %[<a style="#{css}" #{url_ref}>#{title}</a> <br>]

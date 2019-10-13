@@ -116,8 +116,32 @@ x.change_view("around_austin")
 make_post(x, "The graffiti wall", <<-EXCERPT, <<-BODY)
 RIP, Hope Gallery
 EXCERPT
+.dropcap
+
 It's been a while since I was there. They say it was torn down
 while I wasn't looking.
+
+This fake entry is a long one so as to demonstrate both drop-caps
+(above) and an inset quote. Blah blah blah. Lorem ipsum dolor and
+a partridge in a pear tree.
+
+Wherever you go, there you are. Last night I saw upon the stair
+a little man who was not there. He wasn't there again today; I
+wish, I wish he'd go away.
+
+As far as we know, our computer has never had an undetected error.
+And never let it be denied that pobbles are happier without their
+toes. And may your snark never be a boojum.
+
+Contact light. Houston, this is Tranquility Base. The Eagle has
+landed. That's one small step for (a) man, one giant leap for 
+mankind.
+.inset left
+On a clean disk, you can seek forever.
+.end
+
+Pity this busy monster, manunkind, not. Pity rather... Listen:
+There's a hell of a universe next door; let's go.
 BODY
 
 make_post(x, "The Waller Creek project", <<-EXCERPT, <<-BODY)
