@@ -296,6 +296,7 @@ class RuneBlog
     log!(enter: __method__, args: [slug])
     id = slug.to_i
     text = nil
+    @theme = @view.dir/"themes/standard"
     post_entry_name = @theme/"blog/post_entry.lt3"
     xlate src: post_entry_name, dst: "/tmp/post_entry.html" # , debug: true
     @_post_entry ||= File.read("/tmp/post_entry.html")
@@ -397,12 +398,17 @@ class RuneBlog
     log!(enter: __method__, args: [view])
     generate_index(view)   # recent posts (recent.html)
     vdir = @root/:views/view
+    @theme = @root/:views/view/:themes/:standard
     xlate cwd: vdir/"themes/standard/etc",
           src: "blog.css.lt3", copy: vdir/"remote/etc/blog.css" # , debug: true
     xlate cwd: vdir/"themes/standard",
           src: "blog/generate.lt3", dst: vdir/:remote/"index.html"
     copy("#{vdir}/assets/*", "#{vdir}/remote/assets/")
-
+  rescue => err
+    puts err
+    puts err.backtrace.join("\n")
+    print "Pause... "
+    gets
   end
 
   def _get_views(draft)

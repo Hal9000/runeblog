@@ -4,13 +4,11 @@
    - custom.rb (livetext) gets included if present?
    - .faq command
    - 1 blog command line
-   - 2 repl commands for widgets, etc.
-   - 3 dynamically add commands/code to repl
-   - 4 page manager
-   - 5 links manager
+   - 2 repl commands for widgets, etc. (pages, links, ...)
+   - 3 dynamically add commands/code to repl?
    - 6 show tags on posts
    - "local" CSS for each widget?
-   - pathmagic bug
+ x - pathmagic bug
    - more work on .banner!
    - support pinned posts (as pages?)
    - livetext: fix bug .set var="this, that"

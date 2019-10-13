@@ -131,16 +131,17 @@ module RuneBlog::REPL
     reset_output
     check_empty(arg)
     puts unless testing
-    files = @blog.find_draft_slugs
-    if files.empty? 
-      msg = "No files changed"
-      output! msg
-      puts "\n  #{msg}\n " unless testing
-      return @out
-    end
-    files.each {|file| @blog.rebuild_post(file) }
-    @blog.dirty_views.each {|view| generate_index(view) }  # All views for now?
-    File.write("#{@blog.root}/drafts/last_rebuild", Time.now)
+    @blog.generate_view(@blog.view)
+#     files = @blog.find_draft_slugs
+#     if files.empty? 
+#       msg = "No files changed"
+#       output! msg
+#       puts "\n  #{msg}\n " unless testing
+#       return @out
+#     end
+#     files.each {|file| @blog.rebuild_post(file) }
+#     @blog.dirty_views.each {|view| generate_index(view) }  # All views for now?
+#     File.write("#{@blog.root}/drafts/last_rebuild", Time.now)
     @out
   end
 

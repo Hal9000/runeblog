@@ -24,7 +24,7 @@ TEXT
 end
 
 def mainloop
-  print fx("blog> ", Red, :bold)
+  print fx("#{@blog.view}> ", Red, :bold)
   cmd = STDSCR.gets(history: @cmdhist, tab: @tabcom)
   cmd_quit(nil) if cmd.nil?   # ^D
   cmd.chomp!
