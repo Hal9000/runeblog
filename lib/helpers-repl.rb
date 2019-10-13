@@ -18,7 +18,6 @@ module RuneBlog::REPL
 
      "new view $name"    => :cmd_new_view,
 
-#    "customize"         => :cmd_customize,
      "tags"              => :cmd_tags,
      "import"            => :cmd_import,
 
@@ -41,10 +40,8 @@ module RuneBlog::REPL
      "list assets"       => :cmd_list_assets,
      "lsa"               => :cmd_list_assets,
 
-     "rm $postid"        => :cmd_remove_post,
+     "delete >postid"        => :cmd_remove_post,
      "undel $postid"     => :cmd_undelete_post,
-
-     "kill >postid"      => :cmd_kill, 
 
      "edit $postid"      => :cmd_edit_post,
      "ed $postid"        => :cmd_edit_post,
@@ -53,8 +50,6 @@ module RuneBlog::REPL
      "preview"           => :cmd_preview,
 
      "browse"            => :cmd_browse,
-
-     "relink"            => :cmd_relink,
 
      "rebuild"           => :cmd_rebuild,
 
@@ -108,6 +103,7 @@ module RuneBlog::REPL
     end
     meth = found || :cmd_INVALID
     params = cmd if meth == :cmd_INVALID
+puts "choose: #{[meth, params].inspect}"
     [meth, params]
   end
 

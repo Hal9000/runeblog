@@ -132,23 +132,6 @@ module RuneBlog::REPL
     check_empty(arg)
     puts unless testing
     @blog.generate_view(@blog.view)
-#     files = @blog.find_draft_slugs
-#     if files.empty? 
-#       msg = "No files changed"
-#       output! msg
-#       puts "\n  #{msg}\n " unless testing
-#       return @out
-#     end
-#     files.each {|file| @blog.rebuild_post(file) }
-#     @blog.dirty_views.each {|view| generate_index(view) }  # All views for now?
-#     File.write("#{@blog.root}/drafts/last_rebuild", Time.now)
-    @out
-  end
-
-  def cmd_relink(arg, testing = false)
-    reset_output
-    check_empty(arg)
-    @blog.relink
     @out
   end
 
@@ -196,25 +179,22 @@ module RuneBlog::REPL
     puts err.backtrace.join("\n")
   end
 
-  def cmd_kill(arg, testing = false)
+  def _remove_post(arg, testing=false)
+    id = get_integer(arg)
+    result = @blog.remove_post(id)
+    puts "Post #{id} not found" if result.nil?
+  end
+
+  def cmd_remove_post(arg, testing = false)
+puts "arg = #{arg.inspect} is a #{arg.class}"
     reset_output
     args = arg.split
     args.each do |x| 
       # FIXME
-      ret = cmd_remove_post(x.to_i, false)
+      ret = _remove_post(x.to_i, false)
       puts ret
       output ret
     end
-    @out
-  end
-
-  #-- FIXME affects linking, building, publishing...
-
-  def cmd_remove_post(arg, testing = false)
-    reset_output
-    id = get_integer(arg)
-    result = @blog.remove_post(id)
-    output! "Post #{id} not found" if result.nil?
     @out
   end
 
@@ -358,26 +338,24 @@ module RuneBlog::REPL
        list views        List all views available
        lsv               Same as: list views
 
-       config            Edit the publish file or the templates
-       customize         (BUGGY) Change set of tags, extra views
+*      config            Edit the publish file or the templates
+*      customize         (BUGGY) Change set of tags, extra views
   
        p, post           Create a new post
        new post          Same as post (create a post)
 
-       import ASSETS     Import assets (images, etc.)
+*      import ASSETS     Import assets (images, etc.)
 
        lsp, list posts   List posts in current view
 
        lsd, list drafts  List all posts regardless of view
   
-       rm ID             Remove a post
-       kill ID ID ID...  Remove multiple posts
+       delete ID [ID...] Remove multiple posts
        undelete ID       Undelete a post
        edit ID           Edit a post
   
        preview           Look at current (local) view in browser
        browse            Look at current (published) view in browser
-       relink            Regenerate index for all views
        rebuild           Regenerate all posts and relink
        publish           Publish (current view)
        ssh               Login to remote server

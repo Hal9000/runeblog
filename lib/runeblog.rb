@@ -500,11 +500,6 @@ class RuneBlog
     end
   end
 
-  def relink   # FIXME no longer used?
-    log!(enter: __method__)
-    self.views.each {|view| generate_index(view) }
-  end
-
   def index_entry(view, meta)
     log!(enter: __method__, args: [view, meta])
     debug "=== index_entry #{view.to_s.inspect}  #{meta.num} #{meta.title.inspect}"
@@ -544,6 +539,7 @@ class RuneBlog
   def remove_post(num)
     log!(enter: __method__, args: [num])
     raise ArgumentError unless num.is_a?(Integer)
+    # FIXME update original draft .views
     tag = prefix(num)
     files = Find.find(self.view.dir).to_a
     list = files.select {|x| File.directory?(x) and x =~ /#{tag}/ }
