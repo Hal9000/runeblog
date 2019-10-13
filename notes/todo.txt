@@ -1,5 +1,6 @@
    # Functionality
 
+   - bug: things deleted locally aren't deleted remotely (rsync??)
    - bug: delete post, edit elsewhere, comes back (change source!)
    - idea: code under widgets/FOO gets called to build?
    - custom.rb (livetext) gets included if present?

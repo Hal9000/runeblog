@@ -319,6 +319,16 @@ def recent_posts    # side-effect
   HTML
 end
 
+def _run_local(widget)
+  Dir.chdir("widgets/#{widget}") do
+    require("./local") if File.exist?("local.rb")
+  end
+rescue => err
+  STDOUT.puts err
+  STDOUT.puts err.backtrace.join("\n")
+  exit
+end
+
 def sidebar
   if _args.include? "off"
     _body { }  # iterate, do nothing
@@ -331,17 +341,24 @@ def sidebar
     wtag = :widgets/tag
     raise "Can't find #{wtag}" unless Dir.exist?(wtag)
     tcard = "#{tag}-card.html"
-    if File.exist?(wtag/"SUBFILES")
-      children = Dir[wtag/"*.lt3"] - [wtag/tag+".lt3"]
-      children.each do |child|
-        dest = child.sub(/.lt3$/, ".html")
-        xlate src: child, dst: dest  # , debug: true
-      end
-    end
+
+    _run_local(tag)
+
+#    if File.exist?(wtag/"SUBFILES")
+#      children = Dir[wtag/"*.lt3"] - [wtag/tag+".lt3"]
+#      children.each do |child|
+#        dest = child.sub(/.lt3$/, ".html")
+#        xlate src: child, dst: dest  # , debug: true
+#      end
+#    end
     xlate cwd: wtag, src: tag, dst: tcard  # , debug: true
     _include_file wtag/tcard
   end
   _out %[</div>]
+rescue => err
+  puts "err = #{err}"
+  puts err.backtrace.join("\n")
+  exit
 end
 
 def stylesheet
