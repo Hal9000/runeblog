@@ -36,28 +36,40 @@ module RuneBlog::REPL
     @out
   end
 
-  def cmd_config(arg, testing = false)
+  def cmd_pages(arg, testing = false)
     check_empty(arg)
-    dir = @blog.view.dir
-    items = ["themes/standard/blogview.lt3", "themes/standard/post-index.lt3"] 
-    num, fname = STDSCR.menu(title: "Edit file:", items: items)
-    edit_file("#{dir}/#{fname}")
-  end
-
-  # Currently not used
-  def cmd_customize(arg, testing = false)
-    # add extra views? add tags?
-    puts "\n  This is still buggy.\n "
-    return
-
-    avail_tags = all_tags
-    tags = STDSCR.multimenu(items: avail_tags)
-    @blog.post_tags = tags
-  end
-  
-  def cmd_tags(arg, testing = false)
-    Dir.chdir(@blog.root + "/views/" + @blog.view.name)
-    edit_file("tagpool")
+    dir = @blog.view.dir/"themes/standard/widgets/pages"
+    # Assume child files already generated (and list.data??)
+    data = dir/"list.data"
+    lines = File.readlines(data)
+    hash = {}
+    lines.each do |line|
+      url, name = line.chomp.split(",")
+      source = url.sub(/.html$/, ".lt3")
+      hash[name] = source
+    end
+    new_item = "[New page]"
+    num, fname = STDSCR.menu(title: "Edit page:", items: hash.keys + [new_item])
+    return if fname.nil?
+    if fname == new_item
+      print "Page title:  "
+      title = RubyText.gets
+      title.chomp!
+      print "File name (.lt3): "
+      fname = RubyText.gets
+      fname << ".lt3" unless fname.end_with?(".lt3")
+      fhtml = fname.sub(/.lt3$/, ".html")
+      File.open(data, "a") {|f| f.puts "#{fhtml},#{title}" }
+      new_file = dir/fname
+      File.open(new_file, "w") do |f|
+        f.puts "<h1>#{title}</h1>\n\n\n "
+        f.puts ".backlink"
+      end
+      edit_file(new_file)
+    else
+      target = hash[fname]
+      edit_file(dir/target)
+    end
   end
 
   def cmd_import(arg, testing = false)
@@ -143,6 +155,7 @@ module RuneBlog::REPL
       n = viewnames.find_index(@blog.view.name)
       name = @blog.view.name
       k, name = STDSCR.menu(title: "Views", items: viewnames, curr: n) unless testing
+      return if name.nil?
       @blog.view = name
       output name + "\n"
       puts "\n  ", fx(name, :bold), "\n" unless testing

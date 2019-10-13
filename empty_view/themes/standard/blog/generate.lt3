@@ -2,7 +2,7 @@
 . This file will usually not be edited by the user. 
 . It is used to generate the top-level index.html   
 . The user will more often edit blog/index.lt3 in   
-. the process of blog setup.
+. the process of blog setup.                        
 . --------------------------------------------------
 
 .mixin liveblog
@@ -15,17 +15,17 @@
   <body>
 
 . FIXME
-<table width=100%>
-<tr>
-  <td width=30% bgcolor=black>
-    <div style="text-align: center; color: white">
-      <h1>Around Austin</h1><br>
-      The view from downtown...
-    </div>
-  </td>
-  <td><img src=assets/sky2.jpg width=100%></img>
-</tr>
-</table>
+    <table width=100%>
+    <tr>
+      <td width=30% bgcolor=black>
+        <div style="text-align: center; color: white">
+          <h1>Around Austin</h1><br>
+          The view from downtown...
+        </div>
+      </td>
+      <td><img src=assets/sky2.jpg width=100%></img>
+    </tr>
+    </table>
 
     $.include navbar/navbar.lt3
     <div class="content container-fluid mt-4">

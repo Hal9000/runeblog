@@ -40,7 +40,9 @@ module RuneBlog::REPL
      "list assets"       => :cmd_list_assets,
      "lsa"               => :cmd_list_assets,
 
-     "delete >postid"        => :cmd_remove_post,
+     "pages"             => :cmd_pages,
+
+     "delete >postid"    => :cmd_remove_post,
      "undel $postid"     => :cmd_undelete_post,
 
      "edit $postid"      => :cmd_edit_post,
@@ -103,7 +105,7 @@ module RuneBlog::REPL
     end
     meth = found || :cmd_INVALID
     params = cmd if meth == :cmd_INVALID
-puts "choose: #{[meth, params].inspect}"
+# puts "choose: #{[meth, params].inspect}"
     [meth, params]
   end
 
