@@ -1,0 +1,8 @@
+.set card.title=Pages
+
+<html>
+  <head>
+     <style src="main.css"></style>
+  </head>
+  <body> 
+     <h1>$card.title</h1>

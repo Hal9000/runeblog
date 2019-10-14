@@ -35,3 +35,8 @@ LEXT = ".lt3"
     end
   end
 
+  def xlate!(cwd: Dir.pwd, src:, copy: nil, debug: false, force: false)
+    output = "/tmp/xlate-#{File.basename(src).sub(/.lt3$/, "")}"
+    xlate cwd: cwd, src: src, dst: output, debug: debug, force: force
+    File.read(output + ".html")  # return all content as string
+  end

@@ -2,22 +2,20 @@
 
    - bug: things deleted locally aren't deleted remotely (rsync??)
    - bug: delete post, edit elsewhere, comes back (change source!)
-   - idea: code under widgets/FOO gets called to build?
    - custom.rb (livetext) gets included if present?
    - .faq command
    - 1 blog command line
-   - 2 repl commands for widgets, etc. (pages, links, ...)
+   - 2 repl commands for widgets, etc. (news, links, ...)
    - 3 dynamically add commands/code to repl?
    - 6 show tags on posts
    - "local" CSS for each widget?
- x - pathmagic bug
    - more work on .banner!
+   - more work on navbar
    - support pinned posts (as pages?)
    - livetext: fix bug .set var="this, that"
    - update only "stale" items
    - FB/Twitter icons on posts
    - add CSS ref to post?
-   - CSS for widgets?
    - create tag cloud
    - bydates manager
    - backup/restore?
@@ -118,6 +116,9 @@
 
 ---
 
+ x - idea: local.rb code under widgets/FOO gets called to build?
+ x - repl commands for pages
+ x - pathmagic bug
  x - pages (FAQ) bug
  x - rudimentary banner
  x - minor main/iframe bug?

@@ -319,9 +319,14 @@ def recent_posts    # side-effect
   HTML
 end
 
-def _run_local(widget)
+def _load_local(widget)
   Dir.chdir("widgets/#{widget}") do
-    require("./local") if File.exist?("local.rb")
+# STDERR.puts "loadCP1 widget = #{widget.inspect}  pwd = #{Dir.pwd}"
+    found = (require("./#{widget}") if File.exist?("#{widget}.rb"))
+# STDERR.puts "loadCP2 found = #{found}"
+    code = found ? ::RuneBlog::Widget.class_eval(widget.capitalize) : nil
+# STDERR.puts "loadCP3 code = #{code.inspect}"
+    code
   end
 rescue => err
   STDOUT.puts err
@@ -342,7 +347,8 @@ def sidebar
     raise "Can't find #{wtag}" unless Dir.exist?(wtag)
     tcard = "#{tag}-card.html"
 
-    _run_local(tag)
+    code = _load_local(tag)
+    code && Dir.chdir(wtag) { code.build }
 
 #    if File.exist?(wtag/"SUBFILES")
 #      children = Dir[wtag/"*.lt3"] - [wtag/tag+".lt3"]
@@ -623,9 +629,40 @@ def page_type(tag, title)
   end
 end
 
+def _write_main_pages(mainfile, pairs, card_title, tag)
+  local = _local_tag?(tag)
+  pieces = @blog.view.dir/"themes/standard/widgets"/tag/:pieces
+  main_head = xlate! cwd: pieces, src: "main-head.lt3"
+  main_tail = xlate! cwd: pieces, src: "main-tail.lt3"
+  # ^ make into methods in pages.rb or whatever?
+                    
+  File.open("#{mainfile}.html", "w") do |f|
+    f.puts main_head
+    pairs.each do |file, title| 
+      type, title = page_type(tag, title)
+      title = title.gsub(/\\/, "")  # kludge
+      case type
+        when :local;   url_ref = _widget_main(file, tag)  # local always frameable
+        when :frame;   url_ref = "href = '#{file}'"       # local always frameable
+        when :noframe; url_ref = _blank(file)             # local always frameable
+      end
+      css = "color: #8888FF; text-decoration: none; font-size: 24px; font-family: verdana"
+      f.puts %[<a style="#{css}" #{url_ref}>#{title}</a> <br>]
+    end
+    f.puts main_tail
+  end
+end
+
 def _write_main(mainfile, pairs, card_title, tag)
   log!(str: "Creating #{mainfile}.html", pwd: true)
+
+  if tag == "pages"   # temporary experiment
+    _write_main_pages(mainfile, pairs, card_title, tag)
+    return
+  end
+
   local = _local_tag?(tag)
+  setvar "card.title", card_title
   File.open("#{mainfile}.html", "w") do |f|
     _html_body(f) do
       f.puts "<h1>#{card_title}</h1>"
