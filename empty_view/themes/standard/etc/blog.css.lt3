@@ -24,7 +24,6 @@
 \.post-title-text a {
   color: $post.text.color;
   font-size: $post.text.size; 
-# float: right;
   display: block;
   text-decoration: none;
 }

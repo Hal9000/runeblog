@@ -289,7 +289,7 @@ class RuneBlog
     vp
   end
 
-  def teaser(slug)
+  def index_entry(slug)
     log!(enter: __method__, args: [slug])
     id = slug.to_i
     text = nil
@@ -303,7 +303,7 @@ class RuneBlog
     path = vp.path
     url = aslug + ".html"
     date = ::Date.parse(date)
-    date = date.strftime("%B %e<br>%Y")
+    date = date.strftime("%B %e<br><div style='float: right'>%Y</div>")
     text = interpolate(@_post_entry, binding)
     text
   end
@@ -328,7 +328,7 @@ class RuneBlog
     wanted.times do
       postid = File.basename(enum.next)
       postid = postid.to_i
-      text << teaser(postid)    # side effect! calls _out
+      text << index_entry(postid)    # side effect! calls _out
     end
     text << "</body></html>"
     File.write(@vdir/:remote/file, text)
@@ -438,9 +438,20 @@ class RuneBlog
     log!(enter: __method__, args: [draft, pdraft])
     Dir.chdir(pdraft) do 
       excerpt = File.read("teaser.txt")
+      date = _retrieve_metadata(:date)
+      longdate = ::Date.parse(date).strftime("%B %e, %Y")
       title = _retrieve_metadata(:title)
-      vars = %[.heredoc title\n#{title.chomp}\n.end\n] + 
-             %[.heredoc teaser\n#{excerpt.chomp}\n.end\n]
+      vars = <<~LIVE
+        .heredoc title
+        #{title.chomp}
+        .end
+        .heredoc teaser
+        #{excerpt.chomp}
+        .end
+        .heredoc longdate
+        #{longdate}
+        .end
+      LIVE
       File.open(pdraft/"vars.lt3", "w") {|f| f.puts vars }
     end
   end
@@ -500,7 +511,7 @@ class RuneBlog
     end
   end
 
-  def index_entry(view, meta)
+  def OLD_index_entry(view, meta)
     log!(enter: __method__, args: [view, meta])
     debug "=== index_entry #{view.to_s.inspect}  #{meta.num} #{meta.title.inspect}"
     check_meta(meta, "index_entry1")

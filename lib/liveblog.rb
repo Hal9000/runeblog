@@ -154,7 +154,8 @@ def title
   title = @_data.chomp
   @meta.title = title
   setvar :title, title
-  _out %[<h1 class="post-title">#{title}</h1><br>]
+  # FIXME refactor -- just output variables for a template
+# _out %[<h1 class="post-title">#{title}</h1><br>]
   _optional_blank_line
 end
 

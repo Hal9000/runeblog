@@ -28,6 +28,3 @@ TEXT
 end
 
 end
-
-
-

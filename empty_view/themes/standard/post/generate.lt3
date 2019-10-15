@@ -20,6 +20,10 @@ description $teaser
 
 <section class="post">
   <div class="entry-content">
+    <table border=0 width=100%><tr>
+      <td align=left valign=bottom><h2 class="post-title">$title</h2></td>
+      <td align=right valign=top><font size=-5><br></font>$longdate</td>
+    </tr></table><hr>
     $.copy guts.html
   </div>
 </section>
