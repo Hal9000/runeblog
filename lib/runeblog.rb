@@ -393,13 +393,15 @@ class RuneBlog
 
   def generate_view(view)  # huh?
     log!(enter: __method__, args: [view])
-    generate_index(view)   # recent posts (recent.html)
+#   generate_index(view)   # recent posts (recent.html)
     vdir = @root/:views/view
     @theme = @root/:views/view/:themes/:standard
     xlate cwd: vdir/"themes/standard/etc",
           src: "blog.css.lt3", copy: vdir/"remote/etc/blog.css" # , debug: true
     xlate cwd: vdir/"themes/standard",
           src: "blog/generate.lt3", dst: vdir/:remote/"index.html"
+    generate_index(view)   # recent posts (recent.html)
+#   ^ HERE
     copy("#{vdir}/assets/*", "#{vdir}/remote/assets/")
   rescue => err
     puts err
@@ -454,8 +456,8 @@ class RuneBlog
       rem = w.sub(/themes.standard/, "remote")
       create_dirs(rem)
       files = Dir[w/"*"]
-      next unless files.any? {|x| x =~ /html$/ }
-      system!("cp #{w}/*html #{rem}")
+      files = files.select {|x| x =~ /(html|css)$/ }
+      files.each {|file| system!("cp #{file} #{rem}") }
     end
   end
 
@@ -493,7 +495,8 @@ class RuneBlog
     views = _get_views(draft)
     views.each do |view| 
       _handle_post(draft, view)
-      generate_view(view)  # FIXME leads to inefficiency?
+#     generate_view(view)  # FIXME leads to inefficiency?
+#     ^ HERE
     end
   end
 

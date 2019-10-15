@@ -1,0 +1,209 @@
+#!/usr/bin/env ruby
+=begin
+std-widget/
+std-widget/local-vars.lt3
+std-widget//list.data
+std-widget//pieces
+std-widget//pieces/card-head.lt3
+std-widget//pieces/card-tail.lt3
+std-widget//pieces/card.css
+std-widget//pieces/main-head.lt3
+std-widget//pieces/main-tail.lt3
+std-widget//pieces/main.css
+std-widget//README
+std-widget//WIDGET.lt3
+std-widget//WIDGET.rb
+=end
+
+# FIXME Also fix the 
+
+def write_local_vars
+  File.open("std_widget/local-vars.lt3", "w") do |f|
+    f.puts <<~LIVE
+      # #@app: #@title
+      .set widget.name = "#@title"
+
+      . heredocs (in case of embedded commas)
+
+      .heredoc card.title
+      $widget.name
+      .end
+
+      .heredoc main.title
+      $widget.name
+      .end
+    LIVE
+  end
+end
+
+def write_card_head
+  File.open("std_widget/pieces/card-head.lt3", "w") do |f|
+    f.puts <<~LIVE
+      .include ../local_vars.lt3
+      . Material (if any) to go before card data
+      <html>
+        <head>
+           <style src="card.css"></style>
+        </head>
+        <body> 
+           <h1>#@title</h1>
+    LIVE
+    # </html> damned syntax highlighting
+  end
+end 
+
+def write_card_tail
+  File.open("std_widget/pieces/card-tail.lt3", "w") do |f|
+    f.puts <<~LIVE
+      .include ../local_vars.lt3
+      . Material (if any) to go after main data
+        </body>
+      </html> 
+    LIVE
+    # </html> damned syntax highlighting
+  end
+end 
+
+def write_main_head
+  File.open("std_widget/pieces/main-head.lt3", "w") do |f|
+    f.puts <<~LIVE
+      .include ../local_vars.lt3
+      . Material (if any) to go before main data
+      <html>
+        <head>
+           <style src="main.css"></style>
+        </head>
+        <body> 
+           <h1>$card.title</h1>
+    LIVE
+    # </html> damned syntax highlighting
+  end
+end 
+
+def write_main_tail
+  File.open("std_widget/pieces/main-tail.lt3", "w") do |f|
+    f.puts <<~LIVE
+      .include ../local_vars.lt3
+      . Material (if any) to go after main data
+        </body>
+      </html> 
+    LIVE
+    # </html> damned syntax highlighting
+  end
+end 
+
+def write_css
+  # Need .lt3 file?
+  File.open("std_widget/card.css", "w") do |f|
+    f.puts <<~LIVE
+      # CSS for sidebar card
+    LIVE
+  end
+  File.open("std_widget/main.css", "w") do |f|
+    f.puts <<~LIVE
+      # CSS for main area page
+    LIVE
+  end
+end
+
+def _make_class_name(app)
+  if app =~ /[-_]/
+    words = app.split(/[-_]/)
+    name = words.map(&:capitalize).join
+  else
+    name = app.capitalize
+  end
+  return name
+end
+
+def write_widget_ruby
+  File.open("std_widget/#@app.rb", "w") do |f|
+    f.puts <<~LIVE
+      # Custom code for '#@app' widget
+
+      class ::RuneBlog::Widget
+        class #{_make_class_name(@app)}
+          def self.build
+          end
+
+          def self.edit_menu
+          end
+
+          def self.refresh
+          end
+        end
+      end
+    LIVE
+  end
+end
+
+def write_widget_livetext
+  File.open("std_widget/#@app.lt3", "w") do |f|
+    f.puts <<~LIVE
+      .mixin liveblog
+      .make_main_links #@app #@title
+    LIVE
+  end
+end
+
+def write_custom_ruby
+  File.open("std_widget/custom.rb", "w") do |f|
+    f.puts <<~LIVE
+      # This is for specialized livetext add-ons (Ruby methods)
+    LIVE
+  end
+end
+
+def write_README
+  File.open("std_widget/README", "w") do |f|
+    f.puts <<~LIVE
+      This is for a "standard" Runeblog widget
+      Code and docs are a work in progress
+    LIVE
+  end
+end
+
+def safe_copy(src)
+  dst = src.sub(/std_widget/, "empty_view/themes/standard/widgets/#@app")
+  if File.exist?(dst)
+    puts "Skip: #{src}"
+    return 
+  else
+    puts "Copying: #{src}"
+    system("cp #{src}  #{dst}")
+  end
+end
+
+def copy_over
+  here, there = "std_widget", "empty_view/themes/standard/widgets/#@app"
+  slist = Dir["#{here}/*"].reject {|x| File.directory?(x) }
+  slist.each {|src| safe_copy(src) }
+
+  here, there = "std_widget/pieces", "empty_view/themes/standard/widgets/#@app/pieces"
+  system("mkdir #{there}") unless Dir.exist?(there)
+  slist = Dir["#{here}/*"]
+  slist.each {|src| safe_copy(src) }
+end
+
+
+### "Main"
+
+abort 'Need app, "title..."' if ARGV.empty?
+@app, @title = *ARGV
+
+system("rm -rf std_widget")
+system("mkdir -p std_widget/pieces")
+
+write_local_vars
+write_main_head
+write_main_tail
+write_card_head
+write_card_tail
+write_css
+
+write_widget_ruby
+write_widget_livetext
+write_custom_ruby
+write_README
+
+copy_over

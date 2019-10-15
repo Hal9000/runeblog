@@ -1,30 +1,37 @@
    # Functionality
 
+   - todo as .lt3
+   - date inside post
+   - 1 standard/nonstandard marker for widgets
+   - 2 “wrap”-style include
    - bug: things deleted locally aren't deleted remotely (rsync??)
-   - bug: delete post, edit elsewhere, comes back (change source!)
+   - 3 bug: delete post, edit elsewhere, comes back (change source!)
+   - livetext: mixin? include? copy? seek?
+   - more work on .banner!
+   - more work on navbar
+   - fix check_empty issue
    - custom.rb (livetext) gets included if present?
    - .faq command
    - 1 blog command line
    - 2 repl commands for widgets, etc. (news, links, ...)
    - 3 dynamically add commands/code to repl?
    - 6 show tags on posts
-   - "local" CSS for each widget?
-   - more work on .banner!
-   - more work on navbar
-   - support pinned posts (as pages?)
+ x - "local" CSS for each widget?
+   - Widget: tag cloud
+   - Widget: bydates manager
+   - Widget: search
+   - Widget: site map widget
+   - Widget: support pinned posts (as pages?)
+   - Widget: automated news search
    - livetext: fix bug .set var="this, that"
    - update only "stale" items
    - FB/Twitter icons on posts
    - add CSS ref to post?
-   - create tag cloud
-   - bydates manager
    - backup/restore?
    - need categories??
-   - automated news search
    - post analyzer - SEO, spell, wcount, etc.
    - more params in globals
    - ssh-copy-id in setup
-   - site map widget
    - build top-down, respecting staleness
    - permalink on post? ^C feature?
    - also query for title when view is created
@@ -58,12 +65,14 @@
 
    # Prettier code
 
-   - head/tail for widget HTML?
+ x - head/tail for widget HTML?
    - fix/delete Runeblog::Default (post_template)
    - tricky? put navbar inside blog/index.lt3
    - tricky? move global.lt3 into etc
-   - livetext --> xlate (or whatever) everywhere
-   - header/trailer for widgets?
+  x - livetext --> xlate (or whatever) everywhere
+ x - header/trailer for widgets?
+   - livetext: non-system mode?
+   - livetext: permit trailing comments?
    - liveblog: separate dot-commands from helpers
    - remove duplicated and double-scoped code
    - move badly-scoped methods (e.g., runeblog.rb to post.rb)

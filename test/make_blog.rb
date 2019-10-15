@@ -22,9 +22,9 @@ def debug(str = "")
   t = Time.now
   time = t.to_f.to_s
   n = time.index(".")
-  msec = time[n..-1]
+  msec = time[n..(n+2)]
   time = t.strftime("%H:%M:%S") + msec
-  STDERR.puts "#{'%-16s' % time}  #{str}"
+  STDERR.puts "#{'%-11s' % time}  #{str}"
 end
 
 def make_post(x, title, teaser, body, views=[])
@@ -46,6 +46,8 @@ end
 
 #  "Main"...
 
+t0 = Time.now
+
 puts bold("\nGenerating test blog...")
 
 system("rm -rf .blogs")
@@ -54,6 +56,19 @@ x = RuneBlog.new(".blogs")
 
 debug("create_view: #{bold('around_austin')}")
 x.create_view("around_austin")   # FIXME remember view title!
+
+#### FIXME later!!
+vars = <<-VARS
+
+.variables
+blog       Around Austin
+blog.desc  The view from downtown...
+.end
+VARS
+File.open(".blogs/views/around_austin/themes/standard/global.lt3", "a") do |f|
+  f.puts vars
+end
+####
 
 debug("create_view: #{bold('computing')}")
 x.create_view("computing")
@@ -170,6 +185,12 @@ debug
 debug("** generate_view: #{bold('around_austin')}")
 x.generate_view("around_austin")
 x.change_view("around_austin")
+debug
 
 puts bold("...finished.\n")
+
+t1 = Time.now
+
+elapsed = t1 - t0
+puts "\nElapsed: #{'%3.2f' % elapsed} secs\n "
 

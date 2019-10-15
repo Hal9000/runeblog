@@ -1,0 +1,12 @@
+# bydates: Posts by Date
+.set widget.name = "Posts by Date"
+
+. heredocs (in case of embedded commas)
+
+.heredoc card.title
+$widget.name
+.end
+
+.heredoc main.title
+$widget.name
+.end

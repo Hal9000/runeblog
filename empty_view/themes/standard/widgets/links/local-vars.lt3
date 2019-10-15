@@ -1,0 +1,12 @@
+# links: External Links
+.set widget.name = "External Links"
+
+. heredocs (in case of embedded commas)
+
+.heredoc card.title
+$widget.name
+.end
+
+.heredoc main.title
+$widget.name
+.end

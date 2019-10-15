@@ -1,0 +1,12 @@
+# search: Search Posts
+.set widget.name = "Search Posts"
+
+. heredocs (in case of embedded commas)
+
+.heredoc card.title
+$widget.name
+.end
+
+.heredoc main.title
+$widget.name
+.end

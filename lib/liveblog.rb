@@ -45,7 +45,7 @@ def dropcap
 p:first-child:first-letter {
   color: #0000ff;
   float: left;
-  font-family: Georgia;
+  font-family: Verdana;
   font-size: 75px;
   line-height: 60px;
   padding-top: 4px;
@@ -142,7 +142,7 @@ def inset
   end
   lr = _args.first
   wide = _args[1] || "25"
-  _passthru "<div style='float:#{lr}; width: #{wide}%; padding:8px; padding-right:12px; font-family:verdana'>"
+  _passthru "<div style='float:#{lr}; width: #{wide}%; padding:8px; padding-right:12px'>"   # ; font-family:verdana'>"
   _passthru '<b><i>'
   _passthru box
   _passthru_noline '</i></b></div>'
@@ -319,13 +319,21 @@ def recent_posts    # side-effect
   HTML
 end
 
+def _make_class_name(app)
+  if app =~ /[-_]/
+    words = app.split(/[-_]/)
+    name = words.map(&:capitalize).join
+  else
+    name = app.capitalize
+  end
+  return name
+end
+
 def _load_local(widget)
   Dir.chdir("widgets/#{widget}") do
-# STDERR.puts "loadCP1 widget = #{widget.inspect}  pwd = #{Dir.pwd}"
+    rclass = _make_class_name(widget)
     found = (require("./#{widget}") if File.exist?("#{widget}.rb"))
-# STDERR.puts "loadCP2 found = #{found}"
-    code = found ? ::RuneBlog::Widget.class_eval(widget.capitalize) : nil
-# STDERR.puts "loadCP3 code = #{code.inspect}"
+    code = found ? ::RuneBlog::Widget.class_eval(rclass) : nil
     code
   end
 rescue => err
@@ -646,7 +654,7 @@ def _write_main_pages(mainfile, pairs, card_title, tag)
         when :frame;   url_ref = "href = '#{file}'"       # local always frameable
         when :noframe; url_ref = _blank(file)             # local always frameable
       end
-      css = "color: #8888FF; text-decoration: none; font-size: 24px; font-family: verdana"
+      css = "color: #8888FF; text-decoration: none; font-size: 21px"   # ; font-family: verdana"
       f.puts %[<a style="#{css}" #{url_ref}>#{title}</a> <br>]
     end
     f.puts main_tail
@@ -663,9 +671,10 @@ def _write_main(mainfile, pairs, card_title, tag)
 
   local = _local_tag?(tag)
   setvar "card.title", card_title
+  css = "* { font-family: verdana }"
   File.open("#{mainfile}.html", "w") do |f|
-    _html_body(f) do
-      f.puts "<h1>#{card_title}</h1>"
+    _html_body(f, css) do
+      f.puts "<h1>#{card_title}</h1><br><hr>"
       pairs.each do |file, title| 
         type, title = page_type(tag, title)
         title = title.gsub(/\\/, "")  # kludge
@@ -674,7 +683,7 @@ def _write_main(mainfile, pairs, card_title, tag)
           when :frame;   url_ref = "href = '#{file}'"       # local always frameable
           when :noframe; url_ref = _blank(file)             # local always frameable
         end
-        css = "color: #8888FF; text-decoration: none; font-size: 24px; font-family: verdana"
+        css = "color: #8888FF; text-decoration: none; font-size: 21px"  # ; font-family: verdana"
         f.puts %[<a style="#{css}" #{url_ref}>#{title}</a> <br>]
       end
     end

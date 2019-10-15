@@ -1,5 +1,5 @@
-.set card.title=Pages
-
+.include ../local_vars.lt3
+. Material (if any) to go before main data
 <html>
   <head>
      <style src="main.css"></style>

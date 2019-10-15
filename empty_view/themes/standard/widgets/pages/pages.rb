@@ -8,7 +8,7 @@ class ::RuneBlog::Widget
       children = Dir["*.lt3"] - ["pages.lt3"]
       children.each do |child|
         dest = child.sub(/.lt3$/, ".html")
-        xlate src: child, dst: dest, debug: true
+        xlate src: child, dst: dest  # , debug: true
       end
     end
 
