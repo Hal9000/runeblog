@@ -5,10 +5,8 @@
 . --------------------------------------------------
 
 .mixin liveblog
-
 <html>
-  <!-- Editing this file is not recommended.   -->
-  <!-- It was generated from $File on $$date.  -->
+  <!-- Generated from $File on $$date; editing not recommended.   -->
 
 .seek global.lt3
 .include vars.lt3
@@ -17,6 +15,8 @@
 og:title    $title 
 description $teaser
 .end
+
+<body>
 
 <section class="post">
   <div class="entry-content">
@@ -29,6 +29,7 @@ description $teaser
 </section>
 
 <br>
-<a href="javascript:history.go(-1)">[Back]</a>
+<hr>
+.post_trailer
 </body>
 </html>

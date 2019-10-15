@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-system("vi lib/runeblog_version.rb +3")
+system("vi lib/runeblog_version.rb +/0.2.")
 
 require 'date'
 

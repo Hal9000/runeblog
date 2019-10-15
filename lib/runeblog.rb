@@ -436,14 +436,27 @@ class RuneBlog
 
   def _post_metadata(draft, pdraft)
     log!(enter: __method__, args: [draft, pdraft])
+    # FIXME store this somewhere
+    fname = File.basename(draft)       # 0001-this-is-a-post.lt3
+    nslug = fname.sub(/.lt3$/, "")     # 0001-this-is-a-post
+    aslug = nslug.sub(/\d\d\d\d-/, "") # this-is-a-post
+    pnum = nslug[0..3]                  # 0001
     Dir.chdir(pdraft) do 
       excerpt = File.read("teaser.txt")
       date = _retrieve_metadata(:date)
       longdate = ::Date.parse(date).strftime("%B %e, %Y")
       title = _retrieve_metadata(:title)
+      tags = _retrieve_metadata(:tags)
       vars = <<~LIVE
+        .set post.num = #{pnum}
+        .heredoc post.aslug
+        #{aslug}
+        .end
         .heredoc title
         #{title.chomp}
+        .end
+        .heredoc post.tags
+        #{tags.join(" ")}
         .end
         .heredoc teaser
         #{excerpt.chomp}

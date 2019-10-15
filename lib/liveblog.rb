@@ -33,6 +33,25 @@ def post
   _out "  <!-- Post number #{@meta.num} -->\n "
 end
 
+def post_trailer
+  perma = _var("publish.proto") + "://" + _var("publish.server") +
+          "/" + _var("publish.path") + "/permalink/" + _var("post.aslug") + 
+          ".html"
+  tags = _var("post.tags")
+  if tags.empty?
+    taglist = ""
+  else
+    taglist = "Tags: #{tags}"
+  end
+  _out <<~HTML
+  <table width=100%><tr>
+    <td width=10%><a style="text-decoration: none" href="javascript:history.go(-1)">[Back]</a></td>
+    <td width=10%><a style="text-decoration: none" href="#{perma}"> [permalink] </a></td>
+    <td width=80% align=right><font size=-3>#{taglist}</font></td></tr></table>
+  HTML
+  # damned syntax highlighting
+end
+
 def backlink
   _out %[<br><a href="javascript:history.go(-1)">[Back]</a>]
 end
@@ -286,7 +305,6 @@ def head  # Does NOT output <head> tags
   hash = defaults.dup.update(result)  # FIXME collisions?
 
   hash.each_value {|x| _out "  " + x }
-  _out "<body>"
 end
 
 ########## newer stuff...
