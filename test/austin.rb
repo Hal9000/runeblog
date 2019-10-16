@@ -30,11 +30,6 @@ end
 def make_post(x, title, teaser, body, views=[])
   debug "      make_post #{bold(title)}"
   x.create_new_post(title, true, teaser: teaser, body: body, views: views)
-  views.each do |view| 
-    debug
-    debug "** generate_index #{bold(view)}"
-    x.generate_index(view) 
-  end  # recent.html
 end
 
 def show_lines(text)
@@ -69,6 +64,9 @@ File.open(".blogs/views/around_austin/themes/standard/global.lt3", "a") do |f|
   f.puts vars
 end
 ####
+
+debug("** generate_view: #{bold('around_austin')}")
+x.generate_view("around_austin")
 
 debug("-- change_view: #{bold('around_austin')}")
 x.change_view("around_austin")    # 1 2 7 8 9 
@@ -136,8 +134,10 @@ in 2005.
 BODY
 
 debug
-debug("** generate_view: #{bold('around_austin')}")
-x.generate_view("around_austin")
+debug "** generate_index #{bold("around_austin")}"
+x.generate_index("around_austin") 
+
+debug
 x.change_view("around_austin")
 debug
 

@@ -12,15 +12,19 @@
   setvar var, text
 .end
 
+.sublist rcomp Recently completed
+date inside post
+show tags on posts
+permalink on post?
+collect tags (into metadata.txt)
+crude ad mockup
+.end
+
 .sublist easyish Easy stuff?
-=date inside post
 =“wrap”-style include
 custom.rb (livetext) gets included if present?
 \.faq command
-=collect tags
-=show tags on posts
 =add CSS ref to post?
-=permalink on post? ^C feature?
 =also ask for title when view is created?
 .end
 
@@ -159,6 +163,7 @@ docs: how to write templates (incl main one)
 .end
 
 .sublist bugs Bugs, etc.
+widgets don't honor their CSS?
 \.dropcap doesn't work
 \.inset sometimes fails
 things deleted locally aren't deleted remotely (rsync??)
@@ -416,7 +421,7 @@ complete Completed tasks
     <td valign=top width=25%>$docs</td>
     <td valign=top width=25%>$advanced</td>
     <td valign=top width=25%>$misc</td>
-    <td valign=top width=25%>...</td>
+    <td valign=top width=25%>$rcomp</td>
   </tr>
   <tr>
     <td valign=top width=25%>$comp1</td>

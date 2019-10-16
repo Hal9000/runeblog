@@ -2,7 +2,7 @@
 LEXT = ".lt3"
 
   def stale?(src, dst, force = false)
-    log!(enter: __method__, args: [src, dst])
+    log!(enter: __method__, args: [src, dst], level: 3)
     raise "Source #{src} not found in #{Dir.pwd}" unless File.exist?(src)
     return true if force
     return true unless File.exist?(dst)
@@ -29,7 +29,7 @@ LEXT = ".lt3"
         STDERR.puts "#{indent} -- ^ Already up to date!" if debug
         return
       end
-      rc = system!("livetext #{src} >#{dst}")
+      rc = system("livetext #{src} >#{dst}")
       STDERR.puts "...completed (shell returned #{rc})" if debug
       system!("cp #{dst} #{copy}") if copy
     end

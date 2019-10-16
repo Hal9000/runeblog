@@ -10,14 +10,14 @@ class RuneBlog::Post
   include RuneBlog::Helpers
 
   def self.files(num, root)
-    log!(enter: __method__, args: [num, root])
+    log!(enter: __method__, args: [num, root], level: 3)
     files = Find.find(root).to_a
     result = files.grep(/#{prefix(num)}-/)
     result
   end
   
   def self.load(post)
-    log!(enter: __method__, args: [post])
+    log!(enter: __method__, args: [post], level: 3)
     raise "Doesn't work right now"
     raise NoBlogAccessor if RuneBlog.blog.nil?
     # "post" is a slug
@@ -36,7 +36,7 @@ class RuneBlog::Post
   end
 
   def write_metadata(meta)   # FIXME ???
-    log!(enter: __method__, args: [meta])
+    log!(enter: __method__, args: [meta], level: 3)
     debug "=== write_metadata:"
     debug "-----\n#{meta.inspect}\n-----"
     fname2 = "metadata.txt"
@@ -57,7 +57,7 @@ class RuneBlog::Post
   end
 
   def initialize
-    log!(enter: __method__)
+    log!(enter: __method__, level: 3)
     @blog = RuneBlog.blog || raise(NoBlogAccessor)
     @meta = OpenStruct.new
   end
@@ -115,7 +115,7 @@ class RuneBlog::ViewPost
               :teaser_text
               
   def initialize(view, postdir)
-    log!(enter: __method__, args: [view, postdir])
+    log!(enter: __method__, args: [view, postdir], level: 3)
     # Assumes already parsed/processed
     @blog = RuneBlog.blog || raise(NoBlogAccessor)
     @path = postdir.dup
@@ -131,7 +131,7 @@ class RuneBlog::ViewPost
   end
 
   def get_dirs
-    log!(enter: __method__, args: [view, postdir])
+    log!(enter: __method__, args: [view, postdir], level: 3)
     fname = File.basename(draft)
     noext = fname.sub(/.lt3$/, "")
     vdir = @root/:views/view

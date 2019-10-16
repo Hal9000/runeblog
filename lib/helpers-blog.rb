@@ -6,14 +6,14 @@ require 'xlate'
 module RuneBlog::Helpers
 
   def copy(src, dst)
-    log!(enter: __method__, args: [src, dst])
+    log!(enter: __method__, args: [src, dst], level: 2)
     cmd = "cp #{src} #{dst} 2>/dev/null"
     rc = system!(cmd)
     puts "    Failed: #{cmd} - from #{caller[0]}" unless rc
   end
 
   def copy!(src, dst)
-    log!(enter: __method__, args: [src, dst])
+    log!(enter: __method__, args: [src, dst], level: 2)
     cmd = "cp -r #{src} #{dst} 2>/dev/null"
     rc = system!(cmd)
     puts "    Failed: #{cmd} - from #{caller[0]}" unless rc
@@ -36,7 +36,7 @@ module RuneBlog::Helpers
 #  end
 
   def read_config(file, *syms)
-    log!(enter: __method__, args: [file, *syms])
+    log!(enter: __method__, args: [file, *syms], level: 3)
     lines = File.readlines(file).map(&:chomp)
     obj = ::OpenStruct.new
     lines.each do |line|
@@ -61,7 +61,7 @@ module RuneBlog::Helpers
   end
 
   def try_read_config(file, hash)
-    log!(enter: __method__, args: [file, hash])
+    log!(enter: __method__, args: [file, hash], level: 3)
     return hash.values unless File.exist?(file)
     vals = read_config(file, *hash.keys)
     vals
@@ -80,7 +80,7 @@ module RuneBlog::Helpers
 # end 
 
   def write_config(obj, file)
-    log!(enter: __method__, args: [obj, file])
+    log!(enter: __method__, args: [obj, file], level: 2)
     hash = obj.to_h
     File.open(file, "w") do |out|
       hash.each_pair {|key, val| out.puts "#{key}: #{val}" }
@@ -88,13 +88,13 @@ module RuneBlog::Helpers
   end
 
   def get_views   # read from filesystem
-    log!(enter: __method__)
+    log!(enter: __method__, level: 3)
     dirs = subdirs("#@root/views/").sort
     dirs.map {|name| RuneBlog::View.new(name) }
   end
 
   def new_dotfile(root: ".blogs", current_view: "test_view", editor: "vi")
-    log!(enter: __method__, args: [root, current_view, editor])
+    log!(enter: __method__, args: [root, current_view, editor], level: 3)
     root = Dir.pwd/root
     x = OpenStruct.new
     x.root, x.current_view, x.editor = root, current_view, editor
@@ -102,21 +102,21 @@ module RuneBlog::Helpers
   end
 
   def new_sequence
-    log!(enter: __method__)
+    log!(enter: __method__, level: 3)
     dump(0, "sequence")
     version_info = "#{RuneBlog::VERSION}\nBlog created: #{Time.now.to_s}"
     dump(version_info, "VERSION")
   end
 
   def subdirs(dir)
-    log!(enter: __method__, args: [dir])
+    log!(enter: __method__, args: [dir], level: 3)
     dirs = Dir.entries(dir) - %w[. ..]
     dirs.reject! {|x| ! File.directory?("#@root/views/#{x}") }
     dirs
   end
 
   def find_draft_slugs
-    log!(enter: __method__)
+    log!(enter: __method__, level: 3)
     files = Dir["#@root/drafts/**"].grep /\d{4}.*.lt3$/
     flagfile = "#@root/drafts/last_rebuild"
     last = File.exist?(flagfile) ? File.mtime(flagfile) : (Time.now - 86_400)
@@ -128,7 +128,7 @@ module RuneBlog::Helpers
   end
 
   def create_dirs(*dirs)
-    log!(enter: __method__, args: [*dirs])
+    log!(enter: __method__, args: [*dirs], level: 3)
     dirs.each do |dir|
       dir = dir.to_s  # symbols allowed
       next if Dir.exist?(dir)
@@ -139,27 +139,27 @@ module RuneBlog::Helpers
   end
 
   def interpolate(str, bind)
-    log!(enter: __method__, args: [str, bind])
+    log!(enter: __method__, args: [str, bind], level: 3)
     wrap = "<<-EOS\n#{str}\nEOS"
     eval wrap, bind
   end
 
   def error(err)  # Hmm, this is duplicated
-    log!(str: "duplicated method", enter: __method__, args: [err])
+    log!(str: "duplicated method", enter: __method__, args: [err], level: 2)
     str = "\n  Error: #{err}"
     puts str
     puts err.backtrace.join("\n")
   end
 
   def dump(obj, name)
-    log!(enter: __method__, args: [obj, name])
+    log!(enter: __method__, args: [obj, name], level: 3)
     File.write(name, obj)
   end
 
 end
 
 def dump(obj, name)      # FIXME scope
-  log!(str: "scope problem", enter: __method__, args: [obj, name])
+  log!(str: "scope problem", enter: __method__, args: [obj, name], level: 3)
   File.write(name, obj)
 end
 

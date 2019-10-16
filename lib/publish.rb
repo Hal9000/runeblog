@@ -21,25 +21,25 @@ class RuneBlog::Publishing
   end
 
   def to_h
-    log!(enter: __method__)
+    log!(enter: __method__, level: 3)
     {user: @user, server: @server, docroot: @docroot,
      path: @path, proto: @proto}
   end
 
   def url
-    log!(enter: __method__)
+    log!(enter: __method__, level: 3)
     vname = @blog.view.name # .gsub(/_/, "\\_")
     url = "#@proto://#@server/#@path"  # /#{vname}"
   end
 
   def system!(str)
-    log!(enter: __method__, args: [str])
+    log!(enter: __method__, args: [str], level: 1)
     rc = system(str)
     rc
   end
 
   def publish(files, assets=[])
-    log!(enter: __method__, args: [files, assets])
+    log!(enter: __method__, args: [files, assets], level: 1)
     dir = @docroot/@path
     view_name = @blog.view.name
     viewpath = dir # /view_name

@@ -128,17 +128,17 @@ end
 
 
 def make_main_links
-  log!(enter: __method__)
+  log!(enter: __method__, level: 1)
   # FIXME remember strings may not be safe
   line = _data.chomp
   tag, card_title = *line.split(" ", 2)
   cardfile, mainfile = "#{tag}-card", "#{tag}-main"
   input = "list.data"
-  log!(str: "Reading #{input}", pwd: true)
+  log!(str: "Reading #{input}", pwd: true, level: 3)
   pairs = File.readlines(input).map {|line| line.chomp.split(/, */, 2) }
   _write_main(mainfile, pairs, card_title, tag)
   _write_card(cardfile, mainfile, pairs, card_title, tag)
-  log!(str: "...returning from method", pwd: true)
+  log!(str: "...returning from method", pwd: true, level: 3)
 end
 
 ### inset
@@ -375,16 +375,22 @@ def sidebar
     tcard = "#{tag}-card.html"
 
     code = _load_local(tag)
-    code && Dir.chdir(wtag) { code.build }
+    if code && tag == "pages"
+      Dir.chdir(wtag) { code.build }
+    else
+    end
 
-#    if File.exist?(wtag/"SUBFILES")
-#      children = Dir[wtag/"*.lt3"] - [wtag/tag+".lt3"]
-#      children.each do |child|
-#        dest = child.sub(/.lt3$/, ".html")
-#        xlate src: child, dst: dest  # , debug: true
-#      end
-#    end
-    xlate cwd: wtag, src: tag, dst: tcard  # , debug: true
+    if tag == "ad"
+      num = rand(1..4)
+      img = "widgets/ad/ad#{num}.png"
+      src, dst = img, @root/:views/@view_name/"remote/widgets/ad/"
+      system!("cp #{src} #{dst}")   # , show: true)
+      File.open(wtag/"vars.lt3", "w") do |f| 
+        f.puts ".set ad.image = #{img}"
+      end
+    end
+
+    xlate cwd: wtag, src: tag, dst: tcard # , debug: (tag == "ad")
     _include_file wtag/tcard
   end
   _out %[</div>]
@@ -593,7 +599,7 @@ def _html_body(file, css = nil)
 end
 
 def _write_card(cardfile, mainfile, pairs, card_title, tag)
-  log!(str: "Creating #{cardfile}.html", pwd: true)
+  log!(str: "Creating #{cardfile}.html", pwd: true, level: 2)
   url = mainfile
   url = :widgets/tag/mainfile + ".html"
   File.open("#{cardfile}.html", "w") do |f|
@@ -608,7 +614,7 @@ def _write_card(cardfile, mainfile, pairs, card_title, tag)
           </h5>
           <div class="collapse" id="#{tag}">
     EOS
-    log!(str: "Writing data pairs to #{cardfile}.html", pwd: true)
+    log!(str: "Writing data pairs to #{cardfile}.html", pwd: true, level: 2)
     local = _local_tag?(tag)
     pairs.each do |file, title| 
       url = file
@@ -681,7 +687,7 @@ def _write_main_pages(mainfile, pairs, card_title, tag)
 end
 
 def _write_main(mainfile, pairs, card_title, tag)
-  log!(str: "Creating #{mainfile}.html", pwd: true)
+  log!(str: "Creating #{mainfile}.html", pwd: true, level: 2)
 
   if tag == "pages"   # temporary experiment
     _write_main_pages(mainfile, pairs, card_title, tag)

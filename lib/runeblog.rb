@@ -53,7 +53,7 @@ class RuneBlog
   end
 
   def self.create(root = ".blogs")
-    log!(enter: __method__, args: [root])
+    log!(enter: __method__, args: [root], level: 1)
     # Crude - FIXME later -  # What views are there? Publishing, etc.
     self.blog = self   # Weird. Like a singleton - dumbass circular dependency?
     root = Dir.pwd/root
@@ -101,7 +101,7 @@ class RuneBlog
   end
 
   def _deploy_local(dir)
-    log!(enter: __method__, args: [dir])
+    log!(enter: __method__, args: [dir], level: 1)
     Dir.chdir(dir) do
       views = _retrieve_metadata(:views)
       views.each {|v| system!("cp *html #@root/views/#{v}/remote") }
@@ -132,7 +132,7 @@ class RuneBlog
   end
 
   def process_post(sourcefile)
-    log!(enter: __method__, args: [dir])
+    log!(enter: __method__, args: [dir], level: 2)
     nslug = sourcefile.sub(/.lt3/, "")
     dir = @root/:posts/nslug
     create_dir(dir)
@@ -141,7 +141,7 @@ class RuneBlog
   end
 
   def inspect
-    log!(enter: __method__)
+    log!(enter: __method__, level: 3)
     str = "blog: "
     ivars = ["@root", "@sequence"]   # self.instance_variables
     ivars.each do |iv| 
@@ -152,30 +152,30 @@ class RuneBlog
   end
 
   def view?(name)
-    log!(enter: __method__, args: [name])
+    log!(enter: __method__, args: [name], level: 3)
     raise ArgumentError unless name.is_a?(String) && ! name.empty?
     views.any? {|x| x.name == name }
   end
 
   def view(name = nil)
-    log!(enter: __method__, args: [name])
+    log!(enter: __method__, args: [name], level: 3)
     raise ArgumentError unless name.nil? || (name.is_a?(String) && ! name.empty?)
     name.nil? ? @view : str2view(name)
   end
 
   def str2view(str)
-    log!(enter: __method__, args: [str])
+    log!(enter: __method__, args: [str], level: 3)
     raise ArgumentError unless str.is_a?(String) && ! str.empty?
     @views.find {|x| x.name == str }
   end
 
   def _set_publisher
-    log!(enter: __method__)
+    log!(enter: __method__, level: 3)
     @view.publisher = RuneBlog::Publishing.new(@view.to_s)  # FIXME refactor
   end
 
   def view=(arg)
-    log!(enter: __method__, args: [arg])
+    log!(enter: __method__, args: [arg], level: 2)
     case arg
       when RuneBlog::View
         @view = arg
@@ -191,19 +191,19 @@ class RuneBlog
   end
 
   def get_sequence
-    log!(enter: __method__)
+    log!(enter: __method__, level: 3)
     File.read(@root/:sequence).to_i
   end
 
   def next_sequence
-    log!(enter: __method__)
+    log!(enter: __method__, level: 3)
     @sequence += 1
     dump(@sequence, @root/:sequence)
     @sequence
   end
 
   def viewdir(v = nil)   # delete?
-    log!(enter: __method__, args: [v])
+    log!(enter: __method__, args: [v], level: 3)
     v = str2view(v) if v.is_a?(String)
     raise ArgumentError unless v.nil? || v.is_a?(RuneBlog::View)
     v ||= @view
@@ -211,17 +211,17 @@ class RuneBlog
   end
 
   def self.exist?
-    log!(enter: __method__)
+    log!(enter: __method__, level: 3)
     Dir.exist?(DotDir) && File.exist?(DotDir/ConfigFile)
   end
 
   def mark_last_published(str)
-    log!(enter: __method__, args: [str])
+    log!(enter: __method__, args: [str], level: 2)
     dump(str, "#{self.view.dir}/last_published")
   end
 
   def add_view(view_name)
-    log!(enter: __method__, args: [view_name])
+    log!(enter: __method__, args: [view_name], level: 2)
     view = RuneBlog::View.new(view_name)
     @view = view    # current view
     @views << view  # all views
@@ -229,7 +229,7 @@ class RuneBlog
   end
 
   def make_empty_view_tree(view_name)
-    log!(enter: __method__, args: [view_name])
+    log!(enter: __method__, args: [view_name], level: 2)
     Dir.chdir(@root) do
       cmd = "cp -r #{RuneBlog::Path}/../empty_view views/#{view_name}"
       system!(cmd)
@@ -237,7 +237,7 @@ class RuneBlog
   end
 
   def check_valid_new_view(view_name)
-    log!(enter: __method__, args: [view_name])
+    log!(enter: __method__, args: [view_name], level: 3)
     raise ArgumentError unless view_name.is_a?(String)
     raise ArgumentError if view_name.empty?
     names = self.views.map(&:to_s)
@@ -249,9 +249,11 @@ class RuneBlog
   end
 
   def create_view(view_name)
-    log!(enter: __method__, args: [view_name])
+    log!(enter: __method__, args: [view_name], level: 2)
     check_valid_new_view(view_name)
     make_empty_view_tree(view_name)
+# STDERR.puts "Made empty tree!"
+# system("bash")
     add_view(view_name)
     mark_last_published("Initial creation")
   end
@@ -267,7 +269,7 @@ class RuneBlog
   end
 
   def view_files
-    log!(enter: __method__)
+    log!(enter: __method__, level: 2)
     vdir = self.view.dir
     files = [vdir/"index.html"]
     files += posts.map {|x| vdir/x }
@@ -275,7 +277,7 @@ class RuneBlog
   end
 
   def post_lookup(postid)    # side-effect?
-    log!(enter: __method__, args: [postid])
+    log!(enter: __method__, args: [postid], level: 2)
     slug = title = date = teaser_text = nil
 
     dir_posts = @vdir/:posts
@@ -290,7 +292,7 @@ class RuneBlog
   end
 
   def index_entry(slug)
-    log!(enter: __method__, args: [slug])
+    log!(enter: __method__, args: [slug], level: 2)
     id = slug.to_i
     text = nil
     @theme = @view.dir/"themes/standard"
@@ -309,7 +311,7 @@ class RuneBlog
   end
 
   def collect_recent_posts(file)
-    log!(enter: __method__, args: [file])
+    log!(enter: __method__, args: [file], level: 3)
     posts = nil
     dir_posts = @vdir/:posts
     entries = Dir.entries(dir_posts)
@@ -335,7 +337,7 @@ class RuneBlog
   end
 
   def create_new_post(title, testing = false, teaser: nil, body: nil, views: [])
-    log!(enter: __method__, args: [title, testing, teaser, body, views])
+    log!(enter: __method__, args: [title, testing, teaser, body, views], level: 1)
     meta = nil
     views = views + [self.view.to_s]
     Dir.chdir(@root/:posts) do
@@ -351,7 +353,7 @@ class RuneBlog
   end
 
   def edit_initial_post(file, testing = false)
-    log!(enter: __method__, args: [file, testing])
+    log!(enter: __method__, args: [file, testing], level: 3)
     debug "=== edit_initial_post #{file.inspect}  => #{sourcefile}"
     sourcefile = @root/:drafts/file
     result = system!("#@editor #{sourcefile} +8") unless testing
@@ -363,20 +365,20 @@ class RuneBlog
   end
 
   def posts
-    log!(enter: __method__)
+    log!(enter: __method__, level: 3)
     dir = self.view.dir/:posts
     posts = Dir.entries(dir).grep(/^\d{4}/)
     posts
   end
 
   def drafts
-    log!(enter: __method__)
+    log!(enter: __method__, level: 3)
     dir = @root/:drafts
     drafts = Dir.entries(dir).grep(/^\d{4}.*/)
   end
 
   def change_view(view)
-    log!(enter: __method__, args: [view])
+    log!(enter: __method__, args: [view], level: 3)
     raise ArgumentError unless view.is_a?(String) || view.is_a?(RuneBlog::View)
     x = OpenStruct.new
     x.root, x.current_view, x.editor = @root, view.to_s, @editor   # dumb - FIXME later
@@ -400,7 +402,7 @@ class RuneBlog
           src: "blog.css.lt3", copy: vdir/"remote/etc/blog.css" # , debug: true
     xlate cwd: vdir/"themes/standard",
           src: "blog/generate.lt3", dst: vdir/:remote/"index.html"
-    generate_index(view)   # recent posts (recent.html)
+#   generate_index(view)   # recent posts (recent.html)
 #   ^ HERE
     copy("#{vdir}/assets/*", "#{vdir}/remote/assets/")
   rescue => err
@@ -411,7 +413,7 @@ class RuneBlog
   end
 
   def _get_views(draft)
-    log!(enter: __method__, args: [draft])
+    log!(enter: __method__, args: [draft], level: 2)
     # FIXME dumb code
     view_line = File.readlines(draft).grep(/^.views /)
     raise "More than one .views call!" if view_line.size > 1
@@ -422,7 +424,7 @@ class RuneBlog
   end
 
   def _copy_get_dirs(draft, view)
-    log!(enter: __method__, args: [draft, view])
+    log!(enter: __method__, args: [draft, view], level: 2)
     fname = File.basename(draft)
     noext = fname.sub(/.lt3$/, "")
     vdir = @root/:views/view
@@ -435,12 +437,12 @@ class RuneBlog
   end
 
   def _post_metadata(draft, pdraft)
-    log!(enter: __method__, args: [draft, pdraft])
+    log!(enter: __method__, args: [draft, pdraft], level: 2)
     # FIXME store this somewhere
     fname = File.basename(draft)       # 0001-this-is-a-post.lt3
     nslug = fname.sub(/.lt3$/, "")     # 0001-this-is-a-post
     aslug = nslug.sub(/\d\d\d\d-/, "") # this-is-a-post
-    pnum = nslug[0..3]                  # 0001
+    pnum = nslug[0..3]                 # 0001
     Dir.chdir(pdraft) do 
       excerpt = File.read("teaser.txt")
       date = _retrieve_metadata(:date)
@@ -470,7 +472,7 @@ class RuneBlog
   end
 
   def copy_widget_html(view)
-    log!(enter: __method__)
+    log!(enter: __method__, level: 2)
     vdir = @root/:views/view
     remote = vdir/:remote
     wdir = vdir/:themes/:standard/:widgets
@@ -481,12 +483,15 @@ class RuneBlog
       create_dirs(rem)
       files = Dir[w/"*"]
       files = files.select {|x| x =~ /(html|css)$/ }
-      files.each {|file| system!("cp #{file} #{rem}") }
+# files.each {|f| STDERR.puts "    #{f.inspect}" }
+      tag = File.basename(w)
+# STDERR.puts "--- tag: #{tag.inspect}"
+      files.each {|file| system!("cp #{file} #{rem}", show: (tag == "zzz")) }
     end
   end
 
   def _handle_post(draft, view)
-    log!(enter: __method__, args: [draft, view])
+    log!(enter: __method__, args: [draft, view], level: 2)
     # break into separate methods?
 
     fname = File.basename(draft)       # 0001-this-is-a-post.lt3
@@ -515,7 +520,7 @@ class RuneBlog
   end
 
   def generate_post(draft)
-    log!(enter: __method__, args: [draft])
+    log!(enter: __method__, args: [draft], level: 1)
     views = _get_views(draft)
     views.each do |view| 
       _handle_post(draft, view)
@@ -561,7 +566,7 @@ class RuneBlog
   end
 
   def remove_post(num)
-    log!(enter: __method__, args: [num])
+    log!(enter: __method__, args: [num], level: 1)
     raise ArgumentError unless num.is_a?(Integer)
     # FIXME update original draft .views
     tag = prefix(num)
@@ -578,7 +583,7 @@ class RuneBlog
   end
 
   def undelete_post(num)
-    log!(enter: __method__, args: [num])
+    log!(enter: __method__, args: [num], level: 1)
     raise ArgumentError unless num.is_a?(Integer)
     files = Find.find(@root/:views).to_a
     tag = prefix(num)
@@ -594,14 +599,14 @@ class RuneBlog
   end
 
   def delete_draft(num)
-    log!(enter: __method__, args: [num])
+    log!(enter: __method__, args: [num], level: 1)
     raise ArgumentError unless num.is_a?(Integer)
     tag = prefix(num)
     system!("rm -rf #@root/drafts/#{tag}-*")
   end
 
   def make_slug(meta)
-    log!(enter: __method__, args: [meta])
+    log!(enter: __method__, args: [meta], level: 3)
     raise ArgumentError unless meta.title.is_a?(String)
     label = '%04d' % meta.num   # FIXME can do better
     slug0 = meta.title.downcase.strip.gsub(' ', '-').gsub(/[^\w-]/, '')
