@@ -2,13 +2,17 @@
 
 class ::RuneBlog::Widget
   class Bydates
-    def self.build
+    def initialize(repo)
+      @blog = repo
     end
 
-    def self.edit_menu
+    def build
     end
 
-    def self.refresh
+    def edit_menu
+    end
+
+    def refresh
     end
   end
 end

@@ -4,7 +4,11 @@
 
 class ::RuneBlog::Widget
   class Pages
-    def self.build
+    def initialize(repo)
+      @blog = repo
+    end
+
+    def build
       # build child pages
       children = Dir["*.lt3"] - ["pages.lt3"]
       children.each do |child|
@@ -15,10 +19,10 @@ class ::RuneBlog::Widget
       # build cardfile
     end
 
-    def self.edit_menu
+    def edit_menu
     end
 
-    def self.refresh
+    def refresh
     end
   end
 end

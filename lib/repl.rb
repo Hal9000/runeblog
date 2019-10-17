@@ -144,6 +144,7 @@ module RuneBlog::REPL
     check_empty(arg)
     puts unless testing
     @blog.generate_view(@blog.view)
+    @blog.generate_index(@blog.view)
     @out
   end
 

@@ -336,12 +336,13 @@ class RuneBlog
     File.write(@vdir/:remote/file, text)
   end
 
-  def create_new_post(title, testing = false, teaser: nil, body: nil, views: [])
+  def create_new_post(title, testing = false, teaser: nil, body: nil, 
+                      pubdate: Time.now.strftime("%Y-%m-%d"), views: [])
     log!(enter: __method__, args: [title, testing, teaser, body, views], level: 1)
     meta = nil
     views = views + [self.view.to_s]
     Dir.chdir(@root/:posts) do
-      post = Post.create(title: title, teaser: teaser, body: body, views: views)
+      post = Post.create(title: title, teaser: teaser, body: body, pubdate: pubdate, views: views)
       post.edit unless testing
       post.build
       meta = post.meta

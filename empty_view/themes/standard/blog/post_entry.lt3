@@ -4,18 +4,19 @@
 . --------------------------------------------------
 
 <div class="post">
-  <table width=100%>
+  <table width=100% cellpadding=7>
     <tr>
-      <td width=12% valign=top>
-        <span class="post-date mt-1 mb-1">
-          <b>#{date}</b>
-        </span>
+      <td width=14% valign=top align=right style="margin-top: -1px;">
+<!--        <span class="post-date mt-1 mb-1" style="margin-top: 3px; text-align: right"> -->
+          <font size=-1><b>#{date}</b></font>
+<!--        </span> -->
       </td>
-      <td> <!--        <span class="post-title-box"> -->
-          <span class="post-title-text"><a href="#{url}">#{title}</a></span>
-          <b>#{teaser_text}</b>
-          <br>
-          <a style="text-decoration: none" href="#{url}"><small>Keep reading...</small></a></p> <!--        </span>  -->
+      <td> 
+        <!--        <span class="post-title-box"> -->
+          <span class="post-title-text"><a href="#{url}" style="margin-top: -5px">#{title}</a></span>
+          <b>#{teaser_text}</b>&nbsp;&nbsp;
+          <a style="text-decoration: none" href="#{url}"><small>Keep reading...</small></a> 
+        <!--        </span>  -->
       </td>
     </tr>
   </table>

@@ -375,9 +375,13 @@ def sidebar
     tcard = "#{tag}-card.html"
 
     code = _load_local(tag)
-    if code && tag == "pages"
-      Dir.chdir(wtag) { code.build }
-    else
+    if code 
+      if ["pages", "links"].include? tag
+        Dir.chdir(wtag) do 
+          widget = code.new(@blog)
+          widget.build
+        end
+      end
     end
 
     if tag == "ad"

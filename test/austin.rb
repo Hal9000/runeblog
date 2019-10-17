@@ -4,7 +4,9 @@ major, minor = RUBY_VERSION.split(".").values_at(0,1)
 ver = major.to_i*10 + minor.to_i
 abort "Need Ruby 2.4 or greater" unless ver >= 24
 
-Home = Dir.pwd
+# Home = Dir.pwd
+
+require 'date'
 
 require 'global'
 require 'runeblog'
@@ -27,9 +29,14 @@ def debug(str = "")
   STDERR.puts "#{'%-11s' % time}  #{str}"
 end
 
+@fake_date = Date.today - 20
+
 def make_post(x, title, teaser, body, views=[])
   debug "      make_post #{bold(title)}"
-  x.create_new_post(title, true, teaser: teaser, body: body, views: views)
+  pubdate = @fake_date.strftime("%Y-%m-%d")
+  @fake_date += (rand(2) + 1)
+  x.create_new_post(title, true, teaser: teaser, body: body, views: views,
+                    pubdate: pubdate)
 end
 
 def show_lines(text)

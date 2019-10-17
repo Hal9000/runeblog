@@ -18,6 +18,8 @@ show tags on posts
 permalink on post?
 collect tags (into metadata.txt)
 crude ad mockup
+widgets now have #initialize
+rough fix for "links" widget code
 .end
 
 .sublist easyish Easy stuff?
@@ -26,6 +28,7 @@ custom.rb (livetext) gets included if present?
 \.faq command
 =add CSS ref to post?
 =also ask for title when view is created?
+"universal" variables?
 .end
 
 .sublist funky General functionality
