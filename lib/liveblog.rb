@@ -17,7 +17,7 @@ def init_liveblog    # FIXME - a lot of this logic sucks
   @blog = RuneBlog.new(dir)
   @root = @blog.root
   @view = @blog.view
-  @view_name = @blog.view.name
+  @view_name = @blog.view.name unless @view.nil?
   @vdir = @blog.view.dir
   @version = RuneBlog::VERSION
   @theme = @vdir/:themes/:standard
@@ -26,6 +26,18 @@ end
 ##################
 # "dot" commands
 ##################
+
+
+
+def dropcap
+  # Bad form: adds another HEAD
+  text = _data
+  _out " "
+  letter = text[0]
+  remain = text[1..-1]
+  _out %[<div class='mydrop'>#{letter}</div>]
+  _out %[<div style="padding-top: 1px">#{remain}]
+end
 
 def post
   @meta = OpenStruct.new
@@ -54,27 +66,6 @@ end
 
 def backlink
   _out %[<br><a href="javascript:history.go(-1)">[Back]</a>]
-end
-
-def dropcap
-  # Bad form: adds another HEAD
-  _out <<-HTML
-<head>
-<style>
-p:first-child:first-letter {
-  color: #0000ff;
-  float: left;
-  font-family: Verdana;
-  font-size: 75px;
-  line-height: 60px;
-  padding-top: 4px;
-  padding-right: 8px;
-  padding-left: 3px;
-}
-</style>
-</head>
-HTML
-  _out " "
 end
 
 def quote
@@ -146,25 +137,36 @@ end
 def inset
   lines = _body
   box = ""
+  output = []
   lines.each do |line| 
-    line = line.dup
-    if line[0] == "/"  # Only into inset
-      line[0] = ' '
-      box << line.dup + " "
-      line.replace(" ")
+    line = line
+    case line[0]
+      when "/"  # Only into inset
+        line[0] = ' '
+        box << line
+        line.replace(" ")
+      when "|"  # Into inset and body
+        line[0] = ' '
+        box << line
+        output << line
+    else  # Only into body
+      output << line 
     end
-    if line[0] == "|"  # Into inset and body
-      line[0] = ' '
-      box << line.dup + " "
-    end
-    _passthru(line)
+#   _passthru(line)
   end
   lr = _args.first
   wide = _args[1] || "25"
-  _passthru "<div style='float:#{lr}; width: #{wide}%; padding:8px; padding-right:12px'>"   # ; font-family:verdana'>"
-  _passthru '<b><i>'
-  _passthru box
-  _passthru_noline '</i></b></div>'
+  stuff = "<div style='float:#{lr}; width: #{wide}%; padding:8px; padding-right:12px'>"
+  stuff << '<b><i>' + box + '</i></b></div>'
+  _out "</p>"   #  kludge!! nopara
+  0.upto(2) {|i| _passthru output[i] }
+  _passthru stuff
+# _passthru "<div style='float:#{lr}; width: #{wide}%; padding:8px; padding-right:12px'>"   # ; font-family:verdana'>"
+# _passthru '<b><i>'
+# _passthru box
+# _passthru_noline '</i></b></div>'
+  3.upto(output.length-1) {|i| _passthru output[i] }
+  _out "<p>"  #  kludge!! para
   _optional_blank_line
 end
 
@@ -232,10 +234,16 @@ end
 
 def teaser
   raise "'post' was not called" unless @meta
-  @meta.teaser = _body_text
+  text = _body_text
+  @meta.teaser = text
   setvar :teaser, @meta.teaser
-  _out @meta.teaser + "\n"
-  # FIXME
+  if _args[0] == "dropcap"   # FIXME doesn't work yet!
+    letter, remain = text[0], text[1..-1]
+    _out %[<div class='mydrop'>#{letter}</div>]
+    _out %[<div style="padding-top: 1px">#{remain}] + "\n"
+  else
+    _out @meta.teaser + "\n"
+  end
 end
 
 def finalize

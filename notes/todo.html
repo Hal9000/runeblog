@@ -14,7 +14,7 @@
 <p>
 
 <h2>Runeblog TODO</h2>
-</h3>Generated from notes/todo.lt3 on 2019-10-16 at 22:11:36</h3>
+</h3>Generated from notes/todo.lt3 on 2019-10-17 at 15:39:09</h3>
 <p>
 
 <table border=0 width=96% cellpadding=8 cellspacing=8>
@@ -40,8 +40,6 @@
 <li>build top-down, respecting staleness</li></ul></td>
     <td valign=top width=25%>&nbsp;&nbsp;<b>Bugs, etc.
 </b><br><ul><li>widgets don't honor their CSS?</li>
-<li>.dropcap doesn't work</li>
-<li>.inset sometimes fails</li>
 <li>things deleted locally aren't deleted remotely (rsync??)</li>
 <li>delete post, edit elsewhere, comes back (change source!)</li></ul></td>
     <td valign=top width=25%>&nbsp;&nbsp;<b>Livetext bugs/features
@@ -88,7 +86,7 @@
 <li>change xlate everywhere</li>
 <li>liveblog: separate dot-commands from helpers</li>
 <li>remove duplicated and double-scoped code</li>
-<li><font color=red>fix [DotDir is undefined]</font></li>
+<li><font color=red>fix $DotDir</font></li>
 <li>cards as .lt3 files?</li>
 <li><font color=red>more keyword parameters as needed</font></li>
 <li>remove dead code!!</li>
@@ -157,7 +155,9 @@
 <li>collect tags (into metadata.txt)</li>
 <li>crude ad mockup</li>
 <li>widgets now have #initialize</li>
-<li>rough fix for "links" widget code</li></ul></td>
+<li>rough fix for "links" widget code</li>
+<li>.dropcaps work now</li>
+<li>.inset quotes also work</li></ul></td>
   </tr>
   <tr>
     <td valign=top width=25%>&nbsp;&nbsp;<b>Completed tasks
@@ -168,13 +168,13 @@
 <li>pages (FAQ) bug</li>
 <li>rudimentary banner</li>
 <li>minor main/iframe bug?</li>
-<li> in cdata</li>
+<li>fix card2 problem with "$" in cdata</li>
 <li>Bug - whats-at-stubbs post missing</li>
 <li>FAQ opens two different ways (iframe)</li>
 <li>Publishing anomaly</li>
 <li>current_view anomaly</li>
 <li>get publishing working again!</li>
-<li>blog</li>
+<li>fix $\_blog</li>
 <li>Bug - front of post title truncated</li>
 <li>publishing into globals?</li>
 <li>vars.lt3 — title/teaser as heredoc</li>
@@ -210,7 +210,7 @@
 <li>add header data to post!</li>
 <li>livetext: .variables (for config)</li>
 <li>livetext: escape bug  .this</li>
-<li>livetext: better way to do <i>include</i></li>
+<li>livetext: better way to do _include</li>
 <li>css/ directory?</li>
 <li>bootstrap_etc file? css or lt3?</li>
 <li>deepen structure of theme</li>

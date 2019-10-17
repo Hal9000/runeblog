@@ -20,6 +20,8 @@ collect tags (into metadata.txt)
 crude ad mockup
 widgets now have #initialize
 rough fix for "links" widget code
+\.dropcaps work now
+\.inset quotes also work
 .end
 
 .sublist easyish Easy stuff?
@@ -107,18 +109,18 @@ Move some pieces into "snippets" (e.g. Facebook/Twitter integration)
 
 .sublist pretty Prettier code
 =move badly-scoped methods (e.g., runeblog.rb to post.rb)
-=fix check_empty issue
-=fix/delete Runeblog::Default (post_template)?
+=fix check\_empty issue
+=fix/delete Runeblog::Default (post\_template)?
 change xlate everywhere
 liveblog: separate dot-commands from helpers
 remove duplicated and double-scoped code
-=fix $DotDir
+=fix \$DotDir
 cards as .lt3 files?
 =more keyword parameters as needed
 remove dead code!!
 factor generic HTML out of liveblog.rb
 rethink helper libs?
-distinguish view and view_name
+distinguish view and view\_name
 .end
 
 .sublist robust Faster/sturdier code
@@ -135,12 +137,12 @@ profiling
 allow test code to add to post?
 tag pools are dumb??
 verify view is publishable before trying
-methods such as get_post_template?
+methods such as get\_post\_template?
 make hierarchy of publish files?
 safe way to delete a view?
 test credentials for publishing?
 config files: persistent comments?
-change interaction of liveblog and process_file (arbitrary ostruct?)
+change interaction of liveblog and process\_file (arbitrary ostruct?)
 hash same as metadata??
 allow templates to be .lt3 files?
 snippets for templates?
@@ -167,8 +169,6 @@ docs: how to write templates (incl main one)
 
 .sublist bugs Bugs, etc.
 widgets don't honor their CSS?
-\.dropcap doesn't work
-\.inset sometimes fails
 things deleted locally aren't deleted remotely (rsync??)
 delete post, edit elsewhere, comes back (change source!)
 .end
@@ -181,13 +181,13 @@ pathmagic bug
 pages (FAQ) bug
 rudimentary banner
 minor main/iframe bug?
-fix card2 problem with "$" in cdata
+fix card2 problem with "\$" in cdata
 Bug - whats-at-stubbs post missing
 FAQ opens two different ways (iframe)
 Publishing anomaly
-current_view anomaly
+current\_view anomaly
 get publishing working again!
-fix $_blog
+fix \$\_blog
 Bug - front of post title truncated
 publishing into globals?
 vars.lt3 — title/teaser as heredoc
@@ -197,7 +197,7 @@ scrollbar on iframe?
 other vars?
 modifiable global defaults for publishing info/etc.?
 Better navigation/etc for default?
-need open_main, open_blank, open_local, etc.
+need open\_main, open\_blank, open\_local, etc.
 navbar is broken (about, contact)
 let test code log to screen
 whoa! some things won't open in an iframe? (workaround)
@@ -225,9 +225,9 @@ verify preview/browse still work
 add header data to post!
 livetext: .variables (for config)
 livetext: escape bug  \.this
-livetext: better way to do _include
+livetext: better way to do \_include
 css/ directory?
-bootstrap_etc file? css or lt3?
+bootstrap\_etc file? css or lt3?
 deepen structure of theme
 fix themes/standard issue
 improve gemspec
@@ -253,14 +253,14 @@ Livetext: support CSS
 Convert HTML to Livetext (??)
 Readline completion for views
 deal with CSS??
-fix unnecessary rebuild_post/generate_index calls
+fix unnecessary rebuild\_post/generate\_index calls
 Problematic: store initial content as .lt3 rather than .html
 remember runeblog fixes
 weaponize rubytext (gemspec, etc.)
 move some logic into liveblog?
 try new code with old data
 DBC code?
-work on: rebuild, relink, link_post, generate, ...
+work on: rebuild, relink, link\_post, generate, ...
 fix 'categories' bug
 create tag pool (no defaults for now)
 Add Back/Home to post template
@@ -289,7 +289,7 @@ spinner for publishing, etc.
 check remote mkdir
 curses integration?
 config command (See notes.txt)
-dumb_menu method
+dumb\_menu method
 rethink publish/deploy 
 remove explicit tag formatting
 rescue errors only in main REPL?
@@ -312,7 +312,7 @@ config files: blank lines, comments (persistent?)
 
 .sublist comp5 Completed tasks, contd.
 consolidate under .blog
-test make_slug to death
+test make\_slug to death
 fix/improve config file path handling
 editor variable?
 smoother config files?
@@ -320,11 +320,11 @@ distinguish post template and index template
 store in trash instead of deleting? (underscore)
 get rid of "data" tree
 get rid of silly BlogHeader (etc.) constants
-add delete_draft
+add delete\_draft
 remove/kill should be aware of views??
-better data_test environment (and more views/posts)
-code for recreating data_test
-hash into create_post
+better data\_test environment (and more views/posts)
+code for recreating data\_test
+hash into create\_post
 use Readline
 should there be a Post class?
 Make a View class?

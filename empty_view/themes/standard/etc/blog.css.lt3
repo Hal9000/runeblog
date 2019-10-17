@@ -40,6 +40,18 @@
   text-align: top;
 }
 
+\.mydrop {
+  color: #444444;
+  float: left;
+  text-align: top;
+# font-family: Verdana;
+  font-size: 38px;
+  line-height: 38px;
+# padding-top: 0px;
+  padding-right: 8px;
+  padding-left: 3px;
+}
+
 . not used?
 \.thumbnail img {
     max-height: 100%;
