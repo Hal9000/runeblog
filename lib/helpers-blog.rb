@@ -19,22 +19,6 @@ module RuneBlog::Helpers
     puts "    Failed: #{cmd} - from #{caller[0]}" unless rc
   end
 
-#  def get_root
-#    log!(enter: __method__)
-#    if $_blog
-#      if $_blog.root
-#        puts "0. Returned: #{$_blog.root}/"
-#        return $_blog.root + "/"
-#      else
-#        puts "1. Returned: ./"
-#        return "./"
-#      end
-#    else
-#      puts "2. Returned: ./"
-#      return "./"
-#    end
-#  end
-
   def read_config(file, *syms)
     log!(enter: __method__, args: [file, *syms], level: 3)
     lines = File.readlines(file).map(&:chomp)
@@ -66,18 +50,6 @@ module RuneBlog::Helpers
     vals = read_config(file, *hash.keys)
     vals
   end
-
-# def put_config(root:, view:"test_view", editor: "/usr/local/bin/vim")
-#   log!(enter: __method__, args: [root, view, editor])
-#   Dir.mkdir(root) unless Dir.exist?(root)
-#   Dir.chdir(root) do 
-#     File.open("config", "w") do |cfg|
-#       cfg.puts "root: #{root}"
-#       cfg.puts "current_view: #{view}"
-#       cfg.puts "editor: #{editor}"
-#     end
-#   end
-# end 
 
   def write_config(obj, file)
     log!(enter: __method__, args: [obj, file], level: 2)
@@ -155,7 +127,6 @@ module RuneBlog::Helpers
     log!(enter: __method__, args: [obj, name], level: 3)
     File.write(name, obj)
   end
-
 end
 
 def dump(obj, name)      # FIXME scope

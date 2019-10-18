@@ -11,7 +11,7 @@ class RuneBlog::Post
 
   def self.files(num, root)
     log!(enter: __method__, args: [num, root], level: 3)
-    files = Find.find(root).to_a
+    files = ::Find.find(root).to_a
     result = files.grep(/#{prefix(num)}-/)
     result
   end
@@ -22,7 +22,6 @@ class RuneBlog::Post
     raise NoBlogAccessor if RuneBlog.blog.nil?
     # "post" is a slug
     pdir = RuneBlog.blog.view.dir/post
-    verify(Dir.exist?(pdir) => "Directory #{pdir} not found")
     meta = nil
     Dir.chdir(pdir) do
       meta = read_config("metadata.txt")
@@ -73,7 +72,6 @@ class RuneBlog::Post
     post.meta.title, post.meta.teaser, post.meta.body, post.meta.pubdate = 
       title, teaser, body, pubdate
     post.meta.views = [post.blog.view.to_s] + views
-# STDERR.puts "Post.create: views = #{views.inspect}"
     post.meta.tags = []
     post.blog.make_slug(post.meta)  # adds to meta
 
@@ -93,7 +91,6 @@ class RuneBlog::Post
 
   def edit
     log!(enter: __method__)
-    verify(File.exist?(@draft) => "File #{@draft} not found")
     result = system!("vi #@draft +8")  # TODO improve this
     raise EditorProblem(draft) unless result
     nil

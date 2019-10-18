@@ -43,7 +43,6 @@ class RuneBlog::Publishing
     dir = @docroot/@path
     view_name = @blog.view.name
     viewpath = dir # /view_name
-#   result = system!("ssh #@user@#@server -x mkdir -p #{viewpath}") 
     result = system!("ssh #@user@#@server -x mkdir -p #{viewpath}/assets") 
     files.each do |file|
       dest = "#@user@#@server:" + dir  # /view_name

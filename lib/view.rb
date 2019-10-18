@@ -59,6 +59,5 @@ class RuneBlog::View
   rescue
     true
   end
-
 end
 

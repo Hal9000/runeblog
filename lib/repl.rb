@@ -7,7 +7,6 @@ make_exception(:PublishError,  "Error during publishing")
 make_exception(:EditorProblem, "Could not edit $1")
 
 module RuneBlog::REPL
-
   def edit_file(file)
     result = system!("#{@blog.editor} #{file}")
     raise EditorProblem(file) unless result
@@ -200,7 +199,6 @@ module RuneBlog::REPL
   end
 
   def cmd_remove_post(arg, testing = false)
-puts "arg = #{arg.inspect} is a #{arg.class}"
     reset_output
     args = arg.split
     args.each do |x| 
@@ -212,14 +210,12 @@ puts "arg = #{arg.inspect} is a #{arg.class}"
     @out
   end
 
-  #-- FIXME affects linking, building, publishing...
-
   def cmd_edit_post(arg, testing = false)
     reset_output
     id = get_integer(arg)
     # Simplify this
     tag = "#{'%04d' % id}"
-    files = Find.find(@blog.root+"/drafts").to_a
+    files = ::Find.find(@blog.root+"/drafts").to_a
     files = files.grep(/#{tag}-.*lt3/)
     files = files.map {|f| File.basename(f) }
     if files.size > 1
@@ -385,6 +381,5 @@ puts "arg = #{arg.inspect} is a #{arg.class}"
     puts unless testing
     @out
   end
-
 end
 

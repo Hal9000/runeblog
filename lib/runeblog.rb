@@ -1,4 +1,5 @@
 require 'date'
+require 'find'
 
 require 'logging'
 
@@ -63,7 +64,6 @@ class RuneBlog
       create_dirs(:drafts, :views, :posts)
       new_sequence
     end
-#   put_config(root: root)
     x = OpenStruct.new
     x.root, x.current_view, x.editor = root, "test_view", "/usr/bin/vim "   # dumb - FIXME later
     write_config(x, root/ConfigFile)
@@ -252,8 +252,6 @@ class RuneBlog
     log!(enter: __method__, args: [view_name], level: 2)
     check_valid_new_view(view_name)
     make_empty_view_tree(view_name)
-# STDERR.puts "Made empty tree!"
-# system("bash")
     add_view(view_name)
     mark_last_published("Initial creation")
   end
@@ -396,15 +394,12 @@ class RuneBlog
 
   def generate_view(view)  # huh?
     log!(enter: __method__, args: [view])
-#   generate_index(view)   # recent posts (recent.html)
     vdir = @root/:views/view
     @theme = @root/:views/view/:themes/:standard
     xlate cwd: vdir/"themes/standard/etc",
           src: "blog.css.lt3", copy: vdir/"remote/etc/blog.css" # , debug: true
     xlate cwd: vdir/"themes/standard",
           src: "blog/generate.lt3", dst: vdir/:remote/"index.html"
-#   generate_index(view)   # recent posts (recent.html)
-#   ^ HERE
     copy("#{vdir}/assets/*", "#{vdir}/remote/assets/")
   rescue => err
     puts err
@@ -450,6 +445,7 @@ class RuneBlog
       longdate = ::Date.parse(date).strftime("%B %e, %Y")
       title = _retrieve_metadata(:title)
       tags = _retrieve_metadata(:tags)
+      # FIXME simplify
       vars = <<~LIVE
         .set post.num = #{pnum}
         .heredoc post.aslug
@@ -484,9 +480,7 @@ class RuneBlog
       create_dirs(rem)
       files = Dir[w/"*"]
       files = files.select {|x| x =~ /(html|css)$/ }
-# files.each {|f| STDERR.puts "    #{f.inspect}" }
       tag = File.basename(w)
-# STDERR.puts "--- tag: #{tag.inspect}"
       files.each {|file| system!("cp #{file} #{rem}", show: (tag == "zzz")) }
     end
   end
@@ -523,32 +517,7 @@ class RuneBlog
   def generate_post(draft)
     log!(enter: __method__, args: [draft], level: 1)
     views = _get_views(draft)
-    views.each do |view| 
-      _handle_post(draft, view)
-#     generate_view(view)  # FIXME leads to inefficiency?
-#     ^ HERE
-    end
-  end
-
-  def OLD_index_entry(view, meta)
-    log!(enter: __method__, args: [view, meta])
-    debug "=== index_entry #{view.to_s.inspect}  #{meta.num} #{meta.title.inspect}"
-    check_meta(meta, "index_entry1")
-    raise ArgumentError unless view.is_a?(String) || view.is_a?(RuneBlog::View)
-    check_meta(meta, "index_entry2")
-    self.make_slug(meta)
-    check_meta(meta, "index_entry3")
-    # FIXME clean up and generalize
-    ref = view/meta.slug/"index.html"
-    <<-HTML
-      <font size=-1>#{meta.date}&nbsp;&nbsp;</font> <br>
-      <font size=+2 color=blue><a href=../#{ref} style="text-decoration: none">#{meta.title}</font></a>
-      <br>
-      <font size=+1>#{meta.teaser}&nbsp;&nbsp;</font>
-      <a href=../#{ref} style="text-decoration: none">Read more...</a>
-      <br>
-      <hr>
-    HTML
+    views.each {|view| _handle_post(draft, view) }
   end
 
   def rebuild_post(file)
@@ -615,6 +584,5 @@ class RuneBlog
     meta.slug = str
     str
   end
-
 end
 

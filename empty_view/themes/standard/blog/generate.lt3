@@ -14,16 +14,18 @@
 .include blog/head.lt3
   <body>
 
+.set color = #101035
+
 . FIXME
-    <table width=100%>
+    <table width=100% bgcolor=$color>
     <tr>
-      <td width=30% bgcolor=black>
+      <td width=30% bgcolor=$color>
         <div style="text-align: center; color: white">
           <h1>Around Austin</h1><br>
           The view from downtown...
         </div>
       </td>
-      <td><img src=assets/sky2.jpg width=100%></img>
+      <td><img src=assets/austin-pano.jpg width=100%></img>
     </tr>
     </table>
 
