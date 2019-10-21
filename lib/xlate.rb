@@ -2,6 +2,7 @@
 LEXT = ".lt3"
 
 def stale?(src, dst, force = false)
+  meh = File.new("/tmp/dammit-#{src.gsub(/\//, "-")}", "w")
   log!(enter: __method__, args: [src, dst], level: 3)
   raise "Source #{src} not found in #{Dir.pwd}" unless File.exist?(src)
   return true if force
@@ -23,15 +24,15 @@ def xlate(cwd: Dir.pwd, src:,
       STDERR.puts "#{indent}      from: #{caller[0]}"
       STDERR.puts "#{indent}      copy: #{copy}" if copy
     end
-    if stale?(src, dst, force)
-      # do nothing
+    stale = stale?(src, dst, force)
+    if stale
+      rc = system("livetext #{src} >#{dst}")
+      STDERR.puts "...completed (shell returned #{rc})" if debug
+      system!("cp #{dst} #{copy}") if copy
     else
       STDERR.puts "#{indent} -- ^ Already up to date!" if debug
       return
     end
-    rc = system("livetext #{src} >#{dst}")
-    STDERR.puts "...completed (shell returned #{rc})" if debug
-    system!("cp #{dst} #{copy}") if copy
   end
 end
 

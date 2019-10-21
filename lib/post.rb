@@ -62,8 +62,8 @@ class RuneBlog::Post
   end
 
   def self.create(title:, teaser:, body:, pubdate: Time.now.strftime("%Y-%m-%d"),
-                  views:[])
-    log!(enter: __method__, args: [title, teaser, body, pubdate, views])
+                  views:[], file: nil)
+    log!(enter: __method__, args: [title, teaser, body, pubdate, views], stderr: true)
     post = self.new
     # NOTE: This is the ONLY place next_sequence is called!
     num = post.meta.num   = post.blog.next_sequence
@@ -78,14 +78,18 @@ class RuneBlog::Post
     # create_draft
     viewhome = post.blog.view.publisher.url
     meta = post.meta
-    text = RuneBlog.post_template(num: meta.num, title: meta.title, date: meta.pubdate, 
-               view: meta.view, teaser: meta.teaser, body: meta.body,
-               views: meta.views, tags: meta.tags, home: viewhome)
-    srcdir = post.blog.root/:drafts + "/"
-    vpdir = post.blog.root/:drafts + "/"
-    fname  = meta.slug + ".lt3"
-    post.draft = srcdir + fname
-    dump(text, post.draft)
+    if file.nil?
+      text = RuneBlog.post_template(num: meta.num, title: meta.title, date: meta.pubdate, 
+                 view: meta.view, teaser: meta.teaser, body: meta.body,
+                 views: meta.views, tags: meta.tags, home: viewhome)
+      srcdir = post.blog.root/:drafts + "/"
+      vpdir = post.blog.root/:drafts + "/"
+      fname  = meta.slug + ".lt3"
+      post.draft = srcdir + fname
+      dump(text, post.draft)
+    else
+      dump(File.read(file), post.draft)
+    end
     return post
   end
 
@@ -125,6 +129,9 @@ class RuneBlog::ViewPost
     lines = File.readlines(mdfile)
     @title = lines.grep(/title:/).first[7..-1].chomp
     @date  = lines.grep(/pubdate:/).first[9..-1].chomp
+# print "-- date = #{@date.inspect} "; gets
+  rescue => err
+    STDERR.puts "--- #{err}\n #{err.backtrace.join("\n  ")}"
   end
 
   def get_dirs

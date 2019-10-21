@@ -2,13 +2,14 @@
 . This HTML fragment gives the format of a post's   
 . "index" entry (recent posts on blog front page).  
 . --------------------------------------------------
+.nopara
 
 <div class="post">
   <table width=100% cellpadding=7>
     <tr>
       <td width=14% valign=top align=right style="margin-top: -1px;">
 <!--        <span class="post-date mt-1 mb-1" style="margin-top: 3px; text-align: right"> -->
-          <font size=-1><b>#{date}</b></font>
+          <font size=-1>#{date}</font>
 <!--        </span> -->
       </td>
       <td> 
@@ -21,3 +22,5 @@
     </tr>
   </table>
 </div>
+
+<font size=-4><br></font>

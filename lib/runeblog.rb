@@ -43,6 +43,15 @@ class RuneBlog
 
   include Helpers
 
+  def _tmp_error(err)   # FIXME move to helpers
+    out = "/tmp/blog#{rand(100)}.txt"
+    File.open(out, "w") do |f|
+      f.puts err
+      f.puts err.backtrace.join("\n")
+    end
+    puts "Error: See #{out}"
+  end
+
   def self.create_new_blog_repo(dir = ".blogs")
     log!(enter: __method__, args: [dir])
     raise ArgumentError unless dir.is_a?(String) && ! dir.empty?
@@ -68,8 +77,9 @@ class RuneBlog
     x.root, x.current_view, x.editor = root, "test_view", "/usr/bin/vim "   # dumb - FIXME later
     write_config(x, root/ConfigFile)
     @blog = self.new(root)
-    @blog.create_view("test_view")
     @blog
+  rescue => err
+    _tmp_error(err)
   end
 
   def self.open(root = ".blogs")
@@ -78,6 +88,8 @@ class RuneBlog
     self.blog = self   # Weird. Like a singleton - dumbass circular dependency?
     root = Dir.pwd/root
     blog = self.new(root)
+  rescue => err
+    _tmp_error(err)
   end
 
   def initialize(root_dir = ".blogs")   # always assumes existing blog
@@ -106,6 +118,8 @@ class RuneBlog
       views = _retrieve_metadata(:views)
       views.each {|v| system!("cp *html #@root/views/#{v}/remote") }
     end
+  rescue => err
+    _tmp_error(err)
   end
 
   def _retrieve_metadata(key)
@@ -129,6 +143,8 @@ class RuneBlog
       raise "Too many #{key} instances in metadata.txt!"
     end
     return result
+  rescue => err
+    _tmp_error(err)
   end
 
   def process_post(sourcefile)
@@ -138,6 +154,8 @@ class RuneBlog
     create_dir(dir)
     xlate cwd: dir, src: sourcefile  # , debug: true
     _deploy_local(dir)
+  rescue => err
+    _tmp_error(err)
   end
 
   def inspect
@@ -172,6 +190,8 @@ class RuneBlog
   def _set_publisher
     log!(enter: __method__, level: 3)
     @view.publisher = RuneBlog::Publishing.new(@view.to_s)  # FIXME refactor
+  rescue => err
+    _tmp_error(err)
   end
 
   def view=(arg)
@@ -188,6 +208,8 @@ class RuneBlog
       else 
         raise CantAssignView(arg.class.to_s)
     end
+  rescue => err
+    _tmp_error(err)
   end
 
   def get_sequence
@@ -234,6 +256,8 @@ class RuneBlog
       cmd = "cp -r #{RuneBlog::Path}/../empty_view views/#{view_name}"
       system!(cmd)
     end
+  rescue => err
+    _tmp_error(err)
   end
 
   def check_valid_new_view(view_name)
@@ -254,6 +278,8 @@ class RuneBlog
     make_empty_view_tree(view_name)
     add_view(view_name)
     mark_last_published("Initial creation")
+  rescue => err
+    _tmp_error(err)
   end
 
   def delete_view(name, force = false)
@@ -287,6 +313,8 @@ class RuneBlog
     postdir = post.first
     vp = RuneBlog::ViewPost.new(self.view, postdir)
     vp
+  rescue => err
+    _tmp_error(err)
   end
 
   def index_entry(slug)
@@ -302,10 +330,13 @@ class RuneBlog
       vp.nslug, vp.aslug, vp.title, vp.date, vp.teaser_text
     path = vp.path
     url = aslug + ".html"
+# puts "--- vp = #{[vp.nslug, vp.aslug, vp.title, vp.date, vp.teaser_text].inspect}"; gets
     date = ::Date.parse(date)
     date = date.strftime("%B %e<br><div style='float: right'>%Y</div>")
     text = interpolate(@_post_entry, binding)
     text
+  rescue => err
+    _tmp_error(err)
   end
 
   def collect_recent_posts(file)
@@ -316,14 +347,20 @@ class RuneBlog
     posts = entries.grep(/^\d\d\d\d/).map {|x| dir_posts/x }
     posts.select! {|x| File.directory?(x) }
     # directories that start with four digits
-    posts = posts.sort {|a, b| b.to_i <=> a.to_i }  # sort descending
+    posts = posts.sort do |a, b| 
+      ai = a.index(/\d\d\d\d-/)
+      bi = b.index(/\d\d\d\d-/)
+      na = a[ai..(ai+3)].to_i
+      nb = b[bi..(bi+3)].to_i
+      nb <=> na
+    end  # sort descending
     posts = posts[0..19]  # return 20 at most
     text = <<-HTML
       <html>
       <head><link rel="stylesheet" href="etc/blog.css"></head>
       <body>
     HTML
-    wanted = [5, posts.size].min  # estimate how many we want?
+    wanted = [8, posts.size].min  # estimate how many we want?
     enum = posts.each
     wanted.times do
       postid = File.basename(enum.next)
@@ -332,13 +369,16 @@ class RuneBlog
     end
     text << "</body></html>"
     File.write(@vdir/:remote/file, text)
+  rescue => err
+    _tmp_error(err)
   end
 
   def create_new_post(title, testing = false, teaser: nil, body: nil, 
                       pubdate: Time.now.strftime("%Y-%m-%d"), views: [])
-    log!(enter: __method__, args: [title, testing, teaser, body, views], level: 1)
+    log!(enter: __method__, args: [title, testing, teaser, body, views], level: 1, stderr: true)
     meta = nil
     views = views + [self.view.to_s]
+    views.uniq!
     Dir.chdir(@root/:posts) do
       post = Post.create(title: title, teaser: teaser, body: body, pubdate: pubdate, views: views)
       post.edit unless testing
@@ -347,14 +387,12 @@ class RuneBlog
     end
     return meta.num
   rescue => err
-    puts err
-    puts err.backtrace.join("\n")
+    _tmp_error(err)
   end
 
   def edit_initial_post(file, testing = false)
     log!(enter: __method__, args: [file, testing], level: 3)
     debug "=== edit_initial_post #{file.inspect}  => #{sourcefile}"
-    sourcefile = @root/:drafts/file
     result = system!("#@editor #{sourcefile} +8") unless testing
     raise EditorProblem(sourcefile) unless result
     process_post(sourcefile)
@@ -390,6 +428,8 @@ class RuneBlog
     raise ArgumentError unless view.is_a?(String) || view.is_a?(RuneBlog::View)
     @vdir = @root/:views/view
     collect_recent_posts("recent.html")
+  rescue => err
+    _tmp_error(err)
   end
 
   def generate_view(view)  # huh?
@@ -402,10 +442,7 @@ class RuneBlog
           src: "blog/generate.lt3", dst: vdir/:remote/"index.html"
     copy("#{vdir}/assets/*", "#{vdir}/remote/assets/")
   rescue => err
-    puts err
-    puts err.backtrace.join("\n")
-    print "Pause... "
-    gets
+    _tmp_error(err)
   end
 
   def _get_views(draft)
@@ -416,7 +453,9 @@ class RuneBlog
     raise "No .views call!" if view_line.size < 1
     view_line = view_line.first
     views = view_line[7..-1].split
-    views 
+    views.uniq 
+  rescue => err
+    _tmp_error(err)
   end
 
   def _copy_get_dirs(draft, view)
@@ -430,6 +469,8 @@ class RuneBlog
     viewdir, slugdir, aslug = vdir, dir, noext[5..-1]
     theme = viewdir/:themes/:standard
     [noext, viewdir, slugdir, aslug, theme]
+  rescue => err
+    _tmp_error(err)
   end
 
   def _post_metadata(draft, pdraft)
@@ -466,6 +507,8 @@ class RuneBlog
       LIVE
       File.open(pdraft/"vars.lt3", "w") {|f| f.puts vars }
     end
+  rescue => err
+    _tmp_error(err)
   end
 
   def copy_widget_html(view)
@@ -483,10 +526,12 @@ class RuneBlog
       tag = File.basename(w)
       files.each {|file| system!("cp #{file} #{rem}", show: (tag == "zzz")) }
     end
+  rescue => err
+    _tmp_error(err)
   end
 
-  def _handle_post(draft, view)
-    log!(enter: __method__, args: [draft, view], level: 2)
+  def _handle_post(draft, view_name = self.view.to_s)
+    log!(enter: __method__, args: [draft, view_name], level: 2)
     # break into separate methods?
 
     fname = File.basename(draft)       # 0001-this-is-a-post.lt3
@@ -494,30 +539,34 @@ class RuneBlog
     aslug = nslug.sub(/\d\d\d\d-/, "") # this-is-a-post
     ahtml = aslug + ".html"            # this-is-a-post.html
     pdraft = @root/:posts/nslug
-    remote = @root/:views/view/:remote
-    @theme = @root/:views/view/:themes/:standard
+    remote = @root/:views/view_name/:remote
+    @theme = @root/:views/view_name/:themes/:standard
     # Step 1...
     create_dirs(pdraft)
-    xlate cwd: pdraft, src: draft, dst: "guts.html"
+    xlate cwd: pdraft, src: draft, dst: "guts.html", debug: true
     _post_metadata(draft, pdraft)
     # Step 2...
-    vposts = @root/:views/view/:posts
+    vposts = @root/:views/view_name/:posts
     copy!(pdraft, vposts)    # ??
     # Step 3..
     copy(pdraft/"guts.html", @theme/:post) 
     copy(pdraft/"vars.lt3",  @theme/:post) 
     # Step 4...
-    xlate cwd: @theme/:post, src: "generate.lt3", 
-          dst: remote/ahtml, copy: @theme/:post  # , debug: true
+    xlate cwd: @theme/:post, src: "generate.lt3", force: true, 
+          dst: remote/ahtml, copy: @theme/:post, debug: true
     xlate cwd: @theme/:post, src: "permalink.lt3", 
           dst: remote/:permalink/ahtml  # , debug: true
-    copy_widget_html(view)
+    copy_widget_html(view_name)
+  rescue => err
+    _tmp_error(err)
   end
 
   def generate_post(draft)
     log!(enter: __method__, args: [draft], level: 1)
     views = _get_views(draft)
     views.each {|view| _handle_post(draft, view) }
+  rescue => err
+    _tmp_error(err)
   end
 
   def rebuild_post(file)
@@ -531,8 +580,7 @@ class RuneBlog
     @views_dirty.flatten!
     @views_dirty.uniq!
   rescue => err
-    error(err)
-    getch
+    _tmp_error(err)
   end
 
   def remove_post(num)

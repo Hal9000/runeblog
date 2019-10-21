@@ -11,13 +11,15 @@ module RuneBlog::REPL
     result = system!("#{@blog.editor} #{file}")
     raise EditorProblem(file) unless result
     sleep 0.1
-    STDSCR.clear
+    cmd_clear(nil)
   end
 
   def cmd_quit(arg, testing = false)
     check_empty(arg)
     RubyText.stop
-    system!("tput clear")
+    sleep 0.1
+    cmd_clear(nil)
+    sleep 0.1
     exit
   end
 
@@ -98,6 +100,13 @@ module RuneBlog::REPL
     result = system!("open #{local}")
     raise CantOpen(local) unless result
     @out
+  rescue => err
+    out = "/tmp/blog#{rand(100)}.txt"
+    File.open(out, "w") do |f|
+      f.puts err
+      f.puts err.backtrace.join("\n")
+    end
+    puts "Error: See #{out}"
   end
 
   def cmd_publish(arg, testing = false)
@@ -135,6 +144,13 @@ module RuneBlog::REPL
       output! "...finished.\n"
     end
     return @out
+  rescue => err
+    out = "/tmp/blog#{rand(100)}.txt"
+    File.open(out, "w") do |f|
+      f.puts err
+      f.puts err.backtrace.join("\n")
+    end
+    puts "Error: See #{out}"
   end
 
   def cmd_rebuild(arg, testing = false)
@@ -145,6 +161,13 @@ module RuneBlog::REPL
     @blog.generate_view(@blog.view)
     @blog.generate_index(@blog.view)
     @out
+  rescue => err
+    out = "/tmp/blog#{rand(100)}.txt"
+    File.open(out, "w") do |f|
+      f.puts err
+      f.puts err.backtrace.join("\n")
+    end
+    puts "Error: See #{out}"
   end
 
   def cmd_change_view(arg, testing = false)
@@ -178,18 +201,30 @@ module RuneBlog::REPL
     @out
   rescue ViewAlreadyExists
     puts 'Blog already exists'
+  rescue => err
+    out = "/tmp/blog#{rand(100)}.txt"
+    File.open(out, "w") do |f|
+      f.puts err
+      f.puts err.backtrace.join("\n")
+    end
+    puts "Error: See #{out}"
   end
 
   def cmd_new_post(arg, testing = false)
     reset_output
     check_empty(arg)
     title = ask("\nTitle: ")
+    puts
     @blog.create_new_post(title)
 #   STDSCR.clear
     @out
   rescue => err
-    puts err
-    puts err.backtrace.join("\n")
+    out = "/tmp/blog#{rand(100)}.txt"
+    File.open(out, "w") do |f|
+      f.puts err
+      f.puts err.backtrace.join("\n")
+    end
+    puts "Error: See #{out}"
   end
 
   def _remove_post(arg, testing=false)
@@ -235,6 +270,13 @@ module RuneBlog::REPL
     draft = "#{@blog.root}/drafts/#{file}"
     result = edit_file(draft)
     @blog.generate_post(draft)
+  rescue => err
+    out = "/tmp/blog#{rand(100)}.txt"
+    File.open(out, "w") do |f|
+      f.puts err
+      f.puts err.backtrace.join("\n")
+    end
+    puts "Error: See #{out}"
   end
 
   def cmd_list_views(arg, testing = false)
@@ -318,7 +360,10 @@ module RuneBlog::REPL
 
   def cmd_ssh(arg, testing = false)
     pub = @blog.view.publisher
-    system!("ssh #{pub.user}@#{pub.server}")
+    puts
+    system!("tputs clear; ssh #{pub.user}@#{pub.server}")
+    sleep 0.1
+    cmd_clear(nil)
   end
 
   def cmd_INVALID(arg, testing = false)

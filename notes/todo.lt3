@@ -20,23 +20,29 @@ collect tags (into metadata.txt)
 crude ad mockup
 widgets now have #initialize
 rough fix for "links" widget code
-\.dropcaps work now
-\.inset quotes also work
+dropcaps work now
+inset quotes also work
+fixed quote issue
 .end
 
 .sublist easyish Easy stuff?
 =“wrap”-style include
+warning/error: create post with no views existing
+warning? .views line refs nonexistent views
+rewrite help info
 custom.rb (livetext) gets included if present?
 \.faq command
 =add CSS ref to post?
 =also ask for title when view is created?
+Warn when .img (etc.) refs nonexistent asset
 "universal" variables?
 .end
 
 .sublist funky General functionality
 =more work on .banner!
 =more work on navbar
-blog command line
+=blog command line
+better asset management
 dynamically add commands/code to repl?
 =update only "stale" items
 backup/restore?
@@ -168,6 +174,7 @@ docs: how to write templates (incl main one)
 .end
 
 .sublist bugs Bugs, etc.
+preview can crash w/o rebuild
 widgets don't honor their CSS?
 things deleted locally aren't deleted remotely (rsync??)
 delete post, edit elsewhere, comes back (change source!)

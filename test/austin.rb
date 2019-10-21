@@ -119,6 +119,8 @@ Contact light. Houston, this is Tranquility Base. The Eagle has
 landed. That's one small step for (a) man, one giant leap for 
 mankind.
 
+Here's the PDF of $$link["Ruby for the Old-Time C Programmer"|http://rubyhacker.com/blog2/rubydino.pdf]
+
 Pity this busy monster, manunkind, not. Pity rather... Listen:
 There's a hell of a universe next door; let's go.
 BODY

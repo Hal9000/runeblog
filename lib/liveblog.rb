@@ -70,7 +70,7 @@ end
 
 def quote
   _passthru "<blockquote>"
-  _passthru _body
+  _passthru _body.join(" ")
   _passthru "</blockquote>"
   _optional_blank_line
 end
@@ -364,8 +364,8 @@ def _load_local(widget)
     code
   end
 rescue => err
-  STDOUT.puts err
-  STDOUT.puts err.backtrace.join("\n")
+  STDERR.puts err.to_s
+  STDERR.puts err.backtrace.join("\n")
   exit
 end
 
@@ -480,10 +480,16 @@ class Livetext::Functions
     ::Livetext::Vars[name] || "[:#{name} is undefined]"
   end
 
-  def link
-    file, cdata = self.class.param.split("||", 2)
-    %[<link type="application/atom+xml" rel="alternate" href="#{_var(:host)}#{file}" title="#{_var(:title)}">]
-  end
+#   def link(param = nil)
+# puts "--- WTF?? param = #{param.inspect}"; gets
+#     file, cdata = param.split("||", 2)
+#     %[<a href="assets/#{file}">#{cdata}</a>]
+#   end
+# 
+#   def link(param = nil)
+#     file, cdata = param.split("||", 2)
+#     %[<link type="application/atom+xml" rel="alternate" href="#{_var(:host)}#{file}" title="#{_var(:title)}">]
+#   end
 end
 
 ###

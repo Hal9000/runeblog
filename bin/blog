@@ -23,7 +23,8 @@ TEXT
 end
 
 def mainloop
-  print fx("#{@blog.view}> ", Red, :bold)
+  info = @blog.view || "no view"
+  print fx("[#{info}] ", Red, :bold)
   cmd = STDSCR.gets(history: @cmdhist, tab: @tabcom)
   cmd_quit(nil) if cmd.nil?   # ^D
   cmd.chomp!
@@ -72,7 +73,7 @@ puts fx("\n  RuneBlog", :bold), fx(" v #{RuneBlog::VERSION}\n", Red)
   
 loop { mainloop }
 
-# sleep 0.2
-# system("tput clear")
+system("tput clear")
+sleep 0.2
 puts
 
