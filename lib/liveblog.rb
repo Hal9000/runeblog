@@ -64,8 +64,50 @@ def post_trailer
   # damned syntax highlighting
 end
 
+def faq
+  @faq_count ||= 0
+  @faq_count += 1
+  ques = _data.chomp
+  ans  = _body_text
+  id = "faq#@faq_count"
+  _out %[&nbsp;<a class="btn btn-default btn-xs" data-toggle="collapse" href="##{id}" role="button" aria-expanded="false" aria-controls="collapseExample">+</a>]
+  _out %[&nbsp;<b>#{ques}</b>]
+  _out %[<div class="collapse" id="#{id}"><br><font size=+1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#{ans}</font></div><br><br>\n]
+  _optional_blank_line
+end
+
 def backlink
   _out %[<br><a href="javascript:history.go(-1)">[Back]</a>]
+end
+
+def banner  # still experimental
+  _out "<table>"
+  _body do |line|
+    pieces = line.split
+    cols = pieces.size
+    span = cols == 2 ? 1 : 2   # whaaat?
+    _out "  <tr>"
+    pieces.each do |piece|
+      _out "    <td colspan=#{span}>"
+      case
+        when piece.start_with?("hnav")
+          _out "<center>hnav1 hnav2 hnav3 hnav4</center>"
+        when piece.start_with?("vnav")
+          _out "vnav1<br>vnav2<br>vnav3<br>vnav4<br>"
+        when piece.start_with?("text")
+          file = piece.split(":")[1]
+          _out File.read(file)
+        when piece.start_with?("image")
+          file = piece.split(":")[1]
+          _out "      <img src=#{file} height=100></img>"
+      else
+        _out "        '#{piece}' isn't known"
+      end
+      _out "    </td>"
+    end
+    _out "  </tr>"
+  end
+  _out "</table>"
 end
 
 def quote
@@ -553,6 +595,42 @@ def tag_cloud
     _out %[<a #{main} class="#{classname}">#{cdata}</a>]
   end
   close = %[       </div>\n    </div>\n  </div>]
+  _out close
+end
+
+def vnavbar
+end
+
+def navbar2
+  vdir = @blog.view.dir
+  title = _var(:blog)
+
+  open = <<-HTML
+   <nav class="navbar navbar-light bg-light">
+      <a class="navbar-brand" href="index.html">#{title}</a>
+        <ul class="navbar-nav mr-auto">
+  HTML
+  close = <<-HTML
+        </ul>
+      </div>
+    </nav>
+  HTML
+
+  first = true
+  _out open
+  lines = _body
+  lines.each do |line|
+    basename, cdata = line.chomp.strip.split(" ", 2)
+    full = :navbar/basename+".html"
+    href_main = _main(full)
+    if first
+      first = false # hardcode this part??
+      _out %[<li class="nav-item active"> <a class="nav-link" href="index.html">#{cdata}<span class="sr-only">(current)</span></a> </li>]
+    else
+      xlate cwd: "navbar", src: basename, dst: vdir/"remote/navbar"/basename+".html" # , debug: true
+      _out %[<li class="nav-item"> <a class="nav-link" #{href_main}>#{cdata}</a> </li>]
+    end
+  end
   _out close
 end
 

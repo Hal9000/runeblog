@@ -438,7 +438,7 @@ class RuneBlog
     @theme = @root/:views/view/:themes/:standard
     xlate cwd: vdir/"themes/standard/etc",
           src: "blog.css.lt3", copy: vdir/"remote/etc/blog.css" # , debug: true
-    xlate cwd: vdir/"themes/standard",
+    xlate cwd: vdir/"themes/standard", force: true,
           src: "blog/generate.lt3", dst: vdir/:remote/"index.html"
     copy("#{vdir}/assets/*", "#{vdir}/remote/assets/")
   rescue => err

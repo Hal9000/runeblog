@@ -37,7 +37,78 @@ module RuneBlog::REPL
     @out
   end
 
-  def cmd_pages(arg, testing = false)
+  def cmd_config(arg, testing = false)
+    list = ["global.lt3", "blog/generate.lt3", "     head.lt3", "     index.lt3",
+           "     post_entry.lt3", "etc/blog.css.lt3", "    externals.lt3",
+           "post/generate.lt3", "     head.lt3", "     index.lt3",
+           "     permalink.lt3"]
+    name = ["global.lt3", "blog/generate.lt3", "blog/head.lt3", "blog/index.lt3",
+           "blog/post_entry.lt3", "etc/blog.css.lt3", "blog/externals.lt3",
+           "post/generate.lt3", "post/head.lt3", "post/index.lt3",
+           "post/permalink.lt3"]
+    dir = @blog.view.dir/"themes/standard/"
+    num, str = STDSCR.menu(title: "Edit file:", items: list)
+    target = name[num]
+    edit_file(dir/target)
+  end
+
+  def cmd_manage(arg, testing = false)
+puts "Arg = #{arg.inspect}"
+    case arg
+      when "pages";   _manage_pages(arg, testing = false)
+      when "links";   _manage_links(arg, testing = false)
+      when "navbar";  _manage_navbar(arg, testing = false)
+#     when "pinned";  _manage_pinned(arg, testing = false)  # ditch this??
+    else
+      puts "#{arg} is unknown"
+    end
+  end
+
+  def _manage_pinned(arg, testing = false)   # cloned from manage_links
+    check_empty(arg)
+    dir = @blog.view.dir/"themes/standard/widgets/pinned"
+    data = dir/"list.data"
+    edit_file(data)
+  end
+
+  def _manage_navbar(arg, testing = false)   # cloned from manage_pages
+puts "Got to #{__method__}"
+    check_empty(arg)
+    dir = @blog.view.dir/"themes/standard/navbar"
+    files = Dir.entries(dir) - %w[. .. navbar.lt3]
+    new_item = "  [New item]  "
+    main_file = "[ navbar.lt3 ]"
+    files = [main_file] + files + [new_item]
+    num, fname = STDSCR.menu(title: "Edit navbar:", items: files)
+    return if fname.nil?
+    case fname
+      when new_item
+        print "Page title:  "
+        title = RubyText.gets
+        title.chomp!
+        print "File name (.lt3): "
+        fname = RubyText.gets
+        fname << ".lt3" unless fname.end_with?(".lt3")
+        new_file = dir/fname
+        File.open(new_file, "w") do |f|
+          f.puts "<h1>#{title}</h1>\n\n\n "
+          f.puts ".backlink"
+        end
+        edit_file(new_file)
+      when main_file
+        edit_file(main_file[2..-3])
+    else
+      edit_file(dir/fname)
+    end
+  end
+
+  def _manage_links(arg, testing = false)
+    dir = @blog.view.dir/"themes/standard/widgets/links"
+    data = dir/"list.data"
+    edit_file(data)
+  end
+
+  def _manage_pages(arg, testing = false)
     check_empty(arg)
     dir = @blog.view.dir/"themes/standard/widgets/pages"
     # Assume child files already generated (and list.data??)
@@ -393,7 +464,7 @@ module RuneBlog::REPL
        list views        List all views available
        lsv               Same as: list views
 
-*      config            Edit the publish file or the templates
+       config            Edit various system files
 *      customize         (BUGGY) Change set of tags, extra views
   
        p, post           Create a new post

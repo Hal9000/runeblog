@@ -23,6 +23,11 @@ rough fix for "links" widget code
 dropcaps work now
 inset quotes also work
 fixed quote issue
+added basic 'config' command
+basic 'manage' command
+created .faq command
+got vertical navbar working
+very rudimentary .banner command
 .end
 
 .sublist easyish Easy stuff?
@@ -31,7 +36,6 @@ warning/error: create post with no views existing
 warning? .views line refs nonexistent views
 rewrite help info
 custom.rb (livetext) gets included if present?
-\.faq command
 =add CSS ref to post?
 =also ask for title when view is created?
 Warn when .img (etc.) refs nonexistent asset
@@ -68,6 +72,8 @@ automated news search
 .end
 
 .sublist livetext Livetext bugs/features
+autocomplete fails when no valid prefix
+weird screen-clear glitches
 fix bug .set var="this, that"
 =mixin? include? copy? seek?
 mixin as module (livetext -m)
@@ -174,6 +180,7 @@ docs: how to write templates (incl main one)
 .end
 
 .sublist bugs Bugs, etc.
+'manage navbar' doesn't work
 preview can crash w/o rebuild
 widgets don't honor their CSS?
 things deleted locally aren't deleted remotely (rsync??)
