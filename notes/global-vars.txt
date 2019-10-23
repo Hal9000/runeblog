@@ -1,0 +1,8 @@
+Move editor into global.lt3
+Maybe reference smaller files? blog, publishing, banner?, 
+  widgets?, post, post_index, ...
+Author email?
+Widgets in use?
+Font faces/sizes, colors
+Other colors
+Spacing?

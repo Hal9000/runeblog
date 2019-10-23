@@ -543,7 +543,7 @@ class RuneBlog
     @theme = @root/:views/view_name/:themes/:standard
     # Step 1...
     create_dirs(pdraft)
-    xlate cwd: pdraft, src: draft, dst: "guts.html", debug: true
+    xlate cwd: pdraft, src: draft, dst: "guts.html"  # , debug: true
     _post_metadata(draft, pdraft)
     # Step 2...
     vposts = @root/:views/view_name/:posts
@@ -553,7 +553,7 @@ class RuneBlog
     copy(pdraft/"vars.lt3",  @theme/:post) 
     # Step 4...
     xlate cwd: @theme/:post, src: "generate.lt3", force: true, 
-          dst: remote/ahtml, copy: @theme/:post, debug: true
+          dst: remote/ahtml, copy: @theme/:post    # , debug: true
     xlate cwd: @theme/:post, src: "permalink.lt3", 
           dst: remote/:permalink/ahtml  # , debug: true
     copy_widget_html(view_name)

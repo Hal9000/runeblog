@@ -66,13 +66,18 @@ end
 
 def faq
   @faq_count ||= 0
+  _out "<br>" if @faq_count == 0
   @faq_count += 1
   ques = _data.chomp
   ans  = _body_text
   id = "faq#@faq_count"
-  _out %[&nbsp;<a class="btn btn-default btn-xs" data-toggle="collapse" href="##{id}" role="button" aria-expanded="false" aria-controls="collapseExample">+</a>]
+# _out %[&nbsp;<a class="btn btn-default btn-xs" data-toggle="collapse" href="##{id}" role="button" aria-expanded="false" aria-controls="collapseExample">+</a>]
+  _out %[&nbsp;<a data-toggle="collapse" href="##{id}" role="button" aria-expanded="false" aria-controls="collapseExample"><font size=+3>&#8964;</font></a>]
   _out %[&nbsp;<b>#{ques}</b>]
-  _out %[<div class="collapse" id="#{id}"><br><font size=+1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#{ans}</font></div><br><br>\n]
+# _out "<font size=-2><br></font>" if @faq_count == 1
+# _out "<br>" unless @faq_count == 1
+  _out %[<div class="collapse" id="#{id}"><br><font size=+1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#{ans}</font></div>\n]
+  _out "<br>" unless @faq_count == 1
   _optional_blank_line
 end
 
@@ -261,6 +266,18 @@ def pin
   _debug "data = #{_args}"
   # verify only already-specified views?
   @meta.pinned = _args.dup
+  dir = @blog.view.dir/"themes/standard/widgets/pinned/"
+  datafile = dir/"list.data"
+  pins = File.readlines(datafile) rescue []
+damn = File.new("/tmp/dammit", "w")
+  pins << "#{@meta.num} #{@meta.title}\n"
+damn.puts pins
+  pins.uniq!
+damn.puts pins
+damn.close
+  File.open(datafile, "w") do
+    pins.each {|pin| File.puts pin }
+  end
   _optional_blank_line
 end
 
@@ -444,7 +461,7 @@ def sidebar
       end
     end
 
-    xlate cwd: wtag, src: tag, dst: tcard # , debug: (tag == "ad")
+    xlate cwd: wtag, src: tag, dst: tcard, force: true  # , debug: (tag == "ad")
     _include_file wtag/tcard
   end
   _out %[</div>]
@@ -831,7 +848,7 @@ end
 
 def _write_metadata
   File.write("teaser.txt", @meta.teaser)
-  fields = [:num, :title, :date, :pubdate, :views, :tags]
+  fields = [:num, :title, :date, :pubdate, :views, :tags, :pinned]
   fname2 = "metadata.txt"
   f2 = File.open(fname2, "w") do |f2| 
     fields.each {|fld| f2.puts "#{fld}: #{@meta.send(fld)}" }

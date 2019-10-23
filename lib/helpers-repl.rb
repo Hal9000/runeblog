@@ -30,7 +30,7 @@ module RuneBlog::REPL
      "cv"                => :cmd_change_view,  # 0-arity must come second
 
      "config"            => :cmd_config,
-     "manage"            => :cmd_manage,
+     "manage $widget"    => :cmd_manage,
 
      "list posts"        => :cmd_list_posts,
      "lsp"               => :cmd_list_posts,

@@ -53,12 +53,11 @@ module RuneBlog::REPL
   end
 
   def cmd_manage(arg, testing = false)
-puts "Arg = #{arg.inspect}"
     case arg
-      when "pages";   _manage_pages(arg, testing = false)
-      when "links";   _manage_links(arg, testing = false)
-      when "navbar";  _manage_navbar(arg, testing = false)
-#     when "pinned";  _manage_pinned(arg, testing = false)  # ditch this??
+      when "pages";    _manage_pages(nil, testing = false)
+      when "links";   _manage_links(nil, testing = false)
+      when "navbar";  _manage_navbar(nil, testing = false)
+#     when "pinned";  _manage_pinned(nil, testing = false)  # ditch this??
     else
       puts "#{arg} is unknown"
     end

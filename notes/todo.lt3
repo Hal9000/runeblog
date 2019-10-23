@@ -28,6 +28,7 @@ basic 'manage' command
 created .faq command
 got vertical navbar working
 very rudimentary .banner command
+\.faq works mostly
 .end
 
 .sublist easyish Easy stuff?
@@ -72,21 +73,23 @@ automated news search
 .end
 
 .sublist livetext Livetext bugs/features
-autocomplete fails when no valid prefix
+=Var as replacement for \_var
+=autocomplete fails when no valid prefix
+=open/close
+=non-system mode?
+=permit # comments on end of line?
+other command line options? nopara? debug? ...
 weird screen-clear glitches
 fix bug .set var="this, that"
 =mixin? include? copy? seek?
 mixin as module (livetext -m)
-other command line options? nopara? debug? ...
 \$\$incr ?
-=open/close
 permit omission of .lt3
-=permit # comments on end of line?
 \.include dir/    # refs dir/main.lt3 ?
-=non-system mode?
 .end
 
 .sublist ui UI and UX
+="rebuild post" command?
 =add views to lsd/lsp output
 =rethink remove/delete/kill and other verbs
 =commands to edit templates, config, etc.?
@@ -180,6 +183,7 @@ docs: how to write templates (incl main one)
 .end
 
 .sublist bugs Bugs, etc.
+FAQ bootstrap code is screwed up
 'manage navbar' doesn't work
 preview can crash w/o rebuild
 widgets don't honor their CSS?
