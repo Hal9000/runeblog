@@ -14,26 +14,28 @@
 <p>
 
 <h2>Runeblog TODO</h2>
-</h3>Generated from notes/todo.lt3 on 2019-10-21 at 02:02:47</h3>
+</h3>Generated from notes/todo.lt3 on 2019-10-25 at 21:46:39</h3>
 <p>
 
 <table border=0 width=96% cellpadding=8 cellspacing=8>
   <tr>
     <td valign=top width=25%>&nbsp;&nbsp;<b>Easy stuff?
-</b><br><ul><li><font color=red>“wrap”-style include</font></li>
-<li>warning/error: create post with no views existing</li>
-<li>warning? .views line refs nonexistent views</li>
-<li>rewrite help info</li>
+</b><br><ul><li><font color=red>import a legacy draft!</font></li>
+<li><font color=red>more work on .banner!</font></li>
+<li><font color=red>more work on navbar</font></li>
+<li><font color=red>blog command line</font></li>
+<li><font color=red>get "pins" working</font></li>
+<li><font color=red>add views to lsd/lsp output</font></li>
+<li><font color=red>“wrap”-style include</font></li>
+<li><font color=red>warning/error: create post with no views existing</font></li>
+<li><font color=red>rewrite help info</font></li>
+<li>specific kinds of rebuild?</li>
 <li>custom.rb (livetext) gets included if present?</li>
 <li><font color=red>add CSS ref to post?</font></li>
-<li><font color=red>also ask for title when view is created?</font></li>
 <li>Warn when .img (etc.) refs nonexistent asset</li>
 <li>"universal" variables?</li></ul></td>
     <td valign=top width=25%>&nbsp;&nbsp;<b>General functionality
-</b><br><ul><li><font color=red>more work on .banner!</font></li>
-<li><font color=red>more work on navbar</font></li>
-<li><font color=red>blog command line</font></li>
-<li>better asset management</li>
+</b><br><ul><li>better asset management</li>
 <li>dynamically add commands/code to repl?</li>
 <li><font color=red>update only "stale" items</font></li>
 <li>backup/restore?</li>
@@ -43,7 +45,8 @@
 <li><font color=red>ssh-copy-id in setup</font></li>
 <li>build top-down, respecting staleness</li></ul></td>
     <td valign=top width=25%>&nbsp;&nbsp;<b>Bugs, etc.
-</b><br><ul><li>'manage navbar' doesn't work</li>
+</b><br><ul><li>FAQ bootstrap code is screwed up</li>
+<li>weird screen-clear glitches</li>
 <li>preview can crash w/o rebuild</li>
 <li>widgets don't honor their CSS?</li>
 <li>things deleted locally aren't deleted remotely (rsync??)</li>
@@ -55,7 +58,6 @@
 <li><font color=red>non-system mode?</font></li>
 <li><font color=red>permit # comments on end of line?</font></li>
 <li>other command line options? nopara? debug? ...</li>
-<li>weird screen-clear glitches</li>
 <li>fix bug .set var="this, that"</li>
 <li><font color=red>mixin? include? copy? seek?</font></li>
 <li>mixin as module (livetext -m)</li>
@@ -66,18 +68,14 @@
   <tr>
     <td valign=top width=25%>&nbsp;&nbsp;<b>Widget functionality, etc.
 </b><br><ul><li><font color=red> standard/nonstandard marker for widgets</font></li>
-<li><font color=red> repl commands for widgets, etc. (news, links, ...)</font></li>
-<li><font color=red> more on pages</font></li>
-<li><font color=red> more on links</font></li>
 <li><font color=red> work on "standard widget" concept</font></li>
 <li>tag cloud</li>
 <li>bydates manager</li>
 <li>search</li>
 <li>site map widget</li>
-<li>support pinned posts (as pages?)</li>
 <li>automated news search</li></ul></td>
     <td valign=top width=25%>&nbsp;&nbsp;<b>UI and UX
-</b><br><ul><li><font color=red>add views to lsd/lsp output</font></li>
+</b><br><ul><li><font color=red>"rebuild post" command?</font></li>
 <li><font color=red>rethink remove/delete/kill and other verbs</font></li>
 <li><font color=red>commands to edit templates, config, etc.?</font></li>
 <li>shorten commands?</li>
@@ -123,6 +121,7 @@
 <li>docs: how to write templates (incl main one)</li></ul></td>
     <td valign=top width=25%>&nbsp;&nbsp;<b>More advanced features
 </b><br><ul><li>FB/Twitter icons on posts</li>
+<li>second sidebar??</li>
 <li>footer? holding a widget?</li>
 <li>support for Windows?? (open, paths, ...)</li>
 <li>Twitter-embed widget</li>
@@ -140,7 +139,7 @@
 <li><font color=red>special tags: vimeo, twitter, fb?, reddit?, ...</font></li></ul></td>
     <td valign=top width=25%>&nbsp;&nbsp;<b>Miscellaneous/Other
 </b><br><ul><li>allow test code to add to post?</li>
-<li>tag pools are dumb??</li>
+<li>tag pools? dumb??</li>
 <li>verify view is publishable before trying</li>
 <li>methods such as get_post_template?</li>
 <li>make hierarchy of publish files?</li>
@@ -172,7 +171,13 @@
 <li>basic 'manage' command</li>
 <li>created .faq command</li>
 <li>got vertical navbar working</li>
-<li>very rudimentary .banner command</li></ul></td>
+<li>very rudimentary .banner command</li>
+<li>.faq works mostly</li>
+<li>added "deps" to xlate</li>
+<li>some work done on real dependencies</li>
+<li>Warning: .views line refs nonexistent views</li>
+<li>ask for name when view is created</li>
+<li>.banner knows defaults text.html, banner.jpg</li></ul></td>
   </tr>
   <tr>
     <td valign=top width=25%>&nbsp;&nbsp;<b>Completed tasks
