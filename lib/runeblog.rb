@@ -116,7 +116,13 @@ class RuneBlog
     log!(enter: __method__, args: [dir], level: 1)
     Dir.chdir(dir) do
       views = _retrieve_metadata(:views)
-      views.each {|v| system!("cp *html #@root/views/#{v}/remote") }
+      views.each do |v| 
+        unless @blog.view?(v)
+          puts "Warning: '#{v}' is not a view"
+          next
+        end
+        system!("cp *html #@root/views/#{v}/remote")
+      end
     end
   rescue => err
     _tmp_error(err)
@@ -152,6 +158,7 @@ class RuneBlog
     nslug = sourcefile.sub(/.lt3/, "")
     dir = @root/:posts/nslug
     create_dir(dir)
+    # FIXME dependencies?
     xlate cwd: dir, src: sourcefile  # , debug: true
     _deploy_local(dir)
   rescue => err
@@ -323,7 +330,8 @@ class RuneBlog
     text = nil
     @theme = @view.dir/"themes/standard"
     post_entry_name = @theme/"blog/post_entry.lt3"
-    xlate src: post_entry_name, dst: "/tmp/post_entry.html" # , debug: true
+    depend = [post_entry_name]
+    xlate src: post_entry_name, dst: "/tmp/post_entry.html", deps: depend  # , debug: true
     @_post_entry ||= File.read("/tmp/post_entry.html")
     vp = post_lookup(id)
     nslug, aslug, title, date, teaser_text = 
@@ -436,9 +444,12 @@ class RuneBlog
     log!(enter: __method__, args: [view])
     vdir = @root/:views/view
     @theme = @root/:views/view/:themes/:standard
-    xlate cwd: vdir/"themes/standard/etc",
+    depend = [vdir/"remote/etc/blog.css", @theme/"global.lt3", 
+             @theme/"blog/head.lt3", @theme/"navbar/navbar.lt3",
+             @theme/"blog/index.lt3"]   # FIXME what about assets?
+    xlate cwd: vdir/"themes/standard/etc", deps: depend, 
           src: "blog.css.lt3", copy: vdir/"remote/etc/blog.css" # , debug: true
-    xlate cwd: vdir/"themes/standard", force: true,
+    xlate cwd: vdir/"themes/standard", deps: depend, 
           src: "blog/generate.lt3", dst: vdir/:remote/"index.html"
     copy("#{vdir}/assets/*", "#{vdir}/remote/assets/")
   rescue => err
@@ -543,6 +554,7 @@ class RuneBlog
     @theme = @root/:views/view_name/:themes/:standard
     # Step 1...
     create_dirs(pdraft)
+    # FIXME dependencies?
     xlate cwd: pdraft, src: draft, dst: "guts.html"  # , debug: true
     _post_metadata(draft, pdraft)
     # Step 2...
@@ -552,8 +564,10 @@ class RuneBlog
     copy(pdraft/"guts.html", @theme/:post) 
     copy(pdraft/"vars.lt3",  @theme/:post) 
     # Step 4...
+    # FIXME dependencies?
     xlate cwd: @theme/:post, src: "generate.lt3", force: true, 
           dst: remote/ahtml, copy: @theme/:post    # , debug: true
+    # FIXME dependencies?
     xlate cwd: @theme/:post, src: "permalink.lt3", 
           dst: remote/:permalink/ahtml  # , debug: true
     copy_widget_html(view_name)
@@ -564,7 +578,13 @@ class RuneBlog
   def generate_post(draft)
     log!(enter: __method__, args: [draft], level: 1)
     views = _get_views(draft)
-    views.each {|view| _handle_post(draft, view) }
+    views.each do |view| 
+      unless self.view?(view)
+        puts "Warning: '#{view}' is not a view"
+        next
+      end
+      _handle_post(draft, view)
+    end
   rescue => err
     _tmp_error(err)
   end

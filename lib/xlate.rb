@@ -1,19 +1,24 @@
 
 LEXT = ".lt3"
 
-def stale?(src, dst, force = false)
+def newer?(f1, f2)
+  File.mtime(f1) > File.mtime(f2)
+end
+
+def stale?(src, dst, deps, force = false)
   meh = File.new("/tmp/dammit-#{src.gsub(/\//, "-")}", "w")
   log!(enter: __method__, args: [src, dst], level: 3)
   raise "Source #{src} not found in #{Dir.pwd}" unless File.exist?(src)
   return true if force
   return true unless File.exist?(dst)
-  return true if File.mtime(src) > File.mtime(dst)
+  return true if newer?(src, dst)
+  deps.each {|dep| return true if newer?(dep, dst) }
   return false
 end
 
 def xlate(cwd: Dir.pwd, src:, 
           dst: (strip = true; src.sub(/.lt3$/,"")), 
-          copy: nil, debug: false, force: false)
+          deps: [], copy: nil, debug: false, force: false)
   src += LEXT unless src.end_with?(LEXT)
   dst += ".html" unless dst.end_with?(".html") || strip
   indent = " "*12
@@ -24,7 +29,7 @@ def xlate(cwd: Dir.pwd, src:,
       STDERR.puts "#{indent}      from: #{caller[0]}"
       STDERR.puts "#{indent}      copy: #{copy}" if copy
     end
-    stale = stale?(src, dst, force)
+    stale = stale?(src, dst, deps, force)
     if stale
       rc = system("livetext #{src} >#{dst}")
       STDERR.puts "...completed (shell returned #{rc})" if debug

@@ -1,6 +1,7 @@
 require 'ostruct'
 require 'pp'
 require 'date'
+require 'find'
 
 require 'runeblog'
 require 'pathmagic'
@@ -96,15 +97,19 @@ def banner  # still experimental
       _out "    <td colspan=#{span}>"
       case
         when piece.start_with?("hnav")
-          _out "<center>hnav1 hnav2 hnav3 hnav4</center>"
+          # horizontal navbar
+          # _out "<center>hnav1 hnav2 hnav3 hnav4</center>"
         when piece.start_with?("vnav")
-          _out "vnav1<br>vnav2<br>vnav3<br>vnav4<br>"
+          # vertical navbar
+          # _out "vnav1<br>vnav2<br>vnav3<br>vnav4<br>"
         when piece.start_with?("text")
           file = piece.split(":")[1]
+          file ||= "banner/text.html"
           _out File.read(file)
         when piece.start_with?("image")
-          file = piece.split(":")[1]
-          _out "      <img src=#{file} height=100></img>"
+          image = piece.split(":")[1]
+          image ||= "banner/banner.jpg"
+          _out "      <img src=#{image} height=100></img>"
       else
         _out "        '#{piece}' isn't known"
       end
@@ -461,7 +466,12 @@ def sidebar
       end
     end
 
-    xlate cwd: wtag, src: tag, dst: tcard, force: true  # , debug: (tag == "ad")
+    depend = %w[card.css main.css custom.rb local.rb] 
+    depend += ["#{wtag}.lt3", "#{wtag}.rb"]
+    depend += %w[pieces/card-head.lt3 pieces/card-tail.lt3]
+    depend += %w[pieces/main-head.lt3 pieces/main-tail.lt3]
+    depend.map! {|x| @blog.view.dir/"themes/standard/widgets"/wtag/x }
+    xlate cwd: wtag, src: tag, dst: tcard, force: true, deps: depend  , debug: (tag == "ad")
     _include_file wtag/tcard
   end
   _out %[</div>]
@@ -470,6 +480,26 @@ rescue => err
   puts err.backtrace.join("\n")
   exit
 end
+
+=begin
+ets/widgets/pages//card.css
+ets/widgets/pages//custom.rb
+ets/widgets/pages//disclaim.lt3
+ets/widgets/pages//faq.lt3
+ets/widgets/pages//like-dislike.lt3
+ets/widgets/pages//list.data
+ets/widgets/pages//local-vars.lt3
+ets/widgets/pages//local.rb
+ets/widgets/pages//main.css
+ets/widgets/pages//other-stuff.lt3
+ets/widgets/pages//pages.lt3
+ets/widgets/pages//pages.rb
+ets/widgets/pages//pieces
+ets/widgets/pages//pieces/card-head.lt3
+ets/widgets/pages//pieces/card-tail.lt3
+ets/widgets/pages//pieces/main-head.lt3
+ets/widgets/pages//pieces/main-tail.lt3
+=end
 
 def stylesheet
   lines = _body
@@ -688,7 +718,8 @@ def navbar
       first = false # hardcode this part??
       _out %[<li class="nav-item active"> <a class="nav-link" href="index.html">#{cdata}<span class="sr-only">(current)</span></a> </li>]
     else
-      xlate cwd: "navbar", src: basename, dst: vdir/"remote/navbar"/basename+".html" # , debug: true
+      depend = Find.find(@blog.root/:views/@blog.view.to_s/"themes/standard/navbar/").to_a
+      xlate cwd: "navbar", src: basename, dst: vdir/"remote/navbar"/basename+".html", deps: depend # , debug: true
       _out %[<li class="nav-item"> <a class="nav-link" #{href_main}>#{cdata}</a> </li>]
     end
   end

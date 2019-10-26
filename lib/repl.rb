@@ -265,6 +265,10 @@ puts "Got to #{__method__}"
 
   def cmd_new_view(arg, testing = false)
     reset_output
+    if arg.nil?
+      arg = ask("\nFilename: ")
+      puts
+    end
     @blog.create_view(arg)
     edit_file(@blog.view.dir/"themes/standard/global.lt3")
     @blog.change_view(arg)

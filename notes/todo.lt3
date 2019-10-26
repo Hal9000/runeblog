@@ -29,6 +29,8 @@ created .faq command
 got vertical navbar working
 very rudimentary .banner command
 \.faq works mostly
+added "deps" to xlate
+some work done on real dependencies
 .end
 
 .sublist easyish Easy stuff?
@@ -36,6 +38,7 @@ very rudimentary .banner command
 warning/error: create post with no views existing
 warning? .views line refs nonexistent views
 rewrite help info
+specific kinds of rebuild?
 custom.rb (livetext) gets included if present?
 =add CSS ref to post?
 =also ask for title when view is created?
