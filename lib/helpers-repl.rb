@@ -32,6 +32,8 @@ module RuneBlog::REPL
      "config"            => :cmd_config,
      "manage $widget"    => :cmd_manage,
 
+     "legacy"            => :cmd_legacy,
+
      "list posts"        => :cmd_list_posts,
      "lsp"               => :cmd_list_posts,
 
@@ -185,25 +187,6 @@ module RuneBlog::REPL
 
   def colored_slug(slug)
     slug[0..3] + slug[4..-1]
-  end
-
-  def import(arg = nil)
-    raise "Not implemented at present..."
-    arg = nil if arg == ""
-    arg ||= ask("Filename: ")  # check validity later
-    name = arg
-    grep = `grep ^.title #{name}`
-    @title = grep.sub(/^.title /, "")
-    @slug = @blog.make_slug(@title) # import (not impl)
-    @fname = @slug + ".lt3"
-    result = system!("cp #{name} #@root/drafts/#@fname")
-    raise CantCopy(name, "#@root/drafts/#@fname") unless result
-
-    edit_initial_post(@fname)
-    process_post(@fname)
-    link_post_all_views(@meta)
-  rescue => err
-    error(err)
   end
 
   def tags_for_view(vname = @blog.view)

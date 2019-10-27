@@ -17,10 +17,10 @@ def stale?(src, dst, deps, force = false)
 end
 
 def xlate(cwd: Dir.pwd, src:, 
-          dst: (strip = true; src.sub(/.lt3$/,"")), 
+          dst: (strip = true; File.basename(src).sub(/.lt3$/,"")), 
           deps: [], copy: nil, debug: false, force: false)
   src += LEXT unless src.end_with?(LEXT)
-  dst += ".html" unless dst.end_with?(".html") || strip
+  dst += ".html" unless (dst.end_with?(".html"))   # || strip)
   indent = " "*12
   Dir.chdir(cwd) do
     if debug
@@ -30,6 +30,7 @@ def xlate(cwd: Dir.pwd, src:,
       STDERR.puts "#{indent}      copy: #{copy}" if copy
     end
     stale = stale?(src, dst, deps, force)
+# puts "stale? src = #{src}\n       dst = #{dst}\n       #{stale}"
     if stale
       rc = system("livetext #{src} >#{dst}")
       STDERR.puts "...completed (shell returned #{rc})" if debug

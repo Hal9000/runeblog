@@ -287,6 +287,10 @@ puts "Got to #{__method__}"
   def cmd_new_post(arg, testing = false)
     reset_output
     check_empty(arg)
+    if @blog.views.empty?
+      puts "\n  Create a view before creating the first post!\n "
+      return
+    end
     title = ask("\nTitle: ")
     puts
     @blog.create_new_post(title)
@@ -448,54 +452,92 @@ puts "Got to #{__method__}"
     @out
   end
 
+  def cmd_legacy(arg = nil)
+#   dir = ask("Dir = ")
+    dir = "sources/computing"
+    puts "Importing from: #{dir}"
+    files = Dir[dir/"**"]
+    files.each do |fname|
+      name = fname
+      cmd = "grep ^.title #{name}"
+      grep = `#{cmd}`   # find .title
+      @title = grep.sub(/^.title /, "")
+      num = `grep ^.post #{name}`.sub(/^.post /, "").to_i
+      seq = @blog.get_sequence
+      tnum = File.basename(fname).to_i
+
+      raise "num != seq + 1" if num != seq + 1
+      raise "num != tnum" if num != tnum
+      seq = @blog.next_sequence
+      raise "num != seq" if num != seq
+
+      label = '%04d' % num
+      slug0 = @title.downcase.strip.gsub(' ', '-').gsub(/[^\w-]/, '')
+      @slug = "#{label}-#{slug0}"
+      @fname = @slug + ".lt3"
+      cmd = "cp #{name} #{@blog.root}/drafts/#@fname"
+      result = system!(cmd)
+      raise CantCopy(name, "#{@blog.root}/drafts/#@fname") unless result
+puts(`ls -l #{@blog.root}/drafts`)
+puts "@fname = #@fname"
+puts "Pause..."
+gets
+      @meta = @blog.process_post(@fname)
+      puts
+      sleep 2
+    end
+  rescue => err
+    error(err)
+  end
+
+  Help = <<-EOS
+
+  {Basics:}                                         {Views:}
+  -------------------------------------------       -------------------------------------------
+  {h, help}           This message                  {change view VIEW}  Change current view
+  {q, quit}           Exit the program              {cv VIEW}           Change current view
+  {v, version}        Print version information     {new view}          Create a new view
+                                                    {list views}        List all views available
+                                                    {lsv}               Same as: list views
+                   
+  {Posts:}                                          {Advanced:}
+  -------------------------------------------       -------------------------------------------
+  {p, post}           Create a new post             {config}            Edit various system files
+  {new post}          Same as p, post               {customize}         (BUGGY) Change set of tags, extra views
+  {lsp, list posts}   List posts in current view    {preview}           Look at current (local) view in browser
+  {lsd, list drafts}  List all drafts (all views)   {browse}            Look at current (published) view in browser
+  {delete ID [ID...]} Remove multiple posts         {rebuild}           Regenerate all posts and relink
+  {undelete ID}       Undelete a post               {publish}           Publish (current view)
+  {edit ID}           Edit a post                   {ssh}               Login to remote server
+  {import ASSETS}     Import assets (images, etc.)  {manage WIDGET}     Manage content/layout of a widget
+  EOS
+
   def cmd_help(arg, testing = false)
     reset_output 
     check_empty(arg)
-    msg = <<-EOS
-
-       Commands:
-  
-       h, help           This message
-       q, quit           Exit the program
-       v, version        Print version information
-  
-       change view VIEW  Change current view
-       cv VIEW           Change current view
-
-       new view          Create a new view
-
-       list views        List all views available
-       lsv               Same as: list views
-
-       config            Edit various system files
-*      customize         (BUGGY) Change set of tags, extra views
-  
-       p, post           Create a new post
-       new post          Same as post (create a post)
-
-*      import ASSETS     Import assets (images, etc.)
-
-       lsp, list posts   List posts in current view
-
-       lsd, list drafts  List all posts regardless of view
-  
-       delete ID [ID...] Remove multiple posts
-       undelete ID       Undelete a post
-       edit ID           Edit a post
-  
-       preview           Look at current (local) view in browser
-       browse            Look at current (published) view in browser
-       rebuild           Regenerate all posts and relink
-       publish           Publish (current view)
-       ssh               Login to remote server
-    EOS
+    msg = Help
     output msg
     msg.each_line do |line|
-      next if testing
-      line.chomp!
-      s1, s2 = line[0..22], line[23..-1]
-      print fx(s1, :bold)
-      puts s2
+      e = line.each_char
+      first = true
+      loop do
+        s1 = ""
+        c = e.next
+        if c == "{"
+          s2 = first ? "" : "  "
+          first = false
+          loop do 
+            c = e.next
+            break if c == "}"
+            s2 << c
+          end
+          print fx(s2, :bold)
+          s2 = ""
+        else
+          s1 << c
+        end
+        print s1
+      end
     end
     puts unless testing
     @out

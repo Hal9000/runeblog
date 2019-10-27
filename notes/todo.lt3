@@ -34,6 +34,8 @@ some work done on real dependencies
 Warning: .views line refs nonexistent views
 ask for name when view is created
 \.banner knows defaults text.html, banner.jpg
+rewrote help info
+Warning/error: create post with no views existing
 .end
 
 .sublist easyish Easy stuff?
@@ -44,8 +46,6 @@ ask for name when view is created
 =get "pins" working
 =add views to lsd/lsp output
 =“wrap”-style include
-=warning/error: create post with no views existing
-=rewrite help info
 specific kinds of rebuild?
 custom.rb (livetext) gets included if present?
 =add CSS ref to post?
@@ -353,7 +353,6 @@ large testbed!
 rebuild
 fix post template problem
 remove post
-cv without param?
 append onto VERSION when creating blog
 default view in .blog
 current view (all views?) into new post

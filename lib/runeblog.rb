@@ -117,11 +117,14 @@ class RuneBlog
     Dir.chdir(dir) do
       views = _retrieve_metadata(:views)
       views.each do |v| 
-        unless @blog.view?(v)
-          puts "Warning: '#{v}' is not a view"
+puts "VIEW = #{v}   dir = #{dir}"
+        unless self.view?(v)
+          puts "#{fx("Warning:", :red)} #{fx(v, :bold)} is not a view"
           next
         end
-        system!("cp *html #@root/views/#{v}/remote")
+puts "pwd = #{Dir.pwd}"
+puts "cp *html #@root/views/#{v}/remote"
+        system!("cp *html #@root/views/#{v}/remote", show: true)
       end
     end
   rescue => err
@@ -154,12 +157,16 @@ class RuneBlog
   end
 
   def process_post(sourcefile)
-    log!(enter: __method__, args: [dir], level: 2)
+    log!(enter: __method__, args: [sourcefile], level: 2)
     nslug = sourcefile.sub(/.lt3/, "")
     dir = @root/:posts/nslug
-    create_dir(dir)
+# puts "sourcefile = #{sourcefile}"
+puts "-- dir = #{dir}\n   pwd = #{Dir.pwd}\n   @root = #@root"
+gets
+    create_dirs(dir)
     # FIXME dependencies?
-    xlate cwd: dir, src: sourcefile  # , debug: true
+    xlate cwd: dir, src: @root/:drafts/sourcefile, debug: true
+# puts `ls -l #{dir}`
     _deploy_local(dir)
   rescue => err
     _tmp_error(err)
@@ -398,12 +405,15 @@ class RuneBlog
     _tmp_error(err)
   end
 
+  def import_legacy_post(file, oldfile, testing = false)
+  end
+
   def edit_initial_post(file, testing = false)
     log!(enter: __method__, args: [file, testing], level: 3)
-    debug "=== edit_initial_post #{file.inspect}  => #{sourcefile}"
-    result = system!("#@editor #{sourcefile} +8") unless testing
-    raise EditorProblem(sourcefile) unless result
-    process_post(sourcefile)
+    debug "=== edit_initial_post #{file.inspect}  => #{file}"
+    result = system!("#@editor #{file} +8") unless testing
+    raise EditorProblem(file) unless result
+    process_post(file)
     nil
   rescue => err
     error(err)
