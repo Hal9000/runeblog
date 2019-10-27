@@ -36,10 +36,11 @@ ask for name when view is created
 \.banner knows defaults text.html, banner.jpg
 rewrote help info
 Warning/error: create post with no views existing
+enhances ViewPost
+legacy drafts mostly working
 .end
 
 .sublist easyish Easy stuff?
-=import a legacy draft!
 =more work on .banner!
 =more work on navbar
 =blog command line

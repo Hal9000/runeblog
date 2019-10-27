@@ -21,7 +21,8 @@ class RuneBlog::Post
     raise "Doesn't work right now"
     raise NoBlogAccessor if RuneBlog.blog.nil?
     # "post" is a slug
-    pdir = RuneBlog.blog.view.dir/post
+    pdir = RuneBlog.blog.root/:drafts/post
+puts "-- load: opening #{pdir}"
     meta = nil
     Dir.chdir(pdir) do
       meta = read_config("metadata.txt")
@@ -112,9 +113,76 @@ class RuneBlog::Post
 end
 
 class RuneBlog::ViewPost
-  attr_reader :path, :nslug, :aslug, :title, :date,
-              :teaser_text
+  attr_accessor :nslug, :aslug, :num, :view, :blog
+  attr_accessor :path, :title, :date, :teaser_text
+
+  def self.make(blog:, view:, nslug:)
+    raise "No numeric prefix on #{nslug}" unless nslug =~ /^\d{4}-/
+    raise "Not expecting an extension" if nslug.end_with?(".lt3") || nslug.end_with?(".html")
+    view = view.to_s
+    view.define_singleton_method :path do |subdir = ""|
+      str = blog.root/:views/view
+      str << "/#{subdir}" unless subdir.empty?
+      str
+    end
+    view.define_singleton_method :standard do |subdir = ""|
+      str = blog.root/:views/view/:themes/:standard
+      str << "/#{subdir}" unless subdir.empty?
+      str
+    end
+    view.define_singleton_method :postdir do |file = ""|
+      file = file.to_s
+      str = blog.root/:views/view/:posts/nslug
+      str = str/file unless file.empty?
+      str
+    end 
+    view.define_singleton_method :remote do |dir: "", file: ""|
+      subdir = subdir.to_s
+      file = file.to_s
+      str = blog.root/:views/view/:remote
+      str = str/subdir unless subdir.empty?
+      str = str/file unless file.empty?
+      str
+    end
+    obj = RuneBlog::ViewPost.new(view, nslug)
+    obj.blog = blog
+    obj.view = view
+    obj.nslug = nslug
+    obj.aslug = nslug[5..-1]
+    obj.num = nslug[0..3]
+    obj
+  end
+
+  def repo(subdir = "")
+    subdir = subdir.to_s
+    unless subdir.empty?
+      raise "Expected 'posts' or 'drafts'" unless %w[posts drafts].include?(subdir)
+    end
+    str = blog.root
+    str = str/subdir unless subdir.empty?
+    str
+  end
+
+  alias root repo
+
+  def slug(num = true, ext = "")
+    ext = ext.to_s
+    str = ""
+    str << @num << "-" if num
+    str << @aslug 
+    str << ext
+    str
+  end
               
+=begin
+  aslug          this-is-a-post
+  aslug_live     this-is-a-post.lt3
+  aslug_html     this-is-a-post.lt3
+  nslug          0001-this-is-a-post
+
+  slug(:num, ext = "")
+=end
+
   def initialize(view, postdir)
     log!(enter: __method__, args: [view, postdir], level: 3)
     # Assumes already parsed/processed
@@ -122,7 +190,7 @@ class RuneBlog::ViewPost
     @path = postdir.dup
     @nslug = @path.split("/").last
     @aslug = @nslug[5..-1]
-    fname = "#{postdir}/teaser.txt"
+    fname = "#{postdir}/teaser.txt"            # ???
     @teaser_text = File.read(fname).chomp
     # FIXME dumb hacks...
     mdfile = postdir/"metadata.txt"

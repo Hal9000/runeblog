@@ -1,5 +1,8 @@
 #!/usr/bin/env ruby
 
+system("vi notes/todo.lt3; livetext notes/todo.lt3 >notes/todo.html")
+system("git add notes/todo*")
+
 system("vi lib/runeblog_version.rb +/VER '+sil norm|$4h'")
 
 require 'date'

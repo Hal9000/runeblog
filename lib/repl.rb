@@ -38,10 +38,10 @@ module RuneBlog::REPL
   end
 
   def cmd_config(arg, testing = false)
-    list = ["global.lt3", "blog/generate.lt3", "     head.lt3", "     index.lt3",
-           "     post_entry.lt3", "etc/blog.css.lt3", "    externals.lt3",
-           "post/generate.lt3", "     head.lt3", "     index.lt3",
-           "     permalink.lt3"]
+    list = ["global.lt3", "blog/generate.lt3", ".... head.lt3", ".... index.lt3",
+           ".... post_entry.lt3", "etc/blog.css.lt3", "... externals.lt3",
+           "post/generate.lt3", ".... head.lt3", ".... index.lt3",
+           ".... permalink.lt3"]
     name = ["global.lt3", "blog/generate.lt3", "blog/head.lt3", "blog/index.lt3",
            "blog/post_entry.lt3", "etc/blog.css.lt3", "blog/externals.lt3",
            "post/generate.lt3", "post/head.lt3", "post/index.lt3",
@@ -345,7 +345,7 @@ puts "Got to #{__method__}"
     end
 
     file = files.first
-    draft = "#{@blog.root}/drafts/#{file}"
+    draft = "#{file}"  # FIXME ?
     result = edit_file(draft)
     @blog.generate_post(draft)
   rescue => err
@@ -482,7 +482,9 @@ puts(`ls -l #{@blog.root}/drafts`)
 puts "@fname = #@fname"
 puts "Pause..."
 gets
-      @meta = @blog.process_post(@fname)
+      # post = Post.load(@slug)
+      draft = "#{@blog.root}/drafts/#@fname"
+      @meta = @blog.generate_post(draft)
       puts
       sleep 2
     end

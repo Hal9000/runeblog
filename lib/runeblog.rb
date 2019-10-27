@@ -1,5 +1,6 @@
 require 'date'
 require 'find'
+require 'ostruct'
 
 require 'logging'
 
@@ -165,7 +166,7 @@ puts "-- dir = #{dir}\n   pwd = #{Dir.pwd}\n   @root = #@root"
 gets
     create_dirs(dir)
     # FIXME dependencies?
-    xlate cwd: dir, src: @root/:drafts/sourcefile, debug: true
+    xlate cwd: dir, src: @root/:drafts/sourcefile   # , debug: true
 # puts `ls -l #{dir}`
     _deploy_local(dir)
   rescue => err
@@ -394,7 +395,7 @@ gets
     meta = nil
     views = views + [self.view.to_s]
     views.uniq!
-    Dir.chdir(@root/:posts) do
+    Dir.chdir(@root/"posts") do
       post = Post.create(title: title, teaser: teaser, body: body, pubdate: pubdate, views: views)
       post.edit unless testing
       post.build
@@ -406,17 +407,6 @@ gets
   end
 
   def import_legacy_post(file, oldfile, testing = false)
-  end
-
-  def edit_initial_post(file, testing = false)
-    log!(enter: __method__, args: [file, testing], level: 3)
-    debug "=== edit_initial_post #{file.inspect}  => #{file}"
-    result = system!("#@editor #{file} +8") unless testing
-    raise EditorProblem(file) unless result
-    process_post(file)
-    nil
-  rescue => err
-    error(err)
   end
 
   def posts
@@ -469,6 +459,7 @@ gets
   def _get_views(draft)
     log!(enter: __method__, args: [draft], level: 2)
     # FIXME dumb code
+#   view_line = File.readlines(self.root/:drafts/draft).grep(/^.views /)
     view_line = File.readlines(draft).grep(/^.views /)
     raise "More than one .views call!" if view_line.size > 1
     raise "No .views call!" if view_line.size < 1
