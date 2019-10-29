@@ -24,19 +24,18 @@ def xlate(cwd: Dir.pwd, src:,
   indent = " "*12
   Dir.chdir(cwd) do
     if debug
-      STDERR.puts "#{indent} -- xlate #{src} >#{dst}"
-      STDERR.puts "#{indent}      in:   #{Dir.pwd}"
-      STDERR.puts "#{indent}      from: #{caller[0]}"
-      STDERR.puts "#{indent}      copy: #{copy}" if copy
+      puts "#{indent} -- xlate #{src} >#{dst}"
+      puts "#{indent}      in:   #{Dir.pwd}"
+      puts "#{indent}      from: #{caller[0]}"
+      puts "#{indent}      copy: #{copy}" if copy
     end
     stale = stale?(src, dst, deps, force)
-# puts "stale? src = #{src}\n       dst = #{dst}\n       #{stale}"
     if stale
       rc = system("livetext #{src} >#{dst}")
-      STDERR.puts "...completed (shell returned #{rc})" if debug
+      puts "...completed (shell returned #{rc})" if debug
       system!("cp #{dst} #{copy}") if copy
     else
-      STDERR.puts "#{indent} -- ^ Already up to date!" if debug
+      puts "#{indent} -- ^ Already up to date!" if debug
       return
     end
   end

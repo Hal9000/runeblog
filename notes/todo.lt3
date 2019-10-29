@@ -38,13 +38,14 @@ rewrote help info
 Warning/error: create post with no views existing
 enhances ViewPost
 legacy drafts mostly working
+some work on banner, navbar
+pinned posts mostly working
 .end
 
 .sublist easyish Easy stuff?
+=blog command line
 =more work on .banner!
 =more work on navbar
-=blog command line
-=get "pins" working
 =add views to lsd/lsp output
 =“wrap”-style include
 specific kinds of rebuild?
@@ -55,14 +56,13 @@ Warn when .img (etc.) refs nonexistent asset
 .end
 
 .sublist funky General functionality
-better asset management
-dynamically add commands/code to repl?
-=update only "stale" items
-backup/restore?
-need categories??
-post analyzer - SEO, spell, wcount, etc.
+=backup/restore?
 =more params in globals
 =ssh-copy-id in setup
+better asset management
+dynamically add commands/code to repl?
+need categories??
+post analyzer - SEO, spell, wcount, etc.
 build top-down, respecting staleness
 .end
 
@@ -93,8 +93,6 @@ permit omission of .lt3
 
 .sublist ui UI and UX
 ="rebuild post" command?
-=rethink remove/delete/kill and other verbs
-=commands to edit templates, config, etc.?
 shorten commands?
 allow large output for lsp/lsd (scroll? more?)
 undo last post?
@@ -149,7 +147,6 @@ distinguish view and view\_name
 code coverage analysis
 profiling
 .end
-
 
 .sublist misc Miscellaneous/Other
 allow test code to add to post?

@@ -15,6 +15,7 @@ module RuneBlog::REPL
      "v"                 => :cmd_version,
      "list views"        => :cmd_list_views, 
      "lsv"               => :cmd_list_views, 
+     "clear"             => :cmd_clear,
 
      "new view $name"    => :cmd_new_view,
 

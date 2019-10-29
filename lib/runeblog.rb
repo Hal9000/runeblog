@@ -118,13 +118,10 @@ class RuneBlog
     Dir.chdir(dir) do
       views = _retrieve_metadata(:views)
       views.each do |v| 
-puts "VIEW = #{v}   dir = #{dir}"
         unless self.view?(v)
           puts "#{fx("Warning:", :red)} #{fx(v, :bold)} is not a view"
           next
         end
-puts "pwd = #{Dir.pwd}"
-puts "cp *html #@root/views/#{v}/remote"
         system!("cp *html #@root/views/#{v}/remote", show: true)
       end
     end
@@ -161,13 +158,9 @@ puts "cp *html #@root/views/#{v}/remote"
     log!(enter: __method__, args: [sourcefile], level: 2)
     nslug = sourcefile.sub(/.lt3/, "")
     dir = @root/:posts/nslug
-# puts "sourcefile = #{sourcefile}"
-puts "-- dir = #{dir}\n   pwd = #{Dir.pwd}\n   @root = #@root"
-gets
     create_dirs(dir)
     # FIXME dependencies?
     xlate cwd: dir, src: @root/:drafts/sourcefile   # , debug: true
-# puts `ls -l #{dir}`
     _deploy_local(dir)
   rescue => err
     _tmp_error(err)
@@ -346,7 +339,6 @@ gets
       vp.nslug, vp.aslug, vp.title, vp.date, vp.teaser_text
     path = vp.path
     url = aslug + ".html"
-# puts "--- vp = #{[vp.nslug, vp.aslug, vp.title, vp.date, vp.teaser_text].inspect}"; gets
     date = ::Date.parse(date)
     date = date.strftime("%B %e<br><div style='float: right'>%Y</div>")
     text = interpolate(@_post_entry, binding)
@@ -447,11 +439,12 @@ gets
     depend = [vdir/"remote/etc/blog.css", @theme/"global.lt3", 
              @theme/"blog/head.lt3", @theme/"navbar/navbar.lt3",
              @theme/"blog/index.lt3"]   # FIXME what about assets?
-    xlate cwd: vdir/"themes/standard/etc", deps: depend, 
+    xlate cwd: vdir/"themes/standard/etc", deps: depend,
           src: "blog.css.lt3", copy: vdir/"remote/etc/blog.css" # , debug: true
-    xlate cwd: vdir/"themes/standard", deps: depend, 
+    xlate cwd: vdir/"themes/standard", deps: depend, force: true,
           src: "blog/generate.lt3", dst: vdir/:remote/"index.html"
     copy("#{vdir}/assets/*", "#{vdir}/remote/assets/")
+    copy_widget_html(view)
   rescue => err
     _tmp_error(err)
   end
@@ -459,7 +452,6 @@ gets
   def _get_views(draft)
     log!(enter: __method__, args: [draft], level: 2)
     # FIXME dumb code
-#   view_line = File.readlines(self.root/:drafts/draft).grep(/^.views /)
     view_line = File.readlines(draft).grep(/^.views /)
     raise "More than one .views call!" if view_line.size > 1
     raise "No .views call!" if view_line.size < 1

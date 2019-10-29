@@ -8,8 +8,7 @@
 . not needed.
 . --------------------------------------------------
 
-.navbar2
-  index   Home
+.navbar
   about   About
   contact Contact
   faq     FAQ

@@ -19,7 +19,7 @@ def init_liveblog    # FIXME - a lot of this logic sucks
   @root = @blog.root
   @view = @blog.view
   @view_name = @blog.view.name unless @view.nil?
-  @vdir = @blog.view.dir
+  @vdir = @blog.view.dir rescue "NONAME"
   @version = RuneBlog::VERSION
   @theme = @vdir/:themes/:standard
 end
@@ -96,12 +96,9 @@ def banner  # still experimental
     pieces.each do |piece|
       _out "    <td colspan=#{span}>"
       case
-        when piece.start_with?("hnav")
-          # horizontal navbar
-          # _out "<center>hnav1 hnav2 hnav3 hnav4</center>"
-        when piece.start_with?("vnav")
-          # vertical navbar
-          # _out "vnav1<br>vnav2<br>vnav3<br>vnav4<br>"
+        when piece.start_with?("navbar")
+          file = "navbar/navbar.html"
+          _out File.read(file)
         when piece.start_with?("text")
           file = piece.split(":")[1]
           file ||= "banner/text.html"
@@ -268,22 +265,30 @@ end
 
 def pin
   raise "'post' was not called" unless @meta
-  _debug "data = #{_args}"
-  # verify only already-specified views?
-  @meta.pinned = _args.dup
-  dir = @blog.view.dir/"themes/standard/widgets/pinned/"
-  datafile = dir/"list.data"
-  pins = File.readlines(datafile) rescue []
-damn = File.new("/tmp/dammit", "w")
-  pins << "#{@meta.num} #{@meta.title}\n"
-damn.puts pins
-  pins.uniq!
-damn.puts pins
-damn.close
-  File.open(datafile, "w") do
-    pins.each {|pin| File.puts pin }
+  _debug "data = #{_args}"  # verify only valid views?
+  pinned = @_args
+  @meta.pinned = pinned
+  pinned.each do |pinview|
+    dir = @blog.root/:views/pinview/"themes/standard/widgets/pinned/"
+    datafile = dir/"list.data"
+    if File.exist?(datafile)
+      pins = File.readlines(datafile)
+    else
+      pins = []
+    end
+    pins << "#{@meta.num} #{@meta.title}\n"
+    pins.uniq!
+    outfile = File.new(datafile, "w")
+    pins.each do |pin| 
+      outfile.puts pin 
+    end
+    outfile.close
   end
   _optional_blank_line
+rescue => err
+  puts "err = #{err}"
+  puts err.backtrace.join("\n")
+  gets
 end
 
 def write_post
@@ -434,12 +439,16 @@ rescue => err
 end
 
 def sidebar
+  _debug "--- handling sidebar\r"
   if _args.include? "off"
     _body { }  # iterate, do nothing
     return 
   end
 
   _out %[<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">]
+
+  standard = %w[pinned pages links]
+
   _body do |token|
     tag = token.chomp.strip.downcase
     wtag = :widgets/tag
@@ -448,12 +457,14 @@ def sidebar
 
     code = _load_local(tag)
     if code 
-      if ["pages", "links"].include? tag
+      if ["pages", "links", "pinned"].include? tag
         Dir.chdir(wtag) do 
           widget = code.new(@blog)
           widget.build
         end
       end
+      _include_file wtag/tcard
+      next
     end
 
     if tag == "ad"
@@ -471,7 +482,8 @@ def sidebar
     depend += %w[pieces/card-head.lt3 pieces/card-tail.lt3]
     depend += %w[pieces/main-head.lt3 pieces/main-tail.lt3]
     depend.map! {|x| @blog.view.dir/"themes/standard/widgets"/wtag/x }
-    xlate cwd: wtag, src: tag, dst: tcard, force: true, deps: depend  , debug: (tag == "ad")
+_debug "--- call xlate #{tag} src = #{tag}  dst = #{tcard}\r"
+    xlate cwd: wtag, src: tag, dst: tcard, force: true, deps: depend # , debug: true
     _include_file wtag/tcard
   end
   _out %[</div>]
@@ -480,26 +492,6 @@ rescue => err
   puts err.backtrace.join("\n")
   exit
 end
-
-=begin
-ets/widgets/pages//card.css
-ets/widgets/pages//custom.rb
-ets/widgets/pages//disclaim.lt3
-ets/widgets/pages//faq.lt3
-ets/widgets/pages//like-dislike.lt3
-ets/widgets/pages//list.data
-ets/widgets/pages//local-vars.lt3
-ets/widgets/pages//local.rb
-ets/widgets/pages//main.css
-ets/widgets/pages//other-stuff.lt3
-ets/widgets/pages//pages.lt3
-ets/widgets/pages//pages.rb
-ets/widgets/pages//pieces
-ets/widgets/pages//pieces/card-head.lt3
-ets/widgets/pages//pieces/card-tail.lt3
-ets/widgets/pages//pieces/main-head.lt3
-ets/widgets/pages//pieces/main-tail.lt3
-=end
 
 def stylesheet
   lines = _body
@@ -646,42 +638,53 @@ def tag_cloud
 end
 
 def vnavbar
+  _custom_navbar(:vert)
 end
 
-def navbar2
+def hnavbar
+  _custom_navbar  # horiz is default
+end
+
+def navbar
+  _custom_navbar  # horiz is default
+end
+
+def _custom_navbar(orient = :horiz)
   vdir = @blog.view.dir
   title = _var(:blog)
 
+  extra = ""
+  extra = "navbar-expand-lg" if orient == :horiz
+
   open = <<-HTML
-   <nav class="navbar navbar-light bg-light">
-      <a class="navbar-brand" href="index.html">#{title}</a>
-        <ul class="navbar-nav mr-auto">
+   <nav class="navbar #{extra} navbar-light bg-light">
+      <ul class="navbar-nav mr-auto">
   HTML
   close = <<-HTML
-        </ul>
-      </div>
+      </ul>
     </nav>
   HTML
 
-  first = true
-  _out open
+  html_file = @blog.root/:views/@blog.view/:themes/:standard/:navbar/"navbar.html"
+  output = File.new(@blog.root/:views/@blog.view/:themes/:standard/:navbar/"navbar.html", "w")
+  output.puts open
   lines = _body
+  lines = ["  index  Home"] + lines  unless _args.include?("nohome")
   lines.each do |line|
     basename, cdata = line.chomp.strip.split(" ", 2)
     full = :navbar/basename+".html"
     href_main = _main(full)
-    if first
-      first = false # hardcode this part??
-      _out %[<li class="nav-item active"> <a class="nav-link" href="index.html">#{cdata}<span class="sr-only">(current)</span></a> </li>]
+    if basename == "index"  # special case
+      output.puts %[<li class="nav-item active"> <a class="nav-link" href="index.html">#{cdata}<span class="sr-only">(current)</span></a> </li>]
     else
       xlate cwd: "navbar", src: basename, dst: vdir/"remote/navbar"/basename+".html" # , debug: true
-      _out %[<li class="nav-item"> <a class="nav-link" #{href_main}>#{cdata}</a> </li>]
+      output.puts %[<li class="nav-item"> <a class="nav-link" #{href_main}>#{cdata}</a> </li>]
     end
   end
-  _out close
+  output.puts close
 end
 
-def navbar
+def _old_navbar
   vdir = @blog.view.dir
   title = _var(:blog)
 
@@ -772,7 +775,7 @@ def _write_card(cardfile, mainfile, pairs, card_title, tag)
       wrapper = %[<li class="list-group-item">#{anchor}</li>]
       f.puts wrapper
     end
-    _include_file cardfile+".html"
+     _include_file cardfile+".html"
     f.puts <<-EOS
           </div>
         </div>

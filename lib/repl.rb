@@ -54,7 +54,7 @@ module RuneBlog::REPL
 
   def cmd_manage(arg, testing = false)
     case arg
-      when "pages";    _manage_pages(nil, testing = false)
+      when "pages";   _manage_pages(nil, testing = false)
       when "links";   _manage_links(nil, testing = false)
       when "navbar";  _manage_navbar(nil, testing = false)
 #     when "pinned";  _manage_pinned(nil, testing = false)  # ditch this??
@@ -71,7 +71,6 @@ module RuneBlog::REPL
   end
 
   def _manage_navbar(arg, testing = false)   # cloned from manage_pages
-puts "Got to #{__method__}"
     check_empty(arg)
     dir = @blog.view.dir/"themes/standard/navbar"
     files = Dir.entries(dir) - %w[. .. navbar.lt3]
@@ -328,7 +327,7 @@ puts "Got to #{__method__}"
     id = get_integer(arg)
     # Simplify this
     tag = "#{'%04d' % id}"
-    files = ::Find.find(@blog.root+"/drafts").to_a
+    files = ::Find.find(@blog.root/:drafts).to_a
     files = files.grep(/#{tag}-.*lt3/)
     files = files.map {|f| File.basename(f) }
     if files.size > 1
@@ -345,7 +344,7 @@ puts "Got to #{__method__}"
     end
 
     file = files.first
-    draft = "#{file}"  # FIXME ?
+    draft = @blog.root/:drafts/file
     result = edit_file(draft)
     @blog.generate_post(draft)
   rescue => err
@@ -478,10 +477,6 @@ puts "Got to #{__method__}"
       cmd = "cp #{name} #{@blog.root}/drafts/#@fname"
       result = system!(cmd)
       raise CantCopy(name, "#{@blog.root}/drafts/#@fname") unless result
-puts(`ls -l #{@blog.root}/drafts`)
-puts "@fname = #@fname"
-puts "Pause..."
-gets
       # post = Post.load(@slug)
       draft = "#{@blog.root}/drafts/#@fname"
       @meta = @blog.generate_post(draft)
@@ -499,9 +494,10 @@ gets
   {h, help}           This message                  {change view VIEW}  Change current view
   {q, quit}           Exit the program              {cv VIEW}           Change current view
   {v, version}        Print version information     {new view}          Create a new view
-                                                    {list views}        List all views available
+  {clear}             Clear screen                  {list views}        List all views available
                                                     {lsv}               Same as: list views
                    
+
   {Posts:}                                          {Advanced:}
   -------------------------------------------       -------------------------------------------
   {p, post}           Create a new post             {config}            Edit various system files

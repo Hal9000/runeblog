@@ -10,7 +10,8 @@
 .sidebar
   ad 
   links 
-  news 
+  pinned
   pages 
+  news 
 .end
 
