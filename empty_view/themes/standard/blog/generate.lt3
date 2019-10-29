@@ -14,22 +14,7 @@
 .include blog/head.lt3
   <body>
 
-.set color = #101035
-
-. FIXME
-    <table width=100% bgcolor=$color>
-    <tr>
-      <td width=30% bgcolor=$color>
-        <div style="text-align: center; color: white">
-          <h1>Around Austin</h1><br>
-          The view from downtown...
-        </div>
-      </td>
-      <td><img src=assets/austin-pano.jpg width=100%></img>
-    </tr>
-    </table>
-
-    $.include navbar/navbar.lt3
+    $.banner text: top.html image: austin-pano.jpg // navbar
     <div class="content container-fluid mt-4">
       <div class="row">
         $.include blog/index.lt3

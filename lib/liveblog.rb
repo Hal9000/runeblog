@@ -87,33 +87,41 @@ def backlink
 end
 
 def banner  # still experimental
-  _out "<table>"
-  _body do |line|
-    pieces = line.split
-    cols = pieces.size
-    span = cols == 2 ? 1 : 2   # whaaat?
-    _out "  <tr>"
-    pieces.each do |piece|
-      _out "    <td colspan=#{span}>"
-      case
-        when piece.start_with?("navbar")
-          file = "navbar/navbar.html"
-          _out File.read(file)
-        when piece.start_with?("text")
-          file = piece.split(":")[1]
-          file ||= "banner/text.html"
-          _out File.read(file)
-        when piece.start_with?("image")
-          image = piece.split(":")[1]
-          image ||= "banner/banner.jpg"
-          _out "      <img src=#{image} height=100></img>"
-      else
-        _out "        '#{piece}' isn't known"
-      end
-      _out "    </td>"
+  _out "<table width=100% bgcolor=#101035>"
+  _out "  <tr>"
+  enum = _args.each
+  count = 0
+  span = 1
+  loop do
+    count += 1
+    arg = enum.next
+    case arg
+      when "image"
+        image = "banner/banner.jpg"
+        _out "      <td colspan=#{span}><img src=#{image} height=150></img></td>"
+      when "image:"
+        image = "banner/#{enum.next}"
+        _out "      <td colspan=#{span}><img src=#{image} height=150></img></td>"
+      when "text"
+        file = "banner/text.html"
+        _out "<td colspan=#{span}>" + File.read(file) + "</td>"
+      when "text:"
+        file = "banner/#{enum.next}"
+        _out "<td colspan=#{span}>" + File.read(file) + "</td>"
+      when "navbar"
+        file = "navbar/navbar.html"
+        _out "<td colspan=#{span}><div style='text-align: center'>" + File.read(file) + "</div></td>"
+      when "vnavbar"
+        file = "navbar/vnavbar.html"
+        _out "<td colspan=#{span}>" + File.read(file) + "</td>"
+      when "//"
+         span = count - 1
+         _out "  </tr>\n  <tr>"
+    else
+      _out "        '#{arg}' isn't known"
     end
-    _out "  </tr>"
   end
+  _out "  </tr>"
   _out "</table>"
 end
 

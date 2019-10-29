@@ -40,17 +40,17 @@ enhances ViewPost
 legacy drafts mostly working
 some work on banner, navbar
 pinned posts mostly working
+banner and navbar mostly working
 .end
 
 .sublist easyish Easy stuff?
 =blog command line
-=more work on .banner!
-=more work on navbar
 =add views to lsd/lsp output
+=simple "wizard"
 =“wrap”-style include
+=add CSS ref to post?
 specific kinds of rebuild?
 custom.rb (livetext) gets included if present?
-=add CSS ref to post?
 Warn when .img (etc.) refs nonexistent asset
 "universal" variables?
 .end
@@ -63,8 +63,6 @@ better asset management
 dynamically add commands/code to repl?
 need categories??
 post analyzer - SEO, spell, wcount, etc.
-build top-down, respecting staleness
-.end
 
 .sublist widgets Widget functionality, etc.
 = standard/nonstandard marker for widgets

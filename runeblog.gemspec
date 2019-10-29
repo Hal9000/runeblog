@@ -34,6 +34,7 @@ spec = Gem::Specification.new do |s|
   s.files       =  main + misc + test + empty_view
   s.homepage    = 'https://github.com/Hal9000/runeblog'
   s.license     = "Ruby"
+  s.post_install_message = "\n  Success! Run 'blog' command and type h for help.\n "
 end
 
 spec
