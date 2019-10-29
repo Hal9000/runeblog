@@ -9,9 +9,6 @@ require 'repl'
 
 include RuneBlog::REPL
 
-errfile = File.new("stderr.out", "w")
-STDERR.reopen(errfile)
-
 def get_started
   puts
   puts fx(<<-TEXT, :bold)
@@ -35,13 +32,64 @@ rescue => err
   puts err
 end
 
-###
+def cmdline_preview
+  _need_view
+  local = @blog.view.local_index
+  result = system("open #{local}")
+end
+
+def cmdline_publish
+  abort "Nor implemented yet"
+  _need_view
+end
+
+def cmdline_browse
+  abort "Nor implemented yet"
+  _need_view
+end
+
+def _need_view
+  @view = ARGV[1]
+  abort "Need 'view' parameter" if @view.nil?
+  abort "No such view '#{view}'" unless @blog.view?(@view)
+end
+
+def cmdline_rebuild
+  _need_view
+  puts "Generating view..."
+  @blog.generate_view(@view)
+  puts "Generating index..."
+  @blog.generate_index(@view)
+end
+
+def handle_cmdline
+  cmd = ARGV[0]
+  @blog = RuneBlog.new
+  abort "No blog found" if @blog.nil?
+
+  case cmd
+    when "rebuild"; cmdline_rebuild
+    when "publish"; cmdline_publish
+    when "preview"; cmdline_preview
+    when "browse";  cmdline_browse
+  else
+    puts "Command '#{cmd}' is unknown"
+  end
+  exit
+end
+
+### Main
 
 major, minor = RUBY_VERSION.split(".").values_at(0,1)
 ver = major.to_i*10 + minor.to_i
 abort "Need Ruby 2.4 or greater" unless ver >= 24
 
 include RuneBlog::Helpers  # for try_read_config
+
+handle_cmdline unless ARGV.empty?
+
+errfile = File.new("stderr.out", "w")
+STDERR.reopen(errfile)
 
 # read a .rubytext file here?? Call it something else?
 home = ENV['HOME']

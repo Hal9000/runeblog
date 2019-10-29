@@ -41,10 +41,10 @@ legacy drafts mostly working
 some work on banner, navbar
 pinned posts mostly working
 banner and navbar mostly working
+blog command line works (rebuild, preview)
 .end
 
 .sublist easyish Easy stuff?
-=blog command line
 =add views to lsd/lsp output
 =simple "wizard"
 =“wrap”-style include
