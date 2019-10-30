@@ -1,8 +1,8 @@
 .mixin markdown
 <div float="left" align="left">
+<br>
 <img src="raido.png" width="196" height="275" align="left"></img>
 </div>
-
 .h1 runeblog 
 
 Runeblog is a blogging tool written in Ruby. It has these basic characteristics:
@@ -36,15 +36,16 @@ would go into another. There might be a view that only old friends or close frie
 can see. There might be a view purely for reviews of music, books, and movies. 
 
 But the important points are these:
+
 .list
-_All the views will be managed the same way in the same place, and they will all share common data.
+<i>All</i> the views will be managed the same way in the same place, and they will all share common data.
 Any post can easily be included in a single view, in more than one, or in all of them.
 Each view can have its own look and feel, and it can be linked/published separately from the others.
 Each view can be hosted in a different location and/or a different server and domain
 Any post can be in more than one view
 .end
 
-.h2 The `[blog] environment
+.h2 The <tt>blog</tt> environment
 
 There is a command-line tool called `blog which is a REPL (read-eval-print loop). 
 Note that this tool is a curses-based environment (mainly so it can display menus
@@ -114,7 +115,7 @@ browse...
 (and so on)
 </pre>
 
-*[To be continued]
+<b>To be continued</b>
 
 .h2 Customizing the default templates and configuration
 
@@ -134,11 +135,12 @@ are needed.
 
 .h2 Basics of Livetext
 
-*TBD
+<b>TBD</b>
 
-(bold, italics, etc.)
+<b>Bold, italics, etc.</b>
+  single, double, bracketed
 
-(common dot commands)
+<b>Common dot commands)
 <pre>
   .debug
   .say
@@ -147,7 +149,7 @@ are needed.
   indented dot-commands
 </pre>
 
-(external files)
+<b>Using external files</b>
 <pre>
   .mixin
   .include
@@ -155,18 +157,18 @@ are needed.
   .seek
 </pre>
 
-(predefined functions and variables)
+<b>Predefined functions and variables</b>
 <pre>
   \$File
   \$\$date
   etc.
 </pre>
 
-.h2 Runeblog-specific features (Liveblog)
+.h2 Runeblog-specific features (Liveblog</b>
 
-*TBD
+<b>TBD</b>
 
-(dot commands - the basics)
+<b>Dot commands - the basics</b>
 <pre>
   .mixin liveblog
   .post
@@ -176,7 +178,7 @@ are needed.
   .teaser
 </pre>
 
-(dot commands - more advanced)
+<b>Dot commands - more advanced</b>
 <pre>
   .image
   .inset
@@ -184,7 +186,7 @@ are needed.
   .pin
 </pre>
 
-(variables and functions)
+<b>Variables and functions</b>
 <pre>
   \$view, etc.
   \$\$date, \$\$link, etc.
@@ -193,24 +195,24 @@ are needed.
 
 .h2 Defining your own features
 
-(dot commands, variables, functions)
+<b>Dot commands, variables, functions</b>
 <pre>
   .def/.end
   .set
-  .heredoc
   .variables
+  .heredoc
   .func
 </pre>
 
-(defining these in Ruby)
+<b>Defining these in Ruby</b>
 
 
 .h2 More topics
 
-(meta tags, etc.)
-(CSS)
+<b>Meta tags, etc.</b>
+<b>CSS</b>
 
-(widgets) 
+<b>Widgets</b>
 <pre>
   pages
   links 
@@ -221,11 +223,11 @@ are needed.
   etc.
 </pre>
 
-(banner and navbar)
+<b>Banner and navbar</b>
 
-(creating your own widgets)
+<b>Creating your own widgets</b>
 
-(special tags coming "soon")
+<b>Special tags coming "soon"</b>
 <pre>
   github, gitlab, gist
   wikipedia
@@ -235,9 +237,9 @@ are needed.
 </pre>
 
 
-*TBD
+<b>TBD</b>
 
 .h2 More later...
 
-*TBD
+<b>TBD</b>
 
