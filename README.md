@@ -81,9 +81,7 @@ The next thing you should do is to create at least one view of your own. Use the
 <p>
 
 <pre>
-<b>[no view]</b> new view mystuff<br>
-<p>
-
+<b>[no view]</b> new view mystuff
 <b>[mystuff]</b>
 </pre>
 <p>

@@ -84,8 +84,7 @@ The next thing you should do is to create at least one view of your own. Use the
 `[new view] command for this. Note that the current view is displayed as part of the prompt.
 
 <pre>
-<b>[no view]</b> new view mystuff<br>
-
+<b>[no view]</b> new view mystuff
 <b>[mystuff]</b>
 </pre>
 
