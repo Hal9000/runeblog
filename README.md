@@ -1,8 +1,4 @@
 <div float="left" align="left">
-<p>
-
-<p>
-
 <img src="raido.png" width="196" height="275" align="left"></img>
 </div>
 <p>
@@ -55,45 +51,40 @@ The help message looks like this:
 <p>
 
 <pre>
-  Commands:
-
-     h, help           This message
-     q, quit           Exit the program
-
-     change view _view  Change current view
-     new view          Create a new view
-     list views        List all views available
-     lsv               Same as: list views
-
-     p, post           Create a new post
-     new post          Same as post (create a post)
-     lsp, list posts   List posts in current view
-     lsd, list drafts  List all posts regardless of view
-
-     rm _id             Remove a post
-     edit _id           Edit a post
-
-     preview           Look at current (local) view in browser
-     browse            Look at current (deployed) view in browser
-
-     relink            Regenerate index for all views  (MAY CHANGE)
-     rebuild           Regenerate all posts and relink (MAY CHANGE)
-     deploy            Deploy (current view)
+  <b>Basics:</b>                                         <b>Views:</b>
+  -------------------------------------------     -------------------------------------------
+  <b>h, help</b>           This message                  <b>change view VIEW</b>  Change current view
+  <b>q, quit</b>           Exit the program              <b>cv VIEW</b>           Change current view
+  <b>v, version</b>        Print version information     <b>new view</b>          Create a new view
+  <b>clear</b>             Clear screen                  <b>list views</b>        List all views available
+                                                  <b>lsv</b>               Same as: list views
+<br>
+  <b>Posts:</b>                                          <b>Advanced:</b>
+  -------------------------------------------     -------------------------------------------
+  <b>p, post</b>           Create a new post             <b>config</b>            Edit various system files
+  <b>new post</b>          Same as p, post               <b>customize</b>         (BUGGY) Change set of tags, extra views
+  <b>lsp, list posts</b>   List posts in current view    <b>preview</b>           Look at current (local) view in browser
+  <b>lsd, list drafts</b>  List all drafts (all views)   <b>browse</b>            Look at current (published) view in browser
+  <b>delete ID [ID...]</b> Remove multiple posts         <b>rebuild</b>           Regenerate all posts and relink
+  <b>undelete ID</b>       Undelete a post               <b>publish</b>           Publish (current view)
+  <b>edit ID</b>           Edit a post                   <b>ssh</b>               Login to remote server
+  <b>import ASSETS</b>     Import assets (images, etc.)  <b>manage WIDGET</b>     Manage content/layout of a widget
 </pre>
 ## Getting started
 But when you first run the REPL, it checks for an existing blog repository under 
-the <font size=+1><tt>.blog</tt></font> directory. If it doesn't find one, it asks whether you want to create 
-a new blog repo. If you enter <font size=+1><tt>y</tt></font>  for yes, it creates a sort of "skeleton" with a 
-single view called <font size=+1><tt>test_view</tt></font>.
+the <font size=+1><tt>.blogs</tt></font> directory. If it doesn't find one, it asks whether you want to create 
+a new blog repo. 
 <p>
 
 The next thing you should do is to create at least one view of your own. Use the
-<font size=+1><tt>new view</tt></font> command for this.  
+`[new view] command for this. Note that the current view is displayed as part of the prompt.
 <p>
 
-(new view)
-<p>
+<pre>
+*[\[no view\]] new view mystuff
 
+*[\[ mystuff \]]
+</pre>
 (new post)
 <p>
 
