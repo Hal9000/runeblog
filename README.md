@@ -12,10 +12,10 @@ Runeblog is a blogging tool written in Ruby. It has these basic characteristics:
 <li>So far, yes, like Jekyll</li>
 <li>It's based on Livetext (highly extensible Ruby-based markup)</li>
 <li>It has the concept of multiple "views" for a blog</li>
+<li>The multiple views are in effect multiple blogs managed with the same backend.</li>
 </ul>
 <p>
 
-The multiple views are in effect multiple blogs managed with the same backend.
 <p>
 
 ## What is Livetext?
