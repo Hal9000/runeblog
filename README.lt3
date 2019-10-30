@@ -83,11 +83,9 @@ a new blog repo.
 The next thing you should do is to create at least one view of your own. Use the
 `[new view] command for this. Note that the current view is displayed as part of the prompt.
 
-.mono
-*[\[no view\]] new view mystuff
+<pre><b>[no view]</b> new view mystuff</pre>
 
-*[\[ mystuff \]]
-.end
+<pre><b>[mystuff]</b></pre>
 
 (new post)
 
