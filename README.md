@@ -1,11 +1,11 @@
 <div float="left" align="left">
 <br>
+<br>
+<br>
 <img src="raido.png" width="196" height="275" align="left"></img>
 </div>
 <h2>runeblog</h2>
 Runeblog is a blogging tool written in Ruby. It has these basic characteristics:
-<p>
-
  * It is usable entirely from the command line
  * It publishes web pages as static HTML
  * So far, yes, like Jekyll
