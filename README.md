@@ -7,11 +7,11 @@
 <h1>runeblog</h1>
 Runeblog is a blogging tool written in Ruby. It has these basic characteristics:
 <ul>
-It is usable entirely from the command line
-It publishes web pages as static HTML
-So far, yes, like Jekyll
-It's based on Livetext (highly extensible Ruby-based markup)
-It has the concept of multiple "views" for a blog
+<li>It is usable entirely from the command line</li>
+<li>It publishes web pages as static HTML</li>
+<li>So far, yes, like Jekyll</li>
+<li>It's based on Livetext (highly extensible Ruby-based markup)</li>
+<li>It has the concept of multiple "views" for a blog</li>
 </ul>
 <p>
 
