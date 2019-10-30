@@ -73,7 +73,14 @@ The help message looks like this:
 ## Getting started
 But when you first run the REPL, it checks for an existing blog repository under 
 the <font size=+1><tt>.blogs</tt></font> directory. If it doesn't find one, it asks whether you want to create 
-a new blog repo. 
+a new blog repo. Enter <font size=+1><tt>y</tt></font>  for yes.
+<p>
+
+You'll then enter the editor (vim for now) to add configuration info to the <font size=+1><tt>global.lt3</tt></font>  file.
+<p>
+
+<pre><b>FIXME add menu screenshot here</b></pre>
+<pre><b>FIXME add vim screenshot here</b></pre>
 <p>
 
 The next thing you should do is to create at least one view of your own. Use the
@@ -86,29 +93,53 @@ The next thing you should do is to create at least one view of your own. Use the
 </pre>
 <p>
 
-(new post)
+To create a new post, use the <font size=+1><tt>new post</tt></font> command (also abbreviated <font size=+1><tt>post</tt></font>  or simply <font size=+1><tt>p</tt></font>). You will be
+prompted for a title:
 <p>
 
-(preview)
+<pre>
+<b>[around_austin]</b> new post<br>
+<b>Title:</b> This is my first post
+</pre>
 <p>
 
+Then you'll be sent into the editor (currently vim but can be others):
+<p>
+
+<pre><b>FIXME add example here</b></pre>
+<p>
+
+<pre>
+<b>FIXME wizard?</b>
 (publishing one-time setup - server, ssh keys, etc.)
-<p>
-
-(publish)
-<p>
-
-(browse)
-<p>
-
-(and so on...)
+preview...
+publish...
+browse...
+(and so on)
+</pre>
 <p>
 
 *[To be continued]
 <p>
 
-## Changing the default templates
-*TBD
+## Customizing the default templates and configuration
+You can use the <font size=+1><tt>config</tt></font>  command to choose a file to edit.
+<p>
+
+<pre><b>FIXME add screenshot here</b></pre>
+<p>
+
+The meaning and interaction of these files will be explained later. <b>FIXME</b>
+<p>
+
+When you make changes, <font size=+1><tt>rebuild</tt></font>  will detect these and regenerate whatever files
+are needed.
+<p>
+
+## The directory structure for a view
+<pre><b>FIXME add details here</b></pre>
+<p>
+
 <p>
 
 ## Basics of Livetext
@@ -119,32 +150,116 @@ The next thing you should do is to create at least one view of your own. Use the
 <p>
 
 (common dot commands)
+<pre>
+  .debug
+  .say
+  .nopara
+  .quit
+  indented dot-commands
+</pre>
+<p>
+
+(external files)
+<pre>
+  .mixin
+  .include
+  .copy
+  .seek
+</pre>
 <p>
 
 (predefined functions and variables)
+<pre>
+  $File
+  $\[date is undefined]
+  etc.
+</pre>
 <p>
 
 ## Runeblog-specific features (Liveblog)
 *TBD
 <p>
 
-(dot commands)
+(dot commands - the basics)
+<pre>
+  .mixin liveblog
+  .post
+  .title
+  .views
+  .tags
+  .teaser
+</pre>
+<p>
+
+(dot commands - more advanced)
+<pre>
+  .image
+  .inset
+  .dropcap
+  .pin
+</pre>
 <p>
 
 (variables and functions)
+<pre>
+  $view, etc.
+  $\[date is undefined], $\[link is undefined], etc.
+</pre>
+<p>
+
 <p>
 
 ## Defining your own features
-(dot commands)
+(dot commands, variables, functions)
+<pre>
+  .def/.end
+  .set
+  .heredoc
+  .variables
+  .func
+</pre>
 <p>
 
-(variables and functions)
+(defining these in Ruby)
 <p>
 
-*TBD
 <p>
 
-## 
+## More topics
+(meta tags, etc.)
+(CSS)
+<p>
+
+(widgets) 
+<pre>
+  pages
+  links 
+  pinned
+  faq
+  sitemap
+  news
+  etc.
+</pre>
+<p>
+
+(banner and navbar)
+<p>
+
+(creating your own widgets)
+<p>
+
+(special tags coming "soon")
+<pre>
+  github, gitlab, gist
+  wikipedia
+  youtube, vimeo
+  twitter, instagram
+  etc.
+</pre>
+<p>
+
+<p>
+
 *TBD
 <p>
 

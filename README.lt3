@@ -77,8 +77,13 @@ The help message looks like this:
 
 But when you first run the REPL, it checks for an existing blog repository under 
 the `[.blogs] directory. If it doesn't find one, it asks whether you want to create 
-a new blog repo. 
+a new blog repo. Enter `y for yes.
 . If you enter `y for yes, it creates a sort of "skeleton" with a single view called `[test_view].
+
+You'll then enter the editor (vim for now) to add configuration info to the `global.lt3 file.
+
+<pre><b>FIXME add menu screenshot here</b></pre>
+<pre><b>FIXME add vim screenshot here</b></pre>
 
 The next thing you should do is to create at least one view of your own. Use the
 `[new view] command for this. Note that the current view is displayed as part of the prompt.
@@ -88,23 +93,44 @@ The next thing you should do is to create at least one view of your own. Use the
 <b>[mystuff]</b>
 </pre>
 
-(new post)
+To create a new post, use the `[new post] command (also abbreviated `post or simply `[p]). You will be
+prompted for a title:
 
-(preview)
+<pre>
+<b>[around_austin]</b> new post<br>
+<b>Title:</b> This is my first post
+</pre>
 
+Then you'll be sent into the editor (currently vim but can be others):
+
+<pre><b>FIXME add example here</b></pre>
+
+<pre>
+<b>FIXME wizard?</b>
 (publishing one-time setup - server, ssh keys, etc.)
-
-(publish)
-
-(browse)
-
-(and so on...)
+preview...
+publish...
+browse...
+(and so on)
+</pre>
 
 *[To be continued]
 
-.h2 Changing the default templates
+.h2 Customizing the default templates and configuration
 
-*TBD
+You can use the `config command to choose a file to edit.
+
+<pre><b>FIXME add screenshot here</b></pre>
+
+The meaning and interaction of these files will be explained later. *FIXME
+
+When you make changes, `rebuild will detect these and regenerate whatever files
+are needed.
+
+.h2 The directory structure for a view
+
+<pre><b>FIXME add details here</b></pre>
+
 
 .h2 Basics of Livetext
 
@@ -113,26 +139,101 @@ The next thing you should do is to create at least one view of your own. Use the
 (bold, italics, etc.)
 
 (common dot commands)
+<pre>
+  .debug
+  .say
+  .nopara
+  .quit
+  indented dot-commands
+</pre>
+
+(external files)
+<pre>
+  .mixin
+  .include
+  .copy
+  .seek
+</pre>
 
 (predefined functions and variables)
+<pre>
+  \$File
+  \$\$date
+  etc.
+</pre>
 
 .h2 Runeblog-specific features (Liveblog)
 
 *TBD
 
-(dot commands)
+(dot commands - the basics)
+<pre>
+  .mixin liveblog
+  .post
+  .title
+  .views
+  .tags
+  .teaser
+</pre>
+
+(dot commands - more advanced)
+<pre>
+  .image
+  .inset
+  .dropcap
+  .pin
+</pre>
 
 (variables and functions)
+<pre>
+  \$view, etc.
+  \$\$date, \$\$link, etc.
+</pre>
+
 
 .h2 Defining your own features
 
-(dot commands)
+(dot commands, variables, functions)
+<pre>
+  .def/.end
+  .set
+  .heredoc
+  .variables
+  .func
+</pre>
 
-(variables and functions)
+(defining these in Ruby)
 
-*TBD
 
-.h2
+.h2 More topics
+
+(meta tags, etc.)
+(CSS)
+
+(widgets) 
+<pre>
+  pages
+  links 
+  pinned
+  faq
+  sitemap
+  news
+  etc.
+</pre>
+
+(banner and navbar)
+
+(creating your own widgets)
+
+(special tags coming "soon")
+<pre>
+  github, gitlab, gist
+  wikipedia
+  youtube, vimeo
+  twitter, instagram
+  etc.
+</pre>
+
 
 *TBD
 
