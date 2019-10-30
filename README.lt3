@@ -4,7 +4,8 @@
 </div>
 <h1>runeblog</h1>
 <b>Runeblog</b> is a blogging tool written in Ruby. It has these basic characteristics:
-<div align=right>
+<table><tr><td width=10%>&nbsp;</td>
+<td>
 <ul>
 <li>It is usable entirely from the command line</li>
 <li>It publishes web pages as static HTML</li>
@@ -13,6 +14,7 @@
 <li>It has the concept of multiple "views" for a blog</li>
 <li>The multiple views are in effect multiple blogs managed with the same backend.</li>
 </ul>
+</td></tr></table>
 </div>
 
 
