@@ -2,7 +2,7 @@
 <img src="raido4.png" width="210" height="295" align="left"></img>
 </div>
 <h1>runeblog</h1>
-Runeblog is a blogging tool written in Ruby. It has these basic characteristics:
+<b>Runeblog</b> is a blogging tool written in Ruby. It has these basic characteristics:
 <ul>
 <li>It is usable entirely from the command line</li>
 <li>It publishes web pages as static HTML</li>
