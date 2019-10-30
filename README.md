@@ -4,13 +4,17 @@
 <br>
 <img src="raido.png" width="196" height="275" align="left"></img>
 </div>
-<h2>runeblog</h2>
+<h1>runeblog</h1>
 Runeblog is a blogging tool written in Ruby. It has these basic characteristics:
- * It is usable entirely from the command line
- * It publishes web pages as static HTML
- * So far, yes, like Jekyll
- * It's based on Livetext (highly extensible Ruby-based markup)
- * It has the concept of multiple "views" for a blog
+<ul>
+It is usable entirely from the command line
+It publishes web pages as static HTML
+So far, yes, like Jekyll
+It's based on Livetext (highly extensible Ruby-based markup)
+It has the concept of multiple "views" for a blog
+</ul>
+<p>
+
 The multiple views are in effect multiple blogs managed with the same backend.
 <p>
 
