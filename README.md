@@ -3,7 +3,7 @@
 </div>
 <h1>runeblog</h1>
 <b>Runeblog</b> is a blogging tool written in Ruby. It has these basic characteristics:
-<table><tr><td width=10%>&nbsp;</td>
+<table><tr><td width=2%>&nbsp;</td>
 <td>
 <ul>
 <li>It is usable entirely from the command line</li>
