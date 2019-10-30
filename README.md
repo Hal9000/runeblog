@@ -3,7 +3,7 @@
 </div>
 <p>
 
-# runeblog
+# runeblog 
 Runeblog is a blogging tool written in Ruby. It has these basic characteristics:
 <p>
 
