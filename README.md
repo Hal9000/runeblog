@@ -80,10 +80,12 @@ The next thing you should do is to create at least one view of your own. Use the
 `[new view] command for this. Note that the current view is displayed as part of the prompt.
 <p>
 
-<pre><b>[no view]</b> new view mystuff</pre>
+<pre>
+<b>[no view]</b> new view mystuff<br>
 <p>
 
-<pre><b>[mystuff]</b></pre>
+<b>[mystuff]</b>
+</pre>
 <p>
 
 (new post)
