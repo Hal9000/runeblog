@@ -1,4 +1,4 @@
-<div float="left" align="left">
+<div style="float: left; align: left; vertical-align: bottom">
 <br>
 <br>
 <br>
