@@ -80,11 +80,12 @@ The next thing you should do is to create at least one view of your own. Use the
 `[new view] command for this. Note that the current view is displayed as part of the prompt.
 <p>
 
-<pre>
-*[\[no view\]] new view mystuff
+<pre><b>[no view]</b> new view mystuff</pre>
+<p>
 
-*[\[ mystuff \]]
-</pre>
+<pre><b>[mystuff]</b></pre>
+<p>
+
 (new post)
 <p>
 
