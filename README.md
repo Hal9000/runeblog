@@ -1,5 +1,5 @@
 <div style="float: left; align: left; vertical-align: bottom">
-<img src="raido3.png" width="196" height="295" align="left"></img>
+<img src="raido4.png" width="196" height="295" align="left"></img>
 </div>
 <h1>runeblog</h1>
 Runeblog is a blogging tool written in Ruby. It has these basic characteristics:
