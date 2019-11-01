@@ -42,6 +42,7 @@ some work on banner, navbar
 pinned posts mostly working
 banner and navbar mostly working
 blog command line works (rebuild, preview)
+updates to README
 .end
 
 .sublist easyish Easy stuff?
@@ -181,8 +182,9 @@ docs: how to write templates (incl main one)
 .end
 
 .sublist bugs Bugs, etc.
-FAQ bootstrap code is screwed up
-weird screen-clear glitches
+="Unboxing" test fails!
+=weird screen-clear glitches
+FAQ bootstrap code is weird
 preview can crash w/o rebuild
 widgets don't honor their CSS?
 things deleted locally aren't deleted remotely (rsync??)
