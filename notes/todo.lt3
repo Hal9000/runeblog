@@ -43,6 +43,7 @@ pinned posts mostly working
 banner and navbar mostly working
 blog command line works (rebuild, preview)
 updates to README
+Fixes to widgets (links, pages, ...)
 .end
 
 .sublist easyish Easy stuff?
@@ -182,7 +183,9 @@ docs: how to write templates (incl main one)
 .end
 
 .sublist bugs Bugs, etc.
-="Unboxing" test fails!
+="Unboxing" test fails! (dependent on local git repo)
+=Failure in pages 
+=Failure in links 
 =weird screen-clear glitches
 FAQ bootstrap code is weird
 preview can crash w/o rebuild

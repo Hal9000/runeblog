@@ -11,7 +11,7 @@
 .nopara
 .mixin liveblog
 
-.navbar
+.vnavbar
   about   About
   contact Contact
   faq     FAQ

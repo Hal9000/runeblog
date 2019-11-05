@@ -5,6 +5,7 @@ class ::RuneBlog::Widget
     def initialize(repo)
       @blog = repo
       @self = "pinned"
+      @datafile = "list.data"
     end
 
 def _html_body(file, css = nil)    # FIXME
@@ -23,7 +24,7 @@ end
 @tmp = File.new("/tmp/debug-out", "w")
       posts = nil
       Dir.chdir(@blog.root/:posts) { posts = Dir["*"] }
-      lines = File.readlines("list.data")
+      lines = File.exist?(@datafile) ? File.readlines(@datafile) : []
       hash = {}
       @links = []
       lines.each do |x| 

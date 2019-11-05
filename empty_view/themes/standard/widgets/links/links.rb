@@ -38,7 +38,7 @@ class ::RuneBlog::Widget
       tag = "links"
       url = :widgets/tag/tag+"-main.html"
       card_title = "External links"  # FIXME
-      cardfile = "#@self-card"
+      cardfile = "#{Type}-card"
       File.open("#{cardfile}.html", "w") do |f|
         f.puts <<-EOS
           <div class="card mb-3">

@@ -78,7 +78,7 @@ x.generate_view("around_austin")
 debug("-- change_view: #{bold('around_austin')}")
 x.change_view("around_austin")    # 1 2 7 8 9 
 
-make_post(x, "What's at Stubbs...", <<-EXCERPT, <<-BODY, [])
+make_post(x, "What's at Stubbs...", <<-EXCERPT, <<-BODY)
 Stubbs has been around for longer than civilization.
 EXCERPT
 That's a good thing. But their music isn't always the greatest.
@@ -87,6 +87,7 @@ BODY
 make_post(x, "The new amphitheatre is overrated", <<-EXCERPT, <<-BODY)
 It used to be that all major concerts played the Erwin Center.
 EXCERPT
+.pin around_austin
 Now, depending on what you consider "major," blah blah blah...
 BODY
 
@@ -137,7 +138,7 @@ EXCERPT
 This is about Sabine St, blah blah lorem ipsum dolor...
 BODY
 
-make_post(x, "Remember Modest Mouse?", <<-EXCERPT, <<-BODY, [])
+make_post(x, "Remember Modest Mouse?", <<-EXCERPT, <<-BODY)
 They date to the 90s or before. 
 EXCERPT
 But I first heard of them

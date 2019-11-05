@@ -109,9 +109,13 @@ def banner  # still experimental
         file = "banner/#{enum.next}"
         _out "<td colspan=#{span}>" + File.read(file) + "</td>"
       when "navbar"
+        dir = @blog.root/:views/@blog.view/"themes/standard/navbar/"
+        xlate cwd: dir, src: "navbar.lt3", dst: "navbar.html"   # , debug: true
         file = "navbar/navbar.html"
         _out "<td colspan=#{span}><div style='text-align: center'>" + File.read(file) + "</div></td>"
       when "vnavbar"
+        dir = @blog.root/:views/@blog.view/"themes/standard/navbar/"
+        xlate cwd: dir, src: "vnavbar.lt3", dst: "vnavbar.html"   # , debug: true
         file = "navbar/vnavbar.html"
         _out "<td colspan=#{span}>" + File.read(file) + "</td>"
       when "//"
@@ -465,7 +469,7 @@ def sidebar
 
     code = _load_local(tag)
     if code 
-      if ["pages", "links", "pinned"].include? tag
+      if ["news", "pages", "links", "pinned"].include? tag
         Dir.chdir(wtag) do 
           widget = code.new(@blog)
           widget.build
@@ -664,32 +668,34 @@ def _custom_navbar(orient = :horiz)
   extra = ""
   extra = "navbar-expand-lg" if orient == :horiz
 
-  open = <<-HTML
+  start = <<-HTML
+       <!-- FIXME weird bug here!!! -->
    <nav class="navbar #{extra} navbar-light bg-light">
       <ul class="navbar-nav mr-auto">
   HTML
-  close = <<-HTML
+  finish = <<-HTML
       </ul>
     </nav>
   HTML
 
-  html_file = @blog.root/:views/@blog.view/:themes/:standard/:navbar/"navbar.html"
-  output = File.new(@blog.root/:views/@blog.view/:themes/:standard/:navbar/"navbar.html", "w")
-  output.puts open
-  lines = _body
+  navdir = @blog.root/:views/@blog.view/:themes/:standard/:navbar
+  html_file = navdir/"navbar.html"
+  output = File.new(navdir/"navbar.html", "w")
+  output.puts start
+  lines = _body.to_a
   lines = ["  index  Home"] + lines  unless _args.include?("nohome")
   lines.each do |line|
     basename, cdata = line.chomp.strip.split(" ", 2)
-    full = :navbar/basename+".html"
+    full = :navdir/basename+".html"
     href_main = _main(full)
     if basename == "index"  # special case
       output.puts %[<li class="nav-item active"> <a class="nav-link" href="index.html">#{cdata}<span class="sr-only">(current)</span></a> </li>]
     else
-      xlate cwd: "navbar", src: basename, dst: vdir/"remote/navbar"/basename+".html" # , debug: true
+      xlate cwd: navdir, src: basename, dst: vdir/"remote/navbar"/basename+".html" # , debug: true
       output.puts %[<li class="nav-item"> <a class="nav-link" #{href_main}>#{cdata}</a> </li>]
     end
   end
-  output.puts close
+  output.puts finish
 end
 
 def _old_navbar

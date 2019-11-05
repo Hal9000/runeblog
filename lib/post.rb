@@ -9,12 +9,12 @@ class RuneBlog::Post
 
   include RuneBlog::Helpers
 
-  def self.files(num, root)
-    log!(enter: __method__, args: [num, root], level: 3)
-    files = ::Find.find(root).to_a
-    result = files.grep(/#{prefix(num)}-/)
-    result
-  end
+# def self.files(num, root)
+#   log!(enter: __method__, args: [num, root], level: 3)
+#   files = ::Find.find(root).to_a
+#   result = files.grep(/#{prefix(num)}-/)
+#   result
+# end
   
   def self.load(post)
     log!(enter: __method__, args: [post], level: 3)
