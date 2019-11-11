@@ -86,6 +86,12 @@ def backlink
   _out %[<br><a href="javascript:history.go(-1)">[Back]</a>]
 end
 
+def _read_navbar_data
+  dir = @blog.root/:views/@blog.view/"themes/standard/banner/"
+  datafile = dir/"list.data"
+  File.readlines(datafile)
+end
+
 def banner  # still experimental
   _out "<table width=100% bgcolor=#101035>"
   _out "  <tr>"
@@ -98,35 +104,48 @@ def banner  # still experimental
     case arg
       when "image"
         image = "banner/banner.jpg"
-        _out "      <td colspan=#{span}><img src=#{image} height=150></img></td>"
+        _out "      <td colspan=#{span}><img src=#{image} height=150></img></td>" + 
+             " <!-- #{arg} -->"
       when "image:"
         image = "banner/#{enum.next}"
-        _out "      <td colspan=#{span}><img src=#{image} height=150></img></td>"
+        _out "      <td colspan=#{span}><img src=#{image} height=150></img></td>" + 
+             " <!-- #{arg} -->"
       when "text"
-        file = "banner/text.html"
-        _out "<td colspan=#{span}>" + File.read(file) + "</td>"
+        file = "banner/top.html"
+        _out "<td colspan=#{span}>" + File.read(file) + "</td>" + 
+             " <!-- #{arg} -->"
       when "text:"
         file = "banner/#{enum.next}"
-        _out "<td colspan=#{span}>" + File.read(file) + "</td>"
+        _out "<td colspan=#{span}>" + File.read(file) + "</td>" + 
+             " <!-- #{arg} -->"
       when "navbar"
-        dir = @blog.root/:views/@blog.view/"themes/standard/navbar/"
-        xlate cwd: dir, src: "navbar.lt3", dst: "navbar.html"   # , debug: true
-        file = "navbar/navbar.html"
-        _out "<td colspan=#{span}><div style='text-align: center'>" + File.read(file) + "</div></td>"
+# STDERR.puts "-- navbar: pwd = #{Dir.pwd}:  #{`ls`}"
+        dir = @blog.root/:views/@blog.view/"themes/standard/banner/"
+        hnavbar
+        # xlate cwd: dir, src: "navbar.lt3", dst: "navbar.html"   # , debug: true
+        stuff = File.read("banner/navbar.html")
+        _out "<td colspan=#{span}><div style='text-align: center'>#{stuff}</div></td>" + 
+             " <!-- #{arg} -->"
       when "vnavbar"
-        dir = @blog.root/:views/@blog.view/"themes/standard/navbar/"
-        xlate cwd: dir, src: "vnavbar.lt3", dst: "vnavbar.html"   # , debug: true
-        file = "navbar/vnavbar.html"
-        _out "<td colspan=#{span}>" + File.read(file) + "</td>"
+        dir = @blog.root/:views/@blog.view/"themes/standard/banner/"
+        vnavbar
+        # xlate cwd: dir, src: "vnavbar.lt3", dst: "vnavbar.html"   # , debug: true
+        file = "banner/vnavbar.html"
+        _out "<td colspan=#{span}>" + File.read(file) + "</td>" +
+             "<!-- #{arg} -->"
       when "//"
          span = count - 1
-         _out "  </tr>\n  <tr>"
+         _out "  </tr>\n  <tr>" + "<!-- #{arg} -->"
     else
       _out "        '#{arg}' isn't known"
     end
   end
   _out "  </tr>"
   _out "</table>"
+rescue => err
+  STDERR.puts "err = #{err}"
+  STDERR.puts err.backtrace.join("\n")
+  gets
 end
 
 def quote
@@ -290,16 +309,15 @@ def pin
     end
     pins << "#{@meta.num} #{@meta.title}\n"
     pins.uniq!
-    outfile = File.new(datafile, "w")
-    pins.each do |pin| 
-      outfile.puts pin 
+    File.open(datafile, "w") do |outfile|
+      pins.each {|pin| outfile.puts pin }
     end
-    outfile.close
   end
   _optional_blank_line
+  pinned_rebuild    # FIXME experimental
 rescue => err
-  puts "err = #{err}"
-  puts err.backtrace.join("\n")
+  STDERR.puts "err = #{err}"
+  STDERR.puts err.backtrace.join("\n")
   gets
 end
 
@@ -438,6 +456,7 @@ def _make_class_name(app)
 end
 
 def _load_local(widget)
+STDERR.puts "widget = #{widget}  pwd = #{Dir.pwd}"
   Dir.chdir("widgets/#{widget}") do
     rclass = _make_class_name(widget)
     found = (require("./#{widget}") if File.exist?("#{widget}.rb"))
@@ -448,6 +467,20 @@ rescue => err
   STDERR.puts err.to_s
   STDERR.puts err.backtrace.join("\n")
   exit
+end
+
+def pinned_rebuild
+  Dir.chdir(@blog.root/:views/@blog.view/"themes/standard/") do
+    wtag = "widgets/pinned"
+    code = _load_local("pinned")
+    if code 
+      Dir.chdir(wtag) do 
+        widget = code.new(@blog)
+        widget.build
+      end
+      _include_file wtag/"pinned-card.html"
+    end
+  end
 end
 
 def sidebar
@@ -487,16 +520,16 @@ def sidebar
       File.open(wtag/"vars.lt3", "w") do |f| 
         f.puts ".set ad.image = #{img}"
       end
+      xlate cwd: wtag, src: tag, dst: tcard, force: true # , deps: depend # , debug: true
     end
 
-    depend = %w[card.css main.css custom.rb local.rb] 
-    depend += ["#{wtag}.lt3", "#{wtag}.rb"]
-    depend += %w[pieces/card-head.lt3 pieces/card-tail.lt3]
-    depend += %w[pieces/main-head.lt3 pieces/main-tail.lt3]
-    depend.map! {|x| @blog.view.dir/"themes/standard/widgets"/wtag/x }
-_debug "--- call xlate #{tag} src = #{tag}  dst = #{tcard}\r"
-    xlate cwd: wtag, src: tag, dst: tcard, force: true, deps: depend # , debug: true
     _include_file wtag/tcard
+#   depend = %w[card.css main.css custom.rb local.rb] 
+#   depend += ["#{wtag}.lt3", "#{wtag}.rb"]
+#   depend += %w[pieces/card-head.lt3 pieces/card-tail.lt3]
+#   depend += %w[pieces/main-head.lt3 pieces/main-tail.lt3]
+#   depend.map! {|x| @blog.view.dir/"themes/standard/widgets"/wtag/x }
+# _debug "--- call xlate #{tag} src = #{tag}  dst = #{tcard}\r"
   end
   _out %[</div>]
 rescue => err
@@ -650,18 +683,22 @@ def tag_cloud
 end
 
 def vnavbar
-  _custom_navbar(:vert)
+  str = _make_navbar(:vert)
+  _out str
 end
 
 def hnavbar
-  _custom_navbar  # horiz is default
+  str = _make_navbar  # horiz is default
+STDERR.puts "STR = #{str.inspect}"
+  _out str
 end
 
 def navbar
-  _custom_navbar  # horiz is default
+  str = _make_navbar  # horiz is default
+  _out str
 end
 
-def _custom_navbar(orient = :horiz)
+def _make_navbar(orient = :horiz)
   vdir = @blog.view.dir
   title = _var(:blog)
 
@@ -678,70 +715,34 @@ def _custom_navbar(orient = :horiz)
     </nav>
   HTML
 
-  navdir = @blog.root/:views/@blog.view/:themes/:standard/:navbar
-  html_file = navdir/"navbar.html"
-  output = File.new(navdir/"navbar.html", "w")
+  name = (orient == :horiz) ? "navbar.html" : "vnavbar.html"
+
+  html_file = @blog.root/:views/@blog.view/"themes/standard/banner"/name
+# STDERR.puts "html = #{html_file.inspect}  pwd = #{Dir.pwd}"
+  output = File.new(html_file, "w")
   output.puts start
-  lines = _body.to_a
-  lines = ["  index  Home"] + lines  unless _args.include?("nohome")
+  lines = _read_navbar_data
+  lines = ["index  Home"] + lines  unless _args.include?("nohome")
+STDERR.puts "  #{lines.size} lines"
   lines.each do |line|
+STDERR.puts "  handling: #{line.inspect}"
     basename, cdata = line.chomp.strip.split(" ", 2)
-    full = :navdir/basename+".html"
+    full = :banner/basename+".html"
     href_main = _main(full)
     if basename == "index"  # special case
       output.puts %[<li class="nav-item active"> <a class="nav-link" href="index.html">#{cdata}<span class="sr-only">(current)</span></a> </li>]
     else
-      xlate cwd: navdir, src: basename, dst: vdir/"remote/navbar"/basename+".html" # , debug: true
+      dir = @blog.root/:views/@blog.view/"themes/standard/banner"
+      xlate cwd: dir, src: basename, dst: vdir/"remote/banner"/basename+".html" # , debug: true
       output.puts %[<li class="nav-item"> <a class="nav-link" #{href_main}>#{cdata}</a> </li>]
     end
   end
   output.puts finish
+  output.close
+STDERR.puts "-- html_file: #{`ls -l #{html_file}`}"
+  return File.read(html_file)
 end
 
-def _old_navbar
-  vdir = @blog.view.dir
-  title = _var(:blog)
-
-  open = <<-HTML
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="index.html">#{title}</a>
-      <button class="navbar-toggler" 
-              type="button" 
-              data-toggle="collapse" 
-              data-target="#navbarSupportedContent"
-              aria-controls="navbarSupportedContent" 
-              aria-expanded="false" 
-              aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse pull-right" 
-           id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-  HTML
-  close = <<-HTML
-        </ul>
-      </div>
-    </nav>
-  HTML
-
-  first = true
-  _out open
-  lines = _body
-  lines.each do |line|
-    basename, cdata = line.chomp.strip.split(" ", 2)
-    full = :navbar/basename+".html"
-    href_main = _main(full)
-    if first
-      first = false # hardcode this part??
-      _out %[<li class="nav-item active"> <a class="nav-link" href="index.html">#{cdata}<span class="sr-only">(current)</span></a> </li>]
-    else
-      depend = Find.find(@blog.root/:views/@blog.view.to_s/"themes/standard/navbar/").to_a
-      xlate cwd: "navbar", src: basename, dst: vdir/"remote/navbar"/basename+".html", deps: depend # , debug: true
-      _out %[<li class="nav-item"> <a class="nav-link" #{href_main}>#{cdata}</a> </li>]
-    end
-  end
-  _out close
-end
 
 ##################
 # helper methods

@@ -437,7 +437,8 @@ class RuneBlog
     vdir = @root/:views/view
     @theme = @root/:views/view/:themes/:standard
     depend = [vdir/"remote/etc/blog.css", @theme/"global.lt3", 
-             @theme/"blog/head.lt3", @theme/"navbar/navbar.lt3",
+             @theme/"blog/head.lt3", 
+             # @theme/"navbar/navbar.lt3",
              @theme/"blog/index.lt3"]   # FIXME what about assets?
     xlate cwd: vdir/"themes/standard/etc", deps: depend,
           src: "blog.css.lt3", copy: vdir/"remote/etc/blog.css" # , debug: true

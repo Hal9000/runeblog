@@ -14,7 +14,9 @@
 .include blog/head.lt3
   <body>
 
+.say Hello
     $.banner text: top.html image: austin-pano.jpg // navbar
+.say Hello again
     <div class="content container-fluid mt-4">
       <div class="row">
         $.include blog/index.lt3

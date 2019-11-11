@@ -4,30 +4,43 @@ require 'liveblog'
 
 class ::RuneBlog::Widget
   class Links
-    Type = "links"
+    Type, Title = "links", "External links"
 
     def initialize(repo)
       @blog = repo
+      @datafile = input = "list.data"
+      @lines = File.readlines(input)
     end
 
     def build
-      input = "list.data"
-      @lines = File.readlines(input)
       write_main
       write_card
+    end
+
+    def _html_body(file, css = nil)
+      file.puts "<html>"
+      if css
+        file.puts "    <head>"  
+        file.puts "        <style>\n#{css}\n          </style>"
+        file.puts "    </head>"  
+      end
+      file.puts "  <body>"
+      yield
+      file.puts "  </body>\n</html>"
     end
 
     def write_main
       @data = @lines.map! {|x| x.chomp.split(/, */, 3) }
       css = "* { font-family: verdana }"
-      card_title = "External Links"  # FIXME
+      card_title = Title
       File.open("#{Type}-main.html", "w") do |f|     
         _html_body(f, css) do
           f.puts "<h1>#{card_title}</h1><br><hr>"
           url_ref = nil
           @data.each do |url, frameable, title|
-            url_ref = (frameable == "yes") ? "href = '#{url}'" : _blank(url)
-            css = "color: #8888FF; text-decoration: none; font-size: 21px"  # ; font-family: verdana"
+            url_ref = "href = '#{url}'"
+            url_ref << " target=blank" if frameable == "yes"
+            css = "color: #8888FF; text-decoration: none; font-size: 21px"
             f.puts %[<a style="#{css}" #{url_ref}>#{title}</a> <br>]
           end
         end
@@ -52,6 +65,7 @@ class ::RuneBlog::Widget
               <div class="collapse" id="#{tag}">
         EOS
         @data.each do |url2, frameable, title|
+          f.puts "<!-- #{[url2, frameable, title].inspect} -->"
           main_ref = %[href="javascript: void(0)" onclick="javascript:open_main('#{url2}')"]
           tab_ref  = %[href="#{url2}"]
           url_ref = (frameable == "yes") ? main_ref : tab_ref

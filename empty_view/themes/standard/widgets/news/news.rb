@@ -7,11 +7,11 @@ class ::RuneBlog::Widget
     def initialize(repo)
       @blog = repo
       @datafile = "list.data"
+      lines = File.readlines(@datafile)
+      @data = lines.map {|line| line.chomp.split(/, */) }
     end
 
     def build
-      lines = File.readlines(@datafile)
-      @data = lines.map {|line| line.chomp.split(/, */) }
       write_main
       write_card
     end

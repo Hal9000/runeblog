@@ -2,32 +2,35 @@
 
 class ::RuneBlog::Widget
   class Pinned
+    Type, Title = "pinned", "Pinned posts"
+
     def initialize(repo)
       @blog = repo
-      @self = "pinned"
       @datafile = "list.data"
+      # f = File.new("/tmp/mehhh", "w")
+      @lines = File.exist?(@datafile) ? File.readlines(@datafile) : []
+      # f.puts #{@lines.inspect} in #{Dir.pwd}" 
+      File.open("/tmp/mehhh", "w") {|f| f.puts "#{@lines.inspect} in #{Dir.pwd}" }
     end
 
-def _html_body(file, css = nil)    # FIXME
-  file.puts "<html>"
-  if css
-    file.puts "    <head>"  
-    file.puts "        <style>\n#{css}\n          </style>"
-    file.puts "    </head>"  
-  end
-  file.puts "  <body>"
-  yield
-  file.puts "  </body>\n</html>"
-end
+    def _html_body(file, css = nil)    # FIXME
+      file.puts "<html>"
+      if css
+        file.puts "    <head>"  
+        file.puts "        <style>\n#{css}\n          </style>"
+        file.puts "    </head>"  
+      end
+      file.puts "  <body>"
+      yield
+      file.puts "  </body>\n</html>"
+    end
 
     def build
-@tmp = File.new("/tmp/debug-out", "w")
       posts = nil
       Dir.chdir(@blog.root/:posts) { posts = Dir["*"] }
-      lines = File.exist?(@datafile) ? File.readlines(@datafile) : []
       hash = {}
       @links = []
-      lines.each do |x| 
+      @lines.each do |x| 
         num, title = x.chomp.split(" ", 2)
         hash[num] = title
         pre = '%04d' % num 
@@ -41,13 +44,13 @@ end
     end
 
     def write_main
-      tag = "pinned"
-      card_title = "Pinned posts"  # FIXME
-#     setvar "card.title", card_title
+      tag = Type
+      card_title = Title
       css = "* { font-family: verdana }"
-      mainfile = "#@self-main"
+      mainfile = "#{tag}-main"
       File.open("#{mainfile}.html", "w") do |f|
         _html_body(f, css) do
+f.puts "<!-- #{@lines.inspect} in #{Dir.pwd} -->"
           f.puts "<h1>#{card_title}</h1><br><hr>"
           @links.each do |title, file| 
             title = title.gsub(/\\/, "")  # kludge
@@ -59,10 +62,10 @@ end
     end
 
     def write_card
-      tag = "pinned"
+      tag = Type
       url = :widgets/tag/tag+"-main.html"
-      card_title = "Pinned posts"  # FIXME
-      cardfile = "#@self-card"
+      card_title = Title
+      cardfile = "#{tag}-card"
       File.open("#{cardfile}.html", "w") do |f|
         f.puts <<-EOS
           <div class="card mb-3">
