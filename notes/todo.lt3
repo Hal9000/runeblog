@@ -48,6 +48,9 @@ Fixed failure in pages
 Fixed failure in links 
 Fixed pinned pages
 Fixed banner/navbar
+Fixed "missing/incomplete index" problem
+Fixed "preview without rebuild" crash
+Fixed "out-of-box" problem
 .end
 
 .sublist easyish Easy stuff?
@@ -187,10 +190,8 @@ docs: how to write templates (incl main one)
 .end
 
 .sublist bugs Bugs, etc.
-="Unboxing" test fails! (dependent on local git repo)
 =weird screen-clear glitches
 FAQ bootstrap code is weird
-preview can crash w/o rebuild
 widgets don't honor their CSS?
 things deleted locally aren't deleted remotely (rsync??)
 delete post, edit elsewhere, comes back (change source!)

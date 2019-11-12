@@ -157,6 +157,10 @@ module RuneBlog::REPL
   def cmd_preview(arg, testing = false)
     reset_output
     local = @blog.view.local_index
+    unless File.exist?(local)
+      puts "\n  No index. Rebuilding..."
+      cmd_rebuild(nil)
+    end
     result = system!("open #{local}")
     raise CantOpen(local) unless result
     @out

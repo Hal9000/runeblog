@@ -331,11 +331,11 @@ class RuneBlog
     text = nil
     @theme = @view.dir/"themes/standard"
     post_entry_name = @theme/"blog/post_entry.lt3"
-STDERR.puts "--  @pename = #{post_entry_name}"
-STDERR.puts "--  @pe = #{@_post_entry.inspect}"
+# STDERR.puts "--  @pename = #{post_entry_name}"
+# STDERR.puts "--  @pe = #{@_post_entry.inspect}"
     depend = [post_entry_name]
     xlate src: post_entry_name, dst: "/tmp/post_entry.html" # , deps: depend  # , debug: true
-STDERR.puts "-- xlate result: #{`ls -l /tmp/post_entry.html`}"
+# STDERR.puts "-- xlate result: #{`ls -l /tmp/post_entry.html`}"
     @_post_entry ||= File.read("/tmp/post_entry.html")
     vp = post_lookup(id)
     nslug, aslug, title, date, teaser_text = 
@@ -375,16 +375,18 @@ STDERR.puts "-- xlate result: #{`ls -l /tmp/post_entry.html`}"
       <body>
     HTML
     posts = _sorted_posts
+STDERR.puts "Posts = "
+posts.each {|x| STDERR.puts "  " + x }
     wanted = [8, posts.size].min  # estimate how many we want?
     enum = posts.each
     entries = []
     wanted.times do
       postid = File.basename(enum.next)
       postid = postid.to_i
-STDERR.puts "-- postid = #{postid}"
+# STDERR.puts "-- postid = #{postid}"
 # posts.each {|x| STDERR.puts "    #{x}" }
       entry = index_entry(postid)
-STDERR.puts "--   entry = #{entry.inspect}"
+# STDERR.puts "--   entry = #{entry.size} chars"
       entries << entry
       text << entry
     end
