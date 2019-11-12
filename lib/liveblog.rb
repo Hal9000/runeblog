@@ -121,14 +121,14 @@ def banner  # still experimental
       when "navbar"
 # STDERR.puts "-- navbar: pwd = #{Dir.pwd}:  #{`ls`}"
         dir = @blog.root/:views/@blog.view/"themes/standard/banner/"
-        hnavbar
+        _make_navbar  # horiz is default
         # xlate cwd: dir, src: "navbar.lt3", dst: "navbar.html"   # , debug: true
         stuff = File.read("banner/navbar.html")
         _out "<td colspan=#{span}><div style='text-align: center'>#{stuff}</div></td>" + 
              " <!-- #{arg} -->"
       when "vnavbar"
         dir = @blog.root/:views/@blog.view/"themes/standard/banner/"
-        vnavbar
+        _make_navbar(:vert)
         # xlate cwd: dir, src: "vnavbar.lt3", dst: "vnavbar.html"   # , debug: true
         file = "banner/vnavbar.html"
         _out "<td colspan=#{span}>" + File.read(file) + "</td>" +
@@ -348,7 +348,8 @@ end
 def finalize
   # FIXME simplify this!
   unless @meta
-    puts @live.body
+STDERR.puts "META is nil: file = #{Livetext::Vars[:File]}"
+#   puts @live.body
     return
   end
   if @blog.nil?
@@ -456,7 +457,6 @@ def _make_class_name(app)
 end
 
 def _load_local(widget)
-STDERR.puts "widget = #{widget}  pwd = #{Dir.pwd}"
   Dir.chdir("widgets/#{widget}") do
     rclass = _make_class_name(widget)
     found = (require("./#{widget}") if File.exist?("#{widget}.rb"))
@@ -470,7 +470,9 @@ rescue => err
 end
 
 def pinned_rebuild
-  Dir.chdir(@blog.root/:views/@blog.view/"themes/standard/") do
+  view = @blog.view
+  view = _args[0] unless _args.empty?
+  Dir.chdir(@blog.root/:views/view/"themes/standard/") do
     wtag = "widgets/pinned"
     code = _load_local("pinned")
     if code 
@@ -684,18 +686,17 @@ end
 
 def vnavbar
   str = _make_navbar(:vert)
-  _out str
+# _out str
 end
 
 def hnavbar
   str = _make_navbar  # horiz is default
-STDERR.puts "STR = #{str.inspect}"
-  _out str
+# _out str
 end
 
 def navbar
   str = _make_navbar  # horiz is default
-  _out str
+# _out str
 end
 
 def _make_navbar(orient = :horiz)
@@ -718,14 +719,11 @@ def _make_navbar(orient = :horiz)
   name = (orient == :horiz) ? "navbar.html" : "vnavbar.html"
 
   html_file = @blog.root/:views/@blog.view/"themes/standard/banner"/name
-# STDERR.puts "html = #{html_file.inspect}  pwd = #{Dir.pwd}"
   output = File.new(html_file, "w")
   output.puts start
   lines = _read_navbar_data
   lines = ["index  Home"] + lines  unless _args.include?("nohome")
-STDERR.puts "  #{lines.size} lines"
   lines.each do |line|
-STDERR.puts "  handling: #{line.inspect}"
     basename, cdata = line.chomp.strip.split(" ", 2)
     full = :banner/basename+".html"
     href_main = _main(full)
@@ -739,7 +737,6 @@ STDERR.puts "  handling: #{line.inspect}"
   end
   output.puts finish
   output.close
-STDERR.puts "-- html_file: #{`ls -l #{html_file}`}"
   return File.read(html_file)
 end
 

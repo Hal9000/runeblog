@@ -331,8 +331,11 @@ class RuneBlog
     text = nil
     @theme = @view.dir/"themes/standard"
     post_entry_name = @theme/"blog/post_entry.lt3"
+STDERR.puts "--  @pename = #{post_entry_name}"
+STDERR.puts "--  @pe = #{@_post_entry.inspect}"
     depend = [post_entry_name]
-    xlate src: post_entry_name, dst: "/tmp/post_entry.html", deps: depend  # , debug: true
+    xlate src: post_entry_name, dst: "/tmp/post_entry.html" # , deps: depend  # , debug: true
+STDERR.puts "-- xlate result: #{`ls -l /tmp/post_entry.html`}"
     @_post_entry ||= File.read("/tmp/post_entry.html")
     vp = post_lookup(id)
     nslug, aslug, title, date, teaser_text = 
@@ -347,8 +350,7 @@ class RuneBlog
     _tmp_error(err)
   end
 
-  def collect_recent_posts(file)
-    log!(enter: __method__, args: [file], level: 3)
+  def _sorted_posts
     posts = nil
     dir_posts = @vdir/:posts
     entries = Dir.entries(dir_posts)
@@ -362,18 +364,29 @@ class RuneBlog
       nb = b[bi..(bi+3)].to_i
       nb <=> na
     end  # sort descending
-    posts = posts[0..19]  # return 20 at most
+    return posts[0..19]  # return 20 at most
+  end
+
+  def collect_recent_posts(file)
+    log!(enter: __method__, args: [file], level: 3)
     text = <<-HTML
       <html>
       <head><link rel="stylesheet" href="etc/blog.css"></head>
       <body>
     HTML
+    posts = _sorted_posts
     wanted = [8, posts.size].min  # estimate how many we want?
     enum = posts.each
+    entries = []
     wanted.times do
       postid = File.basename(enum.next)
       postid = postid.to_i
-      text << index_entry(postid)    # side effect! calls _out
+STDERR.puts "-- postid = #{postid}"
+# posts.each {|x| STDERR.puts "    #{x}" }
+      entry = index_entry(postid)
+STDERR.puts "--   entry = #{entry.inspect}"
+      entries << entry
+      text << entry
     end
     text << "</body></html>"
     File.write(@vdir/:remote/file, text)
@@ -432,6 +445,15 @@ class RuneBlog
     _tmp_error(err)
   end
 
+  def _hack_pinned_rebuild(view)
+    tmp = "/tmp/pinned.lt3"
+    File.open(tmp, "w") do |f|
+      f.puts ".mixin liveblog\n.pinned_rebuild #{view}"
+    end
+    xlate src: tmp, dst: "/tmp/junk.html"
+    system("rm -f #{tmp} /tmp/junk.html")
+  end
+
   def generate_view(view)  # huh?
     log!(enter: __method__, args: [view])
     vdir = @root/:views/view
@@ -445,6 +467,7 @@ class RuneBlog
     xlate cwd: vdir/"themes/standard", deps: depend, force: true,
           src: "blog/generate.lt3", dst: vdir/:remote/"index.html"
     copy("#{vdir}/assets/*", "#{vdir}/remote/assets/")
+#   _hack_pinned_rebuild(view)    # FIXME experimental
     copy_widget_html(view)
   rescue => err
     _tmp_error(err)

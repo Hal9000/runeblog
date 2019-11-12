@@ -15,7 +15,6 @@ module RuneBlog::REPL
   end
 
   def cmd_quit(arg, testing = false)
-    check_empty(arg)
     RubyText.stop
     sleep 0.1
     cmd_clear(nil)
@@ -24,14 +23,12 @@ module RuneBlog::REPL
   end
 
   def cmd_clear(arg, testing = false)
-    check_empty(arg)
     STDSCR.cwin.clear
     STDSCR.cwin.refresh
   end
 
   def cmd_version(arg, testing = false)
     reset_output
-    check_empty(arg)
     output RuneBlog::VERSION
     puts fx("\n  RuneBlog", :bold), fx(" v #{RuneBlog::VERSION}\n", Red) unless testing
     @out
@@ -64,14 +61,12 @@ module RuneBlog::REPL
   end
 
   def _manage_pinned(arg, testing = false)   # cloned from manage_links
-    check_empty(arg)
     dir = @blog.view.dir/"themes/standard/widgets/pinned"
     data = dir/"list.data"
     edit_file(data)
   end
 
   def _manage_navbar(arg, testing = false)   # cloned from manage_pages
-    check_empty(arg)
     dir = @blog.view.dir/"themes/standard/navbar"
     files = Dir.entries(dir) - %w[. .. navbar.lt3]
     new_item = "  [New item]  "
@@ -107,7 +102,6 @@ module RuneBlog::REPL
   end
 
   def _manage_pages(arg, testing = false)
-    check_empty(arg)
     dir = @blog.view.dir/"themes/standard/widgets/pages"
     # Assume child files already generated (and list.data??)
     data = dir/"list.data"
@@ -143,14 +137,12 @@ module RuneBlog::REPL
   end
 
   def cmd_import(arg, testing = false)
-    check_empty(arg)
     files = ask("\n  File(s) = ")
     system!("cp #{files} #{@blog.root}/views/#{@blog.view.name}/assets/")
   end
 
   def cmd_browse(arg, testing = false)
     reset_output
-    check_empty(arg)
     url = @blog.view.publisher.url
     if url.nil?   
       output! "Publish first."
@@ -164,7 +156,6 @@ module RuneBlog::REPL
 
   def cmd_preview(arg, testing = false)
     reset_output
-    check_empty(arg)
     local = @blog.view.local_index
     result = system!("open #{local}")
     raise CantOpen(local) unless result
@@ -182,7 +173,6 @@ module RuneBlog::REPL
 # Future Hal says please refactor this
     puts unless testing
     reset_output
-    check_empty(arg)
     unless @blog.view.can_publish?
       msg = "Can't publish... see globals.lt3"
       puts msg unless testing
@@ -225,7 +215,6 @@ module RuneBlog::REPL
   def cmd_rebuild(arg, testing = false)
     debug "Starting cmd_rebuild..."
     reset_output
-    check_empty(arg)
     puts unless testing
     @blog.generate_view(@blog.view)
     @blog.generate_index(@blog.view)
@@ -285,7 +274,6 @@ module RuneBlog::REPL
 
   def cmd_new_post(arg, testing = false)
     reset_output
-    check_empty(arg)
     if @blog.views.empty?
       puts "\n  Create a view before creating the first post!\n "
       return
@@ -358,7 +346,6 @@ module RuneBlog::REPL
 
   def cmd_list_views(arg, testing = false)
     reset_output("\n")
-    check_empty(arg)
     puts unless testing
     @blog.views.each do |v| 
       v = v.to_s
@@ -372,7 +359,6 @@ module RuneBlog::REPL
 
   def cmd_list_posts(arg, testing = false)
     reset_output
-    check_empty(arg)
     posts = @blog.posts  # current view
     str = @blog.view.name + ":\n"
     output str
@@ -395,7 +381,6 @@ module RuneBlog::REPL
 
   def cmd_list_drafts(arg, testing = false)
     reset_output
-    check_empty(arg)
     drafts = @blog.drafts  # current view
     if drafts.empty?
       output! "No drafts"
@@ -416,7 +401,6 @@ module RuneBlog::REPL
 
   def cmd_list_assets(arg, testing = false)
     reset_output
-    check_empty(arg)
     dir = @blog.view.dir + "/assets"
     assets = Dir[dir + "/*"]
     if assets.empty?
@@ -512,7 +496,6 @@ module RuneBlog::REPL
 
   def cmd_help(arg, testing = false)
     reset_output 
-    check_empty(arg)
     msg = Help
     output msg
     msg.each_line do |line|
