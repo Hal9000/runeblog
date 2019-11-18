@@ -7,9 +7,7 @@ class ::RuneBlog::Widget
     def initialize(repo)
       @blog = repo
       @datafile = "list.data"
-      # f = File.new("/tmp/mehhh", "w")
       @lines = File.exist?(@datafile) ? File.readlines(@datafile) : []
-      # f.puts #{@lines.inspect} in #{Dir.pwd}" 
       File.open("/tmp/mehhh", "w") {|f| f.puts "#{@lines.inspect} in #{Dir.pwd}" }
     end
 
@@ -50,7 +48,7 @@ class ::RuneBlog::Widget
       mainfile = "#{tag}-main"
       File.open("#{mainfile}.html", "w") do |f|
         _html_body(f, css) do
-f.puts "<!-- #{@lines.inspect} in #{Dir.pwd} -->"
+          f.puts "<!-- #{@lines.inspect} in #{Dir.pwd} -->"
           f.puts "<h1>#{card_title}</h1><br><hr>"
           @links.each do |title, file| 
             title = title.gsub(/\\/, "")  # kludge

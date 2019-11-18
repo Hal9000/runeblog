@@ -480,7 +480,18 @@ def pinned_rebuild
         widget = code.new(@blog)
         widget.build
       end
-      _include_file wtag/"pinned-card.html"
+      # _include_file wtag/"pinned-card.html"
+    end
+  end
+end
+
+def _handle_standard_widget(tag)
+  wtag = :widgets/tag
+  code = _load_local(tag)
+  if code 
+    Dir.chdir(wtag) do 
+      widget = code.new(@blog)
+      widget.build
     end
   end
 end
@@ -494,7 +505,7 @@ def sidebar
 
   _out %[<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">]
 
-  standard = %w[pinned pages links]
+  standard = %w[pinned pages links news]
 
   _body do |token|
     tag = token.chomp.strip.downcase
@@ -502,27 +513,18 @@ def sidebar
     raise "Can't find #{wtag}" unless Dir.exist?(wtag)
     tcard = "#{tag}-card.html"
 
-    code = _load_local(tag)
-    if code 
-      if ["news", "pages", "links", "pinned"].include? tag
-        Dir.chdir(wtag) do 
-          widget = code.new(@blog)
-          widget.build
+    case
+      when standard.include?(tag)
+        _handle_standard_widget(tag)
+      when tag == "ad"
+        num = rand(1..4)
+        img = "widgets/ad/ad#{num}.png"
+        src, dst = img, @root/:views/@view_name/"remote/widgets/ad/"
+        system!("cp #{src} #{dst}")   # , show: true)
+        File.open(wtag/"vars.lt3", "w") do |f| 
+          f.puts ".set ad.image = #{img}"
         end
-      end
-      _include_file wtag/tcard
-      next
-    end
-
-    if tag == "ad"
-      num = rand(1..4)
-      img = "widgets/ad/ad#{num}.png"
-      src, dst = img, @root/:views/@view_name/"remote/widgets/ad/"
-      system!("cp #{src} #{dst}")   # , show: true)
-      File.open(wtag/"vars.lt3", "w") do |f| 
-        f.puts ".set ad.image = #{img}"
-      end
-      xlate cwd: wtag, src: tag, dst: tcard, force: true # , deps: depend # , debug: true
+        xlate cwd: wtag, src: tag, dst: tcard, force: true # , deps: depend # , debug: true
     end
 
     _include_file wtag/tcard

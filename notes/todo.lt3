@@ -51,9 +51,12 @@ Fixed banner/navbar
 Fixed "missing/incomplete index" problem
 Fixed "preview without rebuild" crash
 Fixed "out-of-box" problem
+Fixed bug in pinned posts
 .end
 
 .sublist easyish Easy stuff?
+=Usage message
+=Enable/disable widgets
 =add views to lsd/lsp output
 =simple "wizard"
 =“wrap”-style include
@@ -191,7 +194,7 @@ docs: how to write templates (incl main one)
 
 .sublist bugs Bugs, etc.
 =weird screen-clear glitches
-FAQ bootstrap code is weird
+=FAQ bootstrap code is weird
 widgets don't honor their CSS?
 things deleted locally aren't deleted remotely (rsync??)
 delete post, edit elsewhere, comes back (change source!)
