@@ -84,7 +84,7 @@ You'll then enter the editor (vim for now) to add configuration info to the <fon
 
 <!-- <pre><b>FIXME add menu screenshot here</b></pre> -->
 <!-- <pre><b>FIXME add vim screenshot here</b></pre> -->
-<img src="readme/vim-global.png" width="494" height="696" align="left"></img>
+<img src="readme/vim-global.png" width="494" height="696" align="center"></img>
 <p>
 
 The next thing you should do is to create at least one view of your own. Use the
@@ -130,7 +130,7 @@ browse...
 You can use the <font size=+1><tt>config</tt></font>  command to choose a file to edit.
 <p>
 
-<img src="readme/config-menu.png" width="700" height="547" align="left"></img>
+<img src="readme/config-menu.png" width="700" height="547" align="center"></img>
 <p>
 
 The meaning and interaction of these files will be explained later. <b>FIXME</b>
