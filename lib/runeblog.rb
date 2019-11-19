@@ -447,15 +447,6 @@ posts.each {|x| STDERR.puts "  " + x }
     _tmp_error(err)
   end
 
-  def _hack_pinned_rebuild(view)
-    tmp = "/tmp/pinned.lt3"
-    File.open(tmp, "w") do |f|
-      f.puts ".mixin liveblog\n.pinned_rebuild #{view}"
-    end
-    xlate src: tmp, dst: "/tmp/junk.html"
-    system("rm -f #{tmp} /tmp/junk.html")
-  end
-
   def generate_view(view)  # huh?
     log!(enter: __method__, args: [view])
     vdir = @root/:views/view
@@ -469,7 +460,6 @@ posts.each {|x| STDERR.puts "  " + x }
     xlate cwd: vdir/"themes/standard", deps: depend, force: true,
           src: "blog/generate.lt3", dst: vdir/:remote/"index.html"
     copy("#{vdir}/assets/*", "#{vdir}/remote/assets/")
-#   _hack_pinned_rebuild(view)    # FIXME experimental
     copy_widget_html(view)
   rescue => err
     _tmp_error(err)

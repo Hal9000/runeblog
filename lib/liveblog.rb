@@ -28,8 +28,6 @@ end
 # "dot" commands
 ##################
 
-
-
 def dropcap
   # Bad form: adds another HEAD
   text = _data
@@ -72,11 +70,8 @@ def faq
   ques = _data.chomp
   ans  = _body_text
   id = "faq#@faq_count"
-# _out %[&nbsp;<a class="btn btn-default btn-xs" data-toggle="collapse" href="##{id}" role="button" aria-expanded="false" aria-controls="collapseExample">+</a>]
   _out %[&nbsp;<a data-toggle="collapse" href="##{id}" role="button" aria-expanded="false" aria-controls="collapseExample"><font size=+3>&#8964;</font></a>]
   _out %[&nbsp;<b>#{ques}</b>]
-# _out "<font size=-2><br></font>" if @faq_count == 1
-# _out "<br>" unless @faq_count == 1
   _out %[<div class="collapse" id="#{id}"><br><font size=+1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#{ans}</font></div>\n]
   _out "<br>" unless @faq_count == 1
   _optional_blank_line
@@ -93,11 +88,21 @@ def _read_navbar_data
 end
 
 def banner  # still experimental
-  _out "<table width=100% bgcolor=#101035>"
-  _out "  <tr>"
   enum = _args.each
   count = 0
   span = 1
+  first = enum.peek
+  if first.start_with?("bgcolor:")
+    enum.next
+    bg = enum.next
+  else
+    bg = nil # bg = white - do nothing
+  end
+  str =  "<table width=100%"
+  str << (bg ? " bgcolor=##{bg}>" : ">")
+  _out str
+  _out "  <tr>"
+
   loop do
     count += 1
     arg = enum.next
@@ -119,17 +124,14 @@ def banner  # still experimental
         _out "<td colspan=#{span}>" + File.read(file) + "</td>" + 
              " <!-- #{arg} -->"
       when "navbar"
-# STDERR.puts "-- navbar: pwd = #{Dir.pwd}:  #{`ls`}"
         dir = @blog.root/:views/@blog.view/"themes/standard/banner/"
         _make_navbar  # horiz is default
-        # xlate cwd: dir, src: "navbar.lt3", dst: "navbar.html"   # , debug: true
         stuff = File.read("banner/navbar.html")
         _out "<td colspan=#{span}><div style='text-align: center'>#{stuff}</div></td>" + 
              " <!-- #{arg} -->"
       when "vnavbar"
         dir = @blog.root/:views/@blog.view/"themes/standard/banner/"
         _make_navbar(:vert)
-        # xlate cwd: dir, src: "vnavbar.lt3", dst: "vnavbar.html"   # , debug: true
         file = "banner/vnavbar.html"
         _out "<td colspan=#{span}>" + File.read(file) + "</td>" +
              "<!-- #{arg} -->"
@@ -197,21 +199,6 @@ def list!
   _optional_blank_line
 end
 
-
-def make_main_links
-  log!(enter: __method__, level: 1)
-  # FIXME remember strings may not be safe
-  line = _data.chomp
-  tag, card_title = *line.split(" ", 2)
-  cardfile, mainfile = "#{tag}-card", "#{tag}-main"
-  input = "list.data"
-  log!(str: "Reading #{input}", pwd: true, level: 3)
-  pairs = File.readlines(input).map {|line| line.chomp.split(/, */, 2) }
-  _write_main(mainfile, pairs, card_title, tag)
-  _write_card(cardfile, mainfile, pairs, card_title, tag)
-  log!(str: "...returning from method", pwd: true, level: 3)
-end
-
 ### inset
 
 def inset
@@ -232,7 +219,6 @@ def inset
     else  # Only into body
       output << line 
     end
-#   _passthru(line)
   end
   lr = _args.first
   wide = _args[1] || "25"
@@ -241,10 +227,6 @@ def inset
   _out "</p>"   #  kludge!! nopara
   0.upto(2) {|i| _passthru output[i] }
   _passthru stuff
-# _passthru "<div style='float:#{lr}; width: #{wide}%; padding:8px; padding-right:12px'>"   # ; font-family:verdana'>"
-# _passthru '<b><i>'
-# _passthru box
-# _passthru_noline '</i></b></div>'
   3.upto(output.length-1) {|i| _passthru output[i] }
   _out "<p>"  #  kludge!! para
   _optional_blank_line
@@ -256,7 +238,6 @@ def title
   @meta.title = title
   setvar :title, title
   # FIXME refactor -- just output variables for a template
-# _out %[<h1 class="post-title">#{title}</h1><br>]
   _optional_blank_line
 end
 
@@ -346,15 +327,8 @@ def teaser
 end
 
 def finalize
-  # FIXME simplify this!
-  unless @meta
-STDERR.puts "META is nil: file = #{Livetext::Vars[:File]}"
-#   puts @live.body
-    return
-  end
-  if @blog.nil?
-    return @meta
-  end
+  return unless @meta
+  return @meta if @blog.nil?
 
   @slug = @blog.make_slug(@meta)
   slug_dir = @slug
@@ -609,17 +583,6 @@ class Livetext::Functions
   def _var(name)
     ::Livetext::Vars[name] || "[:#{name} is undefined]"
   end
-
-#   def link(param = nil)
-# puts "--- WTF?? param = #{param.inspect}"; gets
-#     file, cdata = param.split("||", 2)
-#     %[<a href="assets/#{file}">#{cdata}</a>]
-#   end
-# 
-#   def link(param = nil)
-#     file, cdata = param.split("||", 2)
-#     %[<link type="application/atom+xml" rel="alternate" href="#{_var(:host)}#{file}" title="#{_var(:title)}">]
-#   end
 end
 
 ###
@@ -688,17 +651,14 @@ end
 
 def vnavbar
   str = _make_navbar(:vert)
-# _out str
 end
 
 def hnavbar
   str = _make_navbar  # horiz is default
-# _out str
 end
 
 def navbar
   str = _make_navbar  # horiz is default
-# _out str
 end
 
 def _make_navbar(orient = :horiz)
@@ -757,123 +717,6 @@ def _html_body(file, css = nil)
   file.puts "  <body>"
   yield
   file.puts "  </body>\n</html>"
-end
-
-def _write_card(cardfile, mainfile, pairs, card_title, tag)
-  log!(str: "Creating #{cardfile}.html", pwd: true, level: 2)
-  url = mainfile
-  url = :widgets/tag/mainfile + ".html"
-  File.open("#{cardfile}.html", "w") do |f|
-    f.puts <<-EOS
-      <div class="card mb-3">
-        <div class="card-body">
-          <h5 class="card-title">
-            <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="##{tag}">+</button>
-            <a href="javascript: void(0)" 
-               onclick="javascript:open_main('#{url}')" 
-               style="text-decoration: none; color: black"> #{card_title}</a>
-          </h5>
-          <div class="collapse" id="#{tag}">
-    EOS
-    log!(str: "Writing data pairs to #{cardfile}.html", pwd: true, level: 2)
-    local = _local_tag?(tag)
-    pairs.each do |file, title| 
-      url = file
-      type, title = page_type(tag, title)
-      case type
-        when :local;   url_ref = _widget_card(file, tag)  # local always frameable
-        when :frame;   url_ref = _main(file)              # remote, frameable
-        when :noframe; url_ref = _blank(file)             # remote, not frameable
-      end
-      anchor = %[<a #{url_ref}>#{title}</a>]
-      wrapper = %[<li class="list-group-item">#{anchor}</li>]
-      f.puts wrapper
-    end
-     _include_file cardfile+".html"
-    f.puts <<-EOS
-          </div>
-        </div>
-      </div>
-    EOS
-  end
-end
-
-def _local_tag?(tag)
-  case tag.to_sym
-    when :pages
-      true
-    when :news, :links
-      false
-  else
-    true  # Hmmm...
-  end
-end
-
-def page_type(tag, title)
-  yesno = "yes"
-  yesno, title = title.split(/, */) if title =~ /^[yes|no]/
-  local = _local_tag?(tag)
-  frameable = (yesno == "yes")
-  if local
-    return [:local, title]
-  elsif frameable 
-    return [:frame, title]
-  else
-    return [:noframe, title]
-  end
-end
-
-def _write_main_pages(mainfile, pairs, card_title, tag)
-  local = _local_tag?(tag)
-  pieces = @blog.view.dir/"themes/standard/widgets"/tag/:pieces
-  main_head = xlate! cwd: pieces, src: "main-head.lt3"
-  main_tail = xlate! cwd: pieces, src: "main-tail.lt3"
-  # ^ make into methods in pages.rb or whatever?
-                    
-  File.open("#{mainfile}.html", "w") do |f|
-    f.puts main_head
-    pairs.each do |file, title| 
-      type, title = page_type(tag, title)
-      title = title.gsub(/\\/, "")  # kludge
-      case type
-        when :local;   url_ref = _widget_main(file, tag)  # local always frameable
-        when :frame;   url_ref = "href = '#{file}'"       # local always frameable
-        when :noframe; url_ref = _blank(file)             # local always frameable
-      end
-      css = "color: #8888FF; text-decoration: none; font-size: 21px"   # ; font-family: verdana"
-      f.puts %[<a style="#{css}" #{url_ref}>#{title}</a> <br>]
-    end
-    f.puts main_tail
-  end
-end
-
-def _write_main(mainfile, pairs, card_title, tag)
-  log!(str: "Creating #{mainfile}.html", pwd: true, level: 2)
-
-  if tag == "pages"   # temporary experiment
-    _write_main_pages(mainfile, pairs, card_title, tag)
-    return
-  end
-
-  local = _local_tag?(tag)
-  setvar "card.title", card_title
-  css = "* { font-family: verdana }"
-  File.open("#{mainfile}.html", "w") do |f|
-    _html_body(f, css) do
-      f.puts "<h1>#{card_title}</h1><br><hr>"
-      pairs.each do |file, title| 
-        type, title = page_type(tag, title)
-        title = title.gsub(/\\/, "")  # kludge
-        case type
-          when :local;   url_ref = _widget_main(file, tag)  # local always frameable
-          when :frame;   url_ref = "href = '#{file}'"       # local always frameable
-          when :noframe; url_ref = _blank(file)             # local always frameable
-        end
-        css = "color: #8888FF; text-decoration: none; font-size: 21px"  # ; font-family: verdana"
-        f.puts %[<a style="#{css}" #{url_ref}>#{title}</a> <br>]
-      end
-    end
-  end
 end
 
 def _errout(*args)
@@ -948,14 +791,5 @@ end
 
 def _blank(url)
   %[href='#{url}' target='blank']
-end
-
-def _widget_main(url, tag)
-  %[href="#{url}"]
-end
-
-def _widget_card(url, tag)
-  url2 = :widgets/tag/url
-  %[href="javascript: void(0)" onclick="javascript:open_main('#{url2}')"]
 end
 

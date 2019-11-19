@@ -52,6 +52,8 @@ Fixed "missing/incomplete index" problem
 Fixed "preview without rebuild" crash
 Fixed "out-of-box" problem
 Fixed bug in pinned posts
+Some code cleanup in liveblog
+Added to README
 .end
 
 .sublist easyish Easy stuff?
@@ -193,6 +195,7 @@ docs: how to write templates (incl main one)
 .end
 
 .sublist bugs Bugs, etc.
+=Pinned posts needs redundant 'rebuild'
 =weird screen-clear glitches
 =FAQ bootstrap code is weird
 widgets don't honor their CSS?

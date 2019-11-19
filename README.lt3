@@ -1,6 +1,6 @@
 .mixin markdown
 <div style="float: left; align: left; vertical-align: bottom">
-<img src="raido4.png" width="210" height="295" align="left"></img>
+<img src="readme/raido4.png" width="210" height="295" align="left"></img>
 </div>
 <h1>runeblog</h1><b>Runeblog</b> is a blogging tool written in Ruby. It has these basic characteristics:
 <ul>
@@ -80,8 +80,9 @@ a new blog repo. Enter `y for yes.
 
 You'll then enter the editor (vim for now) to add configuration info to the `global.lt3 file.
 
-<pre><b>FIXME add menu screenshot here</b></pre>
-<pre><b>FIXME add vim screenshot here</b></pre>
+<!-- <pre><b>FIXME add menu screenshot here</b></pre> -->
+<!-- <pre><b>FIXME add vim screenshot here</b></pre> -->
+<img src="readme/vim-global.png" width="494" height="696" align="left"></img>
 
 The next thing you should do is to create at least one view of your own. Use the
 `[new view] command for this. Note that the current view is displayed as part of the prompt.
@@ -95,7 +96,7 @@ To create a new post, use the `[new post] command (also abbreviated `post or sim
 prompted for a title:
 
 <pre>
-<b>[around_austin]</b> new post<br>
+<b>[mystuff]</b> new post<br>
 <b>Title:</b> This is my first post
 </pre>
 
@@ -118,7 +119,7 @@ browse...
 
 You can use the `config command to choose a file to edit.
 
-<pre><b>FIXME add screenshot here</b></pre>
+<img src="readme/config-menu.png" width="700" height="547" align="left"></img>
 
 The meaning and interaction of these files will be explained later. *FIXME
 
@@ -126,6 +127,42 @@ When you make changes, `rebuild will detect these and regenerate whatever files
 are needed.
 
 .h2 The directory structure for a view
+
+<b>Subject to change</b>
+TBD: Add details
+
+<pre>
+    .blogs/views/mystuff/
+    ├── assets
+    ├── posts
+    ├── remote
+    │   ├── assets
+    │   ├── banner
+    │   ├── etc
+    │   ├── permalink
+    │   └── widgets
+    │       ├── ad
+    │       ├── links
+    │       ├── news
+    │       ├── pages
+    │       └── pinned
+    └── themes
+        └── standard
+            ├── banner
+            ├── blog
+            ├── etc
+            ├── post
+            └── widgets
+                ├── ad
+                ├── bydates
+                ├── links
+                ├── news
+                ├── pages
+                ├── pinned
+                ├── search
+                ├── sitemap
+                └── tag-cloud
+</pre>
 
 <pre><b>FIXME add details here</b></pre>
 
@@ -224,7 +261,7 @@ are needed.
 
 <b>Creating your own widgets</b>
 
-<b>Special tags coming "soon"</b>
+<b>Special tags/functions coming "soon"</b>
 <pre>
   github, gitlab, gist
   wikipedia
