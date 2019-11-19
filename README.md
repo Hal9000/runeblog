@@ -110,7 +110,7 @@ prompted for a title:
 Then you'll be sent into the editor (currently vim but can be others):
 <p>
 
-<pre><b>FIXME add example here</b></pre>
+<img src="readme/edit-first.png" width="506" height="383" align="center"></img>
 <p>
 
 <pre>
