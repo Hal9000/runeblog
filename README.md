@@ -214,7 +214,7 @@ TBD: Add details
 <b>Predefined functions and variables</b>
 <pre>
   $File
-  $\$date
+  $ $date
   etc.
 </pre>
 <p>
