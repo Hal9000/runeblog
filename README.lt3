@@ -194,11 +194,11 @@ TBD: Add details
 <b>Predefined functions and variables</b>
 <pre>
   \$File
-  \$ \$date
+  `[$$date]
   etc.
 </pre>
 
-.h2 Runeblog-specific features (Liveblog</b>
+.h2 Runeblog-specific features (Liveblog)</b>
 
 <b>TBD</b>
 

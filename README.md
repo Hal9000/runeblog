@@ -214,12 +214,12 @@ TBD: Add details
 <b>Predefined functions and variables</b>
 <pre>
   $File
-  $ $date
+  <font size=+1><tt></tt></font>
   etc.
 </pre>
 <p>
 
-## Runeblog-specific features (Liveblog</b>
+## Runeblog-specific features (Liveblog)</b>
 <b>TBD</b>
 <p>
 
