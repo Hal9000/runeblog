@@ -56,10 +56,11 @@ end
 
 def cmdline_rebuild
   _need_view
-  puts "Generating view..."
+  print "Generating view... "
   @blog.generate_view(@view)
-  puts "Generating index..."
-  @blog.generate_index(@view)
+  print "Generating index... "
+  num = @blog.generate_index(@view)
+  puts "#{num} posts\n "
 end
 
 def handle_cmdline

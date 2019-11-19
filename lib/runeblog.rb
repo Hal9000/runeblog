@@ -375,23 +375,19 @@ class RuneBlog
       <body>
     HTML
     posts = _sorted_posts
-STDERR.puts "Posts = "
-posts.each {|x| STDERR.puts "  " + x }
     wanted = [8, posts.size].min  # estimate how many we want?
     enum = posts.each
     entries = []
     wanted.times do
       postid = File.basename(enum.next)
       postid = postid.to_i
-# STDERR.puts "-- postid = #{postid}"
-# posts.each {|x| STDERR.puts "    #{x}" }
       entry = index_entry(postid)
-# STDERR.puts "--   entry = #{entry.size} chars"
       entries << entry
       text << entry
     end
     text << "</body></html>"
     File.write(@vdir/:remote/file, text)
+    return posts.size
   rescue => err
     _tmp_error(err)
   end
@@ -442,7 +438,8 @@ posts.each {|x| STDERR.puts "  " + x }
     log!(enter: __method__, args: [view], pwd: true, dir: true)
     raise ArgumentError unless view.is_a?(String) || view.is_a?(RuneBlog::View)
     @vdir = @root/:views/view
-    collect_recent_posts("recent.html")
+    num = collect_recent_posts("recent.html")
+    return num
   rescue => err
     _tmp_error(err)
   end

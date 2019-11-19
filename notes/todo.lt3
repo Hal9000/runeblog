@@ -54,6 +54,8 @@ Fixed "out-of-box" problem
 Fixed bug in pinned posts
 Some code cleanup in liveblog
 Added to README
+Minor fixes to bin/blog
+Widget rebuild is fixed
 .end
 
 .sublist easyish Easy stuff?
@@ -195,6 +197,8 @@ docs: how to write templates (incl main one)
 .end
 
 .sublist bugs Bugs, etc.
+=tt tag not working with blog.css?
+=No way to update widget-specific code
 =Pinned posts needs redundant 'rebuild'
 =weird screen-clear glitches
 =FAQ bootstrap code is weird

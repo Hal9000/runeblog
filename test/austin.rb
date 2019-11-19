@@ -50,7 +50,8 @@ end
 
 t0 = Time.now
 
-puts bold("\nGenerating test blog...")
+puts
+debug bold("Generating test blog...")
 
 system("rm -rf .blogs")
 RuneBlog.create_new_blog_repo(".blogs")
@@ -151,12 +152,10 @@ x.generate_index("around_austin")
 
 debug
 x.change_view("around_austin")
-debug
-
-puts bold("...finished.\n")
+debug bold("...finished.\n")
 
 t1 = Time.now
 
 elapsed = t1 - t0
-puts "\nElapsed: #{'%3.2f' % elapsed} secs\n "
+puts "Elapsed: #{'%3.2f' % elapsed} secs\n "
 
