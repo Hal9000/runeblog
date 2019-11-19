@@ -87,8 +87,8 @@ You'll then enter the editor (vim for now) to add configuration info to the <fon
 <img src="readme/vim-global.png" width="494" height="696" align="center"></img>
 <p>
 
-The next thing you should do is to create at least one view of your own. Use the
-`[new view] command for this. Note that the current view is displayed as part of the prompt.
+The next thing you should do is to create at least one view of your own. Use the <font size=+1><tt>new view</tt></font> 
+command for this. Note that the current view is displayed as part of the prompt.
 <p>
 
 <pre>
