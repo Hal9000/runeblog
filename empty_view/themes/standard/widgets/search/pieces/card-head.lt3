@@ -1,8 +1,0 @@
-.include ../local_vars.lt3
-. Material (if any) to go before card data
-<html>
-  <head>
-     <style src="card.css"></style>
-  </head>
-  <body> 
-     <h1>Search Posts</h1>

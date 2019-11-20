@@ -1,96 +1,5 @@
 #!/usr/bin/env ruby
-=begin
-std-widget/
-std-widget/local-vars.lt3
-std-widget//list.data
-std-widget//pieces
-std-widget//pieces/card-head.lt3
-std-widget//pieces/card-tail.lt3
-std-widget//pieces/card.css
-std-widget//pieces/main-head.lt3
-std-widget//pieces/main-tail.lt3
-std-widget//pieces/main.css
-std-widget//README
-std-widget//WIDGET.lt3
-std-widget//WIDGET.rb
-=end
 
-# FIXME Also fix the 
-
-def write_local_vars
-  File.open("std_widget/local-vars.lt3", "w") do |f|
-    f.puts <<~LIVE
-      # #@app: #@title
-      .set widget.name = "#@title"
-
-      . heredocs (in case of embedded commas)
-
-      .heredoc card.title
-      $widget.name
-      .end
-
-      .heredoc main.title
-      $widget.name
-      .end
-    LIVE
-  end
-end
-
-def write_card_head
-  File.open("std_widget/pieces/card-head.lt3", "w") do |f|
-    f.puts <<~LIVE
-      .include ../local_vars.lt3
-      . Material (if any) to go before card data
-      <html>
-        <head>
-           <style src="card.css"></style>
-        </head>
-        <body> 
-           <h1>#@title</h1>
-    LIVE
-    # </html> damned syntax highlighting
-  end
-end 
-
-def write_card_tail
-  File.open("std_widget/pieces/card-tail.lt3", "w") do |f|
-    f.puts <<~LIVE
-      .include ../local_vars.lt3
-      . Material (if any) to go after main data
-        </body>
-      </html> 
-    LIVE
-    # </html> damned syntax highlighting
-  end
-end 
-
-def write_main_head
-  File.open("std_widget/pieces/main-head.lt3", "w") do |f|
-    f.puts <<~LIVE
-      .include ../local_vars.lt3
-      . Material (if any) to go before main data
-      <html>
-        <head>
-           <style src="main.css"></style>
-        </head>
-        <body> 
-           <h1>$card.title</h1>
-    LIVE
-    # </html> damned syntax highlighting
-  end
-end 
-
-def write_main_tail
-  File.open("std_widget/pieces/main-tail.lt3", "w") do |f|
-    f.puts <<~LIVE
-      .include ../local_vars.lt3
-      . Material (if any) to go after main data
-        </body>
-      </html> 
-    LIVE
-    # </html> damned syntax highlighting
-  end
-end 
 
 def write_css
   # Need .lt3 file?
@@ -123,25 +32,78 @@ def write_widget_ruby
 
       class ::RuneBlog::Widget
         class #{_make_class_name(@app)}
-          def self.build
+          Type, Title = "#@app", "#@title"
+
+          def initialize(repo)
+            @blog = repo
+            @datafile = "list.data"
+            @lines = File.exist?(@datafile) ? File.readlines(@datafile) : []
           end
 
-          def self.edit_menu
+          def _html_body(file, css = nil)    # FIXME move to common file
+            file.puts "<html>"
+            if css
+              file.puts "    <head>"  
+              file.puts "        <style>\n#{css}\n          </style>"
+              file.puts "    </head>"  
+            end
+            file.puts "  <body>"
+            yield
+            file.puts "  </body>\n</html>"
           end
 
-          def self.refresh
+          def build
+            # ...insert logic here
+            write_main
+            write_card
+          end
+
+          def write_main
+            tag = Type
+            card_title = Title
+            css = "* { font-family: verdana }"
+            mainfile = "#{tag}-main"
+            File.open("#{mainfile}.html", "w") do |f|
+              _html_body(f, css) do
+                f.puts "<h1>#{card_title}</h1><br><hr>"
+                # ...insert logic here
+              end
+            end
+          end
+
+          def write_card
+            tag = Type
+            url = :widgets/tag/tag+"-main.html"
+            card_title = Title
+            cardfile = "#{tag}-card"
+            File.open("#{cardfile}.html", "w") do |f|
+              f.puts <<-EOS
+                <div class="card mb-3">
+                  <div class="card-body">
+                    <h5 class="card-title">
+                      <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="##{tag}">+</button>
+                      <a href="javascript: void(0)" 
+                         onclick="javascript:open_main('#{url}')" 
+                         style="text-decoration: none; color: black"> #{card_title}</a>
+                    </h5>
+                    <div class="collapse" id="#{tag}">
+              EOS
+              # ...insert logic here
+              f.puts <<-EOS
+                    </div>
+                  </div>
+                </div>
+              EOS
+            end
+          end
+
+          def edit_menu
+          end
+
+          def refresh
           end
         end
       end
-    LIVE
-  end
-end
-
-def write_widget_livetext
-  File.open("std_widget/#@app.lt3", "w") do |f|
-    f.puts <<~LIVE
-      .mixin liveblog
-      .make_main_links #@app #@title
     LIVE
   end
 end
@@ -194,15 +156,8 @@ abort 'Need app, "title..."' if ARGV.empty?
 system("rm -rf std_widget")
 system("mkdir -p std_widget/pieces")
 
-write_local_vars
-write_main_head
-write_main_tail
-write_card_head
-write_card_tail
 write_css
-
 write_widget_ruby
-write_widget_livetext
 write_custom_ruby
 write_README
 

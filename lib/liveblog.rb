@@ -7,8 +7,6 @@ require 'runeblog'
 require 'pathmagic'
 require 'xlate'
 
-# errfile = File.new("/tmp/liveblog.out", "w")
-# STDERR.reopen(errfile)
 
 def init_liveblog    # FIXME - a lot of this logic sucks
   here = Dir.pwd
@@ -504,8 +502,6 @@ def sidebar
     _include_file wtag/tcard
 #   depend = %w[card.css main.css custom.rb local.rb] 
 #   depend += ["#{wtag}.lt3", "#{wtag}.rb"]
-#   depend += %w[pieces/card-head.lt3 pieces/card-tail.lt3]
-#   depend += %w[pieces/main-head.lt3 pieces/main-tail.lt3]
 #   depend.map! {|x| @blog.view.dir/"themes/standard/widgets"/wtag/x }
 # _debug "--- call xlate #{tag} src = #{tag}  dst = #{tcard}\r"
   end
@@ -530,21 +526,6 @@ def script
   integ = lines[1]
   cross = lines[2] || "anonymous"
   _out %[<script src="#{url}" integrity="#{integ}" crossorigin="#{cross}"></script>]
-end
-
-def card_iframe
-  title, lines = _data, _body
-  lines.map!(&:chomp)
-  url = lines[0].chomp
-  stuff = lines[1..-1].join(" ")  # FIXME later
-  middle = <<-HTML
-    <iframe src="#{url}" #{stuff} 
-            style="border: 0" #{stuff}
-            frameborder="0" scrolling="no">
-    </iframe>
-  HTML
-
-  _card_generic(card_title: title, middle: middle, extra: "bg-dark text-white")
 end
 
 $Dot = self   # Clunky! for dot commands called from Functions class
@@ -587,44 +568,6 @@ end
 
 ###
 
-def card1
-  title, lines = _data, _body
-  lines.map!(&:chomp)
-
-  card_text = lines[0]
-  url, classname, cdata = lines[1].split(",", 4)
-  main = _main(url)
-
-  middle = <<-HTML
-    <p class="card-text">#{card_text}</p>
-    <a #{main} class="#{classname}">#{cdata}</a>
-  HTML
-
-  _card_generic(card_title: title, middle: middle, extra: "bg-dark text-white")
-end
-
-def card2
-  str = _data
-  file, card_title = str.chomp.split(" ", 2) 
-  card_title = %[<a #{_main(file)} style="text-decoration: none; color: black">#{card_title}</a>]
-
-# FIXME is this wrong??
-
-  open = <<-HTML
-    <div class="card mb-3">
-      <div class="card-body">
-        <h5 class="card-title">#{card_title}</h5>
-      <ul class="list-group list-group-flush">
-  HTML
-  _out open
-  _body do |line|
-    url, cdata = line.chomp.split(",", 3)
-    main = _main(url)
-    _out %[<li class="list-group-item"><a #{main}}">#{cdata}</a> </li>]
-  end
-  close = %[       </ul>\n    </div>\n  </div>]
-  _out close
-end
 
 def tag_cloud
   title = _data

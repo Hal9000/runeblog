@@ -35,6 +35,7 @@ Warning: .views line refs nonexistent views
 ask for name when view is created
 \.banner knows defaults text.html, banner.jpg
 rewrote help info
+Usage message
 Warning/error: create post with no views existing
 enhances ViewPost
 legacy drafts mostly working
@@ -56,10 +57,12 @@ Some code cleanup in liveblog
 Added to README
 Minor fixes to bin/blog
 Widget rebuild is fixed
+Deleted card1, card2, card_iframe
+Deleted "pieces" dir under widget
+Fixed mkwidget
 .end
 
 .sublist easyish Easy stuff?
-=Usage message
 =Enable/disable widgets
 =add views to lsd/lsp output
 =simple "wizard"

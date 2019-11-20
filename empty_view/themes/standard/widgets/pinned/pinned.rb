@@ -8,7 +8,6 @@ class ::RuneBlog::Widget
       @blog = repo
       @datafile = "list.data"
       @lines = File.exist?(@datafile) ? File.readlines(@datafile) : []
-      File.open("/tmp/mehhh", "w") {|f| f.puts "#{@lines.inspect} in #{Dir.pwd}" }
     end
 
     def _html_body(file, css = nil)    # FIXME
