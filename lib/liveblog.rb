@@ -79,73 +79,215 @@ def backlink
   _out %[<br><a href="javascript:history.go(-1)">[Back]</a>]
 end
 
+def code
+  lines = _body_text
+  _out "<font size=+1><pre>\n#{lines}\n</pre></font>"
+end
+
 def _read_navbar_data
   dir = @blog.root/:views/@blog.view/"themes/standard/banner/"
   datafile = dir/"list.data"
   File.readlines(datafile)
 end
 
-def banner  # still experimental
-  enum = _args.each
+def banner
   count = 0
   span = 1
-  first = enum.peek
-  if first.start_with?("bgcolor:")
-    enum.next
-    bg = enum.next
-  else
-    bg = nil # bg = white - do nothing
-  end
-  str =  "<table width=100%"
-  str << (bg ? " bgcolor=##{bg}>" : ">")
-  _out str
-  _out "  <tr>"
+  bg = "white"  # outside loop
+  wide = nil
+  high = 250
+  str2 = ""
+  lines = _body.to_a
 
-  loop do
+  lines.each do |line|
     count += 1
-    arg = enum.next
-    case arg
+    tag, *data = line.split
+    data ||= []
+    case tag
+      when "width"
+        wide = data[0]
+      when "height"
+        high = data[0]
+      when "bgcolor"
+        bg = data[0] || "white"
       when "image"
-        image = "banner/banner.jpg"
-        _out "      <td colspan=#{span}><img src=#{image} height=150></img></td>" + 
-             " <!-- #{arg} -->"
-      when "image:"
-        image = "banner/#{enum.next}"
-        _out "      <td colspan=#{span}><img src=#{image} height=150></img></td>" + 
-             " <!-- #{arg} -->"
+        image = data[0] || "banner.jpg"
+        image = "banner"/image
+        wide = data[0]
+        width = wide ? "width=#{wide}" : "" 
+        str2 << "      <td colspan=#{span}><img src=#{image} #{width} height=#{high}></img></td>" + "\n"
+      when "svg_title"
+        stuff, hash = _svg_title(*data)
+STDERR.puts hash.inspect
+        wide = hash["width"]
+        str2 << "      <td colspan=#{span} width=#{wide}>#{stuff}</td>" + "\n"
       when "text"
-        file = "banner/top.html"
-        _out "<td colspan=#{span}>" + File.read(file) + "</td>" + 
-             " <!-- #{arg} -->"
-      when "text:"
-        file = "banner/#{enum.next}"
-        _out "<td colspan=#{span}>" + File.read(file) + "</td>" + 
-             " <!-- #{arg} -->"
+        data[0] ||= "top.html"
+        file = "banner"/data[0]
+        str2 << "<td colspan=#{span}>" + File.read(file) + "</td>" + "\n"
       when "navbar"
-        dir = @blog.root/:views/@blog.view/"themes/standard/banner/"
+        dir = @blog.root/:views/@blog.view/"themes/standard/banner/" + "\n"
         _make_navbar  # horiz is default
         stuff = File.read("banner/navbar.html")
-        _out "<td colspan=#{span}><div style='text-align: center'>#{stuff}</div></td>" + 
-             " <!-- #{arg} -->"
+        str2 << "<td colspan=#{span}><div style='text-align: center'>#{stuff}</div></td>" + "\n"
       when "vnavbar"
         dir = @blog.root/:views/@blog.view/"themes/standard/banner/"
         _make_navbar(:vert)
         file = "banner/vnavbar.html"
-        _out "<td colspan=#{span}>" + File.read(file) + "</td>" +
-             "<!-- #{arg} -->"
-      when "//"
+        str2 << "<td colspan=#{span}>" + File.read(file) + "</td>" + "\n"
+      when "break"
          span = count - 1
-         _out "  </tr>\n  <tr>" + "<!-- #{arg} -->"
+         str2 << "  </tr>\n  <tr>"  + "\n"
     else
-      _out "        '#{arg}' isn't known"
+      str2 << "        '#{tag}' isn't known" + "\n"
     end
   end
+  _out "<table width=100% height=#{high} bgcolor=##{bg}>"
+  _out "  <tr>"
+  _out str2
   _out "  </tr>"
   _out "</table>"
 rescue => err
   STDERR.puts "err = #{err}"
   STDERR.puts err.backtrace.join("\n")
   gets
+end
+
+def _parse_colon_args(args, hash)  # really belongs in livetext
+  h2 = hash.dup
+  e = args.each
+  loop do
+    arg = e.next.chop.to_sym
+    raise "_parse_args: #{arg} is unknown" unless hash.keys.include?(arg)
+    h2[arg] = e.next
+  end
+  h2 = h2.reject {|k,v| v.nil? }
+  h2.each_pair {|k, v| raise "#{k} has no value" if v.empty? }
+  h2
+end
+
+def _get_arg(name, args)  # really belongs in livetext
+  raise "(#{name}) Expected an array" unless args.is_a? Array
+  raise "(#{name}) Expected an arg" if args.empty?
+  raise "(#{name}) Too many args: #{args.inspect}" if args.size > 1
+  val = args[0]
+  raise "Expected an argument '#{name}'" if val.nil?
+  val
+end
+
+def _svg_title(*args)
+  width    = 330
+  height   = 100
+  bgcolor  = "blue"
+  style    = nil
+  size     = ""
+  font     = "sans-serif"
+  color    = "white"
+  xy       = "5,5"
+  align    = "center"
+  style2   = nil
+  size2    = ""
+  font2    = "sans-serif"
+  color2   = "white"
+  xy2      = "5,5"
+  align2   = "center"
+
+  e = args.each
+  hash = {}
+  loop do
+    arg = e.next
+    arg = arg.chop
+    case arg   # can give runtime error if arg missing
+      when "width";    width    = e.next
+      when "height";   height   = e.next
+      when "bgcolor";  bgcolor  = e.next
+      when "style";    style    = e.next
+      when "size";     size     = e.next
+      when "font";     font     = e.next
+      when "color";    color    = e.next
+      when "xy";       xy       = e.next
+      when "align";    align    = e.next
+      when "style2";   style2   = e.next
+      when "size2";    size2    = e.next
+      when "font2";    font2    = e.next
+      when "color2";   color2   = e.next
+      when "xy2";      xy2      = e.next
+      when "align2";   align2   = e.next
+    end
+  end
+  x, y = xy.split(",")
+  x2, y2 = xy2.split(",")
+  hash["x"]       = x
+  hash["y"]       = y
+  hash["x2"]      = x2
+  hash["y2"]      = y2
+  hash["width"]   = width
+  hash["height"]  = height
+  hash["bgcolor"] = bgcolor
+  hash["style"]   = style
+  hash["size"]    = size
+  hash["font"]    = font
+  hash["color"]   = color
+  hash["xy"]      = xy
+  hash["align"]   = align
+  hash["style2"]  = style2
+  hash["size2"]   = size2
+  hash["font2"]   = font2
+  hash["color2"]  = color2
+  hash["align2"]  = align2
+  result = <<~HTML
+    <svg width="#{width}" height="#{height}"
+         viewBox="0 0 #{width} #{height}">
+      <style>
+        .title    { font: #{style} #{size} #{font}; fill: #{color} }
+        .subtitle { font: #{style2} #{size2} #{font2}; fill: #{color2} }
+      </style>
+      <rect x="10" y="10" rx="10" ry="10" width="#{width-20}" height="#{height-20}" fill="#{bgcolor}"/>
+      <text text-anchor="#{align}"  x="#{x}" y="#{y}" class="title">#{Livetext::Vars[:blog]} </text>
+      <text text-anchor="#{align2}" x="#{x2}" y="#{y2}" class="subtitle">#{Livetext::Vars["blog.desc"]} </text>
+    </svg>
+  HTML
+  [result, hash]
+end
+
+def svg_title_SOON
+  tstyle = tsize = tfont = tcolor = txy = talign = nil
+  t2style = t2size = t2font = t2color = t2xy = t2align = nil
+  wide, high, hue = 450, 150, "white"
+  _body do |line|
+    count += 1
+    tag, *data = line.split
+    data ||= []
+    title_params = {style: nil, size: "", font: "sans-serif", color: "white",
+                    xy: "5,5", align: "left"}
+    case tag
+      when "title";   
+        hash = _parse_colon_args(data, title_params)
+        tstyle, tsize, tfont, tcolor, txy, talign = 
+          hash.values_at(:tstyle, :tsize, :tfont, :tcolor, :txy, :talign)
+        tx, ty = txy.split(",")
+      when "title2";  
+        hash = _parse_colon_args(data, title_params)
+        t2style, t2size, t2font, t2color, t2xy, t2align =
+          hash.values_at(:t2style, :t2size, :t2font, :t2color, :t2xy, :t2align)
+        t2x, t2y = t2xy.split(",")
+      when "width";   wide = _get_arg(:width, data)
+      when "height";  high = _get_arg(:height, data)
+      when "bgcolor"; hue  = _get_arg(:bgcolor, data)
+    end
+  end
+  <<~HTML
+    <svg width="#{wide}" height="#{high}"
+         viewBox="0 0 #{wide} #{high}">
+      <style>
+        .title    { font: #{tstyle} #{tsize} #{tfont}; fill: #{tcolor} }
+        .subtitle { font: #{t2style} #{t2size} #{t2font}; fill: #{t2color} }
+      </style>
+      <rect x="0" y="0" rx="10" ry="10" width="#{wide}" height="#{height}" fill="#{bgcolor}"/>
+      <text text-anchor="#{talign}"  x="#{tx}" y="#{tx}" class="title">$blog </text>
+      <text text-anchor="#{t2align}" x="#{t2x}" y="#{t2y}" class="subtitle">$blog.desc </text>
+    </svg>
+  HTML
 end
 
 def quote
@@ -354,7 +496,8 @@ def head  # Does NOT output <head> tags
                "linkc"          => %[<link rel="canonical" href="#{_var(:host)}">],
                "og:url"         => %[<meta property="og:url" content="#{_var(:host)}">],
                "og:site_name"   => %[<meta property="og:site_name" content="#{_var(:blog)}">],
-               "style"          => %[<link rel="stylesheet" href="etc/blog.css">],
+#              "style"          => %[<link rel="stylesheet" href="etc/blog.css">],
+# ^ FIXME
                "feed"           => %[<link type="application/atom+xml" rel="alternate" href="#{_var(:host)}/feed.xml" title="#{_var(:blog)}">],
                "favicon"        => %[<link rel="shortcut icon" type="image/x-icon" href="../etc/favicon.ico">\n <link rel="apple-touch-icon" href="../etc/favicon.ico">]
              }

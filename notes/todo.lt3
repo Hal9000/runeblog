@@ -60,28 +60,40 @@ Widget rebuild is fixed
 Deleted card1, card2, card_iframe
 Deleted "pieces" dir under widget
 Fixed mkwidget
+\.banner now takes body
+some work on banner_svg
+Fixed $\.end issue
+Added svg_title to banner
 .end
 
 .sublist easyish Easy stuff?
-=Enable/disable widgets
+="universal" variables?
+=Enable/disable widgets (also FB/Twitter?)
+=break up global.lt3??
+=fix default global.lt3
+=add explanations to config menu
+=add blog/banner.lt3
+=default banner (svg?)
 =add views to lsd/lsp output
 =simple "wizard"
-=“wrap”-style include
-=add CSS ref to post?
+“wrap”-style include
+add CSS ref to post?
 specific kinds of rebuild?
 custom.rb (livetext) gets included if present?
 Warn when .img (etc.) refs nonexistent asset
-"universal" variables?
 .end
 
 .sublist funky General functionality
 =backup/restore?
-=more params in globals
+=complex banners
+=svg for default banner
 =ssh-copy-id in setup
+more params in globals
 better asset management
 dynamically add commands/code to repl?
 need categories??
 post analyzer - SEO, spell, wcount, etc.
+.end
 
 .sublist widgets Widget functionality, etc.
 = standard/nonstandard marker for widgets
@@ -94,12 +106,12 @@ automated news search
 .end
 
 .sublist livetext Livetext bugs/features
+=\.with statement for variables (.var? add to .variables?)
+=permit # comments on end of line?
+=other command line options? nopara? debug? ...
 =Var as replacement for \_var
-=autocomplete fails when no valid prefix
 =open/close
 =non-system mode?
-=permit # comments on end of line?
-other command line options? nopara? debug? ...
 fix bug .set var="this, that"
 =mixin? include? copy? seek?
 mixin as module (livetext -m)
@@ -110,6 +122,7 @@ permit omission of .lt3
 
 .sublist ui UI and UX
 ="rebuild post" command?
+=update software safely?
 shorten commands?
 allow large output for lsp/lsd (scroll? more?)
 undo last post?
@@ -200,8 +213,11 @@ docs: how to write templates (incl main one)
 .end
 
 .sublist bugs Bugs, etc.
+=bin/blog: Error when escaping from menu
+=bin/blog: autocomplete fails when no valid prefix
 =tt tag not working with blog.css?
-=No way to update widget-specific code
+=automatic .nopara as needed
+=No way to update widget-specific code?
 =Pinned posts needs redundant 'rebuild'
 =weird screen-clear glitches
 =FAQ bootstrap code is weird

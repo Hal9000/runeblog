@@ -23,6 +23,9 @@ spec = Gem::Specification.new do |s|
   s.add_runtime_dependency 'livetext', '~> 0.8', '>= 0.8.95'
   s.add_runtime_dependency 'rubytext', '~> 0.1', '>= 0.1.16'
 
+  s.add_runtime_dependency 'minitest'
+  # ^ technically not runtime dep
+
   # Files...
   main = Find.find("bin").to_a + 
          Find.find("lib").to_a

@@ -12,41 +12,42 @@
 <p>
 
 <h2>Runeblog TODO</h2>
-</h3>Generated from notes/todo.lt3 on 2019-11-20 at 00:47:08</h3>
+</h3>Generated from notes/todo.lt3 on 2019-12-03 at 00:57:07</h3>
 <p>
 
 <table border=0 width=96% cellpadding=8 cellspacing=8>
   <tr>
     <td valign=top width=25%>&nbsp;&nbsp;<b>Easy stuff?
-</b><br><ul><li><font color=red>Enable/disable widgets</font></li>
+</b><br><ul><li><font color=red>"universal" variables?</font></li>
+<li><font color=red>Enable/disable widgets (also FB/Twitter?)</font></li>
+<li><font color=red>break up global.lt3??</font></li>
+<li><font color=red>fix default global.lt3</font></li>
+<li><font color=red>add explanations to config menu</font></li>
+<li><font color=red>add blog/banner.lt3</font></li>
+<li><font color=red>default banner (svg?)</font></li>
 <li><font color=red>add views to lsd/lsp output</font></li>
 <li><font color=red>simple "wizard"</font></li>
-<li><font color=red>“wrap”-style include</font></li>
-<li><font color=red>add CSS ref to post?</font></li>
+<li>“wrap”-style include</li>
+<li>add CSS ref to post?</li>
 <li>specific kinds of rebuild?</li>
 <li>custom.rb (livetext) gets included if present?</li>
-<li>Warn when .img (etc.) refs nonexistent asset</li>
-<li>"universal" variables?</li></ul></td>
+<li>Warn when .img (etc.) refs nonexistent asset</li></ul></td>
     <td valign=top width=25%>&nbsp;&nbsp;<b>General functionality
 </b><br><ul><li><font color=red>backup/restore?</font></li>
-<li><font color=red>more params in globals</font></li>
+<li><font color=red>complex banners</font></li>
+<li><font color=red>svg for default banner</font></li>
 <li><font color=red>ssh-copy-id in setup</font></li>
+<li>more params in globals</li>
 <li>better asset management</li>
 <li>dynamically add commands/code to repl?</li>
 <li>need categories??</li>
-<li>post analyzer - SEO, spell, wcount, etc.</li>
-<li></li>
-<li>.sublist widgets Widget functionality, etc.</li>
-<li><font color=red> standard/nonstandard marker for widgets</font></li>
-<li><font color=red> work on "standard widget" concept</font></li>
-<li>tag cloud</li>
-<li>bydates manager</li>
-<li>search</li>
-<li>site map widget</li>
-<li>automated news search</li></ul></td>
+<li>post analyzer - SEO, spell, wcount, etc.</li></ul></td>
     <td valign=top width=25%>&nbsp;&nbsp;<b>Bugs, etc.
-</b><br><ul><li><font color=red>tt tag not working with blog.css?</font></li>
-<li><font color=red>No way to update widget-specific code</font></li>
+</b><br><ul><li><font color=red>bin/blog: Error when escaping from menu</font></li>
+<li><font color=red>bin/blog: autocomplete fails when no valid prefix</font></li>
+<li><font color=red>tt tag not working with blog.css?</font></li>
+<li><font color=red>automatic .nopara as needed</font></li>
+<li><font color=red>No way to update widget-specific code?</font></li>
 <li><font color=red>Pinned posts needs redundant 'rebuild'</font></li>
 <li><font color=red>weird screen-clear glitches</font></li>
 <li><font color=red>FAQ bootstrap code is weird</font></li>
@@ -54,12 +55,12 @@
 <li>things deleted locally aren't deleted remotely (rsync??)</li>
 <li>delete post, edit elsewhere, comes back (change source!)</li></ul></td>
     <td valign=top width=25%>&nbsp;&nbsp;<b>Livetext bugs/features
-</b><br><ul><li><font color=red>Var as replacement for _var</font></li>
-<li><font color=red>autocomplete fails when no valid prefix</font></li>
+</b><br><ul><li><font color=red>.with statement for variables (.var? add to .variables?)</font></li>
+<li><font color=red>permit # comments on end of line?</font></li>
+<li><font color=red>other command line options? nopara? debug? ...</font></li>
+<li><font color=red>Var as replacement for _var</font></li>
 <li><font color=red>open/close</font></li>
 <li><font color=red>non-system mode?</font></li>
-<li><font color=red>permit # comments on end of line?</font></li>
-<li>other command line options? nopara? debug? ...</li>
 <li>fix bug .set var="this, that"</li>
 <li><font color=red>mixin? include? copy? seek?</font></li>
 <li>mixin as module (livetext -m)</li>
@@ -68,9 +69,17 @@
 <li>.include dir/    # refs dir/main.lt3 ?</li></ul></td>
   </tr>
   <tr>
-    <td valign=top width=25%>[widgets is undefined]</td>
+    <td valign=top width=25%>&nbsp;&nbsp;<b>Widget functionality, etc.
+</b><br><ul><li><font color=red> standard/nonstandard marker for widgets</font></li>
+<li><font color=red> work on "standard widget" concept</font></li>
+<li>tag cloud</li>
+<li>bydates manager</li>
+<li>search</li>
+<li>site map widget</li>
+<li>automated news search</li></ul></td>
     <td valign=top width=25%>&nbsp;&nbsp;<b>UI and UX
 </b><br><ul><li><font color=red>"rebuild post" command?</font></li>
+<li><font color=red>update software safely?</font></li>
 <li>shorten commands?</li>
 <li>allow large output for lsp/lsd (scroll? more?)</li>
 <li>undo last post?</li>
@@ -196,7 +205,11 @@
 <li>Widget rebuild is fixed</li>
 <li>Deleted card1, card2, card_iframe</li>
 <li>Deleted "pieces" dir under widget</li>
-<li>Fixed mkwidget</li></ul></td>
+<li>Fixed mkwidget</li>
+<li>.banner now takes body</li>
+<li>some work on banner_svg</li>
+<li>.end issue</li>
+<li>Added svg_title to banner</li></ul></td>
   </tr>
   <tr>
     <td valign=top width=25%>&nbsp;&nbsp;<b>Completed tasks
