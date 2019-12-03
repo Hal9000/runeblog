@@ -23,8 +23,7 @@ spec = Gem::Specification.new do |s|
   s.add_runtime_dependency 'livetext', '~> 0.8', '>= 0.8.95'
   s.add_runtime_dependency 'rubytext', '~> 0.1', '>= 0.1.16'
 
-  s.add_runtime_dependency 'minitest'
-  # ^ technically not runtime dep
+  s.add_development_dependency 'minitest', '~ 5.11.3', '>= 5.10.0'
 
   # Files...
   main = Find.find("bin").to_a + 
@@ -32,7 +31,6 @@ spec = Gem::Specification.new do |s|
   test = Find.find("test").to_a
   misc = %w[./README.lt3 ./README.md ./runeblog.gemspec]
   empty_view = Find.find("empty_view").to_a
-
 
   s.files       =  main + misc + test + empty_view
   s.homepage    = 'https://github.com/Hal9000/runeblog'
