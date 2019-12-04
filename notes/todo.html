@@ -1,41 +1,60 @@
+<div style="font-family: verdana">
 <p>
 
 <p>
 
 <html>
   <head>
+<!--
     <style>
-      * { font-family: verdana }
+      * { font-family: times }
     </style>
+-->
   </head>
 <body>
 <p>
 
 <h2>Runeblog TODO</h2>
-</h3>Generated from notes/todo.lt3 on 2019-12-03 at 00:57:07</h3>
+</h3>Generated from <code><font size=+1><b>notes/todo.lt3</b></font></code> - 2019-12-03 23:59:49</h3>
 <p>
 
 <table border=0 width=96% cellpadding=8 cellspacing=8>
   <tr>
-    <td valign=top width=25%>&nbsp;&nbsp;<b>Easy stuff?
+    <td valign=top width=25%>&nbsp;&nbsp;<b>Next steps...
 </b><br><ul><li><font color=red>"universal" variables?</font></li>
-<li><font color=red>Enable/disable widgets (also FB/Twitter?)</font></li>
 <li><font color=red>break up global.lt3??</font></li>
 <li><font color=red>fix default global.lt3</font></li>
-<li><font color=red>add explanations to config menu</font></li>
+<li><font color=red>Livetext: non-system mode?</font></li>
+<li><font color=red>Livetext: permit # comments on end of line?</font></li>
+<li><font color=red>Livetext: add <i>get_arg,</i>  <i>get_colon_parse,</i>  etc.</font></li>
+<li><font color=red>Livetext: mixin? include? copy? seek?</font></li>
+<li><font color=red>Facebook buttons</font></li>
+<li><font color=red>Twitter buttons</font></li>
+<li><font color=red>Enable/disable widgets (also FB/Twitter?)</font></li>
+<li><font color=red>Livetext: add <i>get_arg,</i>  <i>get_colon_parse,</i>  etc.</font></li>
+<li><font color=red>Livetext: mixin? include? copy? seek?</font></li>
 <li><font color=red>add blog/banner.lt3</font></li>
-<li><font color=red>default banner (svg?)</font></li>
-<li><font color=red>add views to lsd/lsp output</font></li>
+<li><font color=red>default/example banner (svg only?)</font></li>
+<li><font color=red>Livetext: other command line options? nopara? debug? ...</font></li>
+<li><font color=red>Livetext: Var as replacement for _var</font></li>
+<li><font color=red>Livetext: line0 (reset line counter after stashing stuff on top)</font></li>
+<li><font color=red>Livetext: open/close</font></li>
+<li><font color=red>"rebuild post" command?</font></li>
+<li><font color=red>Update software safely?</font></li>
+<li><font color=red>automatic .nopara as needed</font></li>
+<li><font color=red>bin/blog: Error when escaping from menu</font></li>
+<li><font color=red>bin/blog: autocomplete fails when no valid prefix</font></li></ul></td>
+    <td valign=top width=25%>&nbsp;&nbsp;<b>Easy stuff?
+</b><br><ul><li><font color=red>add views to lsd/lsp output</font></li>
 <li><font color=red>simple "wizard"</font></li>
-<li>“wrap”-style include</li>
+<li>"wrap"-style include</li>
 <li>add CSS ref to post?</li>
 <li>specific kinds of rebuild?</li>
 <li>custom.rb (livetext) gets included if present?</li>
 <li>Warn when .img (etc.) refs nonexistent asset</li></ul></td>
     <td valign=top width=25%>&nbsp;&nbsp;<b>General functionality
-</b><br><ul><li><font color=red>backup/restore?</font></li>
-<li><font color=red>complex banners</font></li>
-<li><font color=red>svg for default banner</font></li>
+</b><br><ul><li><font color=red>sophisticated "example" blog (via bin/blog)</font></li>
+<li><font color=red>backup/restore?</font></li>
 <li><font color=red>ssh-copy-id in setup</font></li>
 <li>more params in globals</li>
 <li>better asset management</li>
@@ -43,10 +62,7 @@
 <li>need categories??</li>
 <li>post analyzer - SEO, spell, wcount, etc.</li></ul></td>
     <td valign=top width=25%>&nbsp;&nbsp;<b>Bugs, etc.
-</b><br><ul><li><font color=red>bin/blog: Error when escaping from menu</font></li>
-<li><font color=red>bin/blog: autocomplete fails when no valid prefix</font></li>
-<li><font color=red>tt tag not working with blog.css?</font></li>
-<li><font color=red>automatic .nopara as needed</font></li>
+</b><br><ul><li><font color=red>tt tag not working with blog.css?</font></li>
 <li><font color=red>No way to update widget-specific code?</font></li>
 <li><font color=red>Pinned posts needs redundant 'rebuild'</font></li>
 <li><font color=red>weird screen-clear glitches</font></li>
@@ -54,33 +70,24 @@
 <li>widgets don't honor their CSS?</li>
 <li>things deleted locally aren't deleted remotely (rsync??)</li>
 <li>delete post, edit elsewhere, comes back (change source!)</li></ul></td>
-    <td valign=top width=25%>&nbsp;&nbsp;<b>Livetext bugs/features
-</b><br><ul><li><font color=red>.with statement for variables (.var? add to .variables?)</font></li>
-<li><font color=red>permit # comments on end of line?</font></li>
-<li><font color=red>other command line options? nopara? debug? ...</font></li>
-<li><font color=red>Var as replacement for _var</font></li>
-<li><font color=red>open/close</font></li>
-<li><font color=red>non-system mode?</font></li>
-<li>fix bug .set var="this, that"</li>
-<li><font color=red>mixin? include? copy? seek?</font></li>
-<li>mixin as module (livetext -m)</li>
-<li>$\[incr is undefined] ?</li>
-<li>permit omission of .lt3</li>
-<li>.include dir/    # refs dir/main.lt3 ?</li></ul></td>
   </tr>
   <tr>
+    <td valign=top width=25%>&nbsp;&nbsp;<b>Livetext bugs/features
+</b><br><ul><li>fix bug .set var="this, that"</li>
+<li>mixin as module (livetext -m)</li>
+<li>$$incr?</li>
+<li>permit omission of .lt3?</li>
+<li>.include dir/    # refs dir/main.lt3 ?</li></ul></td>
     <td valign=top width=25%>&nbsp;&nbsp;<b>Widget functionality, etc.
-</b><br><ul><li><font color=red> standard/nonstandard marker for widgets</font></li>
-<li><font color=red> work on "standard widget" concept</font></li>
+</b><br><ul><li><font color=red>standard/nonstandard marker for widgets</font></li>
+<li><font color=red>work on "standard widget" concept</font></li>
 <li>tag cloud</li>
 <li>bydates manager</li>
 <li>search</li>
 <li>site map widget</li>
 <li>automated news search</li></ul></td>
     <td valign=top width=25%>&nbsp;&nbsp;<b>UI and UX
-</b><br><ul><li><font color=red>"rebuild post" command?</font></li>
-<li><font color=red>update software safely?</font></li>
-<li>shorten commands?</li>
+</b><br><ul><li>shorten commands?</li>
 <li>allow large output for lsp/lsd (scroll? more?)</li>
 <li>undo last post?</li>
 <li>allow for post title changing</li>
@@ -102,6 +109,8 @@
 <li>factor generic HTML out of liveblog.rb</li>
 <li>rethink helper libs?</li>
 <li>distinguish view and view_name</li></ul></td>
+  </tr>
+  <tr>
     <td valign=top width=25%>&nbsp;&nbsp;<b>Faster/sturdier code
 </b><br><ul><li><font color=red>more/better exceptions</font></li>
 <li><font color=red>internal error handling</font></li>
@@ -109,8 +118,6 @@
 <li><font color=red>more tests!</font></li>
 <li>code coverage analysis</li>
 <li>profiling</li></ul></td>
-  </tr>
-  <tr>
     <td valign=top width=25%>&nbsp;&nbsp;<b>Documentation and tutorials
 </b><br><ul><li><font color=red>github README</font></li>
 <li><font color=red>docs: getting started</font></li>
@@ -158,6 +165,8 @@
 <li>use a database???</li>
 <li>possibly change: relink, rebuild, etc.?</li>
 <li>back-sync with remote?</li></ul></td>
+  </tr>
+  <tr>
     <td valign=top width=25%>&nbsp;&nbsp;<b>Recently completed
 </b><br><ul><li>date inside post</li>
 <li>show tags on posts</li>
@@ -206,12 +215,13 @@
 <li>Deleted card1, card2, card_iframe</li>
 <li>Deleted "pieces" dir under widget</li>
 <li>Fixed mkwidget</li>
+<li>Added explanations to config menu</li>
 <li>.banner now takes body</li>
 <li>some work on banner_svg</li>
 <li>.end issue</li>
-<li>Added svg_title to banner</li></ul></td>
-  </tr>
-  <tr>
+<li>Added svg_title to banner</li>
+<li>Livetext: added prefix to .variables</li>
+<li>Experimental pieces: FB, Twitter, varmint, univ.lt3</li></ul></td>
     <td valign=top width=25%>&nbsp;&nbsp;<b>Completed tasks
 </b><br><ul><li>todo as .lt3</li>
 <li>idea: local.rb code under widgets/FOO gets called to build?</li>
@@ -309,6 +319,8 @@
 <li>Readline completion for commands?</li>
 <li>leave view out of ./publish file!</li>
 <li>ssh from within repl?</li></ul></td>
+  </tr>
+  <tr>
     <td valign=top width=25%>&nbsp;&nbsp;<b>Completed tasks, contd.
 </b><br><ul><li>fix asset discrepancy</li>
 <li>distinguish unpublished?</li>
@@ -341,8 +353,6 @@
 <li>params checking on method entry</li>
 <li>occasional sanity checking?</li>
 <li>config files: blank lines, comments (persistent?)</li></ul></td>
-  </tr>
-  <tr>
     <td valign=top width=25%>&nbsp;&nbsp;<b>Completed tasks, contd.
 </b><br><ul><li>consolidate under .blog</li>
 <li>test make_slug to death</li>
@@ -392,11 +402,11 @@
 <li>head/tail for widget HTML?</li>
 <li>"local" CSS for each widget?</li></ul></td>
     <td valign=top width=25%>...</td>
-    <td valign=top width=25%>...</td>
   </tr>
 </table>
 <p>
 
+</div>
 </body>
 </html>
 <p>

@@ -75,12 +75,13 @@ some work on banner_svg
 Livetext: fixed $\.end issue
 Added svg_title to banner
 Livetext: added prefix to .variables
+Experimental pieces: FB, Twitter, varmint, univ.lt3
 .end
 
 .sublist easyish Easy stuff?
 =add views to lsd/lsp output
 =simple "wizard"
-“wrap”-style include
+"wrap"-style include
 add CSS ref to post?
 specific kinds of rebuild?
 custom.rb (livetext) gets included if present?
@@ -99,8 +100,8 @@ post analyzer - SEO, spell, wcount, etc.
 .end
 
 .sublist widgets Widget functionality, etc.
-= standard/nonstandard marker for widgets
-= work on "standard widget" concept
+=standard/nonstandard marker for widgets
+=work on "standard widget" concept
 tag cloud
 bydates manager
 search
@@ -110,10 +111,9 @@ automated news search
 
 .sublist livetext Livetext bugs/features
 fix bug .set var="this, that"
-=mixin? include? copy? seek?
 mixin as module (livetext -m)
 $$dd[incr]?
-permit omission of .lt3
+permit omission of .lt3?
 \.include dir/    # refs dir/main.lt3 ?
 .end
 
@@ -445,9 +445,13 @@ complete Completed tasks
 =fix default global.lt3
 =Livetext: non-system mode?
 =Livetext: permit # comments on end of line?
+=Livetext: add _get_arg, _get_colon_parse, etc.
+=Livetext: mixin? include? copy? seek?
 =Facebook buttons
 =Twitter buttons
 =Enable/disable widgets (also FB/Twitter?)
+=Livetext: add _get_arg, _get_colon_parse, etc.
+=Livetext: mixin? include? copy? seek?
 =add blog/banner.lt3
 =default/example banner (svg only?)
 =Livetext: other command line options? nopara? debug? ...

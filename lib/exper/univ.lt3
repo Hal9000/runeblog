@@ -1,0 +1,37 @@
+
+. "Universal" settings -- new defaults for global.lt3
+. work in progress - defaults for each global.lt3
+
+. --------------------------------------------------
+. Global settings are stored here in the form       
+.   <variable>  <value>                             
+. --------------------------------------------------
+
+
+. Details
+charset     utf-8
+locale      en_US
+
+. Identity
+author      Your name here
+site        rubyhacker.com
+host        localhost:4000//      # populate from site?
+url         localhost:4000//      # populate from site?
+publish.user      root
+publish.server    rubyhacker.com  # populate from site?
+publish.docroot   /var/www/
+publish.path      around_austin   # populate from view name
+publish.proto     http
+
+. Style
+font.family       verdana
+
+post.title.color  #010101
+post.title.size   28px
+
+post.text.color   #0101a1
+post.text.size    22px
+
+post.date.color   #9a9a9a
+post.date.size    15px
+
