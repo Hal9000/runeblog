@@ -255,7 +255,7 @@ module RuneBlog::REPL
       return @out
     else
       if @blog.view?(arg)
-        @blog.view = arg  # reads config
+        @blog.view = arg
         output "View: " + @blog.view.name.to_s
         puts "\n  ", fx(arg, :bold), "\n" unless testing
       end

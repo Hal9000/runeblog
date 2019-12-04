@@ -28,11 +28,12 @@ spec = Gem::Specification.new do |s|
   # Files...
   main = Find.find("bin").to_a + 
          Find.find("lib").to_a
+  data = Find.find("data").to_a
   test = Find.find("test").to_a
   misc = %w[./README.lt3 ./README.md ./runeblog.gemspec]
   empty_view = Find.find("empty_view").to_a
 
-  s.files       =  main + misc + test + empty_view
+  s.files       =  main + misc + data + test + empty_view
   s.homepage    = 'https://github.com/Hal9000/runeblog'
   s.license     = "Ruby"
   s.post_install_message = "\n  Success! Run 'blog' command and type h for help.\n "

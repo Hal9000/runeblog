@@ -21,7 +21,7 @@
    "$$" + param
 .end
 
-.sublist rcomp Recently completed
+.sublist oct2019 Recently completed (Oct 2019)
 date inside post
 show tags on posts
 permalink on post?
@@ -33,6 +33,9 @@ dropcaps work now
 inset quotes also work
 fixed quote issue
 added basic 'config' command
+.end
+
+.sublist nov2019 Recently completed (Nov 2019)
 basic 'manage' command
 created .faq command
 got vertical navbar working
@@ -69,6 +72,9 @@ Widget rebuild is fixed
 Deleted card1, card2, card_iframe
 Deleted "pieces" dir under widget
 Fixed mkwidget
+.end
+
+.sublist dec2019 Recently completed (Dec 2019)
 Added explanations to config menu
 \.banner now takes body
 some work on banner_svg
@@ -76,6 +82,8 @@ Livetext: fixed $\.end issue
 Added svg_title to banner
 Livetext: added prefix to .variables
 Experimental pieces: FB, Twitter, varmint, univ.lt3
+Removed Runeblog.create (folded into create_new_blog_repo)
+Experimenting with new config
 .end
 
 .sublist easyish Easy stuff?
@@ -151,7 +159,6 @@ Move some pieces into "snippets" (e.g. Facebook/Twitter integration)
 .sublist pretty Prettier code
 =move badly-scoped methods (e.g., runeblog.rb to post.rb)
 =fix check\_empty issue
-=fix/delete Runeblog::Default (post\_template)?
 change xlate everywhere
 liveblog: separate dot-commands from helpers
 remove duplicated and double-scoped code
@@ -440,29 +447,35 @@ complete Completed tasks
 .end
 
 .sublist nextish Next steps...
+=fix/delete Runeblog::Default (post\_template)?
+=Fix config file creation 
+=Variables for config file?
 ="universal" variables?
 =break up global.lt3??
 =fix default global.lt3
-=Livetext: non-system mode?
-=Livetext: permit # comments on end of line?
-=Livetext: add _get_arg, _get_colon_parse, etc.
-=Livetext: mixin? include? copy? seek?
 =Facebook buttons
 =Twitter buttons
 =Enable/disable widgets (also FB/Twitter?)
-=Livetext: add _get_arg, _get_colon_parse, etc.
-=Livetext: mixin? include? copy? seek?
 =add blog/banner.lt3
 =default/example banner (svg only?)
-=Livetext: other command line options? nopara? debug? ...
-=Livetext: Var as replacement for \_var
-=Livetext: line0 (reset line counter after stashing stuff on top)
-=Livetext: open/close
 ="rebuild post" command?
 =Update software safely?
 =automatic .nopara as needed
 =bin/blog: Error when escaping from menu
 =bin/blog: autocomplete fails when no valid prefix
+.end
+
+.sublist nextlive Next steps (Livetext, etc.)
+=Livetext: non-system mode?
+=Livetext: permit # comments on end of line?
+=Livetext: add _get_arg, _get_colon_parse, etc.
+=Livetext: mixin? include? copy? seek?
+=Livetext: add _get_arg, _get_colon_parse, etc.
+=Livetext: mixin? include? copy? seek?
+=Livetext: other command line options? nopara? debug? ...
+=Livetext: Var as replacement for \_var
+=Livetext: line0 (reset line counter after stashing stuff on top)
+=Livetext: open/close
 .end
 
 
@@ -481,34 +494,44 @@ complete Completed tasks
 
 <table border=0 width=96% cellpadding=8 cellspacing=8>
   <tr>
-    <td valign=top width=25%>$nextish</td>
-    <td valign=top width=25%>$easyish</td>
-    <td valign=top width=25%>$funky</td>
-    <td valign=top width=25%>$bugs</td>
+    <td valign=top width=32%>$nextish</td>
+    <td valign=top width=32%>$nextlive</td>
+    <td valign=top width=32%>$easyish</td>
   </tr>
   <tr>
-    <td valign=top width=25%>$livetext</td>
-    <td valign=top width=25%>$widgets</td>
-    <td valign=top width=25%>$ui</td>
-    <td valign=top width=25%>$pretty</td>
+    <td valign=top width=32%>$funky</td>
+    <td valign=top width=32%>$dec2019</td>
+    <td valign=top width=32%>$nov2019</td>
   </tr>
   <tr>
-    <td valign=top width=25%>$robust</td>
-    <td valign=top width=25%>$docs</td>
-    <td valign=top width=25%>$advanced</td>
-    <td valign=top width=25%>$misc</td>
+    <td valign=top width=32%>$oct2019</td>
+    <td valign=top width=32%>$bugs</td>
+    <td valign=top width=32%>$livetext</td>
   </tr>
   <tr>
-    <td valign=top width=25%>$rcomp</td>
-    <td valign=top width=25%>$comp1</td>
-    <td valign=top width=25%>$comp2</td>
-    <td valign=top width=25%>$comp3</td>
+    <td valign=top width=32%>$widgets</td>
+    <td valign=top width=32%>$ui</td>
+    <td valign=top width=32%>$pretty</td>
   </tr>
   <tr>
-    <td valign=top width=25%>$comp4</td>
-    <td valign=top width=25%>$comp5</td>
-    <td valign=top width=25%>$comp6</td>
-    <td valign=top width=25%>...</td>
+    <td valign=top width=32%>$robust</td>
+    <td valign=top width=32%>$docs</td>
+    <td valign=top width=32%>$advanced</td>
+  </tr>
+  <tr>
+    <td valign=top width=32%>$misc</td>
+    <td valign=top width=32%>$rcomp</td>
+    <td valign=top width=32%>$comp1</td>
+  </tr>
+  <tr>
+    <td valign=top width=32%>$comp2</td>
+    <td valign=top width=32%>$comp3</td>
+    <td valign=top width=32%>$comp4</td>
+  </tr>
+  <tr>
+    <td valign=top width=32%>$comp5</td>
+    <td valign=top width=32%>$comp6</td>
+    <td valign=top width=32%>...</td>
   </tr>
 </table>
 

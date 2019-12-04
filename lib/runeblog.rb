@@ -19,7 +19,6 @@ require 'pathmagic'
 class RuneBlog
  
   DotDir     = ".blogs"
-  ConfigFile = "config"
   Themes     = RuneBlog::Path/"../themes"
 
   make_exception(:FileNotFound,          "File $1 was not found")
@@ -53,34 +52,25 @@ class RuneBlog
     puts "Error: See #{out}"
   end
 
-  def self.create_new_blog_repo(dir = ".blogs")
-    log!(enter: __method__, args: [dir])
-    raise ArgumentError unless dir.is_a?(String) && ! dir.empty?
-    root_dir = Dir.pwd/dir
-    self.create(dir)
-  rescue => err
-    puts "Can't create blog repo: '#{dir}' - #{err}"
-    puts err.backtrace.join("\n")
-  end
-
-  def self.create(root = ".blogs")
-    log!(enter: __method__, args: [root], level: 1)
+  def self.create_new_blog_repo(root = ".blogs")
+    log!(enter: __method__, args: [root])
+    raise ArgumentError unless root.is_a?(String) && ! root.empty?
+    root_dir = Dir.pwd/root
     # Crude - FIXME later -  # What views are there? Publishing, etc.
     self.blog = self   # Weird. Like a singleton - dumbass circular dependency?
     root = Dir.pwd/root
     raise BlogRepoAlreadyExists if Dir.exist?(root)
     create_dirs(root)
     Dir.chdir(root) do
-      create_dirs(:drafts, :views, :posts)
+      create_dirs(:data, :drafts, :views, :posts)
+      copy_data(:config, "./data/")
       new_sequence
     end
-    x = OpenStruct.new
-    x.root, x.current_view, x.editor = root, "test_view", "/usr/bin/vim "   # dumb - FIXME later
-    write_config(x, root/ConfigFile)
     @blog = self.new(root)
     @blog
   rescue => err
-    _tmp_error(err)
+    puts "Can't create blog repo: '#{root}' - #{err}"
+    puts err.backtrace.join("\n")
   end
 
   def self.open(root = ".blogs")
@@ -99,11 +89,7 @@ class RuneBlog
     self.class.blog = self   # Weird. Like a singleton - dumbass circular dependency?
 
     @root = root_dir
-    file = @root/ConfigFile
-    errmsg = "No config file! file = #{file.inspect}  dir = #{Dir.pwd}" 
-    raise errmsg unless File.exist?(file)
-
-    @root, @view_name, @editor = read_config(file, :root, :current_view, :editor)
+    read_config
     md = Dir.pwd.match(%r[.*/views/(.*?)/])
     @view_name = md[1] if md
     @views = get_views
@@ -204,6 +190,7 @@ class RuneBlog
 
   def view=(arg)
     log!(enter: __method__, args: [arg], level: 2)
+    # FIXME should write VIEW file?
     case arg
       when RuneBlog::View
         @view = arg
@@ -429,8 +416,7 @@ class RuneBlog
     log!(enter: __method__, args: [view], level: 3)
     raise ArgumentError unless view.is_a?(String) || view.is_a?(RuneBlog::View)
     x = OpenStruct.new
-    x.root, x.current_view, x.editor = @root, view.to_s, @editor   # dumb - FIXME later
-    write_config(x, @root/ConfigFile)
+    File.write(@root/"data/VIEW", view.to_s)
     self.view = view   # error checking?
   end
 

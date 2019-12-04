@@ -15,36 +15,40 @@
 <p>
 
 <h2>Runeblog TODO</h2>
-</h3>Generated from <code><font size=+1><b>notes/todo.lt3</b></font></code> - 2019-12-04 00:01:59</h3>
+</h3>Generated from <code><font size=+1><b>notes/todo.lt3</b></font></code> - 2019-12-04 15:57:22</h3>
 <p>
 
 <table border=0 width=96% cellpadding=8 cellspacing=8>
   <tr>
-    <td valign=top width=25%>&nbsp;&nbsp;<b>Next steps...
-</b><br><ul><li><font color=red>"universal" variables?</font></li>
+    <td valign=top width=32%>&nbsp;&nbsp;<b>Next steps...
+</b><br><ul><li><font color=red>fix/delete Runeblog::Default (post_template)?</font></li>
+<li><font color=red>Fix config file creation </font></li>
+<li><font color=red>Variables for config file?</font></li>
+<li><font color=red>"universal" variables?</font></li>
 <li><font color=red>break up global.lt3??</font></li>
 <li><font color=red>fix default global.lt3</font></li>
-<li><font color=red>Livetext: non-system mode?</font></li>
-<li><font color=red>Livetext: permit # comments on end of line?</font></li>
-<li><font color=red>Livetext: add <i>get_arg,</i>  <i>get_colon_parse,</i>  etc.</font></li>
-<li><font color=red>Livetext: mixin? include? copy? seek?</font></li>
 <li><font color=red>Facebook buttons</font></li>
 <li><font color=red>Twitter buttons</font></li>
 <li><font color=red>Enable/disable widgets (also FB/Twitter?)</font></li>
-<li><font color=red>Livetext: add <i>get_arg,</i>  <i>get_colon_parse,</i>  etc.</font></li>
-<li><font color=red>Livetext: mixin? include? copy? seek?</font></li>
 <li><font color=red>add blog/banner.lt3</font></li>
 <li><font color=red>default/example banner (svg only?)</font></li>
-<li><font color=red>Livetext: other command line options? nopara? debug? ...</font></li>
-<li><font color=red>Livetext: Var as replacement for _var</font></li>
-<li><font color=red>Livetext: line0 (reset line counter after stashing stuff on top)</font></li>
-<li><font color=red>Livetext: open/close</font></li>
 <li><font color=red>"rebuild post" command?</font></li>
 <li><font color=red>Update software safely?</font></li>
 <li><font color=red>automatic .nopara as needed</font></li>
 <li><font color=red>bin/blog: Error when escaping from menu</font></li>
 <li><font color=red>bin/blog: autocomplete fails when no valid prefix</font></li></ul></td>
-    <td valign=top width=25%>&nbsp;&nbsp;<b>Easy stuff?
+    <td valign=top width=32%>&nbsp;&nbsp;<b>Next steps (Livetext, etc.)
+</b><br><ul><li><font color=red>Livetext: non-system mode?</font></li>
+<li><font color=red>Livetext: permit # comments on end of line?</font></li>
+<li><font color=red>Livetext: add <i>get_arg,</i>  <i>get_colon_parse,</i>  etc.</font></li>
+<li><font color=red>Livetext: mixin? include? copy? seek?</font></li>
+<li><font color=red>Livetext: add <i>get_arg,</i>  <i>get_colon_parse,</i>  etc.</font></li>
+<li><font color=red>Livetext: mixin? include? copy? seek?</font></li>
+<li><font color=red>Livetext: other command line options? nopara? debug? ...</font></li>
+<li><font color=red>Livetext: Var as replacement for _var</font></li>
+<li><font color=red>Livetext: line0 (reset line counter after stashing stuff on top)</font></li>
+<li><font color=red>Livetext: open/close</font></li></ul></td>
+    <td valign=top width=32%>&nbsp;&nbsp;<b>Easy stuff?
 </b><br><ul><li><font color=red>add views to lsd/lsp output</font></li>
 <li><font color=red>simple "wizard"</font></li>
 <li>"wrap"-style include</li>
@@ -52,7 +56,9 @@
 <li>specific kinds of rebuild?</li>
 <li>custom.rb (livetext) gets included if present?</li>
 <li>Warn when .img (etc.) refs nonexistent asset</li></ul></td>
-    <td valign=top width=25%>&nbsp;&nbsp;<b>General functionality
+  </tr>
+  <tr>
+    <td valign=top width=32%>&nbsp;&nbsp;<b>General functionality
 </b><br><ul><li><font color=red>sophisticated "example" blog (via bin/blog)</font></li>
 <li><font color=red>backup/restore?</font></li>
 <li><font color=red>ssh-copy-id in setup</font></li>
@@ -61,125 +67,18 @@
 <li>dynamically add commands/code to repl?</li>
 <li>need categories??</li>
 <li>post analyzer - SEO, spell, wcount, etc.</li></ul></td>
-    <td valign=top width=25%>&nbsp;&nbsp;<b>Bugs, etc.
-</b><br><ul><li><font color=red>tt tag not working with blog.css?</font></li>
-<li><font color=red>No way to update widget-specific code?</font></li>
-<li><font color=red>Pinned posts needs redundant 'rebuild'</font></li>
-<li><font color=red>weird screen-clear glitches</font></li>
-<li><font color=red>FAQ bootstrap code is weird</font></li>
-<li>widgets don't honor their CSS?</li>
-<li>things deleted locally aren't deleted remotely (rsync??)</li>
-<li>delete post, edit elsewhere, comes back (change source!)</li></ul></td>
-  </tr>
-  <tr>
-    <td valign=top width=25%>&nbsp;&nbsp;<b>Livetext bugs/features
-</b><br><ul><li>fix bug .set var="this, that"</li>
-<li>mixin as module (livetext -m)</li>
-<li>$$incr?</li>
-<li>permit omission of .lt3?</li>
-<li>.include dir/    # refs dir/main.lt3 ?</li></ul></td>
-    <td valign=top width=25%>&nbsp;&nbsp;<b>Widget functionality, etc.
-</b><br><ul><li><font color=red>standard/nonstandard marker for widgets</font></li>
-<li><font color=red>work on "standard widget" concept</font></li>
-<li>tag cloud</li>
-<li>bydates manager</li>
-<li>search</li>
-<li>site map widget</li>
-<li>automated news search</li></ul></td>
-    <td valign=top width=25%>&nbsp;&nbsp;<b>UI and UX
-</b><br><ul><li>shorten commands?</li>
-<li>allow large output for lsp/lsd (scroll? more?)</li>
-<li>undo last post?</li>
-<li>allow for post title changing</li>
-<li>add post template capability (create, edit, post)</li>
-<li>tricky? put navbar inside blog/index.lt3</li>
-<li>tricky? move global.lt3 into etc</li>
-<li>allow windows to scroll back</li></ul></td>
-    <td valign=top width=25%>&nbsp;&nbsp;<b>Prettier code
-</b><br><ul><li><font color=red>move badly-scoped methods (e.g., runeblog.rb to post.rb)</font></li>
-<li><font color=red>fix check_empty issue</font></li>
-<li><font color=red>fix/delete Runeblog::Default (post_template)?</font></li>
-<li>change xlate everywhere</li>
-<li>liveblog: separate dot-commands from helpers</li>
-<li>remove duplicated and double-scoped code</li>
-<li><font color=red>fix $DotDir</font></li>
-<li>cards as .lt3 files?</li>
-<li><font color=red>more keyword parameters as needed</font></li>
-<li>remove dead code!!</li>
-<li>factor generic HTML out of liveblog.rb</li>
-<li>rethink helper libs?</li>
-<li>distinguish view and view_name</li></ul></td>
-  </tr>
-  <tr>
-    <td valign=top width=25%>&nbsp;&nbsp;<b>Faster/sturdier code
-</b><br><ul><li><font color=red>more/better exceptions</font></li>
-<li><font color=red>internal error handling</font></li>
-<li><font color=red>livetext error handling</font></li>
-<li><font color=red>more tests!</font></li>
-<li>code coverage analysis</li>
-<li>profiling</li></ul></td>
-    <td valign=top width=25%>&nbsp;&nbsp;<b>Documentation and tutorials
-</b><br><ul><li><font color=red>github README</font></li>
-<li><font color=red>docs: getting started</font></li>
-<li><font color=red>docs: overview of Livetext</font></li>
-<li>explicitly document use of ssh/scp</li>
-<li>update docs</li>
-<li>out-of-the-box workflow</li>
-<li>video tutorial</li>
-<li>docs: how-to</li>
-<li>docs: how to write templates (incl main one)</li></ul></td>
-    <td valign=top width=25%>&nbsp;&nbsp;<b>More advanced features
-</b><br><ul><li>FB/Twitter icons on posts</li>
-<li>second sidebar??</li>
-<li>footer? holding a widget?</li>
-<li>support for Windows?? (open, paths, ...)</li>
-<li>Twitter-embed widget</li>
-<li>verify image assets</li>
-<li><font color=red>setup wizard?</font></li>
-<li>auto-notify on post (FB/Twitter)</li>
-<li>subscription?</li>
-<li>analytics?</li>
-<li>connect to REST interface??</li>
-<li>up/down votes, etc.?</li>
-<li>Select themes/styles for blog??</li>
-<li>real support for tags (and cloud)</li>
-<li>Move some pieces into "snippets" (e.g. Facebook/Twitter integration)</li>
-<li><font color=red>special tags: intra-blog, gist, github, youtube, ...</font></li>
-<li><font color=red>special tags: vimeo, twitter, fb?, reddit?, ...</font></li></ul></td>
-    <td valign=top width=25%>&nbsp;&nbsp;<b>Miscellaneous/Other
-</b><br><ul><li>allow test code to add to post?</li>
-<li>tag pools? dumb??</li>
-<li>verify view is publishable before trying</li>
-<li>methods such as get_post_template?</li>
-<li>make hierarchy of publish files?</li>
-<li>safe way to delete a view?</li>
-<li>test credentials for publishing?</li>
-<li>config files: persistent comments?</li>
-<li>change interaction of liveblog and process_file (arbitrary ostruct?)</li>
-<li>hash same as metadata??</li>
-<li>allow templates to be .lt3 files?</li>
-<li>snippets for templates?</li>
-<li>facebook/twitter as snippets?</li>
-<li>changes in liveblog for snippets??</li>
-<li>Fix/rewrite asset handling? .asset and .asset! tags?</li>
-<li>use a database???</li>
-<li>possibly change: relink, rebuild, etc.?</li>
-<li>back-sync with remote?</li></ul></td>
-  </tr>
-  <tr>
-    <td valign=top width=25%>&nbsp;&nbsp;<b>Recently completed
-</b><br><ul><li>date inside post</li>
-<li>show tags on posts</li>
-<li>permalink on post?</li>
-<li>collect tags (into metadata.txt)</li>
-<li>crude ad mockup</li>
-<li>widgets now have #initialize</li>
-<li>rough fix for "links" widget code</li>
-<li>dropcaps work now</li>
-<li>inset quotes also work</li>
-<li>fixed quote issue</li>
-<li>added basic 'config' command</li>
-<li>basic 'manage' command</li>
+    <td valign=top width=32%>&nbsp;&nbsp;<b>Recently completed (Dec 2019)
+</b><br><ul><li>Added explanations to config menu</li>
+<li>.banner now takes body</li>
+<li>some work on banner_svg</li>
+<li>.end issue</li>
+<li>Added svg_title to banner</li>
+<li>Livetext: added prefix to .variables</li>
+<li>Experimental pieces: FB, Twitter, varmint, univ.lt3</li>
+<li>Removed Runeblog.create (folded into create_new_blog_repo)</li>
+<li>Experimenting with new config</li></ul></td>
+    <td valign=top width=32%>&nbsp;&nbsp;<b>Recently completed (Nov 2019)
+</b><br><ul><li>basic 'manage' command</li>
 <li>created .faq command</li>
 <li>got vertical navbar working</li>
 <li>very rudimentary .banner command</li>
@@ -214,15 +113,128 @@
 <li>Widget rebuild is fixed</li>
 <li>Deleted card1, card2, card_iframe</li>
 <li>Deleted "pieces" dir under widget</li>
-<li>Fixed mkwidget</li>
-<li>Added explanations to config menu</li>
-<li>.banner now takes body</li>
-<li>some work on banner_svg</li>
-<li>.end issue</li>
-<li>Added svg_title to banner</li>
-<li>Livetext: added prefix to .variables</li>
-<li>Experimental pieces: FB, Twitter, varmint, univ.lt3</li></ul></td>
-    <td valign=top width=25%>&nbsp;&nbsp;<b>Completed tasks
+<li>Fixed mkwidget</li></ul></td>
+  </tr>
+  <tr>
+    <td valign=top width=32%>&nbsp;&nbsp;<b>Recently completed (Oct 2019)
+</b><br><ul><li>date inside post</li>
+<li>show tags on posts</li>
+<li>permalink on post?</li>
+<li>collect tags (into metadata.txt)</li>
+<li>crude ad mockup</li>
+<li>widgets now have #initialize</li>
+<li>rough fix for "links" widget code</li>
+<li>dropcaps work now</li>
+<li>inset quotes also work</li>
+<li>fixed quote issue</li>
+<li>added basic 'config' command</li></ul></td>
+    <td valign=top width=32%>&nbsp;&nbsp;<b>Bugs, etc.
+</b><br><ul><li><font color=red>tt tag not working with blog.css?</font></li>
+<li><font color=red>No way to update widget-specific code?</font></li>
+<li><font color=red>Pinned posts needs redundant 'rebuild'</font></li>
+<li><font color=red>weird screen-clear glitches</font></li>
+<li><font color=red>FAQ bootstrap code is weird</font></li>
+<li>widgets don't honor their CSS?</li>
+<li>things deleted locally aren't deleted remotely (rsync??)</li>
+<li>delete post, edit elsewhere, comes back (change source!)</li></ul></td>
+    <td valign=top width=32%>&nbsp;&nbsp;<b>Livetext bugs/features
+</b><br><ul><li>fix bug .set var="this, that"</li>
+<li>mixin as module (livetext -m)</li>
+<li>$$incr?</li>
+<li>permit omission of .lt3?</li>
+<li>.include dir/    # refs dir/main.lt3 ?</li></ul></td>
+  </tr>
+  <tr>
+    <td valign=top width=32%>&nbsp;&nbsp;<b>Widget functionality, etc.
+</b><br><ul><li><font color=red>standard/nonstandard marker for widgets</font></li>
+<li><font color=red>work on "standard widget" concept</font></li>
+<li>tag cloud</li>
+<li>bydates manager</li>
+<li>search</li>
+<li>site map widget</li>
+<li>automated news search</li></ul></td>
+    <td valign=top width=32%>&nbsp;&nbsp;<b>UI and UX
+</b><br><ul><li>shorten commands?</li>
+<li>allow large output for lsp/lsd (scroll? more?)</li>
+<li>undo last post?</li>
+<li>allow for post title changing</li>
+<li>add post template capability (create, edit, post)</li>
+<li>tricky? put navbar inside blog/index.lt3</li>
+<li>tricky? move global.lt3 into etc</li>
+<li>allow windows to scroll back</li></ul></td>
+    <td valign=top width=32%>&nbsp;&nbsp;<b>Prettier code
+</b><br><ul><li><font color=red>move badly-scoped methods (e.g., runeblog.rb to post.rb)</font></li>
+<li><font color=red>fix check_empty issue</font></li>
+<li>change xlate everywhere</li>
+<li>liveblog: separate dot-commands from helpers</li>
+<li>remove duplicated and double-scoped code</li>
+<li><font color=red>fix $DotDir</font></li>
+<li>cards as .lt3 files?</li>
+<li><font color=red>more keyword parameters as needed</font></li>
+<li>remove dead code!!</li>
+<li>factor generic HTML out of liveblog.rb</li>
+<li>rethink helper libs?</li>
+<li>distinguish view and view_name</li></ul></td>
+  </tr>
+  <tr>
+    <td valign=top width=32%>&nbsp;&nbsp;<b>Faster/sturdier code
+</b><br><ul><li><font color=red>more/better exceptions</font></li>
+<li><font color=red>internal error handling</font></li>
+<li><font color=red>livetext error handling</font></li>
+<li><font color=red>more tests!</font></li>
+<li>code coverage analysis</li>
+<li>profiling</li></ul></td>
+    <td valign=top width=32%>&nbsp;&nbsp;<b>Documentation and tutorials
+</b><br><ul><li><font color=red>github README</font></li>
+<li><font color=red>docs: getting started</font></li>
+<li><font color=red>docs: overview of Livetext</font></li>
+<li>explicitly document use of ssh/scp</li>
+<li>update docs</li>
+<li>out-of-the-box workflow</li>
+<li>video tutorial</li>
+<li>docs: how-to</li>
+<li>docs: how to write templates (incl main one)</li></ul></td>
+    <td valign=top width=32%>&nbsp;&nbsp;<b>More advanced features
+</b><br><ul><li>FB/Twitter icons on posts</li>
+<li>second sidebar??</li>
+<li>footer? holding a widget?</li>
+<li>support for Windows?? (open, paths, ...)</li>
+<li>Twitter-embed widget</li>
+<li>verify image assets</li>
+<li><font color=red>setup wizard?</font></li>
+<li>auto-notify on post (FB/Twitter)</li>
+<li>subscription?</li>
+<li>analytics?</li>
+<li>connect to REST interface??</li>
+<li>up/down votes, etc.?</li>
+<li>Select themes/styles for blog??</li>
+<li>real support for tags (and cloud)</li>
+<li>Move some pieces into "snippets" (e.g. Facebook/Twitter integration)</li>
+<li><font color=red>special tags: intra-blog, gist, github, youtube, ...</font></li>
+<li><font color=red>special tags: vimeo, twitter, fb?, reddit?, ...</font></li></ul></td>
+  </tr>
+  <tr>
+    <td valign=top width=32%>&nbsp;&nbsp;<b>Miscellaneous/Other
+</b><br><ul><li>allow test code to add to post?</li>
+<li>tag pools? dumb??</li>
+<li>verify view is publishable before trying</li>
+<li>methods such as get_post_template?</li>
+<li>make hierarchy of publish files?</li>
+<li>safe way to delete a view?</li>
+<li>test credentials for publishing?</li>
+<li>config files: persistent comments?</li>
+<li>change interaction of liveblog and process_file (arbitrary ostruct?)</li>
+<li>hash same as metadata??</li>
+<li>allow templates to be .lt3 files?</li>
+<li>snippets for templates?</li>
+<li>facebook/twitter as snippets?</li>
+<li>changes in liveblog for snippets??</li>
+<li>Fix/rewrite asset handling? .asset and .asset! tags?</li>
+<li>use a database???</li>
+<li>possibly change: relink, rebuild, etc.?</li>
+<li>back-sync with remote?</li></ul></td>
+    <td valign=top width=32%>[rcomp is undefined]</td>
+    <td valign=top width=32%>&nbsp;&nbsp;<b>Completed tasks
 </b><br><ul><li>todo as .lt3</li>
 <li>idea: local.rb code under widgets/FOO gets called to build?</li>
 <li>repl commands for pages</li>
@@ -255,7 +267,9 @@
 <li>bug: one post is truncated (life-...)</li>
 <li>fix generalized widget</li>
 <li>use .copy for guts.html</li></ul></td>
-    <td valign=top width=25%>&nbsp;&nbsp;<b>Completed tasks, contd.
+  </tr>
+  <tr>
+    <td valign=top width=32%>&nbsp;&nbsp;<b>Completed tasks, contd.
 </b><br><ul><li>introduce guts.html</li>
 <li>use .seek for global.lt3</li>
 <li>"livetext" method is "xlate" for now</li>
@@ -287,7 +301,7 @@
 <li>VIEW/posts dir</li>
 <li>make sure posts go into 'generated'</li>
 <li>get rid of 'generated/blog'?</li></ul></td>
-    <td valign=top width=25%>&nbsp;&nbsp;<b>Completed tasks, contd.
+    <td valign=top width=32%>&nbsp;&nbsp;<b>Completed tasks, contd.
 </b><br><ul><li>must fix blog title issue!</li>
 <li>fix "Keep Reading" CSS</li>
 <li>improve HTML (eg DIV not TABLE)</li>
@@ -319,9 +333,7 @@
 <li>Readline completion for commands?</li>
 <li>leave view out of ./publish file!</li>
 <li>ssh from within repl?</li></ul></td>
-  </tr>
-  <tr>
-    <td valign=top width=25%>&nbsp;&nbsp;<b>Completed tasks, contd.
+    <td valign=top width=32%>&nbsp;&nbsp;<b>Completed tasks, contd.
 </b><br><ul><li>fix asset discrepancy</li>
 <li>distinguish unpublished?</li>
 <li>custom curses menu</li>
@@ -353,7 +365,9 @@
 <li>params checking on method entry</li>
 <li>occasional sanity checking?</li>
 <li>config files: blank lines, comments (persistent?)</li></ul></td>
-    <td valign=top width=25%>&nbsp;&nbsp;<b>Completed tasks, contd.
+  </tr>
+  <tr>
+    <td valign=top width=32%>&nbsp;&nbsp;<b>Completed tasks, contd.
 </b><br><ul><li>consolidate under .blog</li>
 <li>test make_slug to death</li>
 <li>fix/improve config file path handling</li>
@@ -384,7 +398,7 @@
 <li>open remote/local?</li>
 <li>detect dirty files for publishing</li>
 <li>single template for post?</li></ul></td>
-    <td valign=top width=25%>&nbsp;&nbsp;<b>Completed tasks, contd.
+    <td valign=top width=32%>&nbsp;&nbsp;<b>Completed tasks, contd.
 </b><br><ul><li>get rid of #readmore</li>
 <li>Bug: make sure teaser goes into body of post</li>
 <li>runeblog dependency on livetext</li>
@@ -401,7 +415,7 @@
 <li>maybe add (default) publishing info to config?</li>
 <li>head/tail for widget HTML?</li>
 <li>"local" CSS for each widget?</li></ul></td>
-    <td valign=top width=25%>...</td>
+    <td valign=top width=32%>...</td>
   </tr>
 </table>
 <p>

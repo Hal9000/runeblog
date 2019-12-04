@@ -1,6 +1,7 @@
 require 'runeblog_version'
 require 'fileutils'
 
+require 'pathmagic'
 require 'xlate'
 
 module RuneBlog::Helpers
@@ -19,44 +20,24 @@ module RuneBlog::Helpers
     puts "    Failed: #{cmd} - from #{caller[0]}" unless rc
   end
 
-  def read_config(file, *syms)
-    log!(enter: __method__, args: [file, *syms], level: 3)
-    lines = File.readlines(file).map(&:chomp)
-    obj = ::OpenStruct.new
-    lines.each do |line|
-      next if line == "\n" || line[0] == "#"
-      key, val = line.split(/: +/, 2)
-      obj.send(key+"=", val)
+  def copy_data(tag, dest)
+    data = RuneBlog::Path/"../data"  # files kept inside gem
+    case tag
+      when :config; files = %w[ROOT VIEW EDITOR]
     end
-    return obj if syms.empty?
+    files.each {|file| copy(data/file, dest) }
+  end
 
-    vals = []
-    if syms.empty?
-      vals = obj.to_hash.values
-    else
-      syms.each {|sym| vals << obj.send(sym) }
-    end
-    return vals
+  def read_config
+    log!(enter: __method__, level: 3)
+    @editor = File.read("data/EDITOR").chomp
+    @current_view = File.read("data/VIEW").chomp
+    @root = File.read("data/EDITOR").chomp
   rescue => err
-    puts "Can't read config file '#{file}': #{err}"
+    puts "Can't read config: #{err}"
     puts err.backtrace.join("\n")
     puts "dir = #{Dir.pwd}"
     exit
-  end
-
-  def try_read_config(file, hash)
-    log!(enter: __method__, args: [file, hash], level: 3)
-    return hash.values unless File.exist?(file)
-    vals = read_config(file, *hash.keys)
-    vals
-  end
-
-  def write_config(obj, file)
-    log!(enter: __method__, args: [obj, file], level: 2)
-    hash = obj.to_h
-    File.open(file, "w") do |out|
-      hash.each_pair {|key, val| out.puts "#{key}: #{val}" }
-    end
   end
 
   def get_views   # read from filesystem

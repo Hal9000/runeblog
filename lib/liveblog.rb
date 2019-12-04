@@ -11,7 +11,7 @@ require 'xlate'
 def init_liveblog    # FIXME - a lot of this logic sucks
   here = Dir.pwd
   dir = here
-  loop { dir = Dir.pwd; break if File.exist?("config"); Dir.chdir("..") }
+  loop { dir = Dir.pwd; break if File.exist?("data/ROOT"); Dir.chdir("..") }
   Dir.chdir(here)     #  here??? or dir??
   @blog = RuneBlog.new(dir)
   @root = @blog.root
