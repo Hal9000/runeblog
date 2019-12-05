@@ -1,6 +1,4 @@
 
-require 'pathmagic'
-
 if ! (Object.constants.include?(:RuneBlog) && RuneBlog.constants.include?(:Path))
 
 class RuneBlog

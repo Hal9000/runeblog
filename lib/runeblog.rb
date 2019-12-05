@@ -12,13 +12,14 @@ require 'view'
 require 'publish'
 require 'post'
 
-# require 'pathmagic'
+require 'pathmagic'
 
 ###
 
 class RuneBlog
  
   DotDir     = ".blogs"
+  ConfigFile = "config"
   Themes     = RuneBlog::Path/"../themes"
 
   make_exception(:FileNotFound,          "File $1 was not found")
@@ -56,17 +57,18 @@ class RuneBlog
     log!(enter: __method__, args: [root])
     raise ArgumentError unless root.is_a?(String) && ! root.empty?
     root_dir = Dir.pwd/root
-    # Crude - FIXME later -  # What views are there? Publishing, etc.
     self.blog = self   # Weird. Like a singleton - dumbass circular dependency?
     root = Dir.pwd/root
     raise BlogRepoAlreadyExists if Dir.exist?(root)
     create_dirs(root)
     Dir.chdir(root) do
-      create_dirs(:data, :drafts, :views, :posts)
-      copy_data(:config, "./data/")
-      File.write("data/ROOT", Dir.pwd + "\n")
+      create_dirs(:drafts, :views, :posts)
       new_sequence
     end
+    x = OpenStruct.new
+    x.root, x.current_view, x.editor = root, "test_view", "/usr/bin/vim "   # dumb - FIXME later
+    write_config(x, root/ConfigFile)
+    write_repo_config
     @blog = self.new(root)
     @blog
   rescue => err
@@ -90,13 +92,16 @@ class RuneBlog
     self.class.blog = self   # Weird. Like a singleton - dumbass circular dependency?
 
     @root = root_dir
-    read_config
-    @views = get_views
+    file = @root/ConfigFile
+    errmsg = "No config file! file = #{file.inspect}  dir = #{Dir.pwd}" 
+    raise errmsg unless File.exist?(file)
+
+    get_repo_config
+    @root, @view_name, @editor = read_config(file, :root, :current_view, :editor)
     md = Dir.pwd.match(%r[.*/views/(.*?)/])
-    if md
-      @view_name = md[1] 
-      @view = str2view(@view_name)
-    end
+    @view_name = md[1] if md
+    @views = get_views
+    @view = str2view(@view_name)
     @sequence = get_sequence
     @post_views = []
     @post_tags = []
@@ -193,7 +198,6 @@ class RuneBlog
 
   def view=(arg)
     log!(enter: __method__, args: [arg], level: 2)
-    # FIXME should write VIEW file?
     case arg
       when RuneBlog::View
         @view = arg
@@ -376,7 +380,7 @@ class RuneBlog
       text << entry
     end
     text << "</body></html>"
-    File.write(@vdir/:remote/file, text + "\n")
+    File.write(@vdir/:remote/file, text)
     return posts.size
   rescue => err
     _tmp_error(err)
@@ -388,15 +392,10 @@ class RuneBlog
     meta = nil
     views = views + [self.view.to_s]
     views.uniq!
-p :cnp1
     Dir.chdir(@root/"posts") do
-p :cnp2
       post = Post.create(title: title, teaser: teaser, body: body, pubdate: pubdate, views: views)
-p :cnp3
       post.edit unless testing
-p :cnp4
       post.build
-p :cnp5
       meta = post.meta
     end
     return meta.num
@@ -424,7 +423,9 @@ p :cnp5
     log!(enter: __method__, args: [view], level: 3)
     raise ArgumentError unless view.is_a?(String) || view.is_a?(RuneBlog::View)
     x = OpenStruct.new
-    File.write(@root/"data/VIEW", view.to_s + "\n")
+    x.root, x.current_view, x.editor = @root, view.to_s, @editor   # dumb - FIXME later
+    copy_data(:config, @root/:data)
+    write_config(x, @root/ConfigFile)
     self.view = view   # error checking?
   end
 
@@ -487,24 +488,16 @@ p :cnp5
   def _post_metadata(draft, pdraft)
     log!(enter: __method__, args: [draft, pdraft], level: 2)
     # FIXME store this somewhere
-p :pm1
     fname = File.basename(draft)       # 0001-this-is-a-post.lt3
     nslug = fname.sub(/.lt3$/, "")     # 0001-this-is-a-post
     aslug = nslug.sub(/\d\d\d\d-/, "") # this-is-a-post
     pnum = nslug[0..3]                 # 0001
-p :pm2
     Dir.chdir(pdraft) do 
-p :pm3
       excerpt = File.read("teaser.txt")
-p :pm4
       date = _retrieve_metadata(:date)
-p :pm5
       longdate = ::Date.parse(date).strftime("%B %e, %Y")
-p :pm6
       title = _retrieve_metadata(:title)
-p :pm7
       tags = _retrieve_metadata(:tags)
-p :pm8
       # FIXME simplify
       vars = <<~LIVE
         .set post.num = #{pnum}
@@ -524,9 +517,7 @@ p :pm8
         #{longdate}
         .end
       LIVE
-p :pm9
       File.open(pdraft/"vars.lt3", "w") {|f| f.puts vars }
-p :pma
     end
   rescue => err
     _tmp_error(err)
@@ -562,54 +553,39 @@ p :pma
     pdraft = @root/:posts/nslug
     remote = @root/:views/view_name/:remote
     @theme = @root/:views/view_name/:themes/:standard
-p :hp1
     # Step 1...
     create_dirs(pdraft)
-p :hp2
     # FIXME dependencies?
     xlate cwd: pdraft, src: draft, dst: "guts.html"  # , debug: true
-p :hp3
     _post_metadata(draft, pdraft)
-p :hp4
     # Step 2...
     vposts = @root/:views/view_name/:posts
     copy!(pdraft, vposts)    # ??
-p :hp5
     # Step 3..
     copy(pdraft/"guts.html", @theme/:post) 
     copy(pdraft/"vars.lt3",  @theme/:post) 
-p :hp5
     # Step 4...
     # FIXME dependencies?
     xlate cwd: @theme/:post, src: "generate.lt3", force: true, 
           dst: remote/ahtml, copy: @theme/:post    # , debug: true
-p :hp7
     # FIXME dependencies?
     xlate cwd: @theme/:post, src: "permalink.lt3", 
           dst: remote/:permalink/ahtml  # , debug: true
-p :hp8
     copy_widget_html(view_name)
-p :hp9
   rescue => err
     _tmp_error(err)
   end
 
   def generate_post(draft)
     log!(enter: __method__, args: [draft], level: 1)
-p :gp1
     views = _get_views(draft)
-p :gp2
     views.each do |view| 
-p :gp3
       unless self.view?(view)
         puts "Warning: '#{view}' is not a view"
         next
       end
-p :gp4
       _handle_post(draft, view)
-p :gp5
     end
-p :gp6
   rescue => err
     _tmp_error(err)
   end

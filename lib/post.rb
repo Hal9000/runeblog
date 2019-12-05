@@ -1,6 +1,6 @@
 require 'runeblog'
 require 'global'
-# require 'pathmagic'
+require 'pathmagic'
 
 class RuneBlog::Post
 
@@ -42,9 +42,7 @@ puts "-- load: opening #{pdir}"
     fname2 = "metadata.txt"
     hash = meta.to_h
 
-p :wmd1
     File.write("teaser.txt", hash[:teaser])
-p :wmd2
     hash.delete(:teaser)
     hash.delete(:body)
 
@@ -108,14 +106,9 @@ p :wmd2
   def build
     log!(enter: __method__)
     post = self
-p :bld1
     views = post.meta.views
-p :bld2
     text = File.read(@draft)
-p :bld3
-p @draft
     @blog.generate_post(@draft)
-p :bld4
   end
 end
 
