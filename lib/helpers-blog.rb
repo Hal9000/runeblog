@@ -1,7 +1,7 @@
 require 'runeblog_version'
 require 'fileutils'
 
-require 'pathmagic'
+#require 'pathmagic'
 require 'xlate'
 
 module RuneBlog::Helpers
@@ -32,7 +32,7 @@ module RuneBlog::Helpers
     log!(enter: __method__, level: 3)
     @editor = File.read("data/EDITOR").chomp
     @current_view = File.read("data/VIEW").chomp
-    @root = File.read("data/EDITOR").chomp
+    @root = File.read(".blogs/data/ROOT").chomp
   rescue => err
     puts "Can't read config: #{err}"
     puts err.backtrace.join("\n")

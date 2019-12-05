@@ -4,14 +4,14 @@ require 'date'
 require 'find'
 
 require 'runeblog'
-require 'pathmagic'
+# require 'pathmagic'
 require 'xlate'
 
 
 def init_liveblog    # FIXME - a lot of this logic sucks
   here = Dir.pwd
   dir = here
-  loop { dir = Dir.pwd; break if File.exist?("data/ROOT"); Dir.chdir("..") }
+# loop { dir = Dir.pwd; break if File.exist?("data/ROOT"); Dir.chdir("..") }
   Dir.chdir(here)     #  here??? or dir??
   @blog = RuneBlog.new(dir)
   @root = @blog.root
@@ -443,10 +443,14 @@ rescue => err
 end
 
 def write_post
+STDERR.puts :wp1
   raise "'post' was not called" unless @meta
+STDERR.puts :wp2
   @meta.views = @meta.views.join(" ") if @meta.views.is_a? Array
   @meta.tags  = @meta.tags.join(" ") if @meta.tags.is_a? Array
+STDERR.puts :wp3
   _write_metadata
+STDERR.puts :wp4
 rescue => err
   puts "err = #{err}"
   puts err.backtrace.join("\n")
@@ -467,13 +471,19 @@ def teaser
 end
 
 def finalize
+STDERR.puts :final1
   return unless @meta
+STDERR.puts :final2
   return @meta if @blog.nil?
+STDERR.puts :final3
 
   @slug = @blog.make_slug(@meta)
+STDERR.puts :final4
   slug_dir = @slug
   @postdir = @blog.view.dir/:posts/slug_dir
+STDERR.puts :final5
   write_post
+STDERR.puts :final6
   @meta
 end
  

@@ -94,7 +94,7 @@ STDERR.reopen(errfile)
 
 # read a .rubytext file here?? Call it something else?
 home = ENV['HOME']
-@fg, @bg = try_read_config("#{home}/.rubytext", fg: Blue, bg: White)
+@fg, @bg = Blue, White   ##  FIXME!! try_read_config("#{home}/.rubytext", fg: Blue, bg: White)
 @fg = @fg.downcase.to_sym
 @bg = @bg.downcase.to_sym
 

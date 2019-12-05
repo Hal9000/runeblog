@@ -12,7 +12,7 @@ require 'view'
 require 'publish'
 require 'post'
 
-require 'pathmagic'
+# require 'pathmagic'
 
 ###
 
@@ -64,6 +64,7 @@ class RuneBlog
     Dir.chdir(root) do
       create_dirs(:data, :drafts, :views, :posts)
       copy_data(:config, "./data/")
+      File.write("data/ROOT", Dir.pwd + "\n")
       new_sequence
     end
     @blog = self.new(root)
@@ -90,10 +91,12 @@ class RuneBlog
 
     @root = root_dir
     read_config
-    md = Dir.pwd.match(%r[.*/views/(.*?)/])
-    @view_name = md[1] if md
     @views = get_views
-    @view = str2view(@view_name)
+    md = Dir.pwd.match(%r[.*/views/(.*?)/])
+    if md
+      @view_name = md[1] 
+      @view = str2view(@view_name)
+    end
     @sequence = get_sequence
     @post_views = []
     @post_tags = []
@@ -373,7 +376,7 @@ class RuneBlog
       text << entry
     end
     text << "</body></html>"
-    File.write(@vdir/:remote/file, text)
+    File.write(@vdir/:remote/file, text + "\n")
     return posts.size
   rescue => err
     _tmp_error(err)
@@ -385,10 +388,15 @@ class RuneBlog
     meta = nil
     views = views + [self.view.to_s]
     views.uniq!
+p :cnp1
     Dir.chdir(@root/"posts") do
+p :cnp2
       post = Post.create(title: title, teaser: teaser, body: body, pubdate: pubdate, views: views)
+p :cnp3
       post.edit unless testing
+p :cnp4
       post.build
+p :cnp5
       meta = post.meta
     end
     return meta.num
@@ -416,7 +424,7 @@ class RuneBlog
     log!(enter: __method__, args: [view], level: 3)
     raise ArgumentError unless view.is_a?(String) || view.is_a?(RuneBlog::View)
     x = OpenStruct.new
-    File.write(@root/"data/VIEW", view.to_s)
+    File.write(@root/"data/VIEW", view.to_s + "\n")
     self.view = view   # error checking?
   end
 
@@ -479,16 +487,24 @@ class RuneBlog
   def _post_metadata(draft, pdraft)
     log!(enter: __method__, args: [draft, pdraft], level: 2)
     # FIXME store this somewhere
+p :pm1
     fname = File.basename(draft)       # 0001-this-is-a-post.lt3
     nslug = fname.sub(/.lt3$/, "")     # 0001-this-is-a-post
     aslug = nslug.sub(/\d\d\d\d-/, "") # this-is-a-post
     pnum = nslug[0..3]                 # 0001
+p :pm2
     Dir.chdir(pdraft) do 
+p :pm3
       excerpt = File.read("teaser.txt")
+p :pm4
       date = _retrieve_metadata(:date)
+p :pm5
       longdate = ::Date.parse(date).strftime("%B %e, %Y")
+p :pm6
       title = _retrieve_metadata(:title)
+p :pm7
       tags = _retrieve_metadata(:tags)
+p :pm8
       # FIXME simplify
       vars = <<~LIVE
         .set post.num = #{pnum}
@@ -508,7 +524,9 @@ class RuneBlog
         #{longdate}
         .end
       LIVE
+p :pm9
       File.open(pdraft/"vars.lt3", "w") {|f| f.puts vars }
+p :pma
     end
   rescue => err
     _tmp_error(err)
@@ -544,39 +562,54 @@ class RuneBlog
     pdraft = @root/:posts/nslug
     remote = @root/:views/view_name/:remote
     @theme = @root/:views/view_name/:themes/:standard
+p :hp1
     # Step 1...
     create_dirs(pdraft)
+p :hp2
     # FIXME dependencies?
     xlate cwd: pdraft, src: draft, dst: "guts.html"  # , debug: true
+p :hp3
     _post_metadata(draft, pdraft)
+p :hp4
     # Step 2...
     vposts = @root/:views/view_name/:posts
     copy!(pdraft, vposts)    # ??
+p :hp5
     # Step 3..
     copy(pdraft/"guts.html", @theme/:post) 
     copy(pdraft/"vars.lt3",  @theme/:post) 
+p :hp5
     # Step 4...
     # FIXME dependencies?
     xlate cwd: @theme/:post, src: "generate.lt3", force: true, 
           dst: remote/ahtml, copy: @theme/:post    # , debug: true
+p :hp7
     # FIXME dependencies?
     xlate cwd: @theme/:post, src: "permalink.lt3", 
           dst: remote/:permalink/ahtml  # , debug: true
+p :hp8
     copy_widget_html(view_name)
+p :hp9
   rescue => err
     _tmp_error(err)
   end
 
   def generate_post(draft)
     log!(enter: __method__, args: [draft], level: 1)
+p :gp1
     views = _get_views(draft)
+p :gp2
     views.each do |view| 
+p :gp3
       unless self.view?(view)
         puts "Warning: '#{view}' is not a view"
         next
       end
+p :gp4
       _handle_post(draft, view)
+p :gp5
     end
+p :gp6
   rescue => err
     _tmp_error(err)
   end

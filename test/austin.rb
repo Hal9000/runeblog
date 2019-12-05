@@ -85,66 +85,66 @@ EXCERPT
 That's a good thing. But their music isn't always the greatest.
 BODY
 
-make_post(x, "The new amphitheatre is overrated", <<-EXCERPT, <<-BODY)
-It used to be that all major concerts played the Erwin Center.
-EXCERPT
-.pin around_austin
-Now, depending on what you consider "major," blah blah blah...
-BODY
-
-make_post(x, "The graffiti wall", <<-EXCERPT, <<-BODY)
-RIP, Hope Gallery
-EXCERPT
-
-.dropcap It's been a while since I was there. They say it was torn down
-while I wasn't looking. Never tagged anything there, of course, nor
-anywhere else. Spraypainting public places isn't my thing, but in this
-case I condoned it because it was sort of there for that purpose.
-
-This fake entry is a long one so as to demonstrate both drop-caps
-(above) and an inset quote. Blah blah blah. Lorem ipsum dolor and
-a partridge in a pear tree.
-
-.inset left 20
-Wherever you go, there you are. Last night I saw upon the stair
-a little man who was not there. He wasn't there again today; I
-wish, I wish he'd go away.  As far as we know, our computer has 
-never had an undetected error.  
-|On a clean disk, you can seek forever.
-And never let it be denied that 
-pobbles are happier without their toes. And may your snark never 
-be a boojum. How do you know you aren't dreaming right now? When
-you see a butterfly, think of Chuang Tzu.
-.end
-
-Contact light. Houston, this is Tranquility Base. The Eagle has
-landed. That's one small step for (a) man, one giant leap for 
-mankind.
-
-Here's the PDF of $$link["Ruby for the Old-Time C Programmer"|http://rubyhacker.com/blog2/rubydino.pdf]
-
-Pity this busy monster, manunkind, not. Pity rather... Listen:
-There's a hell of a universe next door; let's go.
-BODY
-
-make_post(x, "The Waller Creek project", <<-EXCERPT, <<-BODY)
-Will it ever be finished?
-EXCERPT
-Blah blah Waller Creek blah blah...
-BODY
-
-make_post(x, "Life on Sabine Street", <<-EXCERPT, <<-BODY)
-It's like Pooh Corner, except not.
-EXCERPT
-This is about Sabine St, blah blah lorem ipsum dolor...
-BODY
-
-make_post(x, "Remember Modest Mouse?", <<-EXCERPT, <<-BODY)
-They date to the 90s or before. 
-EXCERPT
-But I first heard of them
-in 2005.
-BODY
+# make_post(x, "The new amphitheatre is overrated", <<-EXCERPT, <<-BODY)
+# It used to be that all major concerts played the Erwin Center.
+# EXCERPT
+# .pin around_austin
+# Now, depending on what you consider "major," blah blah blah...
+# BODY
+# 
+# make_post(x, "The graffiti wall", <<-EXCERPT, <<-BODY)
+# RIP, Hope Gallery
+# EXCERPT
+# 
+# .dropcap It's been a while since I was there. They say it was torn down
+# while I wasn't looking. Never tagged anything there, of course, nor
+# anywhere else. Spraypainting public places isn't my thing, but in this
+# case I condoned it because it was sort of there for that purpose.
+# 
+# This fake entry is a long one so as to demonstrate both drop-caps
+# (above) and an inset quote. Blah blah blah. Lorem ipsum dolor and
+# a partridge in a pear tree.
+# 
+# .inset left 20
+# Wherever you go, there you are. Last night I saw upon the stair
+# a little man who was not there. He wasn't there again today; I
+# wish, I wish he'd go away.  As far as we know, our computer has 
+# never had an undetected error.  
+# |On a clean disk, you can seek forever.
+# And never let it be denied that 
+# pobbles are happier without their toes. And may your snark never 
+# be a boojum. How do you know you aren't dreaming right now? When
+# you see a butterfly, think of Chuang Tzu.
+# .end
+# 
+# Contact light. Houston, this is Tranquility Base. The Eagle has
+# landed. That's one small step for (a) man, one giant leap for 
+# mankind.
+# 
+# Here's the PDF of $$link["Ruby for the Old-Time C Programmer"|http://rubyhacker.com/blog2/rubydino.pdf]
+# 
+# Pity this busy monster, manunkind, not. Pity rather... Listen:
+# There's a hell of a universe next door; let's go.
+# BODY
+# 
+# make_post(x, "The Waller Creek project", <<-EXCERPT, <<-BODY)
+# Will it ever be finished?
+# EXCERPT
+# Blah blah Waller Creek blah blah...
+# BODY
+# 
+# make_post(x, "Life on Sabine Street", <<-EXCERPT, <<-BODY)
+# It's like Pooh Corner, except not.
+# EXCERPT
+# This is about Sabine St, blah blah lorem ipsum dolor...
+# BODY
+# 
+# make_post(x, "Remember Modest Mouse?", <<-EXCERPT, <<-BODY)
+# They date to the 90s or before. 
+# EXCERPT
+# But I first heard of them
+# in 2005.
+# BODY
 
 debug
 debug "** generate_index #{bold("around_austin")}"
