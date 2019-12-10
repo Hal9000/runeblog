@@ -84,6 +84,7 @@ Livetext: added prefix to .variables
 Experimental pieces: FB, Twitter, varmint, univ.lt3
 Removed Runeblog.create (folded into create_new_blog_repo)
 Experimenting with new config
+Replaced config with three files under data/
 .end
 
 .sublist easyish Easy stuff?

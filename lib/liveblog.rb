@@ -9,11 +9,9 @@ require 'xlate'
 
 
 def init_liveblog    # FIXME - a lot of this logic sucks
-  here = Dir.pwd
-  dir = here
-# loop { dir = Dir.pwd; break if File.exist?("config"); Dir.chdir("..") }
-  Dir.chdir(here)     #  here??? or dir??
-  @blog = RuneBlog.new(dir)
+  dir = Dir.pwd.sub(/\.blogs.*/, "")
+  @blog = nil
+  Dir.chdir(dir) { @blog = RuneBlog.new }
   @root = @blog.root
   @view = @blog.view
   @view_name = @blog.view.name unless @view.nil?
@@ -118,7 +116,6 @@ def banner
         str2 << "      <td colspan=#{span}><img src=#{image} #{width} height=#{high}></img></td>" + "\n"
       when "svg_title"
         stuff, hash = _svg_title(*data)
-STDERR.puts hash.inspect
         wide = hash["width"]
         str2 << "      <td colspan=#{span} width=#{wide}>#{stuff}</td>" + "\n"
       when "text"
@@ -748,7 +745,7 @@ def navbar
 end
 
 def _make_navbar(orient = :horiz)
-  vdir = @blog.view.dir
+  vdir = @root/:views/@blog.view
   title = _var(:blog)
 
   extra = ""

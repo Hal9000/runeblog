@@ -45,7 +45,7 @@ def xlate(cwd: Dir.pwd, src:,
           dst: (strip = true; File.basename(src).sub(/.lt3$/,"")), 
           deps: [], copy: nil, debug: false, force: false)
   src += LEXT unless src.end_with?(LEXT)
-  dst += ".html" unless (dst.end_with?(".html"))   # || strip)
+  dst += ".html" unless (dst.end_with?(".html") || strip)
   indent = " "*12
   Dir.chdir(cwd) do
     if debug

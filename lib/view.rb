@@ -14,6 +14,7 @@ class RuneBlog::View
     @name = name
     @publisher = RuneBlog::Publishing.new(name)
     @can_publish = true  # FIXME
+    @blog.view = self
   end
 
   def dir

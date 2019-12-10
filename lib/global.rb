@@ -39,6 +39,7 @@ def system!(str, show: false)
   else
     STDERR.puts "FAILED: #{str.inspect}"
     STDERR.puts "\ncaller = \n#{caller.join("\n  ")}\n"
+exit
     return rc
   end
   rc

@@ -53,55 +53,48 @@ class RuneBlog
     puts "Error: See #{out}"
   end
 
-  def self.create_new_blog_repo(root = ".blogs")
-    log!(enter: __method__, args: [root])
-    raise ArgumentError unless root.is_a?(String) && ! root.empty?
-    root_dir = Dir.pwd/root
+  def self.create_new_blog_repo(root_rel = ".blogs")
+    log!(enter: __method__, args: [root_rel])
+    raise ArgumentError unless root_rel.is_a?(String) && ! root_rel.empty?
     self.blog = self   # Weird. Like a singleton - dumbass circular dependency?
-    root = Dir.pwd/root
-    raise BlogRepoAlreadyExists if Dir.exist?(root)
-    create_dirs(root)
-    Dir.chdir(root) do
-      create_dirs(:drafts, :views, :posts)
+    repo_root = Dir.pwd/root_rel
+    raise BlogRepoAlreadyExists if Dir.exist?(repo_root)
+    create_dirs(repo_root)
+    Dir.chdir(repo_root) do
+      create_dirs(:data, :drafts, :views, :posts)
       new_sequence
     end
-    x = OpenStruct.new
-    x.root, x.current_view, x.editor = root, "test_view", "/usr/bin/vim "   # dumb - FIXME later
-    write_config(x, root/ConfigFile)
-    write_repo_config
-    @blog = self.new(root)
+    copy_data(:config, repo_root/:data)
+    write_repo_config(root: repo_root)
+    @blog = self.new
     @blog
   rescue => err
-    puts "Can't create blog repo: '#{root}' - #{err}"
+    puts "Can't create blog repo: '#{repo_root}' - #{err}"
     puts err.backtrace.join("\n")
   end
 
-  def self.open(root = ".blogs")
-    log!(enter: __method__, args: [root])
-    # Crude - FIXME later -  # What views are there? Publishing, etc.
+  def self.open(root_rel = ".blogs")
+    log!(enter: __method__, args: [root_rel])
     self.blog = self   # Weird. Like a singleton - dumbass circular dependency?
-    root = Dir.pwd/root
-    blog = self.new(root)
+    blog = self.new(root_rel)
   rescue => err
     _tmp_error(err)
   end
 
-  def initialize(root_dir = ".blogs")   # always assumes existing blog
-    log!(enter: "initialize", args: [root_dir])
-    # Crude - FIXME later -  # What views are there? Publishing, etc.
+  def initialize(root_rel = ".blogs")   # always assumes existing blog
+    log!(enter: "initialize", args: [root_rel])
     self.class.blog = self   # Weird. Like a singleton - dumbass circular dependency?
 
-    @root = root_dir
-    file = @root/ConfigFile
-    errmsg = "No config file! file = #{file.inspect}  dir = #{Dir.pwd}" 
-    raise errmsg unless File.exist?(file)
-
+    @root = Dir.pwd/root_rel
+    copy_data(:config, @root/:data)
+    write_repo_config(root: @root)
     get_repo_config
-    @root, @view_name, @editor = read_config(file, :root, :current_view, :editor)
-    md = Dir.pwd.match(%r[.*/views/(.*?)/])
-    @view_name = md[1] if md
     @views = get_views
-    @view = str2view(@view_name)
+    md = Dir.pwd.match(%r[.*/views/(.*?)/])
+    if md
+      @view_name = md[1]
+      @view = str2view(@view_name)
+    end
     @sequence = get_sequence
     @post_views = []
     @post_tags = []
@@ -228,15 +221,15 @@ class RuneBlog
 
   def viewdir(v = nil)   # delete?
     log!(enter: __method__, args: [v], level: 3)
+    v ||= @view
     v = str2view(v) if v.is_a?(String)
     raise ArgumentError unless v.nil? || v.is_a?(RuneBlog::View)
-    v ||= @view
     return @root/:views/v
   end
 
   def self.exist?
     log!(enter: __method__, level: 3)
-    Dir.exist?(DotDir) && File.exist?(DotDir/ConfigFile)
+    Dir.exist?(DotDir)
   end
 
   def mark_last_published(str)
@@ -247,7 +240,8 @@ class RuneBlog
   def add_view(view_name)
     log!(enter: __method__, args: [view_name], level: 2)
     view = RuneBlog::View.new(view_name)
-    @view = view    # current view
+    self.view = view    # current view
+    File.write(@root/"data/VIEW", view_name)
     @views << view  # all views
     view
   end
@@ -276,7 +270,6 @@ class RuneBlog
 
   def create_view(view_name)
     log!(enter: __method__, args: [view_name], level: 2)
-    check_valid_new_view(view_name)
     make_empty_view_tree(view_name)
     add_view(view_name)
     mark_last_published("Initial creation")
@@ -325,11 +318,8 @@ class RuneBlog
     text = nil
     @theme = @view.dir/"themes/standard"
     post_entry_name = @theme/"blog/post_entry.lt3"
-# STDERR.puts "--  @pename = #{post_entry_name}"
-# STDERR.puts "--  @pe = #{@_post_entry.inspect}"
     depend = [post_entry_name]
     xlate src: post_entry_name, dst: "/tmp/post_entry.html" # , deps: depend  # , debug: true
-# STDERR.puts "-- xlate result: #{`ls -l /tmp/post_entry.html`}"
     @_post_entry ||= File.read("/tmp/post_entry.html")
     vp = post_lookup(id)
     nslug, aslug, title, date, teaser_text = 
@@ -422,10 +412,8 @@ class RuneBlog
   def change_view(view)
     log!(enter: __method__, args: [view], level: 3)
     raise ArgumentError unless view.is_a?(String) || view.is_a?(RuneBlog::View)
-    x = OpenStruct.new
-    x.root, x.current_view, x.editor = @root, view.to_s, @editor   # dumb - FIXME later
-    copy_data(:config, @root/:data)
-    write_config(x, @root/ConfigFile)
+    File.write(@root/"data/VIEW", view)
+    # write_repo_config
     self.view = view   # error checking?
   end
 
@@ -448,13 +436,15 @@ class RuneBlog
              # @theme/"navbar/navbar.lt3",
              @theme/"blog/index.lt3"]   # FIXME what about assets?
     xlate cwd: vdir/"themes/standard/etc", deps: depend,
-          src: "blog.css.lt3", copy: vdir/"remote/etc/blog.css" # , debug: true
+          src: "blog.css.lt3", copy: vdir/"remote/etc/"  # , debug: true
     xlate cwd: vdir/"themes/standard", deps: depend, force: true,
           src: "blog/generate.lt3", dst: vdir/:remote/"index.html"
     copy("#{vdir}/assets/*", "#{vdir}/remote/assets/")
     copy_widget_html(view)
   rescue => err
-    _tmp_error(err)
+    STDERR.puts err
+    STDERR.puts err.backtrace.join("\n")
+    # _tmp_error(err)
   end
 
   def _get_views(draft)

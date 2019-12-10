@@ -21,13 +21,13 @@ module RuneBlog::Helpers
 
   def get_repo_config
     log!(enter: __method__, level: 3)
-    @editor = File.read(".blogs/data/EDITOR").chomp
-    @current_view = File.read(".blogs/data/VIEW").chomp
-    @root = File.read(".blogs/data/ROOT").chomp
+    @editor = File.read("#@root/data/EDITOR").chomp
+    @current_view = File.read("#@root/data/VIEW").chomp
+    @root = File.read("#@root/data/ROOT").chomp
   rescue => err
-    puts "Can't read config: #{err}"
-    puts err.backtrace.join("\n")
-    puts "dir = #{Dir.pwd}"
+    STDERR.puts "Can't read config: #{err}"
+    STDERR.puts err.backtrace.join("\n")
+    STDERR.puts "dir = #{Dir.pwd}"
   end
 
   def copy_data(tag, dest)
@@ -80,12 +80,11 @@ module RuneBlog::Helpers
 
   def get_views   # read from filesystem
     log!(enter: __method__, level: 3)
-    dirs = subdirs("#@root + "/" + views/").sort
+    dirs = subdirs("#@root/views/").sort
     dirs.map {|name| RuneBlog::View.new(name) }
   end
 
-  def write_repo_config(root: "#{Dir.pwd}/.blogs", view: "#{root}/data/VIEW", editor: "#{root}/data/EDITOR")
-p root
+  def write_repo_config(root: "#{Dir.pwd}/.blogs", view: "[no view]", editor: "/usr/local/bin/vim")
     File.write(root + "/data/ROOT",   root + "\n")
     File.write(root + "/data/VIEW",   view.to_s + "\n")
     File.write(root + "/data/EDITOR", editor + "\n")
