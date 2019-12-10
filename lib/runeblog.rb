@@ -147,7 +147,7 @@ class RuneBlog
     dir = @root/:posts/nslug
     create_dirs(dir)
     # FIXME dependencies?
-    xlate cwd: dir, src: @root/:drafts/sourcefile   # , debug: true
+    preprocess cwd: dir, src: @root/:drafts/sourcefile   # , debug: true
     _deploy_local(dir)
   rescue => err
     _tmp_error(err)
@@ -319,7 +319,7 @@ class RuneBlog
     @theme = @view.dir/"themes/standard"
     post_entry_name = @theme/"blog/post_entry.lt3"
     depend = [post_entry_name]
-    xlate src: post_entry_name, dst: "/tmp/post_entry.html" # , deps: depend  # , debug: true
+    preprocess src: post_entry_name, dst: "/tmp/post_entry.html" # , deps: depend  # , debug: true
     @_post_entry ||= File.read("/tmp/post_entry.html")
     vp = post_lookup(id)
     nslug, aslug, title, date, teaser_text = 
@@ -435,9 +435,9 @@ class RuneBlog
              @theme/"blog/head.lt3", 
              # @theme/"navbar/navbar.lt3",
              @theme/"blog/index.lt3"]   # FIXME what about assets?
-    xlate cwd: vdir/"themes/standard/etc", deps: depend,
+    preprocess cwd: vdir/"themes/standard/etc", deps: depend,
           src: "blog.css.lt3", copy: vdir/"remote/etc/"  # , debug: true
-    xlate cwd: vdir/"themes/standard", deps: depend, force: true,
+    preprocess cwd: vdir/"themes/standard", deps: depend, force: true,
           src: "blog/generate.lt3", dst: vdir/:remote/"index.html"
     copy("#{vdir}/assets/*", "#{vdir}/remote/assets/")
     copy_widget_html(view)
@@ -546,7 +546,7 @@ class RuneBlog
     # Step 1...
     create_dirs(pdraft)
     # FIXME dependencies?
-    xlate cwd: pdraft, src: draft, dst: "guts.html"  # , debug: true
+    preprocess cwd: pdraft, src: draft, dst: "guts.html"  # , debug: true
     _post_metadata(draft, pdraft)
     # Step 2...
     vposts = @root/:views/view_name/:posts
@@ -556,10 +556,10 @@ class RuneBlog
     copy(pdraft/"vars.lt3",  @theme/:post) 
     # Step 4...
     # FIXME dependencies?
-    xlate cwd: @theme/:post, src: "generate.lt3", force: true, 
+    preprocess cwd: @theme/:post, src: "generate.lt3", force: true, 
           dst: remote/ahtml, copy: @theme/:post    # , debug: true
     # FIXME dependencies?
-    xlate cwd: @theme/:post, src: "permalink.lt3", 
+    preprocess cwd: @theme/:post, src: "permalink.lt3", 
           dst: remote/:permalink/ahtml  # , debug: true
     copy_widget_html(view_name)
   rescue => err

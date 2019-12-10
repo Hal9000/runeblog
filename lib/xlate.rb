@@ -1,4 +1,6 @@
+require 'livetext'
 
+LIVE = Livetext.new
 LEXT = ".lt3"
 
 def newer?(f1, f2)
@@ -16,26 +18,28 @@ def stale?(src, dst, deps, force = false)
   return false
 end
 
-def prerprocess(cwd: Dir.pwd, src:, 
+def preprocess(cwd: Dir.pwd, src:, 
           dst: (strip = true; File.basename(src).sub(/.lt3$/,"")), 
           deps: [], copy: nil, debug: false, force: false)
   src += LEXT unless src.end_with?(LEXT)
   dst += ".html" unless (dst.end_with?(".html"))   # || strip)
-  indent = " "*12
+  sp = " "*12
   Dir.chdir(cwd) do
     if debug
-      puts "#{indent} -- xlate #{src} >#{dst}"
-      puts "#{indent}      in:   #{Dir.pwd}"
-      puts "#{indent}      from: #{caller[0]}"
-      puts "#{indent}      copy: #{copy}" if copy
+      puts "#{sp} -- preprocess 
+      puts "#{sp}      src:  #{src}"
+      puts "#{sp}      dst:  #{dst}"
+      puts "#{sp}      in:   #{Dir.pwd}"
+      puts "#{sp}      from: #{caller[0]}"
+      puts "#{sp}      copy: #{copy}" if copy
     end
     stale = stale?(src, dst, deps, force)
     if stale
-      rc = system("livetext #{src} >#{dst}")
-      puts "...completed (shell returned #{rc})" if debug
+      out = LIVE.xform_file(src)
+      File.write(dst, out)
       system!("cp #{dst} #{copy}") if copy
     else
-      puts "#{indent} -- ^ Already up to date!" if debug
+      puts "#{sp} -- ^ Already up to date!" if debug
       return
     end
   end

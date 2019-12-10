@@ -21,6 +21,20 @@
    "$$" + param
 .end
 
+.sublist dec2019 Recently completed (Dec 2019)
+Added explanations to config menu
+\.banner now takes body
+some work on banner_svg
+Livetext: fixed $\.end issue
+Added svg_title to banner
+Livetext: added prefix to .variables
+Experimental pieces: FB, Twitter, varmint, univ.lt3
+Removed Runeblog.create (folded into create_new_blog_repo)
+Experimenting with new config
+Replaced config with three files under data/
+Replaced xlate with preprocess
+.end
+
 .sublist oct2019 Recently completed (Oct 2019)
 date inside post
 show tags on posts
@@ -72,19 +86,6 @@ Widget rebuild is fixed
 Deleted card1, card2, card_iframe
 Deleted "pieces" dir under widget
 Fixed mkwidget
-.end
-
-.sublist dec2019 Recently completed (Dec 2019)
-Added explanations to config menu
-\.banner now takes body
-some work on banner_svg
-Livetext: fixed $\.end issue
-Added svg_title to banner
-Livetext: added prefix to .variables
-Experimental pieces: FB, Twitter, varmint, univ.lt3
-Removed Runeblog.create (folded into create_new_blog_repo)
-Experimenting with new config
-Replaced config with three files under data/
 .end
 
 .sublist easyish Easy stuff?
