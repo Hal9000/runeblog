@@ -1,4 +1,5 @@
 <!-- Miscellaneous local JS pieces are defined here -->
+.nopara
 
 <script>
   function open_main(url) {

@@ -5,7 +5,7 @@ require 'find'
 
 require 'runeblog'
 require 'pathmagic'
-# require 'xlate'
+require 'xlate'
 
 
 def init_liveblog    # FIXME - a lot of this logic sucks
@@ -636,7 +636,7 @@ def sidebar
         File.open(wtag/"vars.lt3", "w") do |f| 
           f.puts ".set ad.image = #{img}"
         end
-        preprocess cwd: wtag, src: tag, dst: tcard, force: true # , deps: depend # , debug: true
+        xlate cwd: wtag, src: tag, dst: tcard, force: true # , deps: depend # , debug: true
     end
 
     _include_file wtag/tcard
@@ -776,7 +776,7 @@ def _make_navbar(orient = :horiz)
       output.puts %[<li class="nav-item active"> <a class="nav-link" href="index.html">#{cdata}<span class="sr-only">(current)</span></a> </li>]
     else
       dir = @blog.root/:views/@blog.view/"themes/standard/banner"
-      preprocess cwd: dir, src: basename, dst: vdir/"remote/banner"/basename+".html" # , debug: true
+      xlate cwd: dir, src: basename, dst: vdir/"remote/banner"/basename+".html" # , debug: true
       output.puts %[<li class="nav-item"> <a class="nav-link" #{href_main}>#{cdata}</a> </li>]
     end
   end
