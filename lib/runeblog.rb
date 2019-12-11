@@ -431,12 +431,12 @@ class RuneBlog
     log!(enter: __method__, args: [view])
     vdir = @root/:views/view
     @theme = @root/:views/view/:themes/:standard
-    depend = [vdir/"remote/etc/blog.css", @theme/"global.lt3", 
+    depend = [vdir/"remote/etc/blog.css.lt3", @theme/"global.lt3", 
              @theme/"blog/head.lt3", 
              # @theme/"navbar/navbar.lt3",
              @theme/"blog/index.lt3"]   # FIXME what about assets?
-    xlate cwd: vdir/"themes/standard/etc", deps: depend,
-          src: "blog.css.lt3", copy: vdir/"remote/etc/"  # , debug: true
+    xlate cwd: vdir/"themes/standard/etc", # deps: depend, debug: true,
+          src: "blog.css.lt3", copy: vdir/"remote/etc/" # , dst: "blog.css"
     xlate cwd: vdir/"themes/standard", deps: depend, force: true,
           src: "blog/generate.lt3", dst: vdir/:remote/"index.html"
     copy("#{vdir}/assets/*", "#{vdir}/remote/assets/")

@@ -11,9 +11,12 @@
 .seek global.lt3
 .include vars.lt3
 
+. FIXME
+
 .head
 og:title    $title 
 description $teaser
+style       blog.css
 .end
 
 <body>

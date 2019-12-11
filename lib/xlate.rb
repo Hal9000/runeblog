@@ -22,11 +22,11 @@ def preprocess(cwd: Dir.pwd, src:,
           dst: (strip = true; File.basename(src).sub(/.lt3$/,"")), 
           deps: [], copy: nil, debug: false, force: false)
   src += LEXT unless src.end_with?(LEXT)
-  dst += ".html" unless (dst.end_with?(".html"))   # || strip)
+  dst += ".html" unless (dst.end_with?(".html") || strip)
   sp = " "*12
   Dir.chdir(cwd) do
     if debug
-      puts "#{sp} -- preprocess 
+      puts "#{sp} -- preprocess "
       puts "#{sp}      src:  #{src}"
       puts "#{sp}      dst:  #{dst}"
       puts "#{sp}      in:   #{Dir.pwd}"

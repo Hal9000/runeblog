@@ -108,7 +108,6 @@ module RuneBlog::Helpers
 
   def subdirs(dir)
     log!(enter: __method__, args: [dir], level: 3)
-STDERR.puts dir
     dirs = Dir.entries(dir) - %w[. ..]
     dirs.reject! {|x| ! File.directory?("#@root/views/#{x}") }
     dirs

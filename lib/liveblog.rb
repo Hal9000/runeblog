@@ -496,7 +496,7 @@ def head  # Does NOT output <head> tags
 #              "style"          => %[<link rel="stylesheet" href="etc/blog.css">],
 # ^ FIXME
                "feed"           => %[<link type="application/atom+xml" rel="alternate" href="#{_var(:host)}/feed.xml" title="#{_var(:blog)}">],
-               "favicon"        => %[<link rel="shortcut icon" type="image/x-icon" href="../etc/favicon.ico">\n <link rel="apple-touch-icon" href="../etc/favicon.ico">]
+               "favicon"        => %[<link rel="shortcut icon" type="image/x-icon" href="etc/favicon.ico">\n <link rel="apple-touch-icon" href="etc/favicon.ico">]
              }
   result = {}
   lines = _body
@@ -511,7 +511,7 @@ def head  # Does NOT output <head> tags
         text = File.read(file)
         result["script"] = Livetext.new.transform(text)
       when "style"
-        result["style"] = %[<link rel="stylesheet" href="('/etc/#{remain}')">]
+        result["style"] = %[<link rel="stylesheet" href="etc/#{remain}">]
       # Later: allow other overrides
       when ""; break
     else

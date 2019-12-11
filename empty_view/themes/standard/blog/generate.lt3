@@ -4,6 +4,7 @@
 . The user will more often edit blog/index.lt3 in   
 . the process of blog setup.                        
 . --------------------------------------------------
+.nopara
 
 .mixin liveblog
 

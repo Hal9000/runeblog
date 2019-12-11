@@ -32,7 +32,8 @@ Experimental pieces: FB, Twitter, varmint, univ.lt3
 Removed Runeblog.create (folded into create_new_blog_repo)
 Experimenting with new config
 Replaced config with three files under data/
-Replaced xlate with preprocess
+BROKEN: Replaced xlate with preprocess
+Backed out preprocess
 .end
 
 .sublist oct2019 Recently completed (Oct 2019)
@@ -449,6 +450,7 @@ complete Completed tasks
 .end
 
 .sublist nextish Next steps...
+=navbar is broken somehow
 =fix/delete Runeblog::Default (post\_template)?
 =Fix config file creation 
 =Variables for config file?
