@@ -34,6 +34,7 @@ Experimenting with new config
 Replaced config with three files under data/
 BROKEN: Replaced xlate with preprocess
 Backed out preprocess
+Fixed navbar
 .end
 
 .sublist oct2019 Recently completed (Oct 2019)
@@ -450,9 +451,7 @@ complete Completed tasks
 .end
 
 .sublist nextish Next steps...
-=navbar is broken somehow
 =fix/delete Runeblog::Default (post\_template)?
-=Fix config file creation 
 =Variables for config file?
 ="universal" variables?
 =break up global.lt3??

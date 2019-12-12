@@ -91,10 +91,11 @@ end
 def banner
   count = 0
   span = 1
-  bg = "white"  # outside loop
+  @bg = "white"  # outside loop
   wide = nil
   high = 250
   str2 = ""
+  navbar = nil
   lines = _body.to_a
 
   lines.each do |line|
@@ -107,7 +108,7 @@ def banner
       when "height"
         high = data[0]
       when "bgcolor"
-        bg = data[0] || "white"
+        @bg = data[0] || "white"
       when "image"
         image = data[0] || "banner.jpg"
         image = "banner"/image
@@ -125,13 +126,15 @@ def banner
       when "navbar"
         dir = @blog.root/:views/@blog.view/"themes/standard/banner/" + "\n"
         _make_navbar  # horiz is default
-        stuff = File.read("banner/navbar.html")
-        str2 << "<td colspan=#{span}><div style='text-align: center'>#{stuff}</div></td>" + "\n"
+        file = "banner/navbar.html"
+        navbar = File.read(file)
+        # str2 << "<td colspan=#{span}><div style='text-align: center'>#{stuff}</div></td>" + "\n"
       when "vnavbar"
         dir = @blog.root/:views/@blog.view/"themes/standard/banner/"
         _make_navbar(:vert)
         file = "banner/vnavbar.html"
-        str2 << "<td colspan=#{span}>" + File.read(file) + "</td>" + "\n"
+        navbar = File.read(file)
+        # str2 << "<td colspan=#{span}>" + File.read(file) + "</td>" + "\n"
       when "break"
          span = count - 1
          str2 << "  </tr>\n  <tr>"  + "\n"
@@ -139,11 +142,12 @@ def banner
       str2 << "        '#{tag}' isn't known" + "\n"
     end
   end
-  _out "<table width=100% height=#{high} bgcolor=##{bg}>"
+  _out "<table width=100% height=#{high} bgcolor=##{@bg}>"
   _out "  <tr>"
   _out str2
   _out "  </tr>"
   _out "</table>"
+  _out navbar if navbar
 rescue => err
   STDERR.puts "err = #{err}"
   STDERR.puts err.backtrace.join("\n")
@@ -748,20 +752,27 @@ def _make_navbar(orient = :horiz)
   vdir = @root/:views/@blog.view
   title = _var(:blog)
 
-  extra = ""
-  extra = "navbar-expand-lg" if orient == :horiz
-
+  if orient == :horiz
+    name = "navbar.html"
+    li1, li2 = "", ""
+    extra = "navbar-expand-lg" 
+    list1 = list2 = ""
+  else
+    name = "vnavbar.html"
+    li1, li2 = '<li class="nav-item">', "</li>"
+    extra = ""
+    list1, list2 = '<l class="navbar-nav mr-auto">', "</ul>"
+  end
+  
   start = <<-HTML
        <!-- FIXME weird bug here!!! -->
    <nav class="navbar #{extra} navbar-light bg-light">
-      <ul class="navbar-nav mr-auto">
+      #{list1}
   HTML
   finish = <<-HTML
-      </ul>
+      #{list2}
     </nav>
   HTML
-
-  name = (orient == :horiz) ? "navbar.html" : "vnavbar.html"
 
   html_file = @blog.root/:views/@blog.view/"themes/standard/banner"/name
   output = File.new(html_file, "w")
@@ -773,11 +784,11 @@ def _make_navbar(orient = :horiz)
     full = :banner/basename+".html"
     href_main = _main(full)
     if basename == "index"  # special case
-      output.puts %[<li class="nav-item active"> <a class="nav-link" href="index.html">#{cdata}<span class="sr-only">(current)</span></a> </li>]
+      output.puts %[#{li1} <a class="nav-link" href="index.html">#{cdata}<span class="sr-only">(current)</span></a> #{li2}]
     else
       dir = @blog.root/:views/@blog.view/"themes/standard/banner"
       xlate cwd: dir, src: basename, dst: vdir/"remote/banner"/basename+".html" # , debug: true
-      output.puts %[<li class="nav-item"> <a class="nav-link" #{href_main}>#{cdata}</a> </li>]
+      output.puts %[#{li1} <a class="nav-link" #{href_main}>#{cdata}</a> #{li2}]
     end
   end
   output.puts finish
