@@ -224,7 +224,6 @@ docs: how to write templates (incl main one)
 .end
 
 .sublist bugs Bugs, etc.
-=permalink "home" is broken!
 =tt tag not working with blog.css?
 =No way to update widget-specific code?
 =Pinned-posts needs redundant 'rebuild'
@@ -460,7 +459,6 @@ complete Completed tasks
 =Formalize example blog
 =fix/delete Runeblog::Default (post\_template)?
 =Variables for config file?
-="universal" variables?
 =break up global.lt3??
 =fix default global.lt3
 =Facebook buttons

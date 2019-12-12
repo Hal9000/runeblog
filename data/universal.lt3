@@ -1,0 +1,19 @@
+. "Universal" settings -- new defaults for global.lt3
+. work in progress - defaults for each global.lt3
+
+. --------------------------------------------------
+. Global settings are stored here in the form       
+.   <variable>  <value>                             
+. --------------------------------------------------
+.nopara
+
+. Identity
+author      Your name here
+site        rubyhacker.com
+
+. Style
+font.family       verdana
+
+. Details
+charset     utf-8
+locale      en_US
