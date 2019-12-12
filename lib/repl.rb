@@ -10,7 +10,6 @@ module RuneBlog::REPL
   def edit_file(file)
     result = system!("#{@blog.editor} #{file}")
     raise EditorProblem(file) unless result
-    sleep 0.1
     cmd_clear(nil)
   end
 
@@ -23,8 +22,8 @@ module RuneBlog::REPL
   end
 
   def cmd_clear(arg, testing = false)
-    STDSCR.cwin.clear
-    STDSCR.cwin.refresh
+#   STDSCR.rows.times { puts " "*(STDSCR.cols-1) }
+    STDSCR.clear
   end
 
   def cmd_version(arg, testing = false)
@@ -38,6 +37,7 @@ module RuneBlog::REPL
     list = ["global.lt3           Global configuration",
             "blog/generate.lt3    Generator for view (usu not edited)",
             ".... head.lt3        HEAD info for view",
+            ".... banner.lt3      banner description",
             ".... index.lt3       User-edited detail for view",
             ".... post_entry.lt3  Generator for post entry in recent-posts",
             "etc/blog.css.lt3     Global CSS",
@@ -47,10 +47,11 @@ module RuneBlog::REPL
             ".... index.lt3       Content for post",
             ".... permalink.lt3   Generator for permalink"]
 
-    name = ["global.lt3", "blog/generate.lt3", "blog/head.lt3", "blog/index.lt3",
-           "blog/post_entry.lt3", "etc/blog.css.lt3", "blog/externals.lt3",
-           "post/generate.lt3", "post/head.lt3", "post/index.lt3",
-           "post/permalink.lt3"]
+    name = ["global.lt3", "blog/generate.lt3", "blog/head.lt3", "blog/banner.lt3", 
+            "blog/index.lt3", "blog/post_entry.lt3", "etc/blog.css.lt3", 
+            "blog/externals.lt3", "post/generate.lt3", "post/head.lt3", 
+            "post/index.lt3", "post/permalink.lt3"]
+
     dir = @blog.view.dir/"themes/standard/"
     num, str = STDSCR.menu(title: "Edit file:", items: list)
     target = name[num]

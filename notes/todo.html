@@ -15,13 +15,14 @@
 <p>
 
 <h2>Runeblog TODO</h2>
-</h3>Generated from <code><font size=+1><b>notes/todo.lt3</b></font></code> - 2019-12-11 22:36:37</h3>
+</h3>Generated from <code><font size=+1><b>notes/todo.lt3</b></font></code> - 2019-12-12 16:31:41</h3>
 <p>
 
 <table border=0 width=96% cellpadding=8 cellspacing=8>
   <tr>
     <td valign=top width=32%>&nbsp;&nbsp;<b>Next steps...
-</b><br><ul><li><font color=red>fix/delete Runeblog::Default (post_template)?</font></li>
+</b><br><ul><li><font color=red>Formalize example blog</font></li>
+<li><font color=red>fix/delete Runeblog::Default (post_template)?</font></li>
 <li><font color=red>Variables for config file?</font></li>
 <li><font color=red>"universal" variables?</font></li>
 <li><font color=red>break up global.lt3??</font></li>
@@ -29,7 +30,6 @@
 <li><font color=red>Facebook buttons</font></li>
 <li><font color=red>Twitter buttons</font></li>
 <li><font color=red>Enable/disable widgets (also FB/Twitter?)</font></li>
-<li><font color=red>add blog/banner.lt3</font></li>
 <li><font color=red>default/example banner (svg only?)</font></li>
 <li><font color=red>"rebuild post" command?</font></li>
 <li><font color=red>Update software safely?</font></li>
@@ -79,7 +79,12 @@
 <li>Replaced config with three files under data/</li>
 <li>BROKEN: Replaced xlate with preprocess</li>
 <li>Backed out preprocess</li>
-<li>Fixed navbar</li></ul></td>
+<li>Fixed navbar</li>
+<li>Added blog/banner.lt3</li>
+<li>Rudimentary "universal.lt3" file</li>
+<li>UI/UX improvements incl menus</li>
+<li>Beginnings of a "wizard"</li>
+<li>New livetext, rubytext</li></ul></td>
     <td valign=top width=32%>&nbsp;&nbsp;<b>Recently completed (Nov 2019)
 </b><br><ul><li>basic 'manage' command</li>
 <li>created .faq command</li>
@@ -132,9 +137,10 @@
 <li>fixed quote issue</li>
 <li>added basic 'config' command</li></ul></td>
     <td valign=top width=32%>&nbsp;&nbsp;<b>Bugs, etc.
-</b><br><ul><li><font color=red>tt tag not working with blog.css?</font></li>
+</b><br><ul><li><font color=red>permalink "home" is broken!</font></li>
+<li><font color=red>tt tag not working with blog.css?</font></li>
 <li><font color=red>No way to update widget-specific code?</font></li>
-<li><font color=red>Pinned posts needs redundant 'rebuild'</font></li>
+<li><font color=red>Pinned-posts needs redundant 'rebuild'</font></li>
 <li><font color=red>weird screen-clear glitches</font></li>
 <li><font color=red>FAQ bootstrap code is weird</font></li>
 <li>widgets don't honor their CSS?</li>

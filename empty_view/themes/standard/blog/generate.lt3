@@ -5,24 +5,15 @@
 . the process of blog setup.                        
 . --------------------------------------------------
 .nopara
-
 .mixin liveblog
 
 <html>
-  <!-- Generated from $File on $$date.  Editing not recommended. -->
-
-.seek global.lt3
-.include blog/head.lt3
+  <!-- Generated from $File on $$date.  
+       Editing not recommended. -->
+  $.seek global.lt3
+  $.include blog/head.lt3
   <body>
-
-    $.banner
-     height  100
-     bgcolor 101035 
-     svg_title bgcolor: #b08080 size: 29px xy: 75,50 align: center size2: 15px xy2: 75,70 align2: center
-     image   austin-pano.jpg 
-     break
-     navbar
-    $.end
+    $.include blog/banner.lt3
     <div class="content container-fluid mt-4">
       <div class="row">
         $.include blog/index.lt3

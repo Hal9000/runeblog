@@ -43,7 +43,7 @@ class ::RuneBlog::Widget
     def write_main
       tag = Type
       card_title = Title
-      css = "* { font-family: verdana }"
+      css = "body { font-family: verdana }"
       mainfile = "#{tag}-main"
       File.open("#{mainfile}.html", "w") do |f|
         _html_body(f, css) do

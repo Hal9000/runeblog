@@ -35,6 +35,11 @@ Replaced config with three files under data/
 BROKEN: Replaced xlate with preprocess
 Backed out preprocess
 Fixed navbar
+Added blog/banner.lt3
+Rudimentary "universal.lt3" file
+UI/UX improvements incl menus
+Beginnings of a "wizard"
+New livetext, rubytext
 .end
 
 .sublist oct2019 Recently completed (Oct 2019)
@@ -219,9 +224,10 @@ docs: how to write templates (incl main one)
 .end
 
 .sublist bugs Bugs, etc.
+=permalink "home" is broken!
 =tt tag not working with blog.css?
 =No way to update widget-specific code?
-=Pinned posts needs redundant 'rebuild'
+=Pinned-posts needs redundant 'rebuild'
 =weird screen-clear glitches
 =FAQ bootstrap code is weird
 widgets don't honor their CSS?
@@ -451,6 +457,7 @@ complete Completed tasks
 .end
 
 .sublist nextish Next steps...
+=Formalize example blog
 =fix/delete Runeblog::Default (post\_template)?
 =Variables for config file?
 ="universal" variables?
@@ -459,7 +466,6 @@ complete Completed tasks
 =Facebook buttons
 =Twitter buttons
 =Enable/disable widgets (also FB/Twitter?)
-=add blog/banner.lt3
 =default/example banner (svg only?)
 ="rebuild post" command?
 =Update software safely?

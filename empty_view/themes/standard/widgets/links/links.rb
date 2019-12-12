@@ -31,7 +31,7 @@ class ::RuneBlog::Widget
 
     def write_main
       @data = @lines.map! {|x| x.chomp.split(/, */, 3) }
-      css = "* { font-family: verdana }"
+      css = "body { font-family: verdana }"
       card_title = Title
       File.open("#{Type}-main.html", "w") do |f|     
         _html_body(f, css) do

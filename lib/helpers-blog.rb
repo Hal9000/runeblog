@@ -33,7 +33,7 @@ module RuneBlog::Helpers
   def copy_data(tag, dest)
     data = RuneBlog::Path + "/../data"  # files kept inside gem
     case tag
-      when :config; files = %w[ROOT VIEW EDITOR]
+      when :config; files = %w[ROOT VIEW EDITOR universal.lt3]
     end
     files.each {|file| copy(data + "/" + file, dest) }
   end

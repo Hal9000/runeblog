@@ -37,7 +37,8 @@ class RuneBlog
     include Helpers
   end
 
-  attr_reader :root, :views, :sequence, :editor
+  attr_reader :views, :sequence
+  attr_accessor :root, :editor
   attr_accessor :view  # overridden
 
   attr_accessor :post_views, :post_tags, :dirty_views

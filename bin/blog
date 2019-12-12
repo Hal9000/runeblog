@@ -9,14 +9,54 @@ require 'repl'
 
 include RuneBlog::REPL
 
+def yesno(question)
+  puts fx("\n  #{question}", :bold)
+  r, c = STDSCR.rc
+  num, str = STDSCR.menu(r: r+1, c: c+6, items: ["yes", "no"])
+  num == 0
+end
+
+def pick_editor
+  choices = %w[vim emacs vi nano]
+  r, c = STDSCR.rc
+  num, name = STDSCR.menu(r: r+1, c: c+6, title: "Default editor", items: choices)
+  file = `which #{name}`.chomp
+end
+
 def get_started
   puts
-  puts fx(<<-TEXT, :bold)
-  Blog repo successfully created.
-  For help, type h or help.
-  Create views with: new view
-  Create a post (within current view): new post
-TEXT
+  puts fx("\n  Blog repo successfully created.", :bold)
+  
+  if yesno("Do you want to qo a quick setup?")
+    puts "\n  First choose your editor."
+    @blog.editor = pick_editor
+    File.write("#{@blog.root}/data/EDITOR", @blog.editor)
+
+    if yesno("Edit settings now?")
+      fname = "#{@blog.root}/data/universal.lt3"
+      edit_file(fname)
+    end
+    # Now create a custom global.lt3
+    sleep 1
+    noview = true
+    puts fx("\n  Quick setup complete!", :bold)
+    if yesno("Create your first view now?")
+      cmd_new_view(nil)
+      noview = false
+      sleep 1
+      puts "\n  View #{@blog.view} created!\n "
+    end
+  end
+
+  sleep 0.5
+
+  puts
+  print fx("  For help", :bold)
+  puts " type h or help."
+  print fx("  Create a view", :bold)
+  puts  " with: new view"
+  print fx("  Create a post", :bold)
+  puts " (within current view): new post"
 end
 
 def mainloop
@@ -101,17 +141,15 @@ home = ENV['HOME']
 RubyText.start(:_echo, :keypad, scroll: true, log: "binblog.txt", fg: @fg, bg: @bg)
 
 if ! RuneBlog.exist?
-  print fx("\n  No blog repo found. Create new one? (y/n): ", :bold)
-  response = gets.chomp
-  if response.downcase == "y"
+  if yesno("No blog repo found. Create new one?")
     RuneBlog.create_new_blog_repo
+    @blog = RuneBlog.new
+    @blog.root = ".blogs"  # So far, always using default... hmm
     get_started
   else
     exit
   end
 end
-
-@blog = RuneBlog.new
 
 puts fx("\n  RuneBlog", :bold), fx(" v #{RuneBlog::VERSION}\n", Red)
 

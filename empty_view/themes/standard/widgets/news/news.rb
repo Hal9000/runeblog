@@ -30,7 +30,7 @@ class ::RuneBlog::Widget
 
     def write_main
       mainfile = "#{Type}-main"
-      css = "* { font-family: verdana }"
+      css = "body { font-family: verdana }"
       File.open("#{mainfile}.html", "w") do |f|
         _html_body(f, css) do
           f.puts "<h1>#{Title}</h1><br><hr>"
