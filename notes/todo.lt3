@@ -41,6 +41,8 @@ UI/UX improvements incl menus
 Beginnings of a "wizard"
 New livetext, rubytext
 Almost fixes generate_global
+Fixes livetext non-system mode
+Fixes pinned-posts redundant rebuild
 .end
 
 .sublist oct2019 Recently completed (Oct 2019)
@@ -460,7 +462,6 @@ complete Completed tasks
 =Formalize example blog
 =RubyText settings in file
 =Make an intro video
-=Pinned-posts needs redundant 'rebuild'
 =fix/delete Runeblog::Default (post\_template)?
 =Variables for config file?
 =Facebook buttons
@@ -475,7 +476,6 @@ complete Completed tasks
 .end
 
 .sublist nextlive Next steps (Livetext, etc.)
-=Livetext: non-system mode?
 =Livetext: permit # comments on end of line?
 =Livetext: add _get_arg, _get_colon_parse, etc.
 =Livetext: mixin? include? copy? seek?

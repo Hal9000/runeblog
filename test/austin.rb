@@ -73,9 +73,6 @@ File.open(".blogs/views/around_austin/themes/standard/global.lt3", "a") do |f|
 end
 ####
 
-debug("** generate_view: #{bold('around_austin')}")
-x.generate_view("around_austin")
-
 debug("-- change_view: #{bold('around_austin')}")
 x.change_view("around_austin")    # 1 2 7 8 9 
 
@@ -150,8 +147,9 @@ debug
 debug "** generate_index #{bold("around_austin")}"
 x.generate_index("around_austin") 
 
-debug
-x.change_view("around_austin")
+debug("** generate_view: #{bold('around_austin')}")
+x.generate_view("around_austin")
+
 debug bold("...finished.\n")
 
 t1 = Time.now

@@ -5,7 +5,7 @@ require 'find'
 
 require 'runeblog'
 require 'pathmagic'
-require 'xlate'
+require 'processing'
 
 
 def init_liveblog    # FIXME - a lot of this logic sucks
@@ -424,19 +424,12 @@ def pin
   pinned.each do |pinview|
     dir = @blog.root/:views/pinview/"themes/standard/widgets/pinned/"
     datafile = dir/"list.data"
-    if File.exist?(datafile)
-      pins = File.readlines(datafile)
-    else
-      pins = []
-    end
+    pins = File.exist?(datafile) ? File.readlines(datafile) : []
     pins << "#{@meta.num} #{@meta.title}\n"
     pins.uniq!
-    File.open(datafile, "w") do |outfile|
-      pins.each {|pin| outfile.puts pin }
-    end
+    File.open(datafile, "w") {|out| pins.each {|pin| out.puts pin } }
   end
   _optional_blank_line
-  pinned_rebuild    # FIXME experimental
 rescue => err
   STDERR.puts "err = #{err}"
   STDERR.puts err.backtrace.join("\n")
@@ -585,21 +578,21 @@ rescue => err
   exit
 end
 
-def pinned_rebuild
-  view = @blog.view
-  view = _args[0] unless _args.empty?
-  Dir.chdir(@blog.root/:views/view/"themes/standard/") do
-    wtag = "widgets/pinned"
-    code = _load_local("pinned")
-    if code 
-      Dir.chdir(wtag) do 
-        widget = code.new(@blog)
-        widget.build
-      end
-      # _include_file wtag/"pinned-card.html"
-    end
-  end
-end
+# def pinned_rebuild
+#   view = @blog.view
+#   view = _args[0] unless _args.empty?
+#   Dir.chdir(@blog.root/:views/view/"themes/standard/") do
+#     wtag = "widgets/pinned"
+#     code = _load_local("pinned")
+#     if code 
+#       Dir.chdir(wtag) do 
+#         widget = code.new(@blog)
+#         widget.build
+#       end
+#       # _include_file wtag/"pinned-card.html"
+#     end
+#   end
+# end
 
 def _handle_standard_widget(tag)
   wtag = :widgets/tag
@@ -640,14 +633,10 @@ def sidebar
         File.open(wtag/"vars.lt3", "w") do |f| 
           f.puts ".set ad.image = #{img}"
         end
-        xlate cwd: wtag, src: tag, dst: tcard, force: true # , deps: depend # , debug: true
+        preprocess cwd: wtag, src: tag, dst: tcard, force: true # , debug: true # , deps: depend 
     end
 
     _include_file wtag/tcard
-#   depend = %w[card.css main.css custom.rb local.rb] 
-#   depend += ["#{wtag}.lt3", "#{wtag}.rb"]
-#   depend.map! {|x| @blog.view.dir/"themes/standard/widgets"/wtag/x }
-# _debug "--- call xlate #{tag} src = #{tag}  dst = #{tcard}\r"
   end
   _out %[</div>]
 rescue => err
@@ -787,7 +776,7 @@ def _make_navbar(orient = :horiz)
       output.puts %[#{li1} <a class="nav-link" href="index.html">#{cdata}<span class="sr-only">(current)</span></a> #{li2}]
     else
       dir = @blog.root/:views/@blog.view/"themes/standard/banner"
-      xlate cwd: dir, src: basename, dst: vdir/"remote/banner"/basename+".html" # , debug: true
+      preprocess cwd: dir, src: basename, dst: vdir/"remote/banner"/basename+".html" # , debug: true
       output.puts %[#{li1} <a class="nav-link" #{href_main}>#{cdata}</a> #{li2}]
     end
   end

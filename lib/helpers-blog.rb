@@ -1,7 +1,7 @@
 require 'runeblog_version'
 require 'fileutils'
 
-require 'xlate'
+require 'processing'
 
 module RuneBlog::Helpers
 

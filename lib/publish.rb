@@ -1,8 +1,13 @@
+if ! defined?(Already_publish)
+
+  Already_publish = nil
+
 require 'global'
 require 'pathmagic'
 
 class RuneBlog::Publishing
   attr_reader :user, :server, :docroot, :path
+
 
   BadRemoteLogin = Exception.new("Can't login remotely")
   BadRemotePerms = Exception.new("Bad remote permissions")
@@ -80,3 +85,4 @@ class RuneBlog::Publishing
   end
 end
 
+end
