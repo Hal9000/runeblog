@@ -101,6 +101,18 @@ class RuneBlog
     @post_tags = []
   end
 
+  def _generate_global
+    vars = read_vars("#@root/data/universal.lt3")
+    global = File.read("#@root/data/global.lt3")
+    global.gsub!(/AUTHOR/,  vars["author"])
+    global.gsub!(/SITE/,    vars["site"])
+    global.gsub!(/FONT/,    vars["font.family"])
+    global.gsub!(/CHARSET/, vars["charset"])
+    global.gsub!(/LOCALE/,  vars["locale"])
+    File.write("#@root/data/global.lt3", global)
+STDERR.puts "Remember: fix global.lt3"
+  end
+
   def _deploy_local(dir)
     log!(enter: __method__, args: [dir], level: 1)
     Dir.chdir(dir) do

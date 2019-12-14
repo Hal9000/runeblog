@@ -7,6 +7,7 @@
 . --------------------------------------------------
 .nopara
 
+.variables
 . Identity
 author      Your name here
 site        rubyhacker.com
@@ -17,3 +18,5 @@ font.family       verdana
 . Details
 charset     utf-8
 locale      en_US
+
+.end

@@ -1,0 +1,35 @@
+. --------------------------------------------------
+. Global settings are stored here in the form       
+.   <variable>  <value>                             
+. --------------------------------------------------
+
+.variables
+author      AUTHOR
+blog        VIEW_TITLE
+blog.desc   VIEW_SUBTITLE
+site        SITE
+
+host        http://SITE
+charset     CHARSET
+url         http://SITE
+locale      LOCALE
+
+font.family       FONT
+
+post.title.color  #010101
+post.title.size   28px
+
+post.text.color   #0101a1
+post.text.size    22px
+
+post.date.color   #9a9a9a
+post.date.size    15px
+
+
+publish.user      root
+publish.server    SITE
+publish.docroot   /var/www/
+publish.path      VIEW_NAME
+publish.proto     http
+.end
+

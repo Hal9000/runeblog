@@ -40,6 +40,7 @@ Rudimentary "universal.lt3" file
 UI/UX improvements incl menus
 Beginnings of a "wizard"
 New livetext, rubytext
+Almost fixes generate_global
 .end
 
 .sublist oct2019 Recently completed (Oct 2019)
@@ -226,7 +227,6 @@ docs: how to write templates (incl main one)
 .sublist bugs Bugs, etc.
 =tt tag not working with blog.css?
 =No way to update widget-specific code?
-=Pinned-posts needs redundant 'rebuild'
 =weird screen-clear glitches
 =FAQ bootstrap code is weird
 widgets don't honor their CSS?
@@ -456,11 +456,13 @@ complete Completed tasks
 .end
 
 .sublist nextish Next steps...
+=break up global.lt3??
 =Formalize example blog
+=RubyText settings in file
+=Make an intro video
+=Pinned-posts needs redundant 'rebuild'
 =fix/delete Runeblog::Default (post\_template)?
 =Variables for config file?
-=break up global.lt3??
-=fix default global.lt3
 =Facebook buttons
 =Twitter buttons
 =Enable/disable widgets (also FB/Twitter?)
@@ -477,12 +479,11 @@ complete Completed tasks
 =Livetext: permit # comments on end of line?
 =Livetext: add _get_arg, _get_colon_parse, etc.
 =Livetext: mixin? include? copy? seek?
-=Livetext: add _get_arg, _get_colon_parse, etc.
-=Livetext: mixin? include? copy? seek?
 =Livetext: other command line options? nopara? debug? ...
-=Livetext: Var as replacement for \_var
-=Livetext: line0 (reset line counter after stashing stuff on top)
-=Livetext: open/close
+=RubyText: let menu accept hash
+Livetext: Var as replacement for \_var  (see varmint)
+Livetext: line0 (reset line counter after stashing stuff on top)
+Livetext: open/close
 .end
 
 

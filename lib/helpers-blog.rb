@@ -33,17 +33,37 @@ module RuneBlog::Helpers
   def copy_data(tag, dest)
     data = RuneBlog::Path + "/../data"  # files kept inside gem
     case tag
-      when :config; files = %w[ROOT VIEW EDITOR universal.lt3]
+      when :config; files = %w[ROOT VIEW EDITOR universal.lt3 global.lt3]
     end
     files.each {|file| copy(data + "/" + file, dest) }
+  end
+
+  def read_vars(file)
+    log!(enter: __method__, args: [file], level: 3)
+    lines = File.readlines(file).map(&:chomp)
+    hash = {}
+    skip = ["\n", "#", "."]
+    lines.each do |line|
+      line = line.strip
+      next if skip.include?(line[0])
+      key, val = line.split(" ", 2)
+      hash[key] = val
+    end
+    hash
+  rescue => err
+    puts "Can't read vars file '#{file}': #{err}"
+    puts err.backtrace.join("\n")
+    puts "dir = #{Dir.pwd}"
+    exit
   end
 
   def read_config(file, *syms)
     log!(enter: __method__, args: [file, *syms], level: 3)
     lines = File.readlines(file).map(&:chomp)
     obj = ::OpenStruct.new
+    skip = ["\n", "#", "."]
     lines.each do |line|
-      next if line == "\n" || line[0] == "#"
+      next if skip.include?(line[0])
       key, val = line.split(/: +/, 2)
       obj.send(key+"=", val)
     end

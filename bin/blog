@@ -37,6 +37,7 @@ def get_started
       edit_file(fname)
     end
     # Now create a custom global.lt3
+    @blog._generate_global
     sleep 1
     noview = true
     puts fx("\n  Quick setup complete!", :bold)
@@ -46,6 +47,7 @@ def get_started
       sleep 1
       puts "\n  View #{@blog.view} created!\n "
     end
+    system("cp #@root/data/global.lt3 #@root/views/#{@blog.view}/themes/standard/")
   end
 
   sleep 0.5
@@ -140,7 +142,9 @@ home = ENV['HOME']
 
 RubyText.start(:_echo, :keypad, scroll: true, log: "binblog.txt", fg: @fg, bg: @bg)
 
-if ! RuneBlog.exist?
+if RuneBlog.exist?
+  @blog = RuneBlog.new
+else
   if yesno("No blog repo found. Create new one?")
     RuneBlog.create_new_blog_repo
     @blog = RuneBlog.new
