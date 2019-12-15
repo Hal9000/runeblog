@@ -6,10 +6,11 @@
 
 .seek themes/standard/global.lt3
 
-* { font-family: $font.family }
+body { font-family: $font.family }
 
 \.post-title a {
   color: $post.title.color;
+  font-family: $font.family;
   font-size: $post.title.size;
   float: right;
   display: inline-block;
@@ -23,6 +24,7 @@
 
 \.post-title-text a {
   color: $post.text.color;
+  font-family: $font.family;
   font-size: $post.text.size; 
   display: block;
   text-decoration: none;
@@ -34,6 +36,7 @@
 
 \.post-date {
   color: $post.date.color;
+  font-family: $font.family;
   font-size: $post.date.size;
   display: block;
   float: left;

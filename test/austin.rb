@@ -64,8 +64,10 @@ x.create_view("around_austin")   # FIXME remember view title!
 vars = <<-VARS
 
 .variables
-blog       Around Austin
-blog.desc  The view from downtown...
+blog        Around Austin
+blog.desc   The view from downtown...
+
+font.family verdana
 .end
 VARS
 File.open(".blogs/views/around_austin/themes/standard/global.lt3", "a") do |f|

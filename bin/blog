@@ -9,32 +9,31 @@ require 'repl'
 
 include RuneBlog::REPL
 
-def yesno(question)
+def yesno(question, noskip=false)
   puts fx("\n  #{question}", :bold)
+  puts unless noskip
   r, c = STDSCR.rc
-  num, str = STDSCR.menu(r: r+1, c: c+6, items: ["yes", "no"])
+  num, str = STDSCR.menu(r: r, c: c+6, items: ["yes", "no"])
   num == 0
 end
 
 def pick_editor
   choices = %w[vim emacs vi nano]
   r, c = STDSCR.rc
-  num, name = STDSCR.menu(r: r+1, c: c+6, title: "Default editor", items: choices)
+  num, name = STDSCR.menu(r: r, c: c+6, title: "Default editor", items: choices)
   file = `which #{name}`.chomp
 end
 
 def get_started
-  puts
-  puts fx("\n  Blog repo successfully created.", :bold)
-  
   if yesno("Do you want to qo a quick setup?")
-    puts "\n  First choose your editor."
+    puts "\n      First choose your editor."
     @blog.editor = pick_editor
     File.write("#{@blog.root}/data/EDITOR", @blog.editor)
 
     if yesno("Edit settings now?")
       fname = "#{@blog.root}/data/universal.lt3"
-      edit_file(fname)
+      vim_params = '-c ":set hlsearch" -c ":hi Search ctermfg=2 ctermbg=6" +/"\(AUTHOR.*\|SITE.*\)"'
+      edit_file(fname, vim: vim_params)
     end
     # Now create a custom global.lt3
     @blog._generate_global
@@ -142,18 +141,20 @@ home = ENV['HOME']
 
 RubyText.start(:_echo, :keypad, scroll: true, log: "binblog.txt", fg: @fg, bg: @bg)
 
-if RuneBlog.exist?
-  @blog = RuneBlog.new
-else
-  if yesno("No blog repo found. Create new one?")
-    RuneBlog.create_new_blog_repo
-    @blog = RuneBlog.new
-    @blog.root = ".blogs"  # So far, always using default... hmm
-    get_started
-  else
-    exit
-  end
+
+new_repo = false
+if ! RuneBlog.exist?
+  exit unless yesno("No blog repo found. Create new one?")
+  RuneBlog.create_new_blog_repo
+  puts fx("  Blog repo successfully created.", :bold)
+  new_repo = true
 end
+
+@blog = RuneBlog.new
+get_started if new_repo
+
+print fx("  For help", :bold)
+puts " type h or help.\n "
 
 puts fx("\n  RuneBlog", :bold), fx(" v #{RuneBlog::VERSION}\n", Red)
 

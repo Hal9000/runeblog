@@ -9,14 +9,13 @@
 
 .variables
 . Identity
-author      Your name here
-site        rubyhacker.com
+author        AUTHOR
+site          SITE_DOMAIN
 
 . Style
-font.family       verdana
+font.family   verdana
 
 . Details
-charset     utf-8
-locale      en_US
-
+charset       utf-8
+locale        en_US
 .end

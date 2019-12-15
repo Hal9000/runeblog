@@ -114,7 +114,6 @@ class RuneBlog
     global.gsub!(/CHARSET/, vars["charset"])
     global.gsub!(/LOCALE/,  vars["locale"])
     File.write("#@root/data/global.lt3", global)
-STDERR.puts "Remember: fix global.lt3"
   end
 
   def _deploy_local(dir)
@@ -290,6 +289,7 @@ STDERR.puts "Remember: fix global.lt3"
     make_empty_view_tree(view_name)
     add_view(view_name)
     mark_last_published("Initial creation")
+    system("cp #@root/data/global.lt3 #@root/views/#{view_name}/themes/standard/global.lt3")
   rescue => err
     _tmp_error(err)
   end

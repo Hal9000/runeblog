@@ -10,11 +10,11 @@ blog.desc   VIEW_SUBTITLE
 site        SITE
 
 host        http://SITE
-charset     CHARSET
+charset     utf-8
 url         http://SITE
-locale      LOCALE
+locale      en_US
 
-font.family       FONT
+font.family       verdana
 
 post.title.color  #010101
 post.title.size   28px

@@ -7,16 +7,21 @@ make_exception(:PublishError,  "Error during publishing")
 make_exception(:EditorProblem, "Could not edit $1")
 
 module RuneBlog::REPL
-  def edit_file(file)
-    result = system!("#{@blog.editor} #{file}")
+  def edit_file(file, vim: "")
+    STDSCR.saveback
+    ed = @blog.editor
+    params = vim if ed =~ /vim$/
+    result = system!("#{@blog.editor} #{file} #{params}")
     raise EditorProblem(file) unless result
-    cmd_clear(nil)
+    STDSCR.restback
+#   cmd_clear(nil)
   end
 
   def cmd_quit(arg, testing = false)
+    cmd_clear(nil)
     RubyText.stop
     sleep 0.1
-    cmd_clear(nil)
+    
     sleep 0.1
     exit
   end
@@ -271,7 +276,8 @@ module RuneBlog::REPL
       puts
     end
     @blog.create_view(arg)
-    edit_file(@blog.view.dir/"themes/standard/global.lt3")
+    vim_params = '-c ":set hlsearch" -c ":hi Search ctermfg=2 ctermbg=6" +/"\(VIEW_.*\|SITE.*\)"'
+    edit_file(@blog.view.dir/"themes/standard/global.lt3", vim: vim_params)
     @blog.change_view(arg)
     @out
   rescue ViewAlreadyExists
@@ -346,6 +352,7 @@ module RuneBlog::REPL
 
     file = files.first
     draft = @blog.root/:drafts/file
+    vim_params = '-c G'
     result = edit_file(draft)
     @blog.generate_post(draft)
   rescue => err

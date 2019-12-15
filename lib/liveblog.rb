@@ -753,14 +753,16 @@ def _make_navbar(orient = :horiz)
     list1, list2 = '<l class="navbar-nav mr-auto">', "</ul>"
   end
   
+#      <!-- FIXME weird bug here!!! -->
   start = <<-HTML
-       <!-- FIXME weird bug here!!! -->
+   <table><tr><td>
    <nav class="navbar #{extra} navbar-light bg-light">
       #{list1}
   HTML
   finish = <<-HTML
       #{list2}
     </nav>
+    </td></tr></table>
   HTML
 
   html_file = @blog.root/:views/@blog.view/"themes/standard/banner"/name

@@ -7,13 +7,13 @@
 <div class="post">
   <table width=100% cellpadding=7>
     <tr>
-      <td width=14% valign=top align=right style="margin-top: -1px;">
+      <td width=16% valign=top align=right style="margin-top: -1px;">
         <font size=-1>#{date}</font>
       </td>
       <td> 
         <span class="post-title-text"><a href="#{url}" style="margin-top: -5px">#{title}</a></span>
         <b>#{teaser_text}</b>&nbsp;&nbsp;
-        <a style="text-decoration: none" href="#{url}"><small>Keep reading...</small></a> 
+        <a style="text-decoration: none" href="#{url}"><small>Keep&nbsp;reading</small></a> 
       </td>
     </tr>
   </table>

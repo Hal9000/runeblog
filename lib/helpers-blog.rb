@@ -104,7 +104,7 @@ module RuneBlog::Helpers
     dirs.map {|name| RuneBlog::View.new(name) }
   end
 
-  def write_repo_config(root: "#{Dir.pwd}/.blogs", view: "#{root}/data/VIEW", editor: "#{root}/data/EDITOR")
+  def write_repo_config(root: "#{Dir.pwd}/.blogs", view: "#{root}/data/VIEW", editor: "/usr/local/bin/vim")
     File.write(root + "/data/ROOT",   root + "\n")
     File.write(root + "/data/VIEW",   view.to_s + "\n")
     File.write(root + "/data/EDITOR", editor + "\n")
