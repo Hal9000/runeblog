@@ -91,7 +91,7 @@ end
 def banner
   count = 0
   span = 1
-  @bg = "white"  # outside loop
+  bg = "white"  # outside loop
   wide = nil
   high = 250
   str2 = ""
@@ -103,12 +103,9 @@ def banner
     tag, *data = line.split
     data ||= []
     case tag
-      when "width"
-        wide = data[0]
-      when "height"
-        high = data[0]
-      when "bgcolor"
-        @bg = data[0] || "white"
+      when "width";   wide = data[0]
+      when "height";  high = data[0]
+      when "bgcolor"; bg = data[0] || "white"
       when "image"
         image = data[0] || "banner.jpg"
         image = "banner"/image
@@ -122,31 +119,39 @@ def banner
       when "text"
         data[0] ||= "top.html"
         file = "banner"/data[0]
+        if ! File.exist?(file) 
+          src = file.sub(/html$/, "lt3")
+          if File.exist?(src)
+            preprocess src: src, dst: file, vars: Livetext::Vars
+          else
+            raise "Neither #{file} nor #{src} found"
+          end
+        end
         str2 << "<td colspan=#{span}>" + File.read(file) + "</td>" + "\n"
       when "navbar"
         dir = @blog.root/:views/@blog.view/"themes/standard/banner/" + "\n"
         _make_navbar  # horiz is default
         file = "banner/navbar.html"
         navbar = File.read(file)
-        # str2 << "<td colspan=#{span}><div style='text-align: center'>#{stuff}</div></td>" + "\n"
       when "vnavbar"
         dir = @blog.root/:views/@blog.view/"themes/standard/banner/"
         _make_navbar(:vert)
         file = "banner/vnavbar.html"
         navbar = File.read(file)
-        # str2 << "<td colspan=#{span}>" + File.read(file) + "</td>" + "\n"
       when "break"
-         span = count - 1
+#        span = count - 1
          str2 << "  </tr>\n  <tr>"  + "\n"
     else
       str2 << "        '#{tag}' isn't known" + "\n"
     end
   end
-  _out "<table width=100% height=#{high} bgcolor=##{@bg}>"
-  _out "  <tr>"
-  _out str2
-  _out "  </tr>"
-  _out "</table>"
+  _out <<~HTML
+    <table width=100% bgcolor=#{bg}>
+      <tr>
+        #{str2}
+      </tr>
+    </table>
+  HTML
   _out navbar if navbar
 rescue => err
   STDERR.puts "err = #{err}"
@@ -177,9 +182,9 @@ def _get_arg(name, args)  # really belongs in livetext
 end
 
 def _svg_title(*args)
-  width    = 330
-  height   = 100
-  bgcolor  = "blue"
+  width    = "95%"
+  height   = 90
+  bgcolor  = "black"
   style    = nil
   size     = ""
   font     = "sans-serif"
@@ -194,101 +199,41 @@ def _svg_title(*args)
   align2   = "center"
 
   e = args.each
-  hash = {}
+  hash = {}  # TODO get rid of hash??
+
+  valid = %w[width height bgcolor style size font color xy 
+             align style2 size2 font2 color2 xy2 align2]
+  os = OpenStruct.new
   loop do
     arg = e.next
     arg = arg.chop
-    case arg   # can give runtime error if arg missing
-      when "width";    width    = e.next
-      when "height";   height   = e.next
-      when "bgcolor";  bgcolor  = e.next
-      when "style";    style    = e.next
-      when "size";     size     = e.next
-      when "font";     font     = e.next
-      when "color";    color    = e.next
-      when "xy";       xy       = e.next
-      when "align";    align    = e.next
-      when "style2";   style2   = e.next
-      when "size2";    size2    = e.next
-      when "font2";    font2    = e.next
-      when "color2";   color2   = e.next
-      when "xy2";      xy2      = e.next
-      when "align2";   align2   = e.next
-    end
+    raise "Don't know '#{arg}'" unless valid.include?(arg)
+    os.send(arg+"=", e.next)
   end
   x, y = xy.split(",")
   x2, y2 = xy2.split(",")
-  hash["x"]       = x
-  hash["y"]       = y
-  hash["x2"]      = x2
-  hash["y2"]      = y2
-  hash["width"]   = width
-  hash["height"]  = height
-  hash["bgcolor"] = bgcolor
-  hash["style"]   = style
-  hash["size"]    = size
-  hash["font"]    = font
-  hash["color"]   = color
-  hash["xy"]      = xy
-  hash["align"]   = align
-  hash["style2"]  = style2
-  hash["size2"]   = size2
-  hash["font2"]   = font2
-  hash["color2"]  = color2
-  hash["align2"]  = align2
+  names = %w[x y x2 y2] + valid
+  names.each {|name| hash[name] = os.send(name) }
   result = <<~HTML
     <svg width="#{width}" height="#{height}"
          viewBox="0 0 #{width} #{height}">
+      <defs>
+        <linearGradient id="grad1" x1="100%" y1="100%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:rgb(198,198,228);stop-opacity:1" />
+          <stop offset="100%" style="stop-color:rgb(30,30,50);stop-opacity:1" />
+        </linearGradient>
+      </defs>
       <style>
         .title    { font: #{style} #{size} #{font}; fill: #{color} }
         .subtitle { font: #{style2} #{size2} #{font2}; fill: #{color2} }
       </style>
-      <rect x="10" y="10" rx="10" ry="10" width="#{width-20}" height="#{height-20}" fill="#{bgcolor}"/>
+      <rect x="10" y="10" rx="10" ry="10" width="#{width}" height="#{height}" fill="url(#grad1)"/>
       <text text-anchor="#{align}"  x="#{x}" y="#{y}" class="title">#{Livetext::Vars[:blog]} </text>
       <text text-anchor="#{align2}" x="#{x2}" y="#{y2}" class="subtitle">#{Livetext::Vars["blog.desc"]} </text>
-    </svg>
+    </svg> 
+    <!-- ^ how does syntax highlighting get messed up? </svg> -->
   HTML
   [result, hash]
-end
-
-def svg_title_SOON
-  tstyle = tsize = tfont = tcolor = txy = talign = nil
-  t2style = t2size = t2font = t2color = t2xy = t2align = nil
-  wide, high, hue = 450, 150, "white"
-  _body do |line|
-    count += 1
-    tag, *data = line.split
-    data ||= []
-    title_params = {style: nil, size: "", font: "sans-serif", color: "white",
-                    xy: "5,5", align: "left"}
-    case tag
-      when "title";   
-        hash = _parse_colon_args(data, title_params)
-        tstyle, tsize, tfont, tcolor, txy, talign = 
-          hash.values_at(:tstyle, :tsize, :tfont, :tcolor, :txy, :talign)
-        tx, ty = txy.split(",")
-      when "title2";  
-        hash = _parse_colon_args(data, title_params)
-        t2style, t2size, t2font, t2color, t2xy, t2align =
-          hash.values_at(:t2style, :t2size, :t2font, :t2color, :t2xy, :t2align)
-        t2x, t2y = t2xy.split(",")
-      when "width";   wide = _get_arg(:width, data)
-      when "height";  high = _get_arg(:height, data)
-      when "bgcolor"; hue  = _get_arg(:bgcolor, data)
-    end
-  end
-  <<~HTML
-    <svg width="#{wide}" height="#{high}"
-         viewBox="0 0 #{wide} #{high}">
-      <style>
-        .title    { font: #{tstyle} #{tsize} #{tfont}; fill: #{tcolor} }
-        .subtitle { font: #{t2style} #{t2size} #{t2font}; fill: #{t2color} }
-      </style>
-      <rect x="0" y="0" rx="10" ry="10" width="#{wide}" height="#{height}" fill="#{bgcolor}"/>
-      <text text-anchor="#{talign}"  x="#{tx}" y="#{tx}" class="title">$blog </text>
-      <text text-anchor="#{t2align}" x="#{t2x}" y="#{t2y}" class="subtitle">$blog.desc </text>
-    </svg>
-  HTML
 end
 
 def quote
@@ -753,7 +698,6 @@ def _make_navbar(orient = :horiz)
     list1, list2 = '<l class="navbar-nav mr-auto">', "</ul>"
   end
   
-#      <!-- FIXME weird bug here!!! -->
   start = <<-HTML
    <table><tr><td>
    <nav class="navbar #{extra} navbar-light bg-light">

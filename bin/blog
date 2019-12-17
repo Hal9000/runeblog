@@ -26,7 +26,7 @@ end
 
 def get_started
   if yesno("Do you want to qo a quick setup?")
-    puts "\n      First choose your editor."
+    puts "      First choose your editor."
     @blog.editor = pick_editor
     File.write("#{@blog.root}/data/EDITOR", @blog.editor)
 
@@ -37,19 +37,15 @@ def get_started
     end
     # Now create a custom global.lt3
     @blog._generate_global
-    sleep 1
     noview = true
     puts fx("\n  Quick setup complete!", :bold)
     if yesno("Create your first view now?")
       cmd_new_view(nil)
       noview = false
-      sleep 1
       puts "\n  View #{@blog.view} created!\n "
     end
-    system("cp #@root/data/global.lt3 #@root/views/#{@blog.view}/themes/standard/")
   end
 
-  sleep 0.5
 
   puts
   print fx("  For help", :bold)

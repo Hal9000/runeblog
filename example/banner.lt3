@@ -1,0 +1,8 @@
+.banner
+  height  100
+  bgcolor 101035 
+  svg_title bgcolor: #b08080 size: 29px xy: 75,50 align: center size2: 15px xy2: 75,70 align2: center
+  image   austin-pano.jpg 
+  break
+  navbar
+.end

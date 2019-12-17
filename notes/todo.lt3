@@ -44,6 +44,8 @@ Almost fixes generate_global
 Fixes livetext non-system mode
 Fixes pinned-posts redundant rebuild
 Improves ux/ui and get_started
+Adds "no post"
+Improves auto-generated banner
 .end
 
 .sublist oct2019 Recently completed (Oct 2019)

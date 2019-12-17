@@ -1,6 +1,4 @@
 .banner
-  height  100
-  bgcolor 101035
   text    top.html
   break
   navbar

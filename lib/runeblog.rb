@@ -376,15 +376,28 @@ class RuneBlog
       <body>
     HTML
     posts = _sorted_posts
-    wanted = [8, posts.size].min  # estimate how many we want?
-    enum = posts.each
-    entries = []
-    wanted.times do
-      postid = File.basename(enum.next)
-      postid = postid.to_i
-      entry = index_entry(postid)
-      entries << entry
-      text << entry
+    if posts.size > 0
+      wanted = [8, posts.size].min  # estimate how many we want?
+      enum = posts.each
+      entries = []
+      wanted.times do
+        postid = File.basename(enum.next)
+        postid = postid.to_i
+        entry = index_entry(postid)
+        entries << entry
+        text << entry
+      end
+    else
+      text << <<-HTML
+        <svg width="95%" height="95%" viewBox="0 0 95% 95%">
+          <style> .huge { font:  italic 100px sans-serif; fill: white } </style>
+          <rect x="0" y="0" rx="50" ry="50" width="95%" height="95%" fill="lightblue"/>
+          <text x="250" y="120" class=huge>No</text>
+          <text x="250" y="230" class=huge>posts</text>
+          <text x="250" y="340" class=huge>here</text>
+          <text x="250" y="450" class=huge>yet</text>
+        </svg>
+      HTML
     end
     text << "</body></html>"
     File.write(@vdir/:remote/file, text)
