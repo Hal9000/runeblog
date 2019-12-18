@@ -159,28 +159,6 @@ rescue => err
   gets
 end
 
-def _parse_colon_args(args, hash)  # really belongs in livetext
-  h2 = hash.dup
-  e = args.each
-  loop do
-    arg = e.next.chop.to_sym
-    raise "_parse_args: #{arg} is unknown" unless hash.keys.include?(arg)
-    h2[arg] = e.next
-  end
-  h2 = h2.reject {|k,v| v.nil? }
-  h2.each_pair {|k, v| raise "#{k} has no value" if v.empty? }
-  h2
-end
-
-def _get_arg(name, args)  # really belongs in livetext
-  raise "(#{name}) Expected an array" unless args.is_a? Array
-  raise "(#{name}) Expected an arg" if args.empty?
-  raise "(#{name}) Too many args: #{args.inspect}" if args.size > 1
-  val = args[0]
-  raise "Expected an argument '#{name}'" if val.nil?
-  val
-end
-
 def _svg_title(*args)
   width    = "95%"
   height   = 90

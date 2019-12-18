@@ -47,6 +47,9 @@ Improves ux/ui and get_started
 Adds "no post"
 Improves auto-generated banner
 Still faster initial setup
+Livetext: permit # comments on end of line
+Livetext: add _get_arg, _get_colon_parse, etc.
+RubyText: let menu accept hash
 .end
 
 .sublist oct2019 Recently completed (Oct 2019)
@@ -480,11 +483,8 @@ complete Completed tasks
 .end
 
 .sublist nextlive Next steps (Livetext, etc.)
-=Livetext: permit # comments on end of line?
-=Livetext: add _get_arg, _get_colon_parse, etc.
 =Livetext: mixin? include? copy? seek?
 =Livetext: other command line options? nopara? debug? ...
-=RubyText: let menu accept hash
 =RubyText: let yesno accept characters
 Livetext: Var as replacement for \_var  (see varmint)
 Livetext: line0 (reset line counter after stashing stuff on top)

@@ -39,27 +39,22 @@ module RuneBlog::REPL
   end
 
   def cmd_config(arg, testing = false)
-    list = ["global.lt3           Global configuration",
-            "blog/generate.lt3    Generator for view (usu not edited)",
-            ".... head.lt3        HEAD info for view",
-            ".... banner.lt3      banner description",
-            ".... index.lt3       User-edited detail for view",
-            ".... post_entry.lt3  Generator for post entry in recent-posts",
-            "etc/blog.css.lt3     Global CSS",
-            "... externals.lt3    External JS/CSS (Bootstrap, etc.)",
-            "post/generate.lt3    Generator for a post",
-            ".... head.lt3        HEAD info for post",
-            ".... index.lt3       Content for post",
-            ".... permalink.lt3   Generator for permalink"]
-
-    name = ["global.lt3", "blog/generate.lt3", "blog/head.lt3", "blog/banner.lt3", 
-            "blog/index.lt3", "blog/post_entry.lt3", "etc/blog.css.lt3", 
-            "blog/externals.lt3", "post/generate.lt3", "post/head.lt3", 
-            "post/index.lt3", "post/permalink.lt3"]
+    hash = {"global.lt3           Global configuration"                     => "global.lt3",
+            "blog/generate.lt3    Generator for view (usu not edited)"      => "blog/generate.lt3",
+            ".... head.lt3        HEAD info for view"                       => "blog/head.lt3",
+            ".... banner.lt3      banner description"                       => "blog/banner.lt3",
+            ".... index.lt3       User-edited detail for view"              => "blog/index.lt3",
+            ".... post_entry.lt3  Generator for post entry in recent-posts" => "blog/post_entry.lt3",
+            "etc/blog.css.lt3     Global CSS"                               => "etc/blog.css.lt3",
+            "... externals.lt3    External JS/CSS (Bootstrap, etc.)"        => "/etc/externals.lt3",
+            "post/generate.lt3    Generator for a post"                     => "post/generate.lt3",
+            ".... head.lt3        HEAD info for post"                       => "post/head.lt3",
+            ".... index.lt3       Content for post"                         => "post/index.lt3",
+            ".... permalink.lt3   Generator for permalink"                  => "post/permalink.lt3",
+           }
 
     dir = @blog.view.dir/"themes/standard/"
-    num, str = STDSCR.menu(title: "Edit file:", items: list)
-    target = name[num]
+    num, target = STDSCR.menu(title: "Edit file:", items: hash)
     edit_file(dir/target)
   end
 
@@ -253,6 +248,7 @@ module RuneBlog::REPL
       viewnames = @blog.views.map {|x| x.name }
       n = viewnames.find_index(@blog.view.name)
       name = @blog.view.name
+      # TODO: Add view description 
       k, name = STDSCR.menu(title: "Views", items: viewnames, curr: n) unless testing
       return if name.nil?
       @blog.view = name

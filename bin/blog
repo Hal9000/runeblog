@@ -12,9 +12,7 @@ include RuneBlog::REPL
 def yesno(question, noskip=false)
   puts fx("\n  #{question}", :bold)
   puts unless noskip
-  r, c = STDSCR.rc
-  num, str = STDSCR.menu(r: r, c: c+6, items: ["yes", "no"])
-  num == 0
+  STDSCR.yesno
 end
 
 def pick_editor
