@@ -46,6 +46,7 @@ Fixes pinned-posts redundant rebuild
 Improves ux/ui and get_started
 Adds "no post"
 Improves auto-generated banner
+Still faster initial setup
 .end
 
 .sublist oct2019 Recently completed (Oct 2019)
@@ -422,7 +423,7 @@ Figure out links
 allow abbreviating view names
 delete multiple posts
 Figure out assets
-\$\$asset function 
+$$dd[asset] function 
 maybe add (default) publishing info to config?
 head/tail for widget HTML?
 "local" CSS for each widget?
