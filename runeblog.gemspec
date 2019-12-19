@@ -20,8 +20,8 @@ spec = Gem::Specification.new do |s|
   s.authors     = ["Hal Fulton"]
   s.email       = 'rubyhacker@gmail.com'
   s.executables << "blog"
-  s.add_runtime_dependency 'livetext', '~> 0.8', '>= 0.8.98'
-  s.add_runtime_dependency 'rubytext', '~> 0.1', '>= 0.1.19'
+  s.add_runtime_dependency 'livetext', '~> 0.8', '>= 0.8.99'
+  s.add_runtime_dependency 'rubytext', '~> 0.1', '>= 0.1.20'
 
   s.add_development_dependency 'minitest', '~> 5.10', '>= 5.10.0'
 

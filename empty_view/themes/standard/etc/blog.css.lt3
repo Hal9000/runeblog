@@ -2,7 +2,6 @@
 . This file is processed to create blog.css         
 . Most of the global CSS goes here                  
 . --------------------------------------------------
-.nopara
 
 .seek themes/standard/global.lt3
 

@@ -1,5 +1,4 @@
 require 'runeblog'
-require 'global'
 require 'ostruct'
 require 'helpers-repl'  # FIXME structure
 
@@ -187,7 +186,7 @@ module RuneBlog::REPL
     puts unless testing
     reset_output
     unless @blog.view.can_publish?
-      msg = "Can't publish... see globals.lt3"
+      msg = "Can't publish... see global.lt3"
       puts msg unless testing
       output! msg
       return @out

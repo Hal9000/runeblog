@@ -1,5 +1,4 @@
 require 'runeblog'
-require 'global'
 require 'pathmagic'
 
 class RuneBlog::Post
@@ -9,12 +8,6 @@ class RuneBlog::Post
 
   include RuneBlog::Helpers
 
-# def self.files(num, root)
-#   log!(enter: __method__, args: [num, root], level: 3)
-#   files = ::Find.find(root).to_a
-#   result = files.grep(/#{prefix(num)}-/)
-#   result
-# end
   
   def self.load(post)
     log!(enter: __method__, args: [post], level: 3)
@@ -22,7 +15,6 @@ class RuneBlog::Post
     raise NoBlogAccessor if RuneBlog.blog.nil?
     # "post" is a slug
     pdir = RuneBlog.blog.root/:drafts/post
-puts "-- load: opening #{pdir}"
     meta = nil
     Dir.chdir(pdir) do
       meta = read_config("metadata.txt")

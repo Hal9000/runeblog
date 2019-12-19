@@ -8,10 +8,11 @@ def RuneBlog.post_template(num: 0, title: "No title", date: nil, view: "test_vie
   log!(enter: __method__, args: [num, title, date, view, teaser, body, tags, views, back, home], level: 3)
   viewlist = (views + [view.to_s]).join(" ")
   taglist = ".tags " + tags.join(" ")
-<<-TEXT
-.mixin liveblog
-. ^ get rid of this later
 
+# .mixin liveblog
+# . ^ get rid of this later
+
+<<-TEXT
 .post #{num}
  
 .title #{title}

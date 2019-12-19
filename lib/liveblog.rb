@@ -18,6 +18,8 @@ def init_liveblog    # FIXME - a lot of this logic sucks
   @vdir = @blog.view.dir rescue "NONAME"
   @version = RuneBlog::VERSION
   @theme = @vdir/:themes/:standard
+rescue
+  raise "Only works inside a blog repo"
 end
 
 ##################
@@ -90,7 +92,6 @@ end
 
 def banner
   count = 0
-  span = 1
   bg = "white"  # outside loop
   wide = nil
   high = 250
@@ -111,23 +112,23 @@ def banner
         image = "banner"/image
         wide = data[0]
         width = wide ? "width=#{wide}" : "" 
-        str2 << "      <td colspan=#{span}><img src=#{image} #{width} height=#{high}></img></td>" + "\n"
+        str2 << "      <td><img src=#{image} #{width} height=#{high}></img></td>" + "\n"
       when "svg_title"
         stuff, hash = _svg_title(*data)
         wide = hash["width"]
-        str2 << "      <td colspan=#{span} width=#{wide}>#{stuff}</td>" + "\n"
+        str2 << "      <td width=#{wide}>#{stuff}</td>" + "\n"
       when "text"
         data[0] ||= "top.html"
         file = "banner"/data[0]
         if ! File.exist?(file) 
           src = file.sub(/html$/, "lt3")
           if File.exist?(src)
-            preprocess src: src, dst: file, vars: Livetext::Vars
+            preprocess src: src, dst: file, call: ".nopara" # , vars: @blog.view.globals
           else
             raise "Neither #{file} nor #{src} found"
           end
         end
-        str2 << "<td colspan=#{span}>" + File.read(file) + "</td>" + "\n"
+        str2 << "<td>" + File.read(file) + "</td>" + "\n"
       when "navbar"
         dir = @blog.root/:views/@blog.view/"themes/standard/banner/" + "\n"
         _make_navbar  # horiz is default
@@ -139,7 +140,6 @@ def banner
         file = "banner/vnavbar.html"
         navbar = File.read(file)
       when "break"
-#        span = count - 1
          str2 << "  </tr>\n  <tr>"  + "\n"
     else
       str2 << "        '#{tag}' isn't known" + "\n"
@@ -552,11 +552,10 @@ def sidebar
         num = rand(1..4)
         img = "widgets/ad/ad#{num}.png"
         src, dst = img, @root/:views/@view_name/"remote/widgets/ad/"
-        system!("cp #{src} #{dst}")   # , show: true)
-        File.open(wtag/"vars.lt3", "w") do |f| 
-          f.puts ".set ad.image = #{img}"
-        end
-        preprocess cwd: wtag, src: tag, dst: tcard, force: true # , debug: true # , deps: depend 
+        system!("cp #{src} #{dst}")
+        File.open(wtag/"vars.lt3", "w") {|f| f.puts ".set ad.image = #{img}" }
+        preprocess cwd: wtag, src: tag, dst: tcard, call: ".nopara", 
+                   force: true # , debug: true # , deps: depend 
     end
 
     _include_file wtag/tcard
@@ -700,7 +699,8 @@ def _make_navbar(orient = :horiz)
       output.puts %[#{li1} <a class="nav-link" href="index.html">#{cdata}<span class="sr-only">(current)</span></a> #{li2}]
     else
       dir = @blog.root/:views/@blog.view/"themes/standard/banner"
-      preprocess cwd: dir, src: basename, dst: vdir/"remote/banner"/basename+".html" # , debug: true
+      dest = vdir/"remote/banner"/basename+".html"
+      preprocess cwd: dir, src: basename, dst: dest, call: ".nopara" # , debug: true
       output.puts %[#{li1} <a class="nav-link" #{href_main}>#{cdata}</a> #{li2}]
     end
   end

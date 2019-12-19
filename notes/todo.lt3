@@ -50,6 +50,9 @@ Still faster initial setup
 Livetext: permit # comments on end of line
 Livetext: add _get_arg, _get_colon_parse, etc.
 RubyText: let menu accept hash
+automatic .nopara as needed
+Livetext: other command line options? nopara? debug? ...
+removed need for ".mixin liveblog"
 .end
 
 .sublist oct2019 Recently completed (Oct 2019)
@@ -107,7 +110,6 @@ Fixed mkwidget
 
 .sublist easyish Easy stuff?
 =add views to lsd/lsp output
-=simple "wizard"
 "wrap"-style include
 add CSS ref to post?
 specific kinds of rebuild?
@@ -120,6 +122,12 @@ Warn when .img (etc.) refs nonexistent asset
 =backup/restore?
 =ssh-copy-id in setup
 more params in globals
+global: num recent posts
+global: main.bgcolor
+common widget code
+autopost: Facebook
+autopost: Twitter
+autopost: linkedin
 better asset management
 dynamically add commands/code to repl?
 need categories??
@@ -471,23 +479,23 @@ complete Completed tasks
 =Make an intro video
 =fix/delete Runeblog::Default (post\_template)?
 =Variables for config file?
+=reddit creds
+=subreddit functionality
 =Facebook buttons
 =Twitter buttons
 =Enable/disable widgets (also FB/Twitter?)
 =default/example banner (svg only?)
 ="rebuild post" command?
 =Update software safely?
-=automatic .nopara as needed
 =bin/blog: Error when escaping from menu
 =bin/blog: autocomplete fails when no valid prefix
+autopost: reddit
 .end
 
 .sublist nextlive Next steps (Livetext, etc.)
 =Livetext: mixin? include? copy? seek?
-=Livetext: other command line options? nopara? debug? ...
 =RubyText: let yesno accept characters
 Livetext: Var as replacement for \_var  (see varmint)
-Livetext: line0 (reset line counter after stashing stuff on top)
 Livetext: open/close
 .end
 

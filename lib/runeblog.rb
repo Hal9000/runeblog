@@ -9,7 +9,6 @@ require 'ostruct'
 require 'logging'
 
 require 'runeblog_version'
-require 'global'
 require 'helpers-blog'
 require 'default'
 require 'view'
@@ -107,13 +106,14 @@ class RuneBlog
 
   def _generate_global
     vars = read_vars("#@root/data/universal.lt3")
-    global = File.read("#@root/data/global.lt3")
+    gfile = "#@root/data/global.lt3"
+    global = File.read(gfile)
     global.gsub!(/AUTHOR/,  vars["author"])
     global.gsub!(/SITE/,    vars["site"])
     global.gsub!(/FONT/,    vars["font.family"])
     global.gsub!(/CHARSET/, vars["charset"])
     global.gsub!(/LOCALE/,  vars["locale"])
-    File.write("#@root/data/global.lt3", global)
+    File.write(gfile, global)
   end
 
   def _deploy_local(dir)
@@ -163,7 +163,8 @@ class RuneBlog
     dir = @root/:posts/nslug
     create_dirs(dir)
     # FIXME dependencies?
-    preprocess cwd: dir, src: @root/:drafts/sourcefile   # , debug: true
+    preprocess cwd: dir, src: @root/:drafts/sourcefile, 
+               mix: "liveblog"  # , debug: true
     _deploy_local(dir)
   rescue => err
     _tmp_error(err)
@@ -336,8 +337,10 @@ class RuneBlog
     @theme = @view.dir/"themes/standard"
     post_entry_name = @theme/"blog/post_entry.lt3"
     depend = [post_entry_name]
-    preprocess src: post_entry_name, dst: "/tmp/post_entry.html" # , deps: depend  # , debug: true
-    @_post_entry ||= File.read("/tmp/post_entry.html")
+    html = "/tmp/post_entry.html"
+    preprocess src: post_entry_name, dst: html,
+               call: ".nopara"  # , deps: depend  # , debug: true
+    @_post_entry ||= File.read(html)
     vp = post_lookup(id)
     nslug, aslug, title, date, teaser_text = 
       vp.nslug, vp.aslug, vp.title, vp.date, vp.teaser_text
@@ -464,9 +467,11 @@ class RuneBlog
              # @theme/"navbar/navbar.lt3",
              @theme/"blog/index.lt3"]   # FIXME what about assets?
     preprocess cwd: vdir/"themes/standard/etc", # deps: depend, debug: true,
-               src: "blog.css.lt3", copy: vdir/"remote/etc/" # , dst: "blog.css"
+               src: "blog.css.lt3", copy: vdir/"remote/etc/", 
+               call: ".nopara" # , dst: "blog.css"
     preprocess cwd: vdir/"themes/standard", deps: depend, force: true,
-               src: "blog/generate.lt3", dst: vdir/:remote/"index.html"
+               src: "blog/generate.lt3", dst: vdir/:remote/"index.html", 
+               call: ".nopara"
     copy("#{vdir}/assets/*", "#{vdir}/remote/assets/")
     copy_widget_html(view)
   rescue => err
@@ -574,7 +579,8 @@ class RuneBlog
     # Step 1...
     create_dirs(pdraft)
     # FIXME dependencies?
-    preprocess cwd: pdraft, src: draft, dst: "guts.html"  # , debug: true
+    preprocess cwd: pdraft, src: draft, dst: "guts.html",
+               mix: "liveblog"  # , debug: true
     _post_metadata(draft, pdraft)
     # Step 2...
     vposts = @root/:views/view_name/:posts
@@ -585,10 +591,12 @@ class RuneBlog
     # Step 4...
     # FIXME dependencies?
     preprocess cwd: @theme/:post, src: "generate.lt3", force: true, 
-               dst: remote/ahtml, copy: @theme/:post    # , debug: true
+               dst: remote/ahtml, copy: @theme/:post,
+               call: ".nopara"    # , debug: true
     # FIXME dependencies?
     preprocess cwd: @theme/:post, src: "permalink.lt3", 
-               dst: remote/:permalink/ahtml  # , debug: true
+               dst: remote/:permalink/ahtml,
+               mix: "liveblog"  # , debug: true
     copy_widget_html(view_name)
   rescue => err
     _tmp_error(err)

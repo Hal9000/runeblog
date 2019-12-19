@@ -22,7 +22,8 @@ end
 
 def preprocess(cwd: Dir.pwd, src:, 
           dst: (strip = true; File.basename(src).sub(/.lt3$/,"")), 
-          deps: [], copy: nil, debug: false, force: false, vars: nil)
+          deps: [], copy: nil, debug: false, force: false, 
+          mix: [], call: [], vars: {})
   src += LEXT unless src.end_with?(LEXT)
   dst += ".html" unless (dst.end_with?(".html") || strip)
   sp = " "*12
@@ -37,8 +38,8 @@ def preprocess(cwd: Dir.pwd, src:,
     end
     stale = stale?(src, dst, deps, force)
     if stale
-      live = Livetext.new
-      out = live.xform_file(src, vars: vars)
+      live = Livetext.customize(mix: "liveblog", call: call, vars: vars)
+      out = live.xform_file(src)
       File.write(dst, out)
       system!("cp #{dst} #{copy}") if copy
     end

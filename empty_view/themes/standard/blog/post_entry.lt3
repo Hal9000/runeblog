@@ -2,7 +2,6 @@
 . This HTML fragment gives the format of a post's   
 . "index" entry (recent posts on blog front page).  
 . --------------------------------------------------
-.nopara
 
 <div class="post">
   <table width=100% cellpadding=7>

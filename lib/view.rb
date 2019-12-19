@@ -1,8 +1,7 @@
-require 'global'
 require 'logging'
 
 class RuneBlog::View
-  attr_reader :name, :state
+  attr_reader :name, :state, :globals
   attr_accessor :publisher
 
   include RuneBlog::Helpers
@@ -15,6 +14,10 @@ class RuneBlog::View
     @publisher = RuneBlog::Publishing.new(name)
     @can_publish = true  # FIXME
     @blog.view = self
+    gfile = @blog.root/"views/#{name}/themes/standard/global.lt3"
+    live = Livetext.customize(call: ".nopara")
+    live.xform_file(gfile)
+    @globals = live.vars
   end
 
   def dir

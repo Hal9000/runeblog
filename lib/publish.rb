@@ -2,7 +2,6 @@ if ! defined?(Already_publish)
 
   Already_publish = nil
 
-require 'global'
 require 'pathmagic'
 
 class RuneBlog::Publishing
@@ -17,6 +16,7 @@ class RuneBlog::Publishing
     @blog = RuneBlog.blog
     gfile = @blog.root/:views/view/"themes/standard/global.lt3"
     data = File.readlines(gfile)
+    # Please refactor the Hal out of this
     grab = ->(var) { data.grep(/^#{var} /).first.chomp.split(" ", 2)[1] }
     @user    = grab.call("publish.user")
     @server  = grab.call("publish.server")
