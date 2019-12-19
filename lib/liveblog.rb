@@ -498,6 +498,7 @@ def _load_local(widget)
 rescue => err
   STDERR.puts err.to_s
   STDERR.puts err.backtrace.join("\n")
+  sleep 6; RubyText.stop
   exit
 end
 
@@ -564,6 +565,7 @@ def sidebar
 rescue => err
   puts "err = #{err}"
   puts err.backtrace.join("\n")
+  sleep 6; RubyText.stop
   exit
 end
 

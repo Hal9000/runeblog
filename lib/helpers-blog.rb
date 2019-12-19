@@ -54,6 +54,7 @@ module RuneBlog::Helpers
     puts "Can't read vars file '#{file}': #{err}"
     puts err.backtrace.join("\n")
     puts "dir = #{Dir.pwd}"
+    sleep 6; RubyText.stop
     exit
   end
 
@@ -80,6 +81,7 @@ module RuneBlog::Helpers
     puts "Can't read config file '#{file}': #{err}"
     puts err.backtrace.join("\n")
     puts "dir = #{Dir.pwd}"
+    sleep 6; RubyText.stop
     exit
   end
 

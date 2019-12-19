@@ -8,7 +8,6 @@ abort "Need Ruby 2.4 or greater" unless ver >= 24
 
 require 'date'
 
-require 'global'
 require 'runeblog'
 require 'repl'
 

@@ -3,7 +3,7 @@ if !defined?(RuneBlog::Path)
 # if ! (Object.constants.include?(:RuneBlog) && RuneBlog.constants.include?(:Path))
 
 class RuneBlog
-  VERSION = "0.2.89"
+  VERSION = "0.2.90"
 
   path = Gem.find_files("runeblog").grep(/runeblog-/).first
   Path  = File.dirname(path)
@@ -50,6 +50,7 @@ def system!(str, show: false)
   else
     STDERR.puts "FAILED: #{str.inspect}"
     STDERR.puts "\ncaller = \n#{caller.join("\n  ")}\n"
+    sleep 6; RubyText.stop
 exit
     return rc
   end
