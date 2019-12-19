@@ -7,7 +7,7 @@ class ::RuneBlog::Widget
     def initialize(repo)
       @blog = repo
       @datafile = "list.data"
-      @lines = File.exist?(@datafile) ? File.readlines(@datafile) : []
+      @lines = _get_data?(@datafile)
     end
 
     def _html_body(file, css = nil)    # FIXME

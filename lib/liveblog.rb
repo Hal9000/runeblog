@@ -84,11 +84,28 @@ def code
   _out "<font size=+1><pre>\n#{lines}\n</pre></font>"
 end
 
+def _get_data?(file)   # File need not exist
+  if File.exist?(file)
+    _get_data(file)
+  else
+    []
+  end
+end
+
+def _get_data(file)
+  lines = File.readlines(file)
+  lines.reject! {|line| line[0] == "-" }  # allow rejection of lines
+  lines = lines.map do |line|
+    line.sub(/ *# .*$/, "")               # allow trailing comments
+  end
+  lines
+end
+
 def _read_navbar_data
   vdir = @blog.root/:views/@blog.view
-  dir = vdir/"themes/standard/banner/"
+  dir = vdir/"themes/standard/banner/navbar/"
   datafile = dir/"list.data"
-  File.readlines(datafile)
+  _get_data(datafile)
 end
 
 def banner
@@ -343,7 +360,7 @@ def pin
   pinned.each do |pinview|
     dir = @blog.root/:views/pinview/"themes/standard/widgets/pinned/"
     datafile = dir/"list.data"
-    pins = File.exist?(datafile) ? File.readlines(datafile) : []
+    pins = _get_data?(datafile)
     pins << "#{@meta.num} #{@meta.title}\n"
     pins.uniq!
     File.open(datafile, "w") {|out| pins.each {|pin| out.puts pin } }

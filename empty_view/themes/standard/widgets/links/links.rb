@@ -9,7 +9,7 @@ class ::RuneBlog::Widget
     def initialize(repo)
       @blog = repo
       @datafile = input = "list.data"
-      @lines = File.readlines(input)
+      @lines = _get_data(@datafile)
     end
 
     def build

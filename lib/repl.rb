@@ -114,7 +114,7 @@ module RuneBlog::REPL
     dir = @blog.view.dir/"themes/standard/widgets/pages"
     # Assume child files already generated (and list.data??)
     data = dir/"list.data"
-    lines = File.readlines(data)
+    lines = _get_data?(data)
     hash = {}
     lines.each do |line|
       url, name = line.chomp.split(",")

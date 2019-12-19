@@ -7,7 +7,7 @@ class ::RuneBlog::Widget
     def initialize(repo)
       @blog = repo
       @datafile = "list.data"
-      lines = File.readlines(@datafile)
+      lines = _get_data(@datafile)
       @data = lines.map {|line| line.chomp.split(/, */) }
     end
 
