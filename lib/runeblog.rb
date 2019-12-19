@@ -472,6 +472,7 @@ class RuneBlog
     preprocess cwd: vdir/"themes/standard", deps: depend, force: true,
                src: "blog/generate.lt3", dst: vdir/:remote/"index.html", 
                call: ".nopara"
+    copy!("#{vdir}/themes/standard/banner/*", "#{vdir}/remote/banner/")  # includes navbar/
     copy("#{vdir}/assets/*", "#{vdir}/remote/assets/")
     copy_widget_html(view)
   rescue => err

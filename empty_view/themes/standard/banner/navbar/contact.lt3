@@ -1,0 +1,18 @@
+. --------------------------------------------------
+. This is a sample file typical of page referenced  
+. directly from the navigation bar.
+. It is like a special case of a page in the "pages"
+. widget.
+. --------------------------------------------------
+
+.set this.title="Contact"
+. make this better later
+<html><body>
+    <div class="content container-fluid mt-4">
+      <div class="row">
+        <h1>$this.title</h1>
+. content starts here...
+How to contact me by email, smoke signals, ICBM, seance, ...
+      </div>
+    </div>
+</body></html>

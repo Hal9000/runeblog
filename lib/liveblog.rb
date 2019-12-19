@@ -85,7 +85,8 @@ def code
 end
 
 def _read_navbar_data
-  dir = @blog.root/:views/@blog.view/"themes/standard/banner/"
+  vdir = @blog.root/:views/@blog.view
+  dir = vdir/"themes/standard/banner/"
   datafile = dir/"list.data"
   File.readlines(datafile)
 end
@@ -97,6 +98,7 @@ def banner
   high = 250
   str2 = ""
   navbar = nil
+  vdir = @blog.root/:views/@blog.view
   lines = _body.to_a
 
   lines.each do |line|
@@ -130,15 +132,9 @@ def banner
         end
         str2 << "<td>" + File.read(file) + "</td>" + "\n"
       when "navbar"
-        dir = @blog.root/:views/@blog.view/"themes/standard/banner/" + "\n"
-        _make_navbar  # horiz is default
-        file = "banner/navbar.html"
-        navbar = File.read(file)
+        navbar = _make_navbar  # horiz is default
       when "vnavbar"
-        dir = @blog.root/:views/@blog.view/"themes/standard/banner/"
-        _make_navbar(:vert)
-        file = "banner/vnavbar.html"
-        navbar = File.read(file)
+        navbar = _make_navbar(:vert)
       when "break"
          str2 << "  </tr>\n  <tr>"  + "\n"
     else
@@ -688,20 +684,20 @@ def _make_navbar(orient = :horiz)
     </td></tr></table>
   HTML
 
-  html_file = @blog.root/:views/@blog.view/"themes/standard/banner"/name
+  html_file = @blog.root/:views/@blog.view/"themes/standard/banner/navbar"/name
   output = File.new(html_file, "w")
   output.puts start
   lines = _read_navbar_data
   lines = ["index  Home"] + lines  unless _args.include?("nohome")
   lines.each do |line|
     basename, cdata = line.chomp.strip.split(" ", 2)
-    full = :banner/basename+".html"
+    full = :banner/:navbar/basename+".html"
     href_main = _main(full)
     if basename == "index"  # special case
       output.puts %[#{li1} <a class="nav-link" href="index.html">#{cdata}<span class="sr-only">(current)</span></a> #{li2}]
     else
-      dir = @blog.root/:views/@blog.view/"themes/standard/banner"
-      dest = vdir/"remote/banner"/basename+".html"
+      dir = @blog.root/:views/@blog.view/"themes/standard/banner/navbar"
+      dest = vdir/"remote/banner/navbar"/basename+".html"
       preprocess cwd: dir, src: basename, dst: dest, call: ".nopara" # , debug: true
       output.puts %[#{li1} <a class="nav-link" #{href_main}>#{cdata}</a> #{li2}]
     end

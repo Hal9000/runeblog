@@ -53,6 +53,7 @@ RubyText: let menu accept hash
 automatic .nopara as needed
 Livetext: other command line options? nopara? debug? ...
 removed need for ".mixin liveblog"
+improved banner layout and config
 .end
 
 .sublist oct2019 Recently completed (Oct 2019)

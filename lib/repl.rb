@@ -39,6 +39,7 @@ module RuneBlog::REPL
 
   def cmd_config(arg, testing = false)
     hash = {"global.lt3           Global configuration"                     => "global.lt3",
+            "banner/top.lt3       Text portion of banner"                   => "banner/top.lt3",
             "blog/generate.lt3    Generator for view (usu not edited)"      => "blog/generate.lt3",
             ".... head.lt3        HEAD info for view"                       => "blog/head.lt3",
             ".... banner.lt3      banner description"                       => "blog/banner.lt3",
@@ -75,10 +76,10 @@ module RuneBlog::REPL
   end
 
   def _manage_navbar(arg, testing = false)   # cloned from manage_pages
-    dir = @blog.view.dir/"themes/standard/navbar"
+    dir = @blog.view.dir/"themes/standard/banner/navbar"
     files = Dir.entries(dir) - %w[. .. navbar.lt3]
-    new_item = "  [New item]  "
     main_file = "[ navbar.lt3 ]"
+    new_item  = "  [New item]  "
     files = [main_file] + files + [new_item]
     num, fname = STDSCR.menu(title: "Edit navbar:", items: files)
     return if fname.nil?
