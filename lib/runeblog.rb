@@ -90,10 +90,13 @@ class RuneBlog
     self.class.blog = self   # Weird. Like a singleton - dumbass circular dependency?
 
     @root = Dir.pwd/root_rel
-    copy_data(:config, @root/:data)
+    copy_data(:config, @root/:data) unless File.exist?(@root/"data/VIEW")
     write_repo_config(root: @root)
     get_repo_config
-    @views = get_views
+    @views = retrieve_views
+puts @views.inspect
+system("cat #@root/data/VIEW")
+    self.view = File.read(@root/"data/VIEW").chomp
     md = Dir.pwd.match(%r[.*/views/(.*?)/])
     if md
       @view_name = md[1]
@@ -460,6 +463,7 @@ class RuneBlog
 
   def generate_view(view)  # huh?
     log!(enter: __method__, args: [view])
+puts "gv: view = #{view}"
     vdir = @root/:views/view
     @theme = @root/:views/view/:themes/:standard
     depend = [vdir/"remote/etc/blog.css.lt3", @theme/"global.lt3", 

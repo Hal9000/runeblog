@@ -84,23 +84,6 @@ def code
   _out "<font size=+1><pre>\n#{lines}\n</pre></font>"
 end
 
-def _get_data?(file)   # File need not exist
-  if File.exist?(file)
-    _get_data(file)
-  else
-    []
-  end
-end
-
-def _get_data(file)
-  lines = File.readlines(file)
-  lines.reject! {|line| line[0] == "-" }  # allow rejection of lines
-  lines = lines.map do |line|
-    line.sub(/ *# .*$/, "")               # allow trailing comments
-  end
-  lines
-end
-
 def _read_navbar_data
   vdir = @blog.root/:views/@blog.view
   dir = vdir/"themes/standard/banner/navbar/"
@@ -117,6 +100,9 @@ def banner
   navbar = nil
   vdir = @blog.root/:views/@blog.view
   lines = _body.to_a
+TTY.puts "-"*30
+lines.each {|x| TTY.puts x }
+TTY.puts "-"*30
 
   lines.each do |line|
     count += 1

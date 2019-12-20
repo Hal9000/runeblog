@@ -229,6 +229,7 @@ module RuneBlog::REPL
     debug "Starting cmd_rebuild..."
     reset_output
     puts unless testing
+TTY.puts "rebuilding #{@blog.view.inspect}"
     @blog.generate_view(@blog.view)
     @blog.generate_index(@blog.view)
     @out

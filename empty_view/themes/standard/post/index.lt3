@@ -6,19 +6,19 @@
 . likely be the place.
 . --------------------------------------------------
 
-.mixin liveblog
-. ^ get rid of this later
-
 .post 0
  
-.title The new amphitheatre is overrated
+.title This is my title
 .pubdate 2019-07-09
-.views around_austin 
+.views stuff 
 .tags 
  
 .teaser
-It used to be that all major concerts played the Erwin Center.
-
+This is only a short excerpt from the top of the blog post. 
 .end
-Now, depending on what you consider "major," blah blah blah...
+
+And now we continue the post.
+Do we have anything to say?
+
+Apparently not much.
 

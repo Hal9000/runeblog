@@ -29,7 +29,7 @@ post.date.size    15px
 publish.user      root
 publish.server    rubyhacker.com
 publish.docroot   /var/www/
-publish.path      around_austin
+publish.path      stuff
 publish.proto     http
 .end
 

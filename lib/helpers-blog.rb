@@ -5,6 +5,23 @@ require 'processing'
 
 module RuneBlog::Helpers
 
+  def _get_data?(file)   # File need not exist
+    if File.exist?(file)
+      _get_data(file)
+    else
+      []
+    end
+  end
+
+  def _get_data(file)
+    lines = File.readlines(file)
+    lines.reject! {|line| line[0] == "-" }  # allow rejection of lines
+    lines = lines.map do |line|
+      line.sub(/ *# .*$/, "")               # allow trailing comments
+    end
+    lines
+  end
+
   def copy(src, dst)
     log!(enter: __method__, args: [src, dst], level: 2)
     cmd = "cp #{src} #{dst} 2>/dev/null"
@@ -100,13 +117,13 @@ module RuneBlog::Helpers
     end
   end
 
-  def get_views   # read from filesystem
+  def retrieve_views   # read from filesystem
     log!(enter: __method__, level: 3)
     dirs = subdirs("#@root/views/").sort
     dirs.map {|name| RuneBlog::View.new(name) }
   end
 
-  def write_repo_config(root: "#{Dir.pwd}/.blogs", view: "#{root}/data/VIEW", editor: "/usr/local/bin/vim")
+  def write_repo_config(root: "#{Dir.pwd}/.blogs", view: File.read("#{root}/data/VIEW").chomp, editor: "/usr/local/bin/vim")
     File.write(root + "/data/ROOT",   root + "\n")
     File.write(root + "/data/VIEW",   view.to_s + "\n")
     File.write(root + "/data/EDITOR", editor + "\n")
