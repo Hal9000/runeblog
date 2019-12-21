@@ -3,37 +3,15 @@ require 'fileutils'
 
 require 'processing'
 
+require 'lowlevel'
+
 module RuneBlog::Helpers
 
-  def _get_data?(file)   # File need not exist
-    if File.exist?(file)
-      _get_data(file)
-    else
-      []
-    end
-  end
-
-  def _get_data(file)
-    lines = File.readlines(file)
-    lines.reject! {|line| line[0] == "-" }  # allow rejection of lines
-    lines = lines.map do |line|
-      line.sub(/ *# .*$/, "")               # allow trailing comments
-    end
-    lines
-  end
-
-  def copy(src, dst)
-    log!(enter: __method__, args: [src, dst], level: 2)
-    cmd = "cp #{src} #{dst} 2>/dev/null"
-    rc = system!(cmd)
-    puts "    Failed: #{cmd} - from #{caller[0]}" unless rc
-  end
-
-  def copy!(src, dst)
-    log!(enter: __method__, args: [src, dst], level: 2)
-    cmd = "cp -r #{src} #{dst} 2>/dev/null"
-    rc = system!(cmd)
-    puts "    Failed: #{cmd} - from #{caller[0]}" unless rc
+  def quit_RubyText
+    return unless defined? RubyText
+    sleep 6
+    RubyText.stop
+    exit
   end
 
   def get_repo_config
@@ -71,8 +49,7 @@ module RuneBlog::Helpers
     puts "Can't read vars file '#{file}': #{err}"
     puts err.backtrace.join("\n")
     puts "dir = #{Dir.pwd}"
-    sleep 6; RubyText.stop
-    exit
+    stop_RubyText
   end
 
   def read_config(file, *syms)
@@ -98,8 +75,7 @@ module RuneBlog::Helpers
     puts "Can't read config file '#{file}': #{err}"
     puts err.backtrace.join("\n")
     puts "dir = #{Dir.pwd}"
-    sleep 6; RubyText.stop
-    exit
+    stop_RubyText
   end
 
   def try_read_config(file, hash)
@@ -123,20 +99,21 @@ module RuneBlog::Helpers
     dirs.map {|name| RuneBlog::View.new(name) }
   end
 
-  def write_repo_config(root: "#{Dir.pwd}/.blogs", view: File.read("#{root}/data/VIEW").chomp, editor: "/usr/local/bin/vim")
+  def write_repo_config(root: "#{Dir.pwd}/.blogs", view: nil, editor: "/usr/local/bin/vim")
+    view ||= File.read("#{root}/data/VIEW").chomp rescue "[no view]"
     File.write(root + "/data/ROOT",   root + "\n")
     File.write(root + "/data/VIEW",   view.to_s + "\n")
     File.write(root + "/data/EDITOR", editor + "\n")
   end
 
-  def new_dotfile(root: ".blogs", current_view: "test_view", editor: "vi")
-    log!(enter: __method__, args: [root, current_view, editor], level: 3)
-    root = Dir.pwd + "/" + root
-    x = OpenStruct.new
-    x.root, x.current_view, x.editor = root, current_view, editor
-    write_config(x, root + "/" + RuneBlog::ConfigFile)
-    write_repo_config
-  end
+  # def new_dotfile(root: ".blogs", current_view: "test_view", editor: "vi")
+  #   log!(enter: __method__, args: [root, current_view, editor], level: 3)
+  #   root = Dir.pwd + "/" + root
+  #   x = OpenStruct.new
+  #   x.root, x.current_view, x.editor = root, current_view, editor
+  #   write_config(x, root + "/" + RuneBlog::ConfigFile)
+  #   write_repo_config
+  # end
 
   def new_sequence
     log!(enter: __method__, level: 3)
@@ -164,38 +141,6 @@ module RuneBlog::Helpers
     files
   end
 
-  def create_dirs(*dirs)
-    log!(enter: __method__, args: [*dirs], level: 3)
-    dirs.each do |dir|
-      dir = dir.to_s  # symbols allowed
-      next if Dir.exist?(dir)
-      cmd = "mkdir -p #{dir} >/dev/null"
-      result = system!(cmd) 
-      raise CantCreateDir(dir) unless result
-    end
-  end
-
-  def interpolate(str, bind)
-    log!(enter: __method__, args: [str, bind], level: 3)
-    wrap = "<<-EOS\n#{str}\nEOS"
-    eval wrap, bind
-  end
-
-  def error(err)  # Hmm, this is duplicated
-    log!(str: "duplicated method", enter: __method__, args: [err], level: 2)
-    str = "\n  Error: #{err}"
-    puts str
-    puts err.backtrace.join("\n")
-  end
-
-  def dump(obj, name)
-    log!(enter: __method__, args: [obj, name], level: 3)
-    File.write(name, obj)
-  end
 end
 
-def dump(obj, name)      # FIXME scope
-  log!(str: "scope problem", enter: __method__, args: [obj, name], level: 3)
-  File.write(name, obj)
-end
 

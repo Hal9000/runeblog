@@ -109,26 +109,16 @@ module RuneBlog::REPL
     end
     meth = found || :cmd_INVALID
     params = cmd if meth == :cmd_INVALID
-# puts "choose: #{[meth, params].inspect}"
     [meth, params]
-  end
-
-  def error(err)  # Hmm, this is duplicated
-    str = "\n  Error: #{err}"
-    puts str
-    puts err.backtrace.join("\n")
   end
 
   def ask(prompt, meth = :to_s)
     print prompt
-    str = gets
-    str.chomp!
-    str.send(meth)
+    gets.chomp.send(meth)
   end
 
-  def yesno(prompt, meth = :to_s)
-    print prompt
-    gets.chomp.upcase[0] == "Y"
+  def ask!(prompt, meth = :to_s)
+    ask(fx(prompt, :bold), meth)
   end
 
   def reset_output(initial = "")

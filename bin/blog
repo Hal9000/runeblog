@@ -25,8 +25,8 @@ end
 def get_universal
   univ = "#{@blog.root}/data/universal.lt3"
   if yesno("Faster initial setup? (no: edit universal.lt3)")
-    author = ask("Author name: ")
-    site   = ask("Site/domain: ")
+    author = ask!("Author name: ")
+    site   = ask!("Site/domain: ")
     # Now stash it...
     str = File.read(univ)
     str = str.gsub(/AUTHOR/, author)
@@ -41,8 +41,8 @@ def get_global
   if yesno("Faster view setup? (no: edit global.lt3)")
     view_name = ask("\nFilename: ")
     @blog.create_view(view_name)   # call change_view??
-    title     = ask("View title: ")
-    subtitle  = ask("Subtitle  : ")
+    title     = ask!("View title: ")
+    subtitle  = ask!("Subtitle  : ")
     gname = "#{@blog.root}/views/#{view_name}/themes/standard/global.lt3" 
     text = File.read(gname)
     text = text.gsub(/VIEW_NAME/,     view_name)
@@ -50,7 +50,7 @@ def get_global
     text = text.gsub(/VIEW_SUBTITLE/, subtitle)
     File.write(gname, text)
   else
-    view_name = ask("\nFilename: ")
+    view_name = ask!("\nFilename: ")
     @blog.create_view(view_name)   # call change_view??
     vim_params = '-c ":set hlsearch" -c ":hi Search ctermfg=2 ctermbg=6" +/"\(VIEW_.*\|SITE.*\)"'
     edit_file(@blog.view.dir/"themes/standard/global.lt3", vim: vim_params)

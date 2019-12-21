@@ -10,7 +10,6 @@ require 'logging'
 
 require 'runeblog_version'
 require 'helpers-blog'
-require 'default'
 require 'view'
 require 'publish'
 require 'post'
@@ -48,6 +47,34 @@ class RuneBlog
 
   include Helpers
 
+    class Default
+
+    # This will all become much more generic later.
+
+    def RuneBlog.post_template(num: 0, title: "No title", date: nil, view: "test_view", 
+                               teaser: "No teaser", body: "No body", tags: ["untagged"], 
+                               views: [], back: "javascript:history.go(-1)", home: "no url")
+      log!(enter: __method__, args: [num, title, date, view, teaser, body, tags, views, back, home], level: 3)
+      viewlist = (views + [view.to_s]).join(" ")
+      taglist = ".tags " + tags.join(" ")
+
+      <<~TEXT
+      .post #{num}
+
+      .title #{title}
+      .pubdate #{date}
+      .views #{viewlist}
+      #{taglist}
+
+      .teaser
+      #{teaser}
+      .end
+      #{body}
+      TEXT
+    end
+
+  end
+
   def _tmp_error(err)   # FIXME move to helpers
     out = "/tmp/blog#{rand(100)}.txt"
     File.open(out, "w") do |f|
@@ -68,7 +95,7 @@ class RuneBlog
       create_dirs(:data, :drafts, :views, :posts)
       new_sequence
     end
-    copy_data(:config, repo_root/:data)
+    copy_data(:config, repo_root/:data) unless File.exist?(repo_root/"data/VIEW")
     write_repo_config(root: repo_root)
     @blog = self.new
     @blog
@@ -90,7 +117,7 @@ class RuneBlog
     self.class.blog = self   # Weird. Like a singleton - dumbass circular dependency?
 
     @root = Dir.pwd/root_rel
-    copy_data(:config, @root/:data) unless File.exist?(@root/"data/VIEW")
+#   copy_data(:config, @root/:data) unless File.exist?(@root/"data/VIEW")
     write_repo_config(root: @root)
     get_repo_config
     @views = retrieve_views
@@ -210,6 +237,9 @@ class RuneBlog
   def view=(arg)
     log!(enter: __method__, args: [arg], level: 2)
     case arg
+      when "[no view]"
+        # puts "Warning: No current view set"
+        @view = nil
       when RuneBlog::View
         @view = arg
         _set_publisher
@@ -487,8 +517,8 @@ class RuneBlog
     log!(enter: __method__, args: [draft], level: 2)
     # FIXME dumb code
     view_line = File.readlines(draft).grep(/^.views /)
-    raise "More than one .views call!" if view_line.size > 1
-    raise "No .views call!" if view_line.size < 1
+    raise "More than one .views call in #{draft}" if view_line.size > 1
+    raise "No .views call in #{draft}" if view_line.size < 1
     view_line = view_line.first
     views = view_line[7..-1].split
     views.uniq 

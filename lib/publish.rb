@@ -37,21 +37,15 @@ class RuneBlog::Publishing
     url = "#@proto://#@server/#@path"  # /#{vname}"
   end
 
-  def system!(str)
-    log!(enter: __method__, args: [str], level: 1)
-    rc = system(str)
-    rc
-  end
-
   def publish
     log!(enter: __method__, level: 1)
     dir = @docroot/@path
     view_name = @blog.view.name
     viewpath = dir # /view_name
     # FIXME rsync doesn't work
-    cmd = "rsync -a -r -z #{@blog.root}/views/#{@blog.view}/remote/ #@user@#@server:#{viewpath}/"
+    cmd = "rsync -r -z #{@blog.root}/views/#{@blog.view}/remote/ #@user@#@server:#{viewpath}/"
     system!(cmd)
-    dump(files, "#{@blog.view.dir}/last_published")
+    dump("#{@blog.view} at #{Time.now}", "#{@blog.view.dir}/last_published")
     true
   end
 

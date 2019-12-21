@@ -194,7 +194,7 @@ module RuneBlog::REPL
     end
 
     ret = RubyText.spinner(label: " Publishing... ") do
-      @blog.view.publisher.publish(files, assets)  # FIXME weird?
+      @blog.view.publisher.publish
     end
     return @out unless ret
 

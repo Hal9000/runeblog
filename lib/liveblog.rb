@@ -501,22 +501,6 @@ rescue => err
   exit
 end
 
-# def pinned_rebuild
-#   view = @blog.view
-#   view = _args[0] unless _args.empty?
-#   Dir.chdir(@blog.root/:views/view/"themes/standard/") do
-#     wtag = "widgets/pinned"
-#     code = _load_local("pinned")
-#     if code 
-#       Dir.chdir(wtag) do 
-#         widget = code.new(@blog)
-#         widget.build
-#       end
-#       # _include_file wtag/"pinned-card.html"
-#     end
-#   end
-# end
-
 def _handle_standard_widget(tag)
   wtag = :widgets/tag
   code = _load_local(tag)
@@ -767,11 +751,6 @@ def _post_lookup(postid)    # side-effect
   postdir = post.first
   vp = RuneBlog::ViewPost.new(@blog.view, postdir)
   vp
-end
-
-def _interpolate(str, context)   # FIXME move this later
-  wrapped = "%[" + str.dup + "]"  # could fail...
-  eval(wrapped, context)
 end
 
 def _card_generic(card_title:, middle:, extra: "")

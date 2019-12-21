@@ -57,6 +57,8 @@ improved banner layout and config
 adds minus, comments to list.data format
 fixed view handling
 use rsync for publishing
+adds lowlevel.rb
+removed some redundant or dead code
 .end
 
 .sublist oct2019 Recently completed (Oct 2019)
@@ -479,6 +481,7 @@ complete Completed tasks
 .sublist nextish Next steps...
 =break up global.lt3??
 =Formalize example blog
+=Enable/disable widgets (also FB/Twitter/reddit?)
 =RubyText settings in file
 =Make an intro video
 =fix/delete Runeblog::Default (post\_template)?
@@ -487,8 +490,6 @@ complete Completed tasks
 =subreddit functionality
 =Facebook buttons
 =Twitter buttons
-=Enable/disable widgets (also FB/Twitter?)
-=default/example banner (svg only?)
 ="rebuild post" command?
 =Update software safely?
 =bin/blog: Error when escaping from menu
