@@ -117,9 +117,9 @@ module RuneBlog::Helpers
 
   def new_sequence
     log!(enter: __method__, level: 3)
-    dump(0, "sequence")
+    dump(0, "data/sequence")
     version_info = "#{RuneBlog::VERSION}\nBlog created: #{Time.now.to_s}"
-    dump(version_info, "VERSION")
+    dump(version_info, "data/VERSION")
   end
 
   def subdirs(dir)

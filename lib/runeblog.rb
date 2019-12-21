@@ -92,7 +92,7 @@ class RuneBlog
     raise BlogRepoAlreadyExists if Dir.exist?(repo_root)
     create_dirs(repo_root)
     Dir.chdir(repo_root) do
-      create_dirs(:data, :drafts, :views, :posts)
+      create_dirs(:data, :config, :drafts, :views, :posts)
       new_sequence
     end
     copy_data(:config, repo_root/:data) unless File.exist?(repo_root/"data/VIEW")
@@ -257,13 +257,13 @@ class RuneBlog
 
   def get_sequence
     log!(enter: __method__, level: 3)
-    File.read(@root/:sequence).to_i
+    File.read(@root/"data/sequence").to_i
   end
 
   def next_sequence
     log!(enter: __method__, level: 3)
     @sequence += 1
-    dump(@sequence, @root/:sequence)
+    dump(@sequence, @root/"data/sequence")
     @sequence
   end
 

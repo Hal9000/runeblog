@@ -25,6 +25,25 @@ rescue
   raise "Only works inside a blog repo"
 end
 
+def _got_python?
+  # Dumb - fix later - check up front as needed
+  # Should also check for praw lib
+  str = `which python3`
+  str.length > 0
+end
+
+def _reddit_post(title, url)
+  _got_python?
+  tmpfile = "/tmp/reddit_post_url.txt"
+  File.open(tmpfile, "w") do |tmp|
+    tmp.puts "[Post] " + title
+    tmp.puts url
+  end
+  rid = `python3 reddit/reddit_post_url.py`
+  system("rm #{tmpfile}")
+  rid  # returns reddit id
+end
+
 ##################
 # "dot" commands
 ##################
