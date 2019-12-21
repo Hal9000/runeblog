@@ -193,17 +193,6 @@ module RuneBlog::REPL
       return @out
     end
 
-    # Need to check dirty/clean status first
-    dirty, all, assets = @blog.view.publishable_files
-    files = dirty
-    if dirty.empty?
-      puts fx("\n  No files are out of date." + " "*20, :bold)
-      print "  Publish anyway? "
-      yn = RubyText.gets.chomp
-      files = all if yn == "y"
-    end
-    return @out if files.empty?
-
     ret = RubyText.spinner(label: " Publishing... ") do
       @blog.view.publisher.publish(files, assets)  # FIXME weird?
     end
@@ -229,7 +218,6 @@ module RuneBlog::REPL
     debug "Starting cmd_rebuild..."
     reset_output
     puts unless testing
-TTY.puts "rebuilding #{@blog.view.inspect}"
     @blog.generate_view(@blog.view)
     @blog.generate_index(@blog.view)
     @out

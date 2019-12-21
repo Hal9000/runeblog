@@ -7,6 +7,9 @@ require 'runeblog'
 require 'pathmagic'
 require 'processing'
 
+# top = Livetext::Path + "/../plugin/liveblog/"
+# eval(File.read("#{top}/testing.rb"))
+
 
 def init_liveblog    # FIXME - a lot of this logic sucks
   dir = Dir.pwd.sub(/\.blogs.*/, "")
@@ -44,7 +47,7 @@ end
 
 def post_trailer
   perma = _var("publish.proto") + "://" + _var("publish.server") +
-          "/" + _var("publish.path") + "/permalink/" + _var("post.aslug") + 
+          "/" + _var("publish.path") + "/" + _var("post.aslug") + 
           ".html"
   tags = _var("post.tags")
   if tags.empty?
@@ -100,9 +103,6 @@ def banner
   navbar = nil
   vdir = @blog.root/:views/@blog.view
   lines = _body.to_a
-TTY.puts "-"*30
-lines.each {|x| TTY.puts x }
-TTY.puts "-"*30
 
   lines.each do |line|
     count += 1

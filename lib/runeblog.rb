@@ -94,8 +94,6 @@ class RuneBlog
     write_repo_config(root: @root)
     get_repo_config
     @views = retrieve_views
-puts @views.inspect
-system("cat #@root/data/VIEW")
     self.view = File.read(@root/"data/VIEW").chomp
     md = Dir.pwd.match(%r[.*/views/(.*?)/])
     if md
@@ -463,7 +461,6 @@ system("cat #@root/data/VIEW")
 
   def generate_view(view)  # huh?
     log!(enter: __method__, args: [view])
-puts "gv: view = #{view}"
     vdir = @root/:views/view
     @theme = @root/:views/view/:themes/:standard
     depend = [vdir/"remote/etc/blog.css.lt3", @theme/"global.lt3", 
@@ -478,6 +475,7 @@ puts "gv: view = #{view}"
                call: ".nopara"
     copy!("#{vdir}/themes/standard/banner/*", "#{vdir}/remote/banner/")  # includes navbar/
     copy("#{vdir}/assets/*", "#{vdir}/remote/assets/")
+# rebuild widgets
     copy_widget_html(view)
   rescue => err
     STDERR.puts err
@@ -598,10 +596,11 @@ puts "gv: view = #{view}"
     preprocess cwd: @theme/:post, src: "generate.lt3", force: true, 
                dst: remote/ahtml, copy: @theme/:post,
                call: ".nopara"    # , debug: true
+#   copy(remote/ahtml, remote/permalink/ahtml)
     # FIXME dependencies?
-    preprocess cwd: @theme/:post, src: "permalink.lt3", 
-               dst: remote/:permalink/ahtml,
-               mix: "liveblog"  # , debug: true
+#   preprocess cwd: @theme/:post, src: "permalink.lt3", 
+#              dst: remote/:permalink/ahtml,
+#              mix: "liveblog"  # , debug: true
     copy_widget_html(view_name)
   rescue => err
     _tmp_error(err)

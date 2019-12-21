@@ -4,7 +4,7 @@
 
 class ::RuneBlog::Widget
   class Pages
-    Type, Title = "pages", "Pages"
+    Type, Title = "pages", "My Pages"
 
     def initialize(repo)
       @blog = repo

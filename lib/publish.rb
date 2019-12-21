@@ -43,24 +43,14 @@ class RuneBlog::Publishing
     rc
   end
 
-  def publish(files, assets=[])
-    log!(enter: __method__, args: [files, assets], level: 1)
+  def publish
+    log!(enter: __method__, level: 1)
     dir = @docroot/@path
     view_name = @blog.view.name
     viewpath = dir # /view_name
-    result = system!("ssh #@user@#@server -x mkdir -p #{viewpath}/assets") 
-    files.each do |file|
-      dest = "#@user@#@server:" + dir  # /view_name
-      file.gsub!(/\/\//, "/")  # weird... :-/
-      cmd = "scp -r #{file} #{dest} >/dev/null 2>/tmp/wtf"
-      debug "cmd = #{cmd.inspect}  - see /tmp/wtf"
-      result = system!(cmd) || puts("\n  Could not copy #{file} to #{dest}")
-    end
-    unless assets.empty?
-      cmd = "scp #{assets.join(' ')} #@user@#@server:#{viewpath}/assets >/dev/null 2>/tmp/wtf2"
-      result = system!(cmd)
-      raise PublishError if !result
-    end
+    # FIXME rsync doesn't work
+    cmd = "rsync -a -r -z #{@blog.root}/views/#{@blog.view}/remote/ #@user@#@server:#{viewpath}/"
+    system!(cmd)
     dump(files, "#{@blog.view.dir}/last_published")
     true
   end
