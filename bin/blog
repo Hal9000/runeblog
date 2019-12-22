@@ -39,7 +39,7 @@ end
 
 def get_global
   if yesno("Faster view setup? (no: edit global.lt3)")
-    view_name = ask("\nFilename: ")
+    view_name = ask!("\nFilename: ")
     @blog.create_view(view_name)   # call change_view??
     title     = ask!("View title: ")
     subtitle  = ask!("Subtitle  : ")

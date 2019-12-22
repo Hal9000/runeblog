@@ -59,6 +59,10 @@ fixed view handling
 use rsync for publishing
 adds lowlevel.rb
 removed some redundant or dead code
+added config (exper, reddit, ...)
+got reddit posting working
+rearranged source tree a little
+post-rebuild now works
 .end
 
 .sublist oct2019 Recently completed (Oct 2019)
@@ -486,15 +490,11 @@ complete Completed tasks
 =Make an intro video
 =fix/delete Runeblog::Default (post\_template)?
 =Variables for config file?
-=reddit creds
-=subreddit functionality
 =Facebook buttons
 =Twitter buttons
-="rebuild post" command?
 =Update software safely?
 =bin/blog: Error when escaping from menu
 =bin/blog: autocomplete fails when no valid prefix
-autopost: reddit
 .end
 
 .sublist nextlive Next steps (Livetext, etc.)

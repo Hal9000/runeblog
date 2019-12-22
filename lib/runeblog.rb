@@ -95,7 +95,10 @@ class RuneBlog
       create_dirs(:data, :config, :drafts, :views, :posts)
       new_sequence
     end
-    copy_data(:config, repo_root/:data) unless File.exist?(repo_root/"data/VIEW")
+    unless File.exist?(repo_root/"data/VIEW")
+      copy_data(:config, repo_root/:data)   
+    end
+    copy_data(:extra,  repo_root/:config)
     write_repo_config(root: repo_root)
     @blog = self.new
     @blog
@@ -117,7 +120,6 @@ class RuneBlog
     self.class.blog = self   # Weird. Like a singleton - dumbass circular dependency?
 
     @root = Dir.pwd/root_rel
-#   copy_data(:config, @root/:data) unless File.exist?(@root/"data/VIEW")
     write_repo_config(root: @root)
     get_repo_config
     @views = retrieve_views
@@ -191,7 +193,7 @@ class RuneBlog
     dir = @root/:posts/nslug
     create_dirs(dir)
     # FIXME dependencies?
-    preprocess cwd: dir, src: @root/:drafts/sourcefile, 
+    preprocess cwd: dir, src: @root/:drafts/sourcefile, dst: @root/:posts/sourcefile.sub(/.lt3/, ",html"),  # ZZZ
                mix: "liveblog"  # , debug: true
     _deploy_local(dir)
   rescue => err
@@ -626,17 +628,12 @@ class RuneBlog
     preprocess cwd: @theme/:post, src: "generate.lt3", force: true, 
                dst: remote/ahtml, copy: @theme/:post,
                call: ".nopara"    # , debug: true
-#   copy(remote/ahtml, remote/permalink/ahtml)
-    # FIXME dependencies?
-#   preprocess cwd: @theme/:post, src: "permalink.lt3", 
-#              dst: remote/:permalink/ahtml,
-#              mix: "liveblog"  # , debug: true
     copy_widget_html(view_name)
   rescue => err
     _tmp_error(err)
   end
 
-  def generate_post(draft)
+  def generate_post(draft, force = false)
     log!(enter: __method__, args: [draft], level: 1)
     views = _get_views(draft)
     views.each do |view| 

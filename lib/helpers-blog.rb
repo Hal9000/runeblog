@@ -26,11 +26,16 @@ module RuneBlog::Helpers
   end
 
   def copy_data(tag, dest)
-    data = RuneBlog::Path + "/../data"  # files kept inside gem
+    data  = RuneBlog::Path + "/../data"    # files kept inside gem
+    extra = RuneBlog::Path + "/../config"  # files kept inside gem
+    # FIXME names are confusing
     case tag
-      when :config; files = %w[ROOT VIEW EDITOR universal.lt3 global.lt3]
+      when :config 
+        files = %w[ROOT VIEW EDITOR universal.lt3 global.lt3]
+        files.each {|file| copy(data + "/" + file, dest) }
+      when :extra
+        copy!(extra, dest)
     end
-    files.each {|file| copy(data + "/" + file, dest) }
   end
 
   def read_vars(file)

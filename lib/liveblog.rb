@@ -25,25 +25,6 @@ rescue
   raise "Only works inside a blog repo"
 end
 
-def _got_python?
-  # Dumb - fix later - check up front as needed
-  # Should also check for praw lib
-  str = `which python3`
-  str.length > 0
-end
-
-def _reddit_post(title, url)
-  _got_python?
-  tmpfile = "/tmp/reddit_post_url.txt"
-  File.open(tmpfile, "w") do |tmp|
-    tmp.puts "[Post] " + title
-    tmp.puts url
-  end
-  rid = `python3 reddit/reddit_post_url.py`
-  system("rm #{tmpfile}")
-  rid  # returns reddit id
-end
-
 ##################
 # "dot" commands
 ##################
@@ -64,23 +45,59 @@ def post
   _out "  <!-- Post number #{@meta.num} -->\n "
 end
 
+  def _got_python?
+    # Dumb - fix later - check up front as needed
+    # Should also check for praw lib
+    str = `which python3`
+    str.length > 0
+  end
+
+  def _reddit_post_url(vdir, title, url)
+    _got_python?
+    tmpfile = "/tmp/reddit-post-url.txt"
+    File.open(tmpfile, "w") do |tmp|
+      tmp.puts "[Post] " + title
+      tmp.puts url
+    end
+    rid = nil
+    Dir.chdir(vdir/:config) { rid = `python3 reddit/reddit_post_url.py` }
+    system("rm #{tmpfile}")
+    rid  # returns reddit id
+  end
+
 def post_trailer
   perma = _var("publish.proto") + "://" + _var("publish.server") +
           "/" + _var("publish.path") + "/" + _var("post.aslug") + 
           ".html"
   tags = _var("post.tags")
-  if tags.empty?
-    taglist = ""
-  else
-    taglist = "Tags: #{tags}"
+  taglist = tags.empty? ? "" : "Tags: #{tags}"
+
+  reddit_enabled = false   # FIXME
+  reddit_txt = ""
+  if reddit_enabled
+    vdir  = @blog.root/:views/@blog.view
+    nslug = "#{_var("post.num")}-#{_var("post.aslug")}"
+    rid_file = vdir/:posts/nslug/"reddit.id"
+    rid = File.exist?(rid_file) ? File.read(rid_file).chomp : nil
+    if rid.nil?
+      title = _var("title")
+      rid = _reddit_post_url(vdir, title, perma)
+      dump(rid, rid_file)
+    end
+    reddit_txt = <<~HTML
+      <hr>
+      <script src='https://redditjs.com/post.js' 
+              data-url="#{rid}" data-width=800 ></script>
+    HTML
+  # damned syntax highlighting </>
   end
   _out <<~HTML
   <table width=100%><tr>
     <td width=10%><a style="text-decoration: none" href="javascript:history.go(-1)">[Back]</a></td>
     <td width=10%><a style="text-decoration: none" href="#{perma}"> [permalink] </a></td>
     <td width=80% align=right><font size=-3>#{taglist}</font></td></tr></table>
+  #{reddit_txt}
   HTML
-  # damned syntax highlighting
 end
 
 def faq

@@ -214,12 +214,31 @@ module RuneBlog::REPL
     puts "Error: See #{out}"
   end
 
+  def fresh?(src, dst)
+    return false unless File.exist?(dst)
+    File.mtime(src) <= File.mtime(dst)
+  end
+
+  def regen_posts
+    drafts = @blog.drafts  # current view
+    drafts.each do |draft|
+      orig = @blog.root/:drafts/draft
+      html = @blog.root/:posts/draft
+      html.sub!(/.lt3$/, "/guts.html")
+      next if fresh?(orig, html)
+      puts "  Regenerating #{draft}"
+      @blog.generate_post(orig)    # rebuild post
+    end
+    puts
+  end
+
   def cmd_rebuild(arg, testing = false)
     debug "Starting cmd_rebuild..."
     reset_output
     puts unless testing
     @blog.generate_view(@blog.view)
     @blog.generate_index(@blog.view)
+    regen_posts
     @out
   rescue => err
     out = "/tmp/blog#{rand(100)}.txt"
@@ -257,7 +276,7 @@ module RuneBlog::REPL
   def cmd_new_view(arg, testing = false)
     reset_output
     if arg.nil?
-      arg = ask("\nFilename: ")
+      arg = ask(fx("\nFilename: ", :bold))
       puts
     end
     @blog.create_view(arg)
