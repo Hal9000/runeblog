@@ -1,0 +1,4 @@
+When a post is generated:
+  - check for reddit.id under VIEW/posts/nnnn-title/
+  - if it doesn't exist, post to reddit
+  - create the reddit.id

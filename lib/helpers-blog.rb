@@ -33,8 +33,8 @@ module RuneBlog::Helpers
       when :config 
         files = %w[ROOT VIEW EDITOR universal.lt3 global.lt3]
         files.each {|file| copy(data + "/" + file, dest) }
-      when :extra
-        copy!(extra, dest)
+      when :extra  # FIXME remove later
+#        copy!(extra, dest)
     end
   end
 

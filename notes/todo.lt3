@@ -63,6 +63,11 @@ added config (exper, reddit, ...)
 got reddit posting working
 rearranged source tree a little
 post-rebuild now works
+added file arg to .variables
+progress on reddit, fb, twitter
+credentials.txt into .gitignore
+added views to lsd/lsp output
+added view titles to lsv
 .end
 
 .sublist oct2019 Recently completed (Oct 2019)
@@ -119,8 +124,7 @@ Fixed mkwidget
 .end
 
 .sublist easyish Easy stuff?
-=add views to lsd/lsp output
-"wrap"-style include
+"wrap"-style include maybe?
 add CSS ref to post?
 specific kinds of rebuild?
 custom.rb (livetext) gets included if present?
@@ -128,10 +132,10 @@ Warn when .img (etc.) refs nonexistent asset
 .end
 
 .sublist funky General functionality
-=sophisticated "example" blog (via bin/blog)
 =backup/restore?
 =ssh-copy-id in setup
 more params in globals
+rename post to entry or recent (in global)
 global: num recent posts
 global: main.bgcolor
 common widget code

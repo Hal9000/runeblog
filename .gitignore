@@ -1,5 +1,6 @@
 runeblog*.gem
 /.blogs
+credentials.txt
 out-stats
 .idea/
 binblog.txt

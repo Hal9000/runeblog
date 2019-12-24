@@ -1,6 +1,7 @@
 require 'runeblog'
 require 'ostruct'
 require 'helpers-repl'  # FIXME structure
+require 'pathmagic'
 
 make_exception(:PublishError,  "Error during publishing")
 make_exception(:EditorProblem, "Could not edit $1")
@@ -378,10 +379,15 @@ module RuneBlog::REPL
       v = v.to_s
       v = fx(v, :bold) if v == @blog.view.name
       output v + "\n"
-      puts "  ", v unless testing
+      # FIXME: next 3 lines are crufty as hell
+      lines = File.readlines(@blog.root/"views/#{v}/themes/standard/global.lt3")
+      lines = lines.select {|x| x =~ /^blog / && x !~ /VIEW_/ }
+      title = lines.first.split(" ", 2)[1]
+      print "  ", ('%15s' % v) unless testing
+      puts  "  ", fx(title, :black) unless testing
     end
     puts unless testing
-    @out
+#   @out
   end
 
   def cmd_list_posts(arg, testing = false)
@@ -400,6 +406,12 @@ module RuneBlog::REPL
         base = post.sub(/.lt3$/, "")
         num, rest = base[0..3], base[4..-1]
         puts "  ", fx(num, Red), fx(rest, Blue) unless testing
+        draft = @blog.root/:drafts/post + ".lt3"
+        other = @blog._get_views(draft) - [@blog.view.to_s]
+        unless other.empty?
+          print fx(" "*7 + "also in: ", :bold) 
+          puts other.join(", ") 
+        end
       end
     end
     puts unless testing
@@ -420,6 +432,11 @@ module RuneBlog::REPL
         base = draft.sub(/.lt3$/, "")
         num, rest = base[0..3], base[4..-1]
         puts "  ", fx(num, Red), fx(rest, Blue) unless testing
+        other = @blog._get_views(@blog.root/:drafts/draft) - [@blog.view.to_s]
+        unless other.empty?
+          print fx(" "*7 + "also in: ", :bold) 
+          puts other.join(", ") 
+        end
       end
     end
     puts unless testing

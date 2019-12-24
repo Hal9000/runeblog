@@ -1,0 +1,15 @@
+.variables facebook credentials.txt
+
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '$facebook.appid',
+      xfbml      : $facebook.xfbml,
+      version    : '$facebook.ver'
+    });
+  };
+
+  callout(document, 'facebook-jssdk', 
+          '//connect.facebook.net/en_US/sdk.js');
+</script>
+
