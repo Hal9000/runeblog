@@ -16,15 +16,12 @@ locale      en_US
 
 font.family       verdana
 
-post.title.color  #010101
-post.title.size   28px
-
-post.text.color   #0101a1
-post.text.size    22px
-
-post.date.color   #9a9a9a
-post.date.size    15px
-
+recent.title.color  #010101
+recent.title.size   28px
+recent.text.color   #0101a1
+recent.text.size    22px
+recent.date.color   #9a9a9a
+recent.date.size    15px
 
 publish.user      root
 publish.server    rubyhacker.com

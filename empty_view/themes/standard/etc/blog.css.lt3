@@ -3,40 +3,40 @@
 . Most of the global CSS goes here                  
 . --------------------------------------------------
 
-.seek themes/standard/global.lt3
+.seek global.lt3
 
 body { font-family: $font.family }
 
-\.post-title a {
-  color: $post.title.color;
+\.recent-title a {
+  color: $recent.title.color;
   font-family: $font.family;
-  font-size: $post.title.size;
+  font-size: $recent.title.size;
   float: right;
   display: inline-block;
   text-align: top;
   text-decoration: none;
 }
 
-\.post-title a:hover {
+\.recent-title a:hover {
   text-decoration: none;
 }
 
-\.post-title-text a {
-  color: $post.text.color;
+\.recent-title-text a {
+  color: $recent.text.color;
   font-family: $font.family;
-  font-size: $post.text.size; 
+  font-size: $recent.text.size; 
   display: block;
   text-decoration: none;
 }
 
-\.post-title-text a:hover {
+\.recent-title-text a:hover {
   text-decoration: none;
 }
 
-\.post-date {
-  color: $post.date.color;
+\.recent-date {
+  color: $recent.date.color;
   font-family: $font.family;
-  font-size: $post.date.size;
+  font-size: $recent.date.size;
   display: block;
   float: left;
   text-align: top;

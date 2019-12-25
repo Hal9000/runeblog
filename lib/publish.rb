@@ -3,10 +3,10 @@ if ! defined?(Already_publish)
   Already_publish = nil
 
 require 'pathmagic'
+require 'processing'
 
 class RuneBlog::Publishing
   attr_reader :user, :server, :docroot, :path
-
 
   BadRemoteLogin = Exception.new("Can't login remotely")
   BadRemotePerms = Exception.new("Bad remote permissions")
@@ -14,15 +14,14 @@ class RuneBlog::Publishing
   def initialize(view)
     log!(enter: __method__, args: [view.to_s])
     @blog = RuneBlog.blog
-    gfile = @blog.root/:views/view/"themes/standard/global.lt3"
-    data = File.readlines(gfile)
-    # Please refactor the Hal out of this
-    grab = ->(var) { data.grep(/^#{var} /).first.chomp.split(" ", 2)[1] }
-    @user    = grab.call("publish.user")
-    @server  = grab.call("publish.server")
-    @docroot = grab.call("publish.docroot")
-    @path    = grab.call("publish.path")
-    @proto   = grab.call("publish.proto")
+    dir = @blog.root/:views/view/"themes/standard/"
+    gfile = dir/"global.lt3"
+    live = get_live_vars(gfile)
+    @user    = live.vars["publish.user"]
+    @server  = live.vars["publish.server"]
+    @docroot = live.vars["publish.docroot"]
+    @path    = live.vars["publish.path"]
+    @proto   = live.vars["publish.proto"]
   end
 
   def to_h

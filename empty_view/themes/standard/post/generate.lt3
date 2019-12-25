@@ -22,9 +22,9 @@ style       blog.css
 <body>
 
 <section class="post">
-  <div class="entry-content">
+  <div class="recent-content">
     <table border=0 width=100%><tr>
-      <td align=left valign=bottom><h2 class="post-title">$title</h2></td>
+      <td align=left valign=bottom><h2 class="recent-title">$title</h2></td>
       <td align=right valign=top><font size=-5><br></font>$longdate</td>
     </tr></table><hr>
     $.copy guts.html

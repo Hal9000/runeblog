@@ -193,7 +193,7 @@ class RuneBlog
     dir = @root/:posts/nslug
     create_dirs(dir)
     # FIXME dependencies?
-    preprocess cwd: dir, src: @root/:drafts/sourcefile, dst: @root/:posts/sourcefile.sub(/.lt3/, ",html"),  # ZZZ
+    preprocess cwd: dir, src: @root/:drafts/sourcefile, dst: @root/:posts/sourcefile.sub(/.lt3/, ".html"),  # ZZZ
                mix: "liveblog"  # , debug: true
     _deploy_local(dir)
   rescue => err

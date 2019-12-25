@@ -68,6 +68,8 @@ progress on reddit, fb, twitter
 credentials.txt into .gitignore
 added views to lsd/lsp output
 added view titles to lsv
+adds get_live_vars
+improves global.lt3 and CSS class names
 .end
 
 .sublist oct2019 Recently completed (Oct 2019)

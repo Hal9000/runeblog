@@ -21,7 +21,7 @@ description $teaser
 .end
 
 <section class="post">
-  <div class="entry-content">
+  <div class="recent-content">
     $.copy guts.html
   </div>
 </section>

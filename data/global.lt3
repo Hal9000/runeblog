@@ -15,21 +15,24 @@ url         http://SITE
 locale      en_US
 
 font.family       verdana
+.end
 
-post.title.color  #010101
-post.title.size   28px
+.variables recent
+title.color  #010101
+title.size   28px
 
-post.text.color   #0101a1
-post.text.size    22px
+text.color   #0101a1
+text.size    22px
 
-post.date.color   #9a9a9a
-post.date.size    15px
+date.color   #9a9a9a
+date.size    15px
+.end
 
-
-publish.user      root
-publish.server    SITE
-publish.docroot   /var/www/
-publish.path      VIEW_NAME
-publish.proto     http
+.variables publish
+user      root
+server    SITE
+docroot   /var/www/
+path      VIEW_NAME
+proto     http
 .end
 

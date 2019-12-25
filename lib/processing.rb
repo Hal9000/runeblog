@@ -47,4 +47,10 @@ def preprocess(cwd: Dir.pwd, src:,
   end
 end
 
+def get_live_vars(src)
+  live = Livetext.customize(call: [".nopara"])
+  live.xform_file(src)
+  live
+end
+
 end
