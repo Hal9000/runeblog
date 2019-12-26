@@ -373,7 +373,7 @@ class RuneBlog
     html = "/tmp/post_entry.html"
     preprocess src: post_entry_name, dst: html,
                call: ".nopara"  # , deps: depend  # , debug: true
-    @_post_entry ||= File.read(html)
+    @_post_entry = File.read(html)
     vp = post_lookup(id)
     nslug, aslug, title, date, teaser_text = 
       vp.nslug, vp.aslug, vp.title, vp.date, vp.teaser_text
@@ -499,9 +499,8 @@ class RuneBlog
              @theme/"blog/head.lt3", 
              # @theme/"navbar/navbar.lt3",
              @theme/"blog/index.lt3"]   # FIXME what about assets?
-    preprocess cwd: vdir/"themes/standard/etc", # deps: depend, debug: true,
-               src: "blog.css.lt3", copy: vdir/"remote/etc/", 
-               call: ".nopara" # , dst: "blog.css"
+    preprocess cwd: vdir/"themes/standard/etc", src: "blog.css.lt3", 
+               copy: vdir/"remote/etc/", call: [".nopara"], strip: true
     preprocess cwd: vdir/"themes/standard", deps: depend, force: true,
                src: "blog/generate.lt3", dst: vdir/:remote/"index.html", 
                call: ".nopara"

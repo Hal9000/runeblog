@@ -275,6 +275,13 @@ def h6; _passthru "<h6>#{@_data}</h6>"; end
 
 def hr; _passthru "<hr>"; end
 
+def nlist
+  _out "<ol>"
+  _body {|line| _out "<li>#{line}</li>" }
+  _out "</ol>"
+  _optional_blank_line
+end
+
 def list
   _out "<ul>"
   _body {|line| _out "<li>#{line}</li>" }

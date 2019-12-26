@@ -21,11 +21,15 @@ def stale?(src, dst, deps, force = false)
 end
 
 def preprocess(cwd: Dir.pwd, src:, 
-          dst: (strip = true; File.basename(src).sub(/.lt3$/,"")), 
+          dst: nil, strip: false,
           deps: [], copy: nil, debug: false, force: false, 
           mix: [], call: [], vars: {})
   src += LEXT unless src.end_with?(LEXT)
-  dst += ".html" unless (dst.end_with?(".html") || strip)
+  if strip
+    dst = File.basename(src).sub(/.lt3$/,"")
+  else
+    dst += ".html" unless dst.end_with?(".html")
+  end
   sp = " "*12
   Dir.chdir(cwd) do
     if debug

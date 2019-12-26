@@ -31,6 +31,7 @@ def get_universal
     str = File.read(univ)
     str = str.gsub(/AUTHOR/, author)
     str = str.gsub(/SITE_DOMAIN/, site)
+    File.write(univ, str)
   else
     vim_params = '-c ":set hlsearch" -c ":hi Search ctermfg=2 ctermbg=6" +/"\(AUTHOR.*\|SITE.*\)"'
     edit_file(univ, vim: vim_params)

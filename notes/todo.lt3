@@ -70,6 +70,9 @@ added views to lsd/lsp output
 added view titles to lsv
 adds get_live_vars
 improves global.lt3 and CSS class names
+fixes in livetext formatting
+added nlist to liveblog
+experimenting with em dash
 .end
 
 .sublist oct2019 Recently completed (Oct 2019)
