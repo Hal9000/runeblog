@@ -1,0 +1,6 @@
+recent.title.color  #010101
+recent.title.size   28px
+recent.text.color   #0101a1
+recent.text.size    22px
+recent.date.color   #9a9a9a
+recent.date.size    15px

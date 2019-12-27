@@ -1,0 +1,5 @@
+user      root
+server    rubyhacker.com
+docroot   /var/www/
+path      stuff
+proto     http

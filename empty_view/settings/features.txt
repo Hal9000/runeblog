@@ -1,0 +1,13 @@
+- reddit       # autopost, embed thread after blog post
+- facebook     # reader-like, reader post, autopost?
+- twitter      # reader-tweet, reader-follow, autotweet?
+  
+- ad           # widget: embed advertising 
+- bydates      # widget: browse posts by date
+  links        # widget: external links
+  news         # widget: news (external)
+  pages        # widget: internal pages
+  pinned       # widget: pinned posts
+- search       # widget: search posts
+- sitemap      # widget: site map
+- tag-cloud    # widget: tag cloud (clickable)
