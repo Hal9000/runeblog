@@ -80,6 +80,7 @@ added view.txt, recent.txt, publish.txt
 improved ui/ux
 fixed/changed some variable names (e.g. view.*)
 added features.txt file
+bumped livetext to 0.9.01
 .end
 
 .sublist oct2019 Recently completed (Oct 2019)
