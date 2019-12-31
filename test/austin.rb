@@ -59,19 +59,17 @@ x = RuneBlog.new(".blogs")
 debug("create_view: #{bold('around_austin')}")
 x.create_view("around_austin")   # FIXME remember view title!
 
-#### FIXME later!!
+#### FIXME
+
 vars = <<-VARS
-
-.variables
-blog        Around Austin
-blog.desc   The view from downtown...
-
-font.family verdana
-.end
+author     Hal Fulton
+title      Around Austin
+subtitle   The view from downtown...
+domain     foo.com
 VARS
-File.open(".blogs/views/around_austin/themes/standard/global.lt3", "a") do |f|
-  f.puts vars
-end
+vfile = ".blogs/views/around_austin/settings/view.txt"
+File.open(vfile, "w") {|f| f.puts vars }
+
 ####
 
 debug("-- change_view: #{bold('around_austin')}")

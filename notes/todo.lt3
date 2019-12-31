@@ -34,6 +34,8 @@ Experimenting with new config
 Replaced config with three files under data/
 BROKEN: Replaced xlate with preprocess
 Backed out preprocess
+put navbar inside blog/index.lt3
+move global.lt3 into etc
 Fixed navbar
 Added blog/banner.lt3
 Rudimentary "universal.lt3" file
@@ -73,6 +75,11 @@ improves global.lt3 and CSS class names
 fixes in livetext formatting
 added nlist to liveblog
 experimenting with em dash
+broke up global.lt3
+added view.txt, recent.txt, publish.txt
+improved ui/ux
+fixed/changed some variable names (e.g. view.*)
+added features.txt file
 .end
 
 .sublist oct2019 Recently completed (Oct 2019)
@@ -129,6 +136,7 @@ Fixed mkwidget
 .end
 
 .sublist easyish Easy stuff?
+change teaser to excerpt?
 "wrap"-style include maybe?
 add CSS ref to post?
 specific kinds of rebuild?
@@ -137,30 +145,25 @@ Warn when .img (etc.) refs nonexistent asset
 .end
 
 .sublist funky General functionality
-=backup/restore?
-=ssh-copy-id in setup
-more params in globals
-rename post to entry or recent (in global)
-global: num recent posts
-global: main.bgcolor
-common widget code
+=post analyzer - SEO, spell, wcount, etc.
+split up global.lt3, fix wizard
 autopost: Facebook
 autopost: Twitter
 autopost: linkedin
 better asset management
 dynamically add commands/code to repl?
 need categories??
-post analyzer - SEO, spell, wcount, etc.
 .end
 
 .sublist widgets Widget functionality, etc.
 =standard/nonstandard marker for widgets
 =work on "standard widget" concept
-tag cloud
+=common widget code
+=tag cloud
+=site map widget
+=automated news search
 bydates manager
 search
-site map widget
-automated news search
 .end
 
 .sublist livetext Livetext bugs/features
@@ -177,8 +180,6 @@ allow large output for lsp/lsd (scroll? more?)
 undo last post?
 allow for post title changing
 add post template capability (create, edit, post)
-tricky? put navbar inside blog/index.lt3
-tricky? move global.lt3 into etc
 allow windows to scroll back
 .end
 
@@ -189,7 +190,6 @@ footer? holding a widget?
 support for Windows?? (open, paths, ...)
 Twitter-embed widget
 verify image assets
-=setup wizard?
 auto-notify on post (FB/Twitter)
 subscription?
 analytics?
@@ -198,19 +198,17 @@ up/down votes, etc.?
 Select themes/styles for blog??
 real support for tags (and cloud)
 Move some pieces into "snippets" (e.g. Facebook/Twitter integration)
-=special tags: intra-blog, gist, github, youtube, ...
-=special tags: vimeo, twitter, fb?, reddit?, ...
 .end
 
 .sublist pretty Prettier code
+=don't use vars.lt3
 =move badly-scoped methods (e.g., runeblog.rb to post.rb)
+=fix \$DotDir
+=more keyword parameters as needed
 =fix check\_empty issue
-change xlate everywhere
 liveblog: separate dot-commands from helpers
 remove duplicated and double-scoped code
-=fix \$DotDir
 cards as .lt3 files?
-=more keyword parameters as needed
 remove dead code!!
 factor generic HTML out of liveblog.rb
 rethink helper libs?
@@ -492,7 +490,17 @@ complete Completed tasks
 .end
 
 .sublist nextish Next steps...
-=break up global.lt3??
+=fix metadata.txt format
+=_retrieve_metadata or _get_draft_data -- pick one!
+=clean up UI
+=better lsd, lsp output (title, not slug)
+=fix "head" stuff
+=global: num recent posts
+=global: main.bgcolor
+=backup/restore?
+=ssh-copy-id in setup
+=special tags: intra-blog, gist, github, youtube, ...
+=special tags: vimeo, twitter, fb?, reddit?, ...
 =Formalize example blog
 =Enable/disable widgets (also FB/Twitter/reddit?)
 =RubyText settings in file

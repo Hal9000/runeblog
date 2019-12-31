@@ -1,4 +1,0 @@
-author      Your name here
-title       Blog title goes here
-subtitle    Subtitle (if any) goes here
-site        rubyhacker.com

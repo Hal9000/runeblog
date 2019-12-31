@@ -72,7 +72,7 @@ def post_trailer
   tags = _var("post.tags")
   taglist = tags.empty? ? "" : "Tags: #{tags}"
 
-  reddit_enabled = false   # FIXME
+  reddit_enabled = @blog.features["reddit"] rescue nil
   reddit_txt = ""
   if reddit_enabled
     vdir  = @blog.root/:views/@blog.view
@@ -241,8 +241,8 @@ def _svg_title(*args)
         .subtitle { font: #{style2} #{size2} #{font2}; fill: #{color2} }
       </style>
       <rect x="10" y="10" rx="10" ry="10" width="#{width}" height="#{height}" fill="url(#grad1)"/>
-      <text text-anchor="#{align}"  x="#{x}" y="#{y}" class="title">#{Livetext::Vars[:blog]} </text>
-      <text text-anchor="#{align2}" x="#{x2}" y="#{y2}" class="subtitle">#{Livetext::Vars["blog.desc"]} </text>
+      <text text-anchor="#{align}"  x="#{x}" y="#{y}" class="title">#{Livetext::Vars["view.title"]} </text>
+      <text text-anchor="#{align2}" x="#{x2}" y="#{y2}" class="subtitle">#{Livetext::Vars["view.subtitle"]} </text>
     </svg> 
     <!-- ^ how does syntax highlighting get messed up? </svg> -->
   HTML
@@ -446,18 +446,18 @@ def head  # Does NOT output <head> tags
   defaults = {}
   defaults = { "charset"        => %[<meta charset="utf-8">],
                "http-equiv"     => %[<meta http-equiv="X-UA-Compatible" content="IE=edge">],
-               "title"          => %[<title>\n  #{_var(:blog)} | #{_var("blog.desc")}\n  </title>],
+               "title"          => %[<title>\n  #{_var("view.title")} | #{_var("view.subtitle")}\n  </title>],
                "generator"      => %[<meta name="generator" content="Runeblog v #@version">],
-               "og:title"       => %[<meta property="og:title" content="#{_var(:blog)}">],
+               "og:title"       => %[<meta property="og:title" content="#{_var("view.title")}">],
                "og:locale"      => %[<meta property="og:locale" content="#{_var(:locale)}">],
-               "description"    => %[<meta name="description" content="#{_var("blog.desc")}">],
-               "og:description" => %[<meta property="og:description" content="#{_var("blog.desc")}">],
+               "description"    => %[<meta name="description" content="#{_var("view.subtitle")}">],
+               "og:description" => %[<meta property="og:description" content="#{_var("view.subtitle")}">],
                "linkc"          => %[<link rel="canonical" href="#{_var(:host)}">],
                "og:url"         => %[<meta property="og:url" content="#{_var(:host)}">],
-               "og:site_name"   => %[<meta property="og:site_name" content="#{_var(:blog)}">],
+               "og:site_name"   => %[<meta property="og:site_name" content="#{_var("view.title")}">],
 #              "style"          => %[<link rel="stylesheet" href="etc/blog.css">],
 # ^ FIXME
-               "feed"           => %[<link type="application/atom+xml" rel="alternate" href="#{_var(:host)}/feed.xml" title="#{_var(:blog)}">],
+               "feed"           => %[<link type="application/atom+xml" rel="alternate" href="#{_var(:host)}/feed.xml" title="#{_var("view.title")}">],
                "favicon"        => %[<link rel="shortcut icon" type="image/x-icon" href="etc/favicon.ico">\n <link rel="apple-touch-icon" href="etc/favicon.ico">]
              }
   result = {}
@@ -689,7 +689,7 @@ end
 
 def _make_navbar(orient = :horiz)
   vdir = @root/:views/@blog.view
-  title = _var(:blog)
+  title = _var("view.title")
 
   if orient == :horiz
     name = "navbar.html"

@@ -1,5 +1,5 @@
 user      root
-server    rubyhacker.com
-docroot   /var/www/
-path      stuff
-proto     http
+server    SITE
+docroot   /var/www/html
+path      VIEW_NAME        # can be different
+proto     https

@@ -8,14 +8,11 @@
 .nopara
 
 .variables
-. Identity
-author        AUTHOR
-site          SITE_DOMAIN
+univ.author        AUTHOR
+univ.site          SITE_DOMAIN
 
-. Style
 font.family   verdana
 
-. Details
 charset       utf-8
 locale        en_US
 .end

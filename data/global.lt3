@@ -3,36 +3,18 @@
 .   <variable>  <value>                             
 . --------------------------------------------------
 
-.variables
-author      AUTHOR
-blog        VIEW_TITLE
-blog.desc   VIEW_SUBTITLE
-site        SITE
+.variables view     ../../settings/view.txt
 
+.variables recent   ../../settings/recent.txt
+
+.variables publish  ../../settings/publish.txt
+
+.variables
 host        http://SITE
 charset     utf-8
 url         http://SITE
 locale      en_US
 
 font.family       verdana
-.end
-
-.variables recent
-title.color  #010101
-title.size   28px
-
-text.color   #0101a1
-text.size    22px
-
-date.color   #9a9a9a
-date.size    15px
-.end
-
-.variables publish
-user      root
-server    SITE
-docroot   /var/www/
-path      VIEW_NAME
-proto     http
 .end
 

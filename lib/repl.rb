@@ -38,7 +38,7 @@ module RuneBlog::REPL
     @out
   end
 
-  def cmd_config(arg, testing = false)
+  def OLD_cmd_config(arg, testing = false)
     hash = {"global.lt3           Global configuration"                     => "global.lt3",
             "banner/top.lt3       Text portion of banner"                   => "banner/top.lt3",
             "blog/generate.lt3    Generator for view (usu not edited)"      => "blog/generate.lt3",
@@ -58,6 +58,32 @@ module RuneBlog::REPL
     num, target = STDSCR.menu(title: "Edit file:", items: hash)
     edit_file(dir/target)
   end
+
+  def cmd_config(arg, testing = false)
+    hash = {"Global configuration"                     => "global.lt3",
+            "   View-specific variables"               => "../../settings/view.txt",
+            "   Recent posts"                          => "../../settings/recent.txt",
+            "   Publishing vars"                       => "../../settings/publish.txt",
+            "Banner description"                       => "blog/banner.lt3",
+            "   Text portion of banner"                => "banner/top.lt3",
+            "Generator for view (usu not edited)"      => "blog/generate.lt3",
+            "   HEAD info for view"                    => "blog/head.lt3",
+            "   User-edited detail for view"           => "blog/index.lt3",
+            "Generator for post entry in recent-posts" => "blog/post_entry.lt3",
+            "Global CSS"                               => "etc/blog.css.lt3",
+            "External JS/CSS (Bootstrap, etc.)"        => "/etc/externals.lt3",
+            "Generator for a post"                     => "post/generate.lt3",
+            "   HEAD info for post"                    => "post/head.lt3",
+            "   Content for post"                      => "post/index.lt3",
+            "Generator for permalink"                  => "post/permalink.lt3",
+           }
+
+    dir = @blog.view.dir/"themes/standard/"
+    num, target = STDSCR.menu(title: "Edit file:", items: hash)
+    edit_file(dir/target)
+  end
+
+
 
   def cmd_manage(arg, testing = false)
     case arg

@@ -14,6 +14,18 @@ module RuneBlog::Helpers
     exit
   end
 
+  def read_features
+    hash = {}
+    file = @root/self.view/"settings/features.txt"
+    lines = File.readlines(file)
+    lines.each do |line|
+      char, line = line[0], line[1..-1].chomp
+      name = line.strip
+      hash[name] = (char != "-")
+    end
+    @features = hash
+  end
+
   def get_repo_config
     log!(enter: __method__, level: 3)
     @editor = File.read(".blogs/data/EDITOR").chomp
@@ -47,14 +59,15 @@ module RuneBlog::Helpers
       line = line.strip
       next if skip.include?(line[0])
       key, val = line.split(" ", 2)
-      hash[key] = val
+      next if key.nil?
+      hash[key] = hash[key.to_sym] = val
     end
     hash
   rescue => err
     puts "Can't read vars file '#{file}': #{err}"
     puts err.backtrace.join("\n")
     puts "dir = #{Dir.pwd}"
-    stop_RubyText
+    stop_RubyText rescue nil
   end
 
   def read_config(file, *syms)
@@ -110,15 +123,6 @@ module RuneBlog::Helpers
     File.write(root + "/data/VIEW",   view.to_s + "\n")
     File.write(root + "/data/EDITOR", editor + "\n")
   end
-
-  # def new_dotfile(root: ".blogs", current_view: "test_view", editor: "vi")
-  #   log!(enter: __method__, args: [root, current_view, editor], level: 3)
-  #   root = Dir.pwd + "/" + root
-  #   x = OpenStruct.new
-  #   x.root, x.current_view, x.editor = root, current_view, editor
-  #   write_config(x, root + "/" + RuneBlog::ConfigFile)
-  #   write_repo_config
-  # end
 
   def new_sequence
     log!(enter: __method__, level: 3)

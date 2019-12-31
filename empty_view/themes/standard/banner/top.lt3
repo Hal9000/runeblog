@@ -15,6 +15,6 @@
 
 <rect x="20" y="20" rx="15" ry="15" width="98%" height="100" fill="url(#grad1)"/>
 
-<text x="45" y="70" class=heavy>$blog</text>
-<text x="45" y="98" class=small>$blog.desc</text>
+<text x="45" y="70" class=heavy>$view.title</text>
+<text x="45" y="98" class=small>$view.subtitle</text>
 </svg>

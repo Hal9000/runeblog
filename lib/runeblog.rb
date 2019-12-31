@@ -40,7 +40,7 @@ class RuneBlog
   end
 
   attr_reader :views, :sequence
-  attr_accessor :root, :editor
+  attr_accessor :root, :editor, :features
   attr_accessor :view  # overridden
 
   attr_accessor :post_views, :post_tags, :dirty_views
@@ -120,7 +120,7 @@ class RuneBlog
     self.class.blog = self   # Weird. Like a singleton - dumbass circular dependency?
 
     @root = Dir.pwd/root_rel
-    write_repo_config(root: @root)
+    write_repo_config(root: @root)   # ?? FIXME
     get_repo_config
     @views = retrieve_views
     self.view = File.read(@root/"data/VIEW").chomp
@@ -134,16 +134,67 @@ class RuneBlog
     @post_tags = []
   end
 
+  def complete_file(name, vars, hash)
+    debugging = vars.nil?
+    return if hash.empty?
+    text = File.read(name)
+    if vars.nil?   # FIXME dumbest hack ever?
+      vars = {}
+      hash.values.each {|val| vars[val] = val }
+    end
+
+    hash.each_pair {|key, var| text.gsub!(key, vars[var]) }
+    File.write(name, text)
+  end
+
+  def _generate_settings(view = nil)
+    vars = read_vars("#@root/data/universal.lt3")
+    hash = {/AUTHOR/  => "view.author",
+            /SITE/    => "view.site",
+            /FONT/    => "font.family",
+            /CHARSET/ => :charset,
+            /LOCALE/  => :locale}
+
+    # rubytext.txt - LATER
+    # complete_file(settings/"rubytext.txt", {}
+
+    if view
+      settings = @root/view/"settings"
+      ### ??? Where to get hash of view-specific vars?
+
+      # features.txt - handle specially
+      fname = settings/"features.txt"
+
+      # view.txt
+      complete_file(settings/"view.txt", 
+                        /AUTHOR/   => "view.author",
+                        /TITLE/    => "view.title",
+                        /SUBTITLE/ => "view.subtitle",
+                        /SITE/     => "view.site")
+
+      # publish.txt
+      complete_file(settings/"publish.txt", 
+                        /USER/    => "publish.user",
+                        /SERVER/  => "publish.server",
+                        /DOCROOT/ => "publish.docroot",
+                        /PATH/    => "publish.path",
+                        /PROTO/   => "publish.proto")
+                
+      # recent.txt - SKIP THIS?
+      complete_file(settings/"recent.txt",  {})
+    end
+  end
+
   def _generate_global
     vars = read_vars("#@root/data/universal.lt3")
     gfile = "#@root/data/global.lt3"
-    global = File.read(gfile)
-    global.gsub!(/AUTHOR/,  vars["author"])
-    global.gsub!(/SITE/,    vars["site"])
-    global.gsub!(/FONT/,    vars["font.family"])
-    global.gsub!(/CHARSET/, vars["charset"])
-    global.gsub!(/LOCALE/,  vars["locale"])
-    File.write(gfile, global)
+    hash = {/AUTHOR/  => "univ.author",
+            /SITE/    => "univ.site",
+            /FONT/    => "font.family",
+            /CHARSET/ => :charset,
+            /LOCALE/  => :locale}
+    complete_file(gfile, vars, hash)
+    _generate_settings
   end
 
   def _deploy_local(dir)
@@ -151,16 +202,15 @@ class RuneBlog
     Dir.chdir(dir) do
       views = _retrieve_metadata(:views)
       views.each do |v| 
-        unless self.view?(v)
-          puts "#{fx("Warning:", :red)} #{fx(v, :bold)} is not a view"
-          next
-        end
+        next unless _check_view?(v)
         system!("cp *html #@root/views/#{v}/remote", show: true)
       end
     end
   rescue => err
     _tmp_error(err)
   end
+
+  # FIXME reconcile with _get_draft data
 
   def _retrieve_metadata(key)
     key = key.to_s
@@ -506,12 +556,33 @@ class RuneBlog
                call: ".nopara"
     copy!("#{vdir}/themes/standard/banner/*", "#{vdir}/remote/banner/")  # includes navbar/
     copy("#{vdir}/assets/*", "#{vdir}/remote/assets/")
-# rebuild widgets
+    # rebuild widgets?
     copy_widget_html(view)
   rescue => err
     STDERR.puts err
     STDERR.puts err.backtrace.join("\n")
     # _tmp_error(err)
+  end
+
+  def _get_draft_data(num, sym)
+    tag = prefix(num)
+    front = @blog.root/:drafts/tag
+    files = Dir[front + "*"]
+    raise "No draft #{num} found" if files.empty?
+    raise "Too many files found for #{num}!" if files.size > 1
+    file = files.first
+    lines = File.readlines(file)
+    case sym
+      when :views
+        view_line = lines.grep(/^.views /)
+        raise "More than one .views call in #{draft}" if view_line.size > 1
+        raise "No .views call in #{draft}" if view_line.size < 1
+        view_line = view_line.first
+        views = view_line[7..-1].split
+        return views.uniq 
+    else
+      raise "Unknown symbol #{sym.inspect}"
+    end
   end
 
   def _get_views(draft)
@@ -603,6 +674,8 @@ class RuneBlog
     log!(enter: __method__, args: [draft, view_name], level: 2)
     # break into separate methods?
 
+    return unless _check_view?(view_name)
+
     fname = File.basename(draft)       # 0001-this-is-a-post.lt3
     nslug = fname.sub(/.lt3$/, "")     # 0001-this-is-a-post
     aslug = nslug.sub(/\d\d\d\d-/, "") # this-is-a-post
@@ -632,30 +705,16 @@ class RuneBlog
     _tmp_error(err)
   end
 
+  def _check_view?(view)
+    flag = self.view?(view)
+    puts "  Warning: '#{view}' is not a view" unless flag
+    flag
+  end
+
   def generate_post(draft, force = false)
     log!(enter: __method__, args: [draft], level: 1)
     views = _get_views(draft)
-    views.each do |view| 
-      unless self.view?(view)
-        puts "Warning: '#{view}' is not a view"
-        next
-      end
-      _handle_post(draft, view)
-    end
-  rescue => err
-    _tmp_error(err)
-  end
-
-  def rebuild_post(file)
-    log!(enter: __method__, args: [file])
-    raise "Doesn't currently work"
-    debug "Called rebuild_post(#{file.inspect})"
-    raise ArgumentError unless file.is_a?(String)
-    meta = process_post(file)
-    @views_dirty ||= []
-    @views_dirty << meta.views
-    @views_dirty.flatten!
-    @views_dirty.uniq!
+    views.each {|view| _handle_post(draft, view) }
   rescue => err
     _tmp_error(err)
   end

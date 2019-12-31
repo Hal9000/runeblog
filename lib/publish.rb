@@ -16,6 +16,8 @@ class RuneBlog::Publishing
     @blog = RuneBlog.blog
     dir = @blog.root/:views/view/"themes/standard/"
     gfile = dir/"global.lt3"
+    return unless File.exist?(gfile)  # FIXME Hackish as hell
+
     live = get_live_vars(gfile)
     @user    = live.vars["publish.user"]
     @server  = live.vars["publish.server"]

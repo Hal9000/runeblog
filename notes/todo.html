@@ -15,13 +15,23 @@
 <p>
 
 <h2>Runeblog TODO</h2>
-</h3>Generated from <code><font size=+1><b>notes/todo.lt3</b></font></code> - 2019-12-26 01:21:47</h3>
+</h3>Generated from <code><font size=+1><b>notes/todo.lt3</b></font></code> - 2019-12-31 03:03:32</h3>
 <p>
 
 <table border=0 width=96% cellpadding=8 cellspacing=8>
   <tr>
     <td valign=top width=32%>&nbsp;&nbsp;<b>Next steps...
-</b><br><ul><li><font color=red>break up global.lt3??</font></li>
+</b><br><ul><li><font color=red>fix metadata.txt format</font></li>
+<li><font color=red>_retrieve_metadata or <i>get_draft_data</i> -- pick one!</font></li>
+<li><font color=red>clean up UI</font></li>
+<li><font color=red>better lsd, lsp output (title, not slug)</font></li>
+<li><font color=red>fix "head" stuff</font></li>
+<li><font color=red>global: num recent posts</font></li>
+<li><font color=red>global: main.bgcolor</font></li>
+<li><font color=red>backup/restore?</font></li>
+<li><font color=red>ssh-copy-id in setup</font></li>
+<li><font color=red>special tags: intra-blog, gist, github, youtube, ...</font></li>
+<li><font color=red>special tags: vimeo, twitter, fb?, reddit?, ...</font></li>
 <li><font color=red>Formalize example blog</font></li>
 <li><font color=red>Enable/disable widgets (also FB/Twitter/reddit?)</font></li>
 <li><font color=red>RubyText settings in file</font></li>
@@ -39,7 +49,8 @@
 <li>Livetext: Var as replacement for _var  (see varmint)</li>
 <li>Livetext: open/close</li></ul></td>
     <td valign=top width=32%>&nbsp;&nbsp;<b>Easy stuff?
-</b><br><ul><li>"wrap"-style include maybe?</li>
+</b><br><ul><li>change teaser to excerpt?</li>
+<li>"wrap"-style include maybe?</li>
 <li>add CSS ref to post?</li>
 <li>specific kinds of rebuild?</li>
 <li>custom.rb (livetext) gets included if present?</li>
@@ -47,20 +58,14 @@
   </tr>
   <tr>
     <td valign=top width=32%>&nbsp;&nbsp;<b>General functionality
-</b><br><ul><li><font color=red>backup/restore?</font></li>
-<li><font color=red>ssh-copy-id in setup</font></li>
-<li>more params in globals</li>
-<li>rename post to entry or recent (in global)</li>
-<li>global: num recent posts</li>
-<li>global: main.bgcolor</li>
-<li>common widget code</li>
+</b><br><ul><li><font color=red>post analyzer - SEO, spell, wcount, etc.</font></li>
+<li>split up global.lt3, fix wizard</li>
 <li>autopost: Facebook</li>
 <li>autopost: Twitter</li>
 <li>autopost: linkedin</li>
 <li>better asset management</li>
 <li>dynamically add commands/code to repl?</li>
-<li>need categories??</li>
-<li>post analyzer - SEO, spell, wcount, etc.</li></ul></td>
+<li>need categories??</li></ul></td>
     <td valign=top width=32%>&nbsp;&nbsp;<b>Recently completed (Dec 2019)
 </b><br><ul><li>Added explanations to config menu</li>
 <li>.banner now takes body</li>
@@ -74,6 +79,8 @@
 <li>Replaced config with three files under data/</li>
 <li>BROKEN: Replaced xlate with preprocess</li>
 <li>Backed out preprocess</li>
+<li>put navbar inside blog/index.lt3</li>
+<li>move global.lt3 into etc</li>
 <li>Fixed navbar</li>
 <li>Added blog/banner.lt3</li>
 <li>Rudimentary "universal.lt3" file</li>
@@ -112,7 +119,12 @@
 <li>improves global.lt3 and CSS class names</li>
 <li>fixes in livetext formatting</li>
 <li>added nlist to liveblog</li>
-<li>experimenting with em dash</li></ul></td>
+<li>experimenting with em dash</li>
+<li>broke up global.lt3</li>
+<li>added view.txt, recent.txt, publish.txt</li>
+<li>improved ui/ux</li>
+<li>fixed/changed some variable names (e.g. view.*)</li>
+<li>added features.txt file</li></ul></td>
     <td valign=top width=32%>&nbsp;&nbsp;<b>Recently completed (Nov 2019)
 </b><br><ul><li>basic 'manage' command</li>
 <li>created .faq command</li>
@@ -183,29 +195,28 @@
     <td valign=top width=32%>&nbsp;&nbsp;<b>Widget functionality, etc.
 </b><br><ul><li><font color=red>standard/nonstandard marker for widgets</font></li>
 <li><font color=red>work on "standard widget" concept</font></li>
-<li>tag cloud</li>
+<li><font color=red>common widget code</font></li>
+<li><font color=red>tag cloud</font></li>
+<li><font color=red>site map widget</font></li>
+<li><font color=red>automated news search</font></li>
 <li>bydates manager</li>
-<li>search</li>
-<li>site map widget</li>
-<li>automated news search</li></ul></td>
+<li>search</li></ul></td>
     <td valign=top width=32%>&nbsp;&nbsp;<b>UI and UX
 </b><br><ul><li>shorten commands?</li>
 <li>allow large output for lsp/lsd (scroll? more?)</li>
 <li>undo last post?</li>
 <li>allow for post title changing</li>
 <li>add post template capability (create, edit, post)</li>
-<li>tricky? put navbar inside blog/index.lt3</li>
-<li>tricky? move global.lt3 into etc</li>
 <li>allow windows to scroll back</li></ul></td>
     <td valign=top width=32%>&nbsp;&nbsp;<b>Prettier code
-</b><br><ul><li><font color=red>move badly-scoped methods (e.g., runeblog.rb to post.rb)</font></li>
+</b><br><ul><li><font color=red>don't use vars.lt3</font></li>
+<li><font color=red>move badly-scoped methods (e.g., runeblog.rb to post.rb)</font></li>
+<li><font color=red>fix $DotDir</font></li>
+<li><font color=red>more keyword parameters as needed</font></li>
 <li><font color=red>fix check_empty issue</font></li>
-<li>change xlate everywhere</li>
 <li>liveblog: separate dot-commands from helpers</li>
 <li>remove duplicated and double-scoped code</li>
-<li><font color=red>fix $DotDir</font></li>
 <li>cards as .lt3 files?</li>
-<li><font color=red>more keyword parameters as needed</font></li>
 <li>remove dead code!!</li>
 <li>factor generic HTML out of liveblog.rb</li>
 <li>rethink helper libs?</li>
@@ -236,7 +247,6 @@
 <li>support for Windows?? (open, paths, ...)</li>
 <li>Twitter-embed widget</li>
 <li>verify image assets</li>
-<li><font color=red>setup wizard?</font></li>
 <li>auto-notify on post (FB/Twitter)</li>
 <li>subscription?</li>
 <li>analytics?</li>
@@ -244,9 +254,7 @@
 <li>up/down votes, etc.?</li>
 <li>Select themes/styles for blog??</li>
 <li>real support for tags (and cloud)</li>
-<li>Move some pieces into "snippets" (e.g. Facebook/Twitter integration)</li>
-<li><font color=red>special tags: intra-blog, gist, github, youtube, ...</font></li>
-<li><font color=red>special tags: vimeo, twitter, fb?, reddit?, ...</font></li></ul></td>
+<li>Move some pieces into "snippets" (e.g. Facebook/Twitter integration)</li></ul></td>
   </tr>
   <tr>
     <td valign=top width=32%>&nbsp;&nbsp;<b>Miscellaneous/Other

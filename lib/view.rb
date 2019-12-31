@@ -15,6 +15,8 @@ class RuneBlog::View
     @can_publish = true  # FIXME
     @blog.view = self
     gfile = @blog.root/"views/#{name}/themes/standard/global.lt3"
+    return unless File.exist?(gfile)  # Hackish!! how is View.new called from create_view??
+
     live = Livetext.customize(call: ".nopara")
     live.xform_file(gfile)
     @globals = live.vars
