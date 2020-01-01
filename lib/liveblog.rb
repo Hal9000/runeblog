@@ -72,7 +72,7 @@ def post_trailer
   tags = _var("post.tags")
   taglist = tags.empty? ? "" : "Tags: #{tags}"
 
-  reddit_enabled = @blog.features["reddit"] rescue nil
+  reddit_enabled = @blog.features["reddit"]
   reddit_txt = ""
   if reddit_enabled
     vdir  = @blog.root/:views/@blog.view
@@ -110,7 +110,7 @@ def faq
   _out %[&nbsp;<a data-toggle="collapse" href="##{id}" role="button" aria-expanded="false" aria-controls="collapseExample"><font size=+3>&#8964;</font></a>]
   _out %[&nbsp;<b>#{ques}</b>]
   _out %[<div class="collapse" id="#{id}"><br><font size=+1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#{ans}</font></div>\n]
-  _out "<br>" unless @faq_count == 1
+  _out "<br>" # unless @faq_count == 1
   _optional_blank_line
 end
 

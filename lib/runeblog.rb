@@ -122,6 +122,7 @@ class RuneBlog
     @root = Dir.pwd/root_rel
     write_repo_config(root: @root)   # ?? FIXME
     get_repo_config
+    read_features   # top level
     @views = retrieve_views
     self.view = File.read(@root/"data/VIEW").chomp
     md = Dir.pwd.match(%r[.*/views/(.*?)/])
@@ -294,11 +295,13 @@ class RuneBlog
         @view = nil
       when RuneBlog::View
         @view = arg
+        read_features(@view)
         _set_publisher
       when String
         new_view = str2view(arg)
         raise NoSuchView(arg) if new_view.nil?
         @view = new_view
+        read_features(@view)
         _set_publisher
       else 
         raise CantAssignView(arg.class.to_s)

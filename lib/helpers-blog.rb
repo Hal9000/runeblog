@@ -14,14 +14,22 @@ module RuneBlog::Helpers
     exit
   end
 
-  def read_features
+  def read_features(view = nil)
     hash = {}
-    file = @root/self.view/"settings/features.txt"
+    if view.nil?  # toplevel default
+      dir = @root/"data"
+    else
+      dir = @root/:views/self.view/:settings
+    end
+    file = dir/"features.txt"
     lines = File.readlines(file)
     lines.each do |line|
-      char, line = line[0], line[1..-1].chomp
-      name = line.strip
-      hash[name] = (char != "-")
+      line = line.strip
+      line.sub!(/ #.*/, "")   # trailing
+      next if line =~ /^ *#/  # leading
+      next if line.empty?
+      name, status = line.split
+      hash[name] = (status == "1")  # enabled
     end
     @features = hash
   end
@@ -39,15 +47,9 @@ module RuneBlog::Helpers
 
   def copy_data(tag, dest)
     data  = RuneBlog::Path + "/../data"    # files kept inside gem
-    extra = RuneBlog::Path + "/../config"  # files kept inside gem
-    # FIXME names are confusing
-    case tag
-      when :config 
-        files = %w[ROOT VIEW EDITOR universal.lt3 global.lt3]
-        files.each {|file| copy(data + "/" + file, dest) }
-      when :extra  # FIXME remove later
-#        copy!(extra, dest)
-    end
+    # FIXME tag no longer used
+    files = %w[ROOT VIEW EDITOR universal.lt3 global.lt3 features.txt]
+    files.each {|file| copy(data + "/" + file, dest) unless File.exist?(dest/file) }
   end
 
   def read_vars(file)

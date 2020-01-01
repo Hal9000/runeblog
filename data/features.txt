@@ -2,7 +2,7 @@
 # 1 = enabled (implies installed)
 # x = excluded (not installed; does it even exist?)
 
-reddit     1   # autopost, embed thread after blog post
+reddit     0   # autopost, embed thread after blog post
 facebook   0   # reader-like, reader post, autopost?
 twitter    0   # reader-tweet, reader-follow, autotweet?
 

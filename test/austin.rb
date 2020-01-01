@@ -31,7 +31,7 @@ end
 @fake_date = Date.today - 20
 
 def make_post(x, title, teaser, body, views=[])
-  debug "      make_post #{bold(title)}"
+  debug "  make_post #{bold(title)}"
   pubdate = @fake_date.strftime("%Y-%m-%d")
   @fake_date += (rand(2) + 1)
   x.create_new_post(title, true, teaser: teaser, body: body, views: views,
@@ -53,8 +53,8 @@ puts
 debug bold("Generating test blog...")
 
 system("rm -rf .blogs")
-RuneBlog.create_new_blog_repo(".blogs")
-x = RuneBlog.new(".blogs")
+RuneBlog.create_new_blog_repo # (".blogs")
+x = RuneBlog.new  # (".blogs")
 
 debug("create_view: #{bold('around_austin')}")
 x.create_view("around_austin")   # FIXME remember view title!
@@ -72,7 +72,7 @@ File.open(vfile, "w") {|f| f.puts vars }
 
 ####
 
-debug("-- change_view: #{bold('around_austin')}")
+debug("change_view: #{bold('around_austin')}")
 x.change_view("around_austin")    # 1 2 7 8 9 
 
 make_post(x, "What's at Stubbs...", <<-EXCERPT, <<-BODY)
@@ -142,11 +142,10 @@ But I first heard of them
 in 2005.
 BODY
 
-debug
-debug "** generate_index #{bold("around_austin")}"
+debug "generate_index #{bold("around_austin")}"
 x.generate_index("around_austin") 
 
-debug("** generate_view: #{bold('around_austin')}")
+debug("generate_view: #{bold('around_austin')}")
 x.generate_view("around_austin")
 
 debug bold("...finished.\n")

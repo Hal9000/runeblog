@@ -81,6 +81,9 @@ improved ui/ux
 fixed/changed some variable names (e.g. view.*)
 added features.txt file
 bumped livetext to 0.9.01
+changed format of features.txt
+fixed reddit_enable
+now can enable/disable widgets, FB/Twitter/reddit
 .end
 
 .sublist oct2019 Recently completed (Oct 2019)
@@ -503,7 +506,6 @@ complete Completed tasks
 =special tags: intra-blog, gist, github, youtube, ...
 =special tags: vimeo, twitter, fb?, reddit?, ...
 =Formalize example blog
-=Enable/disable widgets (also FB/Twitter/reddit?)
 =RubyText settings in file
 =Make an intro video
 =fix/delete Runeblog::Default (post\_template)?
