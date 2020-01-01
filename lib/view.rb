@@ -14,6 +14,10 @@ class RuneBlog::View
     @publisher = RuneBlog::Publishing.new(name)
     @can_publish = true  # FIXME
     @blog.view = self
+    get_globals
+  end
+
+  def get_globals
     gfile = @blog.root/"views/#{name}/themes/standard/global.lt3"
     return unless File.exist?(gfile)  # Hackish!! how is View.new called from create_view??
 

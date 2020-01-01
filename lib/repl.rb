@@ -14,20 +14,21 @@ module RuneBlog::REPL
     result = system!("#{@blog.editor} #{file} #{params}")
     raise EditorProblem(file) unless result
     STDSCR.restback
-#   cmd_clear(nil)
+    cmd_clear(nil)
   end
 
   def cmd_quit(arg, testing = false)
     cmd_clear(nil)
+    sleep 0.1
     RubyText.stop
     sleep 0.1
-    
+    system("clear")
     sleep 0.1
     exit
   end
 
   def cmd_clear(arg, testing = false)
-#   STDSCR.rows.times { puts " "*(STDSCR.cols-1) }
+    STDSCR.rows.times { puts " "*(STDSCR.cols-1) }
     STDSCR.clear
   end
 
@@ -38,52 +39,31 @@ module RuneBlog::REPL
     @out
   end
 
-  def OLD_cmd_config(arg, testing = false)
-    hash = {"global.lt3           Global configuration"                     => "global.lt3",
-            "banner/top.lt3       Text portion of banner"                   => "banner/top.lt3",
-            "blog/generate.lt3    Generator for view (usu not edited)"      => "blog/generate.lt3",
-            ".... head.lt3        HEAD info for view"                       => "blog/head.lt3",
-            ".... banner.lt3      banner description"                       => "blog/banner.lt3",
-            ".... index.lt3       User-edited detail for view"              => "blog/index.lt3",
-            ".... post_entry.lt3  Generator for post entry in recent-posts" => "blog/post_entry.lt3",
-            "etc/blog.css.lt3     Global CSS"                               => "etc/blog.css.lt3",
-            "... externals.lt3    External JS/CSS (Bootstrap, etc.)"        => "/etc/externals.lt3",
-            "post/generate.lt3    Generator for a post"                     => "post/generate.lt3",
-            ".... head.lt3        HEAD info for post"                       => "post/head.lt3",
-            ".... index.lt3       Content for post"                         => "post/index.lt3",
-            ".... permalink.lt3   Generator for permalink"                  => "post/permalink.lt3",
-           }
-
-    dir = @blog.view.dir/"themes/standard/"
-    num, target = STDSCR.menu(title: "Edit file:", items: hash)
-    edit_file(dir/target)
-  end
-
   def cmd_config(arg, testing = false)
     hash = {"Global configuration"                     => "global.lt3",
             "   View-specific variables"               => "../../settings/view.txt",
             "   Recent posts"                          => "../../settings/recent.txt",
             "   Publishing vars"                       => "../../settings/publish.txt",
-            "Banner description"                       => "blog/banner.lt3",
-            "   Text portion of banner"                => "banner/top.lt3",
-            "Generator for view (usu not edited)"      => "blog/generate.lt3",
+            "   Config for reddit"                     => "../../config/reddit/credentials.txt",
+            "   Config for Facebook"                   => "../../config/facebook/credentials.txt",
+            "   Config for Twitter"                    => "../../config/twitter/credentials.txt",
+            "View generator"                           => "blog/generate.lt3",
+            "   Banner: Description"                   => "blog/banner.lt3",
+            "   Banner: Text portion"                  => "banner/top.lt3",
             "   HEAD info for view"                    => "blog/head.lt3",
             "   User-edited detail for view"           => "blog/index.lt3",
-            "Generator for post entry in recent-posts" => "blog/post_entry.lt3",
-            "Global CSS"                               => "etc/blog.css.lt3",
-            "External JS/CSS (Bootstrap, etc.)"        => "/etc/externals.lt3",
+            "   Generator for recent-posts entry"      => "blog/post_entry.lt3",
             "Generator for a post"                     => "post/generate.lt3",
             "   HEAD info for post"                    => "post/head.lt3",
             "   Content for post"                      => "post/index.lt3",
-            "Generator for permalink"                  => "post/permalink.lt3",
+            "Global CSS"                               => "etc/blog.css.lt3",
+            "External JS/CSS (Bootstrap, etc.)"        => "/etc/externals.lt3"
            }
 
     dir = @blog.view.dir/"themes/standard/"
     num, target = STDSCR.menu(title: "Edit file:", items: hash)
     edit_file(dir/target)
   end
-
-
 
   def cmd_manage(arg, testing = false)
     case arg

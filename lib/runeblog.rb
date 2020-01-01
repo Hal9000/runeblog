@@ -296,12 +296,14 @@ class RuneBlog
       when RuneBlog::View
         @view = arg
         read_features(@view)
+        @view.get_globals
         _set_publisher
       when String
         new_view = str2view(arg)
         raise NoSuchView(arg) if new_view.nil?
         @view = new_view
         read_features(@view)
+        @view.get_globals
         _set_publisher
       else 
         raise CantAssignView(arg.class.to_s)
@@ -377,6 +379,7 @@ class RuneBlog
     add_view(view_name)
     mark_last_published("Initial creation")
     system("cp #@root/data/global.lt3 #@root/views/#{view_name}/themes/standard/global.lt3")
+    @view.get_globals
   rescue => err
     _tmp_error(err)
   end
@@ -457,16 +460,18 @@ class RuneBlog
     return posts[0..19]  # return 20 at most
   end
 
-  def collect_recent_posts(file)
+  def collect_recent_posts(file = "recent.html")
     log!(enter: __method__, args: [file], level: 3)
+    vars = self.view.globals
     text = <<-HTML
       <html>
       <head><link rel="stylesheet" href="etc/blog.css"></head>
-      <body>
+      <body style="background-color: #{vars["recent.bgcolor"]}">
     HTML
     posts = _sorted_posts
     if posts.size > 0
-      wanted = [8, posts.size].min  # estimate how many we want?
+      # estimate how many we want
+      wanted = [vars["recent.count"].to_i, posts.size].min
       enum = posts.each
       entries = []
       wanted.times do
@@ -538,7 +543,7 @@ class RuneBlog
     log!(enter: __method__, args: [view], pwd: true, dir: true)
     raise ArgumentError unless view.is_a?(String) || view.is_a?(RuneBlog::View)
     @vdir = @root/:views/view
-    num = collect_recent_posts("recent.html")
+    num = collect_recent_posts
     return num
   rescue => err
     _tmp_error(err)

@@ -1,6 +1,11 @@
 title.color  #010101
 title.size   28px
+
 text.color   #0101a1
 text.size    22px
+
 date.color   #9a9a9a
 date.size    15px
+
+bgcolor      #ffffff  # white
+count        4

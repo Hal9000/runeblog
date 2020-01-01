@@ -15,7 +15,7 @@
 <p>
 
 <h2>Runeblog TODO</h2>
-</h3>Generated from <code><font size=+1><b>notes/todo.lt3</b></font></code> - 2019-12-31 18:12:41</h3>
+</h3>Generated from <code><font size=+1><b>notes/todo.lt3</b></font></code> - 2020-01-01 00:30:44</h3>
 <p>
 
 <table border=0 width=96% cellpadding=8 cellspacing=8>
@@ -26,8 +26,6 @@
 <li><font color=red>clean up UI</font></li>
 <li><font color=red>better lsd, lsp output (title, not slug)</font></li>
 <li><font color=red>fix "head" stuff</font></li>
-<li><font color=red>global: num recent posts</font></li>
-<li><font color=red>global: main.bgcolor</font></li>
 <li><font color=red>backup/restore?</font></li>
 <li><font color=red>ssh-copy-id in setup</font></li>
 <li><font color=red>special tags: intra-blog, gist, github, youtube, ...</font></li>
@@ -58,7 +56,6 @@
   <tr>
     <td valign=top width=32%>&nbsp;&nbsp;<b>General functionality
 </b><br><ul><li><font color=red>post analyzer - SEO, spell, wcount, etc.</font></li>
-<li>split up global.lt3, fix wizard</li>
 <li>autopost: Facebook</li>
 <li>autopost: Twitter</li>
 <li>autopost: linkedin</li>
@@ -127,7 +124,10 @@
 <li>bumped livetext to 0.9.01</li>
 <li>changed format of features.txt</li>
 <li>fixed reddit_enable</li>
-<li>now can enable/disable widgets, FB/Twitter/reddit</li></ul></td>
+<li>now can enable/disable widgets, FB/Twitter/reddit</li>
+<li>adds recent.count, recent.bgcolor</li>
+<li>adds reddit/facebook/twitter to config</li>
+<li>UI workaround for screen-clear problem</li></ul></td>
     <td valign=top width=32%>&nbsp;&nbsp;<b>Recently completed (Nov 2019)
 </b><br><ul><li>basic 'manage' command</li>
 <li>created .faq command</li>
@@ -213,7 +213,6 @@
 <li>allow windows to scroll back</li></ul></td>
     <td valign=top width=32%>&nbsp;&nbsp;<b>Prettier code
 </b><br><ul><li><font color=red>don't use vars.lt3</font></li>
-<li><font color=red>move badly-scoped methods (e.g., runeblog.rb to post.rb)</font></li>
 <li><font color=red>fix $DotDir</font></li>
 <li><font color=red>more keyword parameters as needed</font></li>
 <li><font color=red>fix check_empty issue</font></li>

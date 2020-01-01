@@ -84,6 +84,9 @@ bumped livetext to 0.9.01
 changed format of features.txt
 fixed reddit_enable
 now can enable/disable widgets, FB/Twitter/reddit
+adds recent.count, recent.bgcolor
+adds reddit/facebook/twitter to config
+UI workaround for screen-clear problem
 .end
 
 .sublist oct2019 Recently completed (Oct 2019)
@@ -150,7 +153,6 @@ Warn when .img (etc.) refs nonexistent asset
 
 .sublist funky General functionality
 =post analyzer - SEO, spell, wcount, etc.
-split up global.lt3, fix wizard
 autopost: Facebook
 autopost: Twitter
 autopost: linkedin
@@ -206,7 +208,6 @@ Move some pieces into "snippets" (e.g. Facebook/Twitter integration)
 
 .sublist pretty Prettier code
 =don't use vars.lt3
-=move badly-scoped methods (e.g., runeblog.rb to post.rb)
 =fix \$DotDir
 =more keyword parameters as needed
 =fix check\_empty issue
@@ -499,8 +500,6 @@ complete Completed tasks
 =clean up UI
 =better lsd, lsp output (title, not slug)
 =fix "head" stuff
-=global: num recent posts
-=global: main.bgcolor
 =backup/restore?
 =ssh-copy-id in setup
 =special tags: intra-blog, gist, github, youtube, ...
