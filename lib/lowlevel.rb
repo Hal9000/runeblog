@@ -2,7 +2,7 @@
   def _tmp_error(err)
     out = "/tmp/blog#{rand(100)}.txt"
     File.open(out, "w") do |f|
-      f.puts err + "\n--------"
+      f.puts err.to_s + "\n--------"
       f.puts err.backtrace.join("\n")
     end
     puts "Error: See #{out}"
@@ -37,10 +37,11 @@
 
   def _get_data(file)
     lines = File.readlines(file)
-    lines.reject! {|line| line[0] == "-" }  # allow rejection of lines
     lines = lines.map do |line|
-      line.sub(/ *# .*$/, "")               # allow trailing comments
+      line = line.chomp.strip
+      line.sub(/ *# .*$/, "")    # allow leading/trailing comments
     end
+    lines.reject! {|x| x.empty? }
     lines
   end
 

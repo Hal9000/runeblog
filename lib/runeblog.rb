@@ -204,25 +204,26 @@ class RuneBlog
 
   # FIXME reconcile with _get_draft data
 
+  # Need a method to get key-value pairs? similar to read_vars?
+
   def _retrieve_metadata(key)
     key = key.to_s
-    lines = File.readlines("metadata.txt")
-    lines = lines.grep(/^#{key}: /)
+    lines = _get_data("metadata.txt")
+    lines = lines.grep(/^#{key}/)   # possible prefix problem later??
     case lines.size
       when 0
         result = nil  # not found
       when 1
-        front = "#{key}: "
-        n = front.size
-        str = lines.first.chomp[n..-1]
+        str = lines.first.split(" ", 2)[1]
         case key
           when "views", "tags"   # plurals
+            return [] if str.nil?
             result = str.split
         else
           result = str
         end
     else 
-      raise "Too many #{key} instances in metadata.txt!"
+      raise "Too many '#{key}' instances in metadata.txt!"
     end
     return result
   rescue => err

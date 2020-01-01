@@ -775,9 +775,9 @@ end
 def _write_metadata
   File.write("teaser.txt", @meta.teaser)
   fields = [:num, :title, :date, :pubdate, :views, :tags, :pinned]
-  fname2 = "metadata.txt"
-  f2 = File.open(fname2, "w") do |f2| 
-    fields.each {|fld| f2.puts "#{fld}: #{@meta.send(fld)}" }
+  fname = "metadata.txt"
+  File.open(fname, "w") do |f| 
+    fields.each {|fld| f.puts "#{'%8s' % fld}  #{@meta.send(fld)}" }
   end
 end
 

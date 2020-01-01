@@ -89,9 +89,10 @@ adds reddit/facebook/twitter to config
 UI workaround for screen-clear problem
 improves command dispatch
 removes ugly test scaffolding
+fixed metadata.txt format
 .end
 
-.sublist oct2019 Recently completed (Oct 2019)
+.sublist octnov2019 Recently completed (Oct/Nov 2019)
 date inside post
 show tags on posts
 permalink on post?
@@ -103,9 +104,6 @@ dropcaps work now
 inset quotes also work
 fixed quote issue
 added basic 'config' command
-.end
-
-.sublist nov2019 Recently completed (Nov 2019)
 basic 'manage' command
 created .faq command
 got vertical navbar working
@@ -145,7 +143,9 @@ Fixed mkwidget
 .end
 
 .sublist easyish Easy stuff?
-change teaser to excerpt?
+="preview post" command
+=change teaser to excerpt?
+=detect non-OSX and print warning
 "wrap"-style include maybe?
 add CSS ref to post?
 specific kinds of rebuild?
@@ -495,7 +495,6 @@ complete Completed tasks
 .end
 
 .sublist nextish Next steps...
-=fix metadata.txt format
 =_retrieve_metadata or _get_draft_data -- pick one!
 =better lsd, lsp output (title, not slug)
 =Update software safely?
@@ -546,36 +545,36 @@ Livetext: open/close
   <tr>
     <td valign=top width=32%>$funky</td>
     <td valign=top width=32%>$dec2019</td>
-    <td valign=top width=32%>$nov2019</td>
+    <td valign=top width=32%>$octnov2019</td>
   </tr>
   <tr>
-    <td valign=top width=32%>$oct2019</td>
     <td valign=top width=32%>$bugs</td>
     <td valign=top width=32%>$livetext</td>
+    <td valign=top width=32%>$widgets</td>
   </tr>
   <tr>
-    <td valign=top width=32%>$widgets</td>
     <td valign=top width=32%>$ui</td>
     <td valign=top width=32%>$pretty</td>
+    <td valign=top width=32%>$robust</td>
   </tr>
   <tr>
-    <td valign=top width=32%>$robust</td>
     <td valign=top width=32%>$docs</td>
     <td valign=top width=32%>$advanced</td>
+    <td valign=top width=32%>$misc</td>
   </tr>
   <tr>
-    <td valign=top width=32%>$misc</td>
     <td valign=top width=32%>$rcomp</td>
     <td valign=top width=32%>$comp1</td>
+    <td valign=top width=32%>$comp2</td>
   </tr>
   <tr>
-    <td valign=top width=32%>$comp2</td>
     <td valign=top width=32%>$comp3</td>
     <td valign=top width=32%>$comp4</td>
+    <td valign=top width=32%>$comp5</td>
   </tr>
   <tr>
-    <td valign=top width=32%>$comp5</td>
     <td valign=top width=32%>$comp6</td>
+    <td valign=top width=32%>...</td>
     <td valign=top width=32%>...</td>
   </tr>
 </table>

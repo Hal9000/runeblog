@@ -27,26 +27,26 @@ class RuneBlog::Post
     meta
   end
 
-  def write_metadata(meta)   # FIXME ???
-    log!(enter: __method__, args: [meta], level: 3)
-    debug "=== write_metadata:"
-    debug "-----\n#{meta.inspect}\n-----"
-    fname2 = "metadata.txt"
-    hash = meta.to_h
-
-    File.write("teaser.txt", hash[:teaser])
-    hash.delete(:teaser)
-    hash.delete(:body)
-
-    hash[:views] = hash[:views].join(" ")
-    hash[:tags]  = hash[:tags].join(" ")
-
-    fields = [:num, :title, :date, :pubdate, :views, :tags]
-
-    f2 = File.new(fname2, "w")
-    fields.each {|fld| f2.puts "#{fld}: #{hash[fld]}" }
-    f2.close
-  end
+#   def write_metadata(meta)   # FIXME ???
+#     log!(enter: __method__, args: [meta], level: 3)
+#     debug "=== write_metadata:"
+#     debug "-----\n#{meta.inspect}\n-----"
+#     fname2 = "metadata.txt"
+#     hash = meta.to_h
+# 
+#     File.write("teaser.txt", hash[:teaser])
+#     hash.delete(:teaser)
+#     hash.delete(:body)
+# 
+#     hash[:views] = hash[:views].join(" ")
+#     hash[:tags]  = hash[:tags].join(" ")
+# 
+#     fields = [:num, :title, :date, :pubdate, :views, :tags]
+# 
+#     f2 = File.new(fname2, "w")
+#     fields.each {|fld| f2.puts "#{fld}: #{hash[fld]}" }
+#     f2.close
+#   end
 
   def initialize
     log!(enter: __method__, level: 3)
@@ -184,12 +184,11 @@ class RuneBlog::ViewPost
     @aslug = @nslug[5..-1]
     fname = "#{postdir}/teaser.txt"            # ???
     @teaser_text = File.read(fname).chomp
-    # FIXME dumb hacks...
-    mdfile = postdir/"metadata.txt"
-    lines = File.readlines(mdfile)
-    @title = lines.grep(/title:/).first[7..-1].chomp
-    @date  = lines.grep(/pubdate:/).first[9..-1].chomp
-# print "-- date = #{@date.inspect} "; gets
+    
+    Dir.chdir(postdir) do 
+      @title = @blog._retrieve_metadata("title")
+      @date  = @blog._retrieve_metadata("pubdate")
+    end
   rescue => err
     STDERR.puts "--- #{err}\n #{err.backtrace.join("\n  ")}"
   end
