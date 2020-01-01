@@ -1,4 +1,13 @@
 
+  def _tmp_error(err)
+    out = "/tmp/blog#{rand(100)}.txt"
+    File.open(out, "w") do |f|
+      f.puts err + "\n--------"
+      f.puts err.backtrace.join("\n")
+    end
+    puts "Error: See #{out}"
+  end
+
   def dump(obj, name)
     File.write(name, obj)
   end

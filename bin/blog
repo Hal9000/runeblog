@@ -66,6 +66,8 @@ def get_started
     puts "      First choose your editor."
     @blog.editor = pick_editor
     File.write("#{@blog.root}/data/EDITOR", @blog.editor)
+    print "      Default editor is "
+    puts  fx(@blog.editor, :bold)
 
     get_universal
     # Now create a custom global.lt3
@@ -90,11 +92,11 @@ def mainloop
   info = @blog.view || "no view"
   print fx("[#{info}] ", Red, :bold)
   cmd = STDSCR.gets(history: @cmdhist, tab: @tabcom)
-  cmd_quit(nil) if cmd.nil?   # ^D
+  cmd_quit if cmd.nil?   # ^D
   cmd.chomp!
   return if cmd.empty?   # CR does nothing
-  meth, params = RuneBlog::REPL.choose_method(cmd)
-  ret, str = send(meth, params)
+  invoking = RuneBlog::REPL.choose_method(cmd)
+  ret = send(*invoking)
 rescue => err
   puts err
 end
@@ -106,7 +108,7 @@ def cmdline_preview
 end
 
 def cmdline_publish
-  abort "Nor implemented yet"
+  abort "Not implemented yet"
   _need_view
 end
 
@@ -152,7 +154,8 @@ major, minor = RUBY_VERSION.split(".").values_at(0,1)
 ver = major.to_i*10 + minor.to_i
 unless ver >= 24
   RubyText.stop
-  abort "Need Ruby 2.4 or greater" 
+  sleep 0.2
+  abort "Needs Ruby 2.4 or greater" 
 end
 
 include RuneBlog::Helpers  # for try_read_config
@@ -194,7 +197,7 @@ puts fx("\n  RuneBlog", :bold), fx(" v #{RuneBlog::VERSION}\n", Red)
   
 loop { mainloop }
 
-system("tput clear")
+# system("tput clear")
 sleep 0.2
 puts
 

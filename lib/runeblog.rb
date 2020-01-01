@@ -75,15 +75,6 @@ class RuneBlog
 
   end
 
-  def _tmp_error(err)   # FIXME move to helpers
-    out = "/tmp/blog#{rand(100)}.txt"
-    File.open(out, "w") do |f|
-      f.puts err
-      f.puts err.backtrace.join("\n")
-    end
-    puts "Error: See #{out}"
-  end
-
   def self.create_new_blog_repo(root_rel = ".blogs")
     log!(enter: __method__, args: [root_rel])
     raise ArgumentError unless root_rel.is_a?(String) && ! root_rel.empty?

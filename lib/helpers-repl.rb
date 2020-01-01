@@ -109,7 +109,9 @@ module RuneBlog::REPL
     end
     meth = found || :cmd_INVALID
     params = cmd if meth == :cmd_INVALID
-    [meth, params]
+    result = [meth]
+    result << params unless params.nil?
+    result
   end
 
   def ask(prompt, meth = :to_s)
@@ -119,42 +121,6 @@ module RuneBlog::REPL
 
   def ask!(prompt, meth = :to_s)
     ask(fx(prompt, :bold), meth)
-  end
-
-  def reset_output(initial = "")
-    @out ||= ""
-    @out.replace initial
-  end
-
-  def flush_output(initial = "")
-    CantOpen
-    @out ||= ""
-    puts @out
-    reset_output
-  end
-
-  def output(str)  # \n and indent
-    @out ||= ""
-    @out << "  " + str.to_s
-  end
-
-  def outstr(str)  # indent
-    @out ||= ""
-    @out << str
-  end
-
-  def output!(str)  # \n and indent
-    @out ||= ""
-    @out << "  " + str
-  end
-
-  def output_newline(n = 1)
-    @out ||= ""
-    n.times { @out << "\n" }
-  end
-
-  def check_empty(arg)
-    raise InternalError(caller[0], arg.inspect)  unless arg.nil?
   end
 
   def get_integer(arg)
@@ -174,10 +140,6 @@ module RuneBlog::REPL
       when Array
         raise CantDelete(files.join("\n"))
     end
-  end
-
-  def colored_slug(slug)
-    slug[0..3] + slug[4..-1]
   end
 
   def tags_for_view(vname = @blog.view)

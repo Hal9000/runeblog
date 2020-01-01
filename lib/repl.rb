@@ -14,11 +14,14 @@ module RuneBlog::REPL
     result = system!("#{@blog.editor} #{file} #{params}")
     raise EditorProblem(file) unless result
     STDSCR.restback
-    cmd_clear(nil)
+    cmd_clear
   end
 
-  def cmd_quit(arg, testing = false)
-    cmd_clear(nil)
+  def cmd_quit
+    STDSCR.rows.times { puts " "*(STDSCR.cols-1) }
+    # FIXME please?
+    sleep 0.1
+    STDSCR.clear
     sleep 0.1
     RubyText.stop
     sleep 0.1
@@ -27,19 +30,17 @@ module RuneBlog::REPL
     exit
   end
 
-  def cmd_clear(arg, testing = false)
+  def cmd_clear
     STDSCR.rows.times { puts " "*(STDSCR.cols-1) }
+    sleep 0.1
     STDSCR.clear
   end
 
-  def cmd_version(arg, testing = false)
-    reset_output
-    output RuneBlog::VERSION
-    puts fx("\n  RuneBlog", :bold), fx(" v #{RuneBlog::VERSION}\n", Red) unless testing
-    @out
+  def cmd_version
+    puts fx("\n  RuneBlog", :bold), fx(" v #{RuneBlog::VERSION}\n", Red)
   end
 
-  def cmd_config(arg, testing = false)
+  def cmd_config
     hash = {"Global configuration"                     => "global.lt3",
             "   View-specific variables"               => "../../settings/view.txt",
             "   Recent posts"                          => "../../settings/recent.txt",
@@ -65,24 +66,24 @@ module RuneBlog::REPL
     edit_file(dir/target)
   end
 
-  def cmd_manage(arg, testing = false)
+  def cmd_manage(arg)
     case arg
-      when "pages";   _manage_pages(nil, testing = false)
-      when "links";   _manage_links(nil, testing = false)
-      when "navbar";  _manage_navbar(nil, testing = false)
-#     when "pinned";  _manage_pinned(nil, testing = false)  # ditch this??
+      when "pages";   _manage_pages(nil)
+      when "links";   _manage_links(nil)
+      when "navbar";  _manage_navbar(nil)
+#     when "pinned";  _manage_pinned(nil)  # ditch this??
     else
       puts "#{arg} is unknown"
     end
   end
 
-  def _manage_pinned(arg, testing = false)   # cloned from manage_links
+  def _manage_pinned   # cloned from manage_links
     dir = @blog.view.dir/"themes/standard/widgets/pinned"
     data = dir/"list.data"
     edit_file(data)
   end
 
-  def _manage_navbar(arg, testing = false)   # cloned from manage_pages
+  def _manage_navbar   # cloned from manage_pages
     dir = @blog.view.dir/"themes/standard/banner/navbar"
     files = Dir.entries(dir) - %w[. .. navbar.lt3]
     main_file = "[ navbar.lt3 ]"
@@ -111,13 +112,13 @@ module RuneBlog::REPL
     end
   end
 
-  def _manage_links(arg, testing = false)
+  def _manage_links
     dir = @blog.view.dir/"themes/standard/widgets/links"
     data = dir/"list.data"
     edit_file(data)
   end
 
-  def _manage_pages(arg, testing = false)
+  def _manage_pages(arg)
     dir = @blog.view.dir/"themes/standard/widgets/pages"
     # Assume child files already generated (and list.data??)
     data = dir/"list.data"
@@ -152,73 +153,53 @@ module RuneBlog::REPL
     end
   end
 
-  def cmd_import(arg, testing = false)
+  def cmd_import
     files = ask("\n  File(s) = ")
     system!("cp #{files} #{@blog.root}/views/#{@blog.view.name}/assets/")
   end
 
-  def cmd_browse(arg, testing = false)
-    reset_output
+  def cmd_browse
     url = @blog.view.publisher.url
     if url.nil?   
-      output! "Publish first."
       puts "\n  Publish first."
-      return @out
+      return
     end
     result = system!("open '#{url}'")
     raise CantOpen(url) unless result
-    return @out
+    return
   end
 
-  def cmd_preview(arg, testing = false)
-    reset_output
+  def cmd_preview
     local = @blog.view.local_index
     unless File.exist?(local)
       puts "\n  No index. Rebuilding..."
-      cmd_rebuild(nil)
+      cmd_rebuild
     end
     result = system!("open #{local}")
     raise CantOpen(local) unless result
-    @out
   rescue => err
-    out = "/tmp/blog#{rand(100)}.txt"
-    File.open(out, "w") do |f|
-      f.puts err
-      f.puts err.backtrace.join("\n")
-    end
-    puts "Error: See #{out}"
+    _tmp_error(err)
   end
 
-  def cmd_publish(arg, testing = false)
+  def cmd_publish
 # Future Hal says please refactor this
-    puts unless testing
-    reset_output
+    puts
     unless @blog.view.can_publish?
       msg = "Can't publish... see global.lt3"
-      puts msg unless testing
-      output! msg
-      return @out
+      puts msg
+      return
     end
 
     ret = RubyText.spinner(label: " Publishing... ") do
       @blog.view.publisher.publish
     end
-    return @out unless ret
+    return unless ret
 
     vdir = @blog.view.dir
     dump("fix this later", "#{vdir}/last_published")
-    if ! testing || ! ret
-      puts "  ...finished.\n " 
-      output! "...finished.\n"
-    end
-    return @out
+    puts "  ...finished.\n " unless ret
   rescue => err
-    out = "/tmp/blog#{rand(100)}.txt"
-    File.open(out, "w") do |f|
-      f.puts err
-      f.puts err.backtrace.join("\n")
-    end
-    puts "Error: See #{out}"
+    _tmp_error(err)
   end
 
   def fresh?(src, dst)
@@ -239,49 +220,37 @@ module RuneBlog::REPL
     puts
   end
 
-  def cmd_rebuild(arg, testing = false)
+  def cmd_rebuild
     debug "Starting cmd_rebuild..."
-    reset_output
-    puts unless testing
+    puts
     @blog.generate_view(@blog.view)
     @blog.generate_index(@blog.view)
     regen_posts
-    @out
   rescue => err
-    out = "/tmp/blog#{rand(100)}.txt"
-    File.open(out, "w") do |f|
-      f.puts err
-      f.puts err.backtrace.join("\n")
-    end
-    puts "Error: See #{out}"
+    _tmp_error(err)
   end
 
-  def cmd_change_view(arg, testing = false)
-    reset_output
+  def cmd_change_view(arg)
     # Simplify this
     if arg.nil?
       viewnames = @blog.views.map {|x| x.name }
       n = viewnames.find_index(@blog.view.name)
       name = @blog.view.name
       # TODO: Add view description 
-      k, name = STDSCR.menu(title: "Views", items: viewnames, curr: n) unless testing
+      k, name = STDSCR.menu(title: "Views", items: viewnames, curr: n)
       return if name.nil?
       @blog.view = name
-      output name + "\n"
-      puts "\n  ", fx(name, :bold), "\n" unless testing
-      return @out
+      puts "\n  ", fx(name, :bold), "\n"
+      return
     else
       if @blog.view?(arg)
         @blog.view = arg
-        output "View: " + @blog.view.name.to_s
-        puts "\n  ", fx(arg, :bold), "\n" unless testing
+        puts "\n  ", fx(arg, :bold), "\n"
       end
     end
-    return @out
   end
 
-  def cmd_new_view(arg, testing = false)
-    reset_output
+  def cmd_new_view(arg)
     if arg.nil?
       arg = ask(fx("\nFilename: ", :bold))
       puts
@@ -293,20 +262,13 @@ module RuneBlog::REPL
     vim_params = '-c ":set hlsearch" -c ":hi Search ctermfg=2 ctermbg=6" +/"\(VIEW_.*\|SITE.*\)"'
     edit_file(@blog.view.dir/"themes/standard/global.lt3", vim: vim_params)
     @blog.change_view(arg)
-    @out
   rescue ViewAlreadyExists
     puts 'Blog already exists'
   rescue => err
-    out = "/tmp/blog#{rand(100)}.txt"
-    File.open(out, "w") do |f|
-      f.puts err
-      f.puts err.backtrace.join("\n")
-    end
-    puts "Error: See #{out}"
+    _tmp_error(err)
   end
 
-  def cmd_new_post(arg, testing = false)
-    reset_output
+  def cmd_new_post
     if @blog.views.empty?
       puts "\n  Create a view before creating the first post!\n "
       return
@@ -314,15 +276,8 @@ module RuneBlog::REPL
     title = ask("\nTitle: ")
     puts
     @blog.create_new_post(title)
-#   STDSCR.clear
-    @out
   rescue => err
-    out = "/tmp/blog#{rand(100)}.txt"
-    File.open(out, "w") do |f|
-      f.puts err
-      f.puts err.backtrace.join("\n")
-    end
-    puts "Error: See #{out}"
+    _tmp_error(err)
   end
 
   def _remove_post(arg, testing=false)
@@ -331,20 +286,16 @@ module RuneBlog::REPL
     puts "Post #{id} not found" if result.nil?
   end
 
-  def cmd_remove_post(arg, testing = false)
-    reset_output
+  def cmd_remove_post(arg)
     args = arg.split
     args.each do |x| 
       # FIXME
       ret = _remove_post(x.to_i, false)
       puts ret
-      output ret
     end
-    @out
   end
 
-  def cmd_edit_post(arg, testing = false)
-    reset_output
+  def cmd_edit_post(arg)
     id = get_integer(arg)
     # Simplify this
     tag = "#{'%04d' % id}"
@@ -353,14 +304,12 @@ module RuneBlog::REPL
     files = files.map {|f| File.basename(f) }
     if files.size > 1
       msg = "Multiple files: #{files}"
-      output msg
-      puts msg unless testing
+      puts msg
       return [false, msg]
     end
     if files.empty?
       msg = "\n  Can't edit post #{id}"
-      output msg
-      puts msg unless testing
+      puts msg
       return [false, msg]
     end
 
@@ -370,48 +319,36 @@ module RuneBlog::REPL
     result = edit_file(draft)
     @blog.generate_post(draft)
   rescue => err
-    out = "/tmp/blog#{rand(100)}.txt"
-    File.open(out, "w") do |f|
-      f.puts err
-      f.puts err.backtrace.join("\n")
-    end
-    puts "Error: See #{out}"
+    _tmp_error(err)
   end
 
-  def cmd_list_views(arg, testing = false)
-    reset_output("\n")
-    puts unless testing
+  def cmd_list_views
+    puts
     @blog.views.each do |v| 
       v = v.to_s
       v = fx(v, :bold) if v == @blog.view.name
-      output v + "\n"
       # FIXME: next 3 lines are crufty as hell
-      lines = File.readlines(@blog.root/"views/#{v}/themes/standard/global.lt3")
-      lines = lines.select {|x| x =~ /^blog / && x !~ /VIEW_/ }
+      lines = File.readlines(@blog.root/"views/#{v}/settings/view.txt")
+      lines = lines.select {|x| x =~ /^title / && x !~ /VIEW_/ }
       title = lines.first.split(" ", 2)[1]
-      print "  ", ('%15s' % v) unless testing
-      puts  "  ", fx(title, :black) unless testing
+      print "  ", ('%15s' % v)
+      puts  "  ", fx(title, :black)
     end
-    puts unless testing
-#   @out
+    puts
   end
 
-  def cmd_list_posts(arg, testing = false)
-    reset_output
+  def cmd_list_posts
     posts = @blog.posts  # current view
     str = @blog.view.name + ":\n"
-    output str
-    puts unless testing
-    puts "  ", fx(str, :bold) unless testing
+    puts
+    puts "  ", fx(str, :bold)
     if posts.empty?
-      output! "No posts"
-      puts "  No posts" unless testing
+      puts "  No posts"
     else
       posts.each do |post| 
-        outstr "  #{colored_slug(post)}\n" 
         base = post.sub(/.lt3$/, "")
         num, rest = base[0..3], base[4..-1]
-        puts "  ", fx(num, Red), fx(rest, Blue) unless testing
+        puts "  ", fx(num, Red), fx(rest, Blue)
         draft = @blog.root/:drafts/post + ".lt3"
         other = @blog._get_views(draft) - [@blog.view.to_s]
         unless other.empty?
@@ -420,24 +357,20 @@ module RuneBlog::REPL
         end
       end
     end
-    puts unless testing
-    @out
+    puts
   end
 
-  def cmd_list_drafts(arg, testing = false)
-    reset_output
+  def cmd_list_drafts
     drafts = @blog.drafts  # current view
     if drafts.empty?
-      output! "No drafts"
-      puts "\n  No drafts\n " unless testing
-      return @out
+      puts "\n  No drafts\n "
+      return
     else
-      puts unless testing
+      puts
       drafts.each do |draft| 
-        outstr "  #{colored_slug(draft.sub(/.lt3$/, ""))}\n" 
         base = draft.sub(/.lt3$/, "")
         num, rest = base[0..3], base[4..-1]
-        puts "  ", fx(num, Red), fx(rest, Blue) unless testing
+        puts "  ", fx(num, Red), fx(rest, Blue)
         other = @blog._get_views(@blog.root/:drafts/draft) - [@blog.view.to_s]
         unless other.empty?
           print fx(" "*7 + "also in: ", :bold) 
@@ -445,48 +378,40 @@ module RuneBlog::REPL
         end
       end
     end
-    puts unless testing
-    @out
+    puts
   end
 
-  def cmd_list_assets(arg, testing = false)
-    reset_output
+  def cmd_list_assets
     dir = @blog.view.dir + "/assets"
     assets = Dir[dir + "/*"]
     if assets.empty?
-      output! "No assets"
-      puts "  No assets" unless testing
-      return @out
+      puts "  No assets"
+      return
     else
-      puts unless testing
+      puts
       assets.each do |name| 
         asset = File.basename(name)
-        outstr asset
-        puts "  ", fx(asset, Blue) unless testing
+        puts "  ", fx(asset, Blue)
       end
     end
-    puts unless testing
-    @out
+    puts
   end
 
-  def cmd_ssh(arg, testing = false)
+  def cmd_ssh
     pub = @blog.view.publisher
     puts
     system!("tputs clear; ssh #{pub.user}@#{pub.server}")
     sleep 0.1
-    cmd_clear(nil)
+    cmd_clear
   end
 
-  def cmd_INVALID(arg, testing = false)
-    reset_output "\n  Command '#{arg}' was not understood."
+  def cmd_INVALID(arg)
     print fx("\n  Command ", :bold)
     print fx(arg, Red, :bold)
     puts fx(" was not understood.\n ", :bold)
-    @out
   end
 
-  def cmd_legacy(arg = nil)
-#   dir = ask("Dir = ")
+  def cmd_legacy
     dir = "sources/computing"
     puts "Importing from: #{dir}"
     files = Dir[dir/"**"]
@@ -535,7 +460,7 @@ module RuneBlog::REPL
   {Posts:}                                          {Advanced:}
   -------------------------------------------       -------------------------------------------
   {p, post}           Create a new post             {config}            Edit various system files
-  {new post}          Same as p, post               {customize}         (BUGGY) Change set of tags, extra views
+  {new post}          Same as p, post                
   {lsp, list posts}   List posts in current view    {preview}           Look at current (local) view in browser
   {lsd, list drafts}  List all drafts (all views)   {browse}            Look at current (published) view in browser
   {delete ID [ID...]} Remove multiple posts         {rebuild}           Regenerate all posts and relink
@@ -544,10 +469,8 @@ module RuneBlog::REPL
   {import ASSETS}     Import assets (images, etc.)  {manage WIDGET}     Manage content/layout of a widget
   EOS
 
-  def cmd_help(arg, testing = false)
-    reset_output 
+  def cmd_help
     msg = Help
-    output msg
     msg.each_line do |line|
       e = line.each_char
       first = true
@@ -570,8 +493,6 @@ module RuneBlog::REPL
         print s1
       end
     end
-    puts unless testing
-    @out
+    puts
   end
 end
-

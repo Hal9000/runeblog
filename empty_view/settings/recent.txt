@@ -7,5 +7,5 @@ text.size    22px
 date.color   #9a9a9a
 date.size    15px
 
-bgcolor      #ffffff  # white
-count        4
+bgcolor      #ffffff   # white
+count        10        # max number of recent entries

@@ -87,6 +87,8 @@ now can enable/disable widgets, FB/Twitter/reddit
 adds recent.count, recent.bgcolor
 adds reddit/facebook/twitter to config
 UI workaround for screen-clear problem
+improves command dispatch
+removes ugly test scaffolding
 .end
 
 .sublist oct2019 Recently completed (Oct 2019)
@@ -210,7 +212,6 @@ Move some pieces into "snippets" (e.g. Facebook/Twitter integration)
 =don't use vars.lt3
 =fix \$DotDir
 =more keyword parameters as needed
-=fix check\_empty issue
 liveblog: separate dot-commands from helpers
 remove duplicated and double-scoped code
 cards as .lt3 files?
@@ -266,7 +267,6 @@ docs: how to write templates (incl main one)
 .sublist bugs Bugs, etc.
 =tt tag not working with blog.css?
 =No way to update widget-specific code?
-=weird screen-clear glitches
 =FAQ bootstrap code is weird
 widgets don't honor their CSS?
 things deleted locally aren't deleted remotely (rsync??)
@@ -497,21 +497,21 @@ complete Completed tasks
 .sublist nextish Next steps...
 =fix metadata.txt format
 =_retrieve_metadata or _get_draft_data -- pick one!
-=clean up UI
 =better lsd, lsp output (title, not slug)
+=Update software safely?
 =fix "head" stuff
+=Formalize example blog
+=Use example blog in automated testing
+=Move custom code into widgets
 =backup/restore?
 =ssh-copy-id in setup
 =special tags: intra-blog, gist, github, youtube, ...
 =special tags: vimeo, twitter, fb?, reddit?, ...
-=Formalize example blog
 =RubyText settings in file
 =Make an intro video
 =fix/delete Runeblog::Default (post\_template)?
-=Variables for config file?
 =Facebook buttons
 =Twitter buttons
-=Update software safely?
 =bin/blog: Error when escaping from menu
 =bin/blog: autocomplete fails when no valid prefix
 .end
