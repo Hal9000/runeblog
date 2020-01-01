@@ -13,40 +13,19 @@ class RuneBlog::Post
     log!(enter: __method__, args: [post], level: 3)
     raise "Doesn't work right now"
     raise NoBlogAccessor if RuneBlog.blog.nil?
-    # "post" is a slug
+    # "post" is a slug?
     pdir = RuneBlog.blog.root/:drafts/post
     meta = nil
     Dir.chdir(pdir) do
-      meta = read_config("metadata.txt")
-      meta.date = Date.parse(meta.date)
-      meta.views = meta.views.split
-      meta.tags = meta.tags.split
-      meta.teaser = File.read("teaser.txt")
+#     meta = read_config("metadata.txt")
+#     meta.date = Date.parse(meta.date)
+#     meta.views = meta.views.split
+#     meta.tags = meta.tags.split
+#     meta.teaser = File.read("teaser.txt")
 #     meta.body = File.read("body.txt")
     end
     meta
   end
-
-#   def write_metadata(meta)   # FIXME ???
-#     log!(enter: __method__, args: [meta], level: 3)
-#     debug "=== write_metadata:"
-#     debug "-----\n#{meta.inspect}\n-----"
-#     fname2 = "metadata.txt"
-#     hash = meta.to_h
-# 
-#     File.write("teaser.txt", hash[:teaser])
-#     hash.delete(:teaser)
-#     hash.delete(:body)
-# 
-#     hash[:views] = hash[:views].join(" ")
-#     hash[:tags]  = hash[:tags].join(" ")
-# 
-#     fields = [:num, :title, :date, :pubdate, :views, :tags]
-# 
-#     f2 = File.new(fname2, "w")
-#     fields.each {|fld| f2.puts "#{fld}: #{hash[fld]}" }
-#     f2.close
-#   end
 
   def initialize
     log!(enter: __method__, level: 3)
