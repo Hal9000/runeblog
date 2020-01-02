@@ -3,7 +3,7 @@ if !defined?(RuneBlog::Path)
 # if ! (Object.constants.include?(:RuneBlog) && RuneBlog.constants.include?(:Path))
 
 class RuneBlog
-  VERSION = "0.3.05"
+  VERSION = "0.3.06"
 
   path = Gem.find_files("runeblog").grep(/runeblog-/).first
   Path  = File.dirname(path)
@@ -45,6 +45,5 @@ def prefix(num)
   log!(enter: __method__, args: [num], level: 3)
   "#{'%04d' % num.to_i}"
 end
-
 
 end

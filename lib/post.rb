@@ -66,10 +66,9 @@ class RuneBlog::Post
   end
 
   def edit
-    log!(enter: __method__)
-    result = system!("vi #@draft +8")  # TODO improve this
-    raise EditorProblem(draft) unless result
-    nil
+    # log!(enter: __method__)
+    edit_file(@draft, vim: "+8")
+    build
   rescue => err
     error(err)
   end 
@@ -78,8 +77,8 @@ class RuneBlog::Post
     log!(enter: __method__)
     post = self
     views = post.meta.views
-    text = File.read(@draft)
     @blog.generate_post(@draft)
+    @blog.generate_index(@blog.view)
   end
 end
 
@@ -165,8 +164,9 @@ class RuneBlog::ViewPost
     @teaser_text = File.read(fname).chomp
     
     Dir.chdir(postdir) do 
-      @title = @blog._retrieve_metadata("title")
-      @date  = @blog._retrieve_metadata("pubdate")
+      meta = @blog.read_metadata
+      @title = meta.title
+      @date  = meta.pubdate
     end
   rescue => err
     STDERR.puts "--- #{err}\n #{err.backtrace.join("\n  ")}"

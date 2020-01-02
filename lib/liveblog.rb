@@ -789,9 +789,8 @@ def _post_lookup(postid)    # side-effect
   posts = Dir.entries(dir_posts).grep(/^\d\d\d\d/).map {|x| dir_posts/x }
   posts.select! {|x| File.directory?(x) }
 
-  post = posts.select {|x| File.basename(x).to_i == postid }
-  raise "Error: More than one post #{postid}" if post.size > 1
-  postdir = post.first
+  posts = posts.select {|x| File.basename(x).to_i == postid }
+  postdir = exactly_one(posts)
   vp = RuneBlog::ViewPost.new(@blog.view, postdir)
   vp
 end

@@ -21,6 +21,12 @@
    "$$" + param
 .end
 
+.sublist dec2019 Recently completed (Jan 2020)
+removed more dead code
+added read_metadata
+added rebuild of post and index when post edited
+.end
+
 .sublist dec2019 Recently completed (Dec 2019)
 Added explanations to config menu
 \.banner now takes body
@@ -154,11 +160,11 @@ Warn when .img (etc.) refs nonexistent asset
 .end
 
 .sublist funky General functionality
-=post analyzer - SEO, spell, wcount, etc.
-autopost: Facebook
+=better asset management
 autopost: Twitter
+autopost: Facebook
 autopost: linkedin
-better asset management
+post analyzer - SEO, spell, wcount, etc.
 dynamically add commands/code to repl?
 need categories??
 .end
@@ -495,7 +501,6 @@ complete Completed tasks
 .end
 
 .sublist nextish Next steps...
-=_retrieve_metadata or _get_draft_data -- pick one!
 =better lsd, lsp output (title, not slug)
 =Update software safely?
 =fix "head" stuff

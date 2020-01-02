@@ -15,15 +15,13 @@
 <p>
 
 <h2>Runeblog TODO</h2>
-</h3>Generated from <code><font size=+1><b>notes/todo.lt3</b></font></code> - 2020-01-01 01:50:14</h3>
+</h3>Generated from <code><font size=+1><b>notes/todo.lt3</b></font></code> - 2020-01-01 20:33:55</h3>
 <p>
 
 <table border=0 width=96% cellpadding=8 cellspacing=8>
   <tr>
     <td valign=top width=32%>&nbsp;&nbsp;<b>Next steps...
-</b><br><ul><li><font color=red>fix metadata.txt format</font></li>
-<li><font color=red>_retrieve_metadata or <i>get_draft_data</i> -- pick one!</font></li>
-<li><font color=red>better lsd, lsp output (title, not slug)</font></li>
+</b><br><ul><li><font color=red>better lsd, lsp output (title, not slug)</font></li>
 <li><font color=red>Update software safely?</font></li>
 <li><font color=red>fix "head" stuff</font></li>
 <li><font color=red>Formalize example blog</font></li>
@@ -46,7 +44,9 @@
 <li>Livetext: Var as replacement for _var  (see varmint)</li>
 <li>Livetext: open/close</li></ul></td>
     <td valign=top width=32%>&nbsp;&nbsp;<b>Easy stuff?
-</b><br><ul><li>change teaser to excerpt?</li>
+</b><br><ul><li><font color=red>"preview post" command</font></li>
+<li><font color=red>change teaser to excerpt?</font></li>
+<li><font color=red>detect non-OSX and print warning</font></li>
 <li>"wrap"-style include maybe?</li>
 <li>add CSS ref to post?</li>
 <li>specific kinds of rebuild?</li>
@@ -55,11 +55,11 @@
   </tr>
   <tr>
     <td valign=top width=32%>&nbsp;&nbsp;<b>General functionality
-</b><br><ul><li><font color=red>post analyzer - SEO, spell, wcount, etc.</font></li>
-<li>autopost: Facebook</li>
+</b><br><ul><li><font color=red>better asset management</font></li>
 <li>autopost: Twitter</li>
+<li>autopost: Facebook</li>
 <li>autopost: linkedin</li>
-<li>better asset management</li>
+<li>post analyzer - SEO, spell, wcount, etc.</li>
 <li>dynamically add commands/code to repl?</li>
 <li>need categories??</li></ul></td>
     <td valign=top width=32%>&nbsp;&nbsp;<b>Recently completed (Dec 2019)
@@ -129,9 +129,21 @@
 <li>adds reddit/facebook/twitter to config</li>
 <li>UI workaround for screen-clear problem</li>
 <li>improves command dispatch</li>
-<li>removes ugly test scaffolding</li></ul></td>
-    <td valign=top width=32%>&nbsp;&nbsp;<b>Recently completed (Nov 2019)
-</b><br><ul><li>basic 'manage' command</li>
+<li>removes ugly test scaffolding</li>
+<li>fixed metadata.txt format</li></ul></td>
+    <td valign=top width=32%>&nbsp;&nbsp;<b>Recently completed (Oct/Nov 2019)
+</b><br><ul><li>date inside post</li>
+<li>show tags on posts</li>
+<li>permalink on post?</li>
+<li>collect tags (into metadata.txt)</li>
+<li>crude ad mockup</li>
+<li>widgets now have #initialize</li>
+<li>rough fix for "links" widget code</li>
+<li>dropcaps work now</li>
+<li>inset quotes also work</li>
+<li>fixed quote issue</li>
+<li>added basic 'config' command</li>
+<li>basic 'manage' command</li>
 <li>created .faq command</li>
 <li>got vertical navbar working</li>
 <li>very rudimentary .banner command</li>
@@ -169,18 +181,6 @@
 <li>Fixed mkwidget</li></ul></td>
   </tr>
   <tr>
-    <td valign=top width=32%>&nbsp;&nbsp;<b>Recently completed (Oct 2019)
-</b><br><ul><li>date inside post</li>
-<li>show tags on posts</li>
-<li>permalink on post?</li>
-<li>collect tags (into metadata.txt)</li>
-<li>crude ad mockup</li>
-<li>widgets now have #initialize</li>
-<li>rough fix for "links" widget code</li>
-<li>dropcaps work now</li>
-<li>inset quotes also work</li>
-<li>fixed quote issue</li>
-<li>added basic 'config' command</li></ul></td>
     <td valign=top width=32%>&nbsp;&nbsp;<b>Bugs, etc.
 </b><br><ul><li><font color=red>tt tag not working with blog.css?</font></li>
 <li><font color=red>No way to update widget-specific code?</font></li>
@@ -194,8 +194,6 @@
 <li>$$incr?</li>
 <li>permit omission of .lt3?</li>
 <li>.include dir/    # refs dir/main.lt3 ?</li></ul></td>
-  </tr>
-  <tr>
     <td valign=top width=32%>&nbsp;&nbsp;<b>Widget functionality, etc.
 </b><br><ul><li><font color=red>standard/nonstandard marker for widgets</font></li>
 <li><font color=red>work on "standard widget" concept</font></li>
@@ -205,6 +203,8 @@
 <li><font color=red>automated news search</font></li>
 <li>bydates manager</li>
 <li>search</li></ul></td>
+  </tr>
+  <tr>
     <td valign=top width=32%>&nbsp;&nbsp;<b>UI and UX
 </b><br><ul><li>shorten commands?</li>
 <li>allow large output for lsp/lsd (scroll? more?)</li>
@@ -223,8 +223,6 @@
 <li>factor generic HTML out of liveblog.rb</li>
 <li>rethink helper libs?</li>
 <li>distinguish view and view_name</li></ul></td>
-  </tr>
-  <tr>
     <td valign=top width=32%>&nbsp;&nbsp;<b>Faster/sturdier code
 </b><br><ul><li><font color=red>more/better exceptions</font></li>
 <li><font color=red>internal error handling</font></li>
@@ -232,6 +230,8 @@
 <li><font color=red>more tests!</font></li>
 <li>code coverage analysis</li>
 <li>profiling</li></ul></td>
+  </tr>
+  <tr>
     <td valign=top width=32%>&nbsp;&nbsp;<b>Documentation and tutorials
 </b><br><ul><li><font color=red>github README</font></li>
 <li><font color=red>docs: getting started</font></li>
@@ -257,8 +257,6 @@
 <li>Select themes/styles for blog??</li>
 <li>real support for tags (and cloud)</li>
 <li>Move some pieces into "snippets" (e.g. Facebook/Twitter integration)</li></ul></td>
-  </tr>
-  <tr>
     <td valign=top width=32%>&nbsp;&nbsp;<b>Miscellaneous/Other
 </b><br><ul><li>allow test code to add to post?</li>
 <li>tag pools? dumb??</li>
@@ -278,6 +276,8 @@
 <li>use a database???</li>
 <li>possibly change: relink, rebuild, etc.?</li>
 <li>back-sync with remote?</li></ul></td>
+  </tr>
+  <tr>
     <td valign=top width=32%>[rcomp is undefined]</td>
     <td valign=top width=32%>&nbsp;&nbsp;<b>Completed tasks
 </b><br><ul><li>todo as .lt3</li>
@@ -312,8 +312,6 @@
 <li>bug: one post is truncated (life-...)</li>
 <li>fix generalized widget</li>
 <li>use .copy for guts.html</li></ul></td>
-  </tr>
-  <tr>
     <td valign=top width=32%>&nbsp;&nbsp;<b>Completed tasks, contd.
 </b><br><ul><li>introduce guts.html</li>
 <li>use .seek for global.lt3</li>
@@ -346,6 +344,8 @@
 <li>VIEW/posts dir</li>
 <li>make sure posts go into 'generated'</li>
 <li>get rid of 'generated/blog'?</li></ul></td>
+  </tr>
+  <tr>
     <td valign=top width=32%>&nbsp;&nbsp;<b>Completed tasks, contd.
 </b><br><ul><li>must fix blog title issue!</li>
 <li>fix "Keep Reading" CSS</li>
@@ -410,8 +410,6 @@
 <li>params checking on method entry</li>
 <li>occasional sanity checking?</li>
 <li>config files: blank lines, comments (persistent?)</li></ul></td>
-  </tr>
-  <tr>
     <td valign=top width=32%>&nbsp;&nbsp;<b>Completed tasks, contd.
 </b><br><ul><li>consolidate under .blog</li>
 <li>test make_slug to death</li>
@@ -443,6 +441,8 @@
 <li>open remote/local?</li>
 <li>detect dirty files for publishing</li>
 <li>single template for post?</li></ul></td>
+  </tr>
+  <tr>
     <td valign=top width=32%>&nbsp;&nbsp;<b>Completed tasks, contd.
 </b><br><ul><li>get rid of #readmore</li>
 <li>Bug: make sure teaser goes into body of post</li>
@@ -460,6 +460,7 @@
 <li>maybe add (default) publishing info to config?</li>
 <li>head/tail for widget HTML?</li>
 <li>"local" CSS for each widget?</li></ul></td>
+    <td valign=top width=32%>...</td>
     <td valign=top width=32%>...</td>
   </tr>
 </table>

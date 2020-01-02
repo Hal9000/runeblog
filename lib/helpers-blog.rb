@@ -22,16 +22,10 @@ module RuneBlog::Helpers
       dir = @root/:views/self.view/:settings
     end
     file = dir/"features.txt"
-    lines = File.readlines(file)
-    lines.each do |line|
-      line = line.strip
-      line.sub!(/ #.*/, "")   # trailing
-      next if line =~ /^ *#/  # leading
-      next if line.empty?
-      name, status = line.split
-      hash[name] = (status == "1")  # enabled
-    end
-    @features = hash
+    pairs = read_pairs(file)
+    enabled = {}
+    pairs.each {|k,v| enabled[k] = (v == "1") }
+    @features = enabled
   end
 
   def get_repo_config
@@ -70,47 +64,6 @@ module RuneBlog::Helpers
     puts err.backtrace.join("\n")
     puts "dir = #{Dir.pwd}"
     stop_RubyText rescue nil
-  end
-
-  def read_config(file, *syms)
-    log!(enter: __method__, args: [file, *syms], level: 3)
-    lines = File.readlines(file).map(&:chomp)
-    obj = ::OpenStruct.new
-    skip = ["\n", "#", "."]
-    lines.each do |line|
-      next if skip.include?(line[0])
-      key, val = line.split(/: +/, 2)
-      obj.send(key+"=", val)
-    end
-    return obj if syms.empty?
-
-    vals = []
-    if syms.empty?
-      vals = obj.to_hash.values
-    else
-      syms.each {|sym| vals << obj.send(sym) }
-    end
-    return vals
-  rescue => err
-    puts "Can't read config file '#{file}': #{err}"
-    puts err.backtrace.join("\n")
-    puts "dir = #{Dir.pwd}"
-    stop_RubyText
-  end
-
-  def try_read_config(file, hash)
-    log!(enter: __method__, args: [file, hash], level: 3)
-    return hash.values unless File.exist?(file)
-    vals = read_config(file, *hash.keys)
-    vals
-  end
-
-  def write_config(obj, file)
-    log!(enter: __method__, args: [obj, file], level: 2)
-    hash = obj.to_h
-    File.open(file, "w") do |out|
-      hash.each_pair {|key, val| out.puts "#{key}: #{val}" }
-    end
   end
 
   def retrieve_views   # read from filesystem

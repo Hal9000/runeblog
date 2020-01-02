@@ -189,43 +189,24 @@ class RuneBlog
     _generate_settings
   end
 
+  # FIXME reconcile with _get_draft data
+
+  def read_metadata
+    meta = read_pairs!("metadata.txt")
+    meta.views = meta.views.split
+    meta.tags  = meta.tags.split
+    meta
+  end
+
   def _deploy_local(dir)
     log!(enter: __method__, args: [dir], level: 1)
     Dir.chdir(dir) do
-      views = _retrieve_metadata(:views)
-      views.each do |v| 
+      meta = read_metadata
+      meta.views.each do |v| 
         next unless _check_view?(v)
         system!("cp *html #@root/views/#{v}/remote", show: true)
       end
     end
-  rescue => err
-    _tmp_error(err)
-  end
-
-  # FIXME reconcile with _get_draft data
-
-  # Need a method to get key-value pairs? similar to read_vars?
-
-  def _retrieve_metadata(key)
-    key = key.to_s
-    lines = _get_data("metadata.txt")
-    lines = lines.grep(/^#{key}/)   # possible prefix problem later??
-    case lines.size
-      when 0
-        result = nil  # not found
-      when 1
-        str = lines.first.split(" ", 2)[1]
-        case key
-          when "views", "tags"   # plurals
-            return [] if str.nil?
-            result = str.split
-        else
-          result = str
-        end
-    else 
-      raise "Too many '#{key}' instances in metadata.txt!"
-    end
-    return result
   rescue => err
     _tmp_error(err)
   end
@@ -402,9 +383,8 @@ class RuneBlog
     posts = Dir.entries(dir_posts).grep(/^\d\d\d\d/).map {|x| dir_posts/x }
     posts.select! {|x| File.directory?(x) }
 
-    post = posts.select {|x| File.basename(x).to_i == postid }
-    raise "Error: More than one post #{postid}" if post.size > 1
-    postdir = post.first
+    posts = posts.select {|x| File.basename(x).to_i == postid }
+    postdir = exactly_one(posts)
     vp = RuneBlog::ViewPost.new(self.view, postdir)
     vp
   rescue => err
@@ -564,34 +544,10 @@ class RuneBlog
     # _tmp_error(err)
   end
 
-  def _get_draft_data(num, sym)
-    tag = prefix(num)
-    front = @blog.root/:drafts/tag
-    files = Dir[front + "*"]
-    raise "No draft #{num} found" if files.empty?
-    raise "Too many files found for #{num}!" if files.size > 1
-    file = files.first
-    lines = File.readlines(file)
-    case sym
-      when :views
-        view_line = lines.grep(/^.views /)
-        raise "More than one .views call in #{draft}" if view_line.size > 1
-        raise "No .views call in #{draft}" if view_line.size < 1
-        view_line = view_line.first
-        views = view_line[7..-1].split
-        return views.uniq 
-    else
-      raise "Unknown symbol #{sym.inspect}"
-    end
-  end
-
   def _get_views(draft)
     log!(enter: __method__, args: [draft], level: 2)
     # FIXME dumb code
-    view_line = File.readlines(draft).grep(/^.views /)
-    raise "More than one .views call in #{draft}" if view_line.size > 1
-    raise "No .views call in #{draft}" if view_line.size < 1
-    view_line = view_line.first
+    view_line = exactly_one(File.readlines(draft).grep(/^.views /))
     views = view_line[7..-1].split
     views.uniq 
   rescue => err
@@ -622,10 +578,11 @@ class RuneBlog
     pnum = nslug[0..3]                 # 0001
     Dir.chdir(pdraft) do 
       excerpt = File.read("teaser.txt")
-      date = _retrieve_metadata(:date)
+      meta = read_metadata
+      date = meta.date
       longdate = ::Date.parse(date).strftime("%B %e, %Y")
-      title = _retrieve_metadata(:title)
-      tags = _retrieve_metadata(:tags)
+      title = meta.title
+      tags = meta.tags
       # FIXME simplify
       vars = <<~LIVE
         .set post.num = #{pnum}

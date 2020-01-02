@@ -8,31 +8,31 @@ make_exception(:EditorProblem, "Could not edit $1")
 
 module RuneBlog::REPL
   def edit_file(file, vim: "")
-    STDSCR.saveback
+#   STDSCR.saveback
     ed = @blog.editor
     params = vim if ed =~ /vim$/
     result = system!("#{@blog.editor} #{file} #{params}")
     raise EditorProblem(file) unless result
-    STDSCR.restback
+#   STDSCR.restback
     cmd_clear
   end
 
   def cmd_quit
     STDSCR.rows.times { puts " "*(STDSCR.cols-1) }
     # FIXME please?
-    sleep 0.1
+    # sleep 0.1
     STDSCR.clear
     sleep 0.1
     RubyText.stop
     sleep 0.1
     system("clear")
-    sleep 0.1
+    # sleep 0.1
     exit
   end
 
   def cmd_clear
     STDSCR.rows.times { puts " "*(STDSCR.cols-1) }
-    sleep 0.1
+    # sleep 0.1
     STDSCR.clear
   end
 
@@ -223,9 +223,9 @@ module RuneBlog::REPL
   def cmd_rebuild
     debug "Starting cmd_rebuild..."
     puts
+    regen_posts
     @blog.generate_view(@blog.view)
     @blog.generate_index(@blog.view)
-    regen_posts
   rescue => err
     _tmp_error(err)
   end
@@ -301,22 +301,8 @@ module RuneBlog::REPL
     tag = "#{'%04d' % id}"
     files = ::Find.find(@blog.root/:drafts).to_a
     files = files.grep(/#{tag}-.*lt3/)
-    files = files.map {|f| File.basename(f) }
-    if files.size > 1
-      msg = "Multiple files: #{files}"
-      puts msg
-      return [false, msg]
-    end
-    if files.empty?
-      msg = "\n  Can't edit post #{id}"
-      puts msg
-      return [false, msg]
-    end
-
-    file = files.first
-    draft = @blog.root/:drafts/file
-    vim_params = '-c G'
-    result = edit_file(draft)
+    draft = exactly_one(files)
+    result = edit_file(draft, vim: '-c$')
     @blog.generate_post(draft)
   rescue => err
     _tmp_error(err)

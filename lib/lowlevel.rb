@@ -28,11 +28,7 @@
   end
 
   def _get_data?(file)   # File need not exist
-    if File.exist?(file)
-      _get_data(file)
-    else
-      []
-    end
+    File.exist?(file) ? _get_data(file) : []
   end
 
   def _get_data(file)
@@ -43,6 +39,27 @@
     end
     lines.reject! {|x| x.empty? }
     lines
+  end
+
+  def read_pairs(file)       # returns a hash
+    lines = _get_data(file)
+    hash = {}
+    lines.each do |line|
+      key, val = line.split(" ", 2)
+      hash[key] = val
+    end
+    hash
+  end
+
+  def read_pairs!(file)       # returns an openstruct
+    lines = _get_data(file)
+    obj = OpenStruct.new
+    lines.each do |line|
+      key, val = line.split(" ", 2)
+      val ||= ""
+      obj.send("#{key}=", val)
+    end
+    obj
   end
 
   def copy(src, dst)
@@ -75,9 +92,15 @@
   end
 
   def error(err)
-    log!(str: err, enter: __method__, args: [err], level: 2)
+    # log!(str: err, enter: __method__, args: [err], level: 2)
     str = "\n  Error: #{err}"
     puts str
     puts err.backtrace.join("\n")
+  end
+
+  def exactly_one(list)
+    raise "List: Zero instances" if list.empty?
+    raise "List: More than one instance" if list.size > 1
+    list.first
   end
 
