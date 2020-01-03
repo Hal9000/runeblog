@@ -21,10 +21,163 @@
    "$$" + param
 .end
 
-.sublist dec2019 Recently completed (Jan 2020)
+.sublist jan2020 Recently completed (Jan 2020)
 removed more dead code
 added read_metadata
 added rebuild of post and index when post edited
+better lsd, lsp output (title, not slug)
+.end
+
+.sublist nextish Next steps...
+=fix "head" stuff
+=Formalize example blog
+=Use example blog in automated testing
+ssh-copy-id in setup
+Update software safely?
+Move custom code into widgets
+backup/restore?
+special tags: intra-blog, gist, github, youtube, ...
+special tags: vimeo, twitter, fb?, reddit?, ...
+RubyText settings in file
+Make an intro video
+fix/delete Runeblog::Default (post\_template)?
+Facebook buttons
+Twitter buttons
+.end
+
+.sublist bugs Bugs, etc.
+FAQ is weird (see computing, navbar vs pages)
+bin/blog: Error when escaping from menu
+bin/blog: autocomplete fails when no valid prefix
+tt tag not working with blog.css?
+No way to update widget-specific code?
+widgets don't honor their CSS?
+things deleted locally aren't deleted remotely (rsync??)
+delete post, edit elsewhere, comes back (change source!)
+.end
+
+.sublist easyish Easy stuff?
+"preview post" command
+change teaser to excerpt?
+detect non-OSX and print warning
+"wrap"-style include maybe?
+add CSS ref to post?
+specific kinds of rebuild?
+custom.rb (livetext) gets included if present?
+Warn when .img (etc.) refs nonexistent asset
+.end
+
+.sublist funky General functionality
+better asset management
+autopost: Twitter
+autopost: Facebook
+autopost: linkedin
+post analyzer - SEO, spell, wcount, etc.
+dynamically add commands/code to repl?
+need categories??
+.end
+
+.sublist widgets Widget functionality, etc.
+=common widget code
+=tag cloud
+work on "standard widget" concept
+standard/nonstandard marker for widgets
+site map widget
+automated news search
+bydates manager
+search
+.end
+
+.sublist livetext Livetext bugs/features
+fix bug .set var="this, that"
+mixin as module (livetext -m)
+$$dd[incr]?
+permit omission of .lt3?
+\.include dir/    # refs dir/main.lt3 ?
+.end
+
+.sublist ui UI and UX
+shorten commands?
+allow large output for lsp/lsd (scroll? more?)
+undo last post?
+allow for post title changing
+add post template capability (create, edit, post)
+allow windows to scroll back
+.end
+
+.sublist advanced More advanced features
+FB/Twitter icons on posts
+poll support
+second sidebar??
+footer? holding a widget?
+support for Windows?? (open, paths, ...)
+Twitter-embed widget
+verify image assets
+auto-notify on post (FB/Twitter)
+subscription?
+analytics?
+connect to REST interface??
+up/down votes, etc.?
+Select themes/styles for blog??
+real support for tags (and cloud)
+Move some pieces into "snippets" (e.g. Facebook/Twitter integration)
+.end
+
+.sublist pretty Prettier code
+=don't use vars.lt3
+=fix \$DotDir
+more keyword parameters as needed
+liveblog: separate dot-commands from helpers
+remove duplicated and double-scoped code
+cards as .lt3 files?
+remove dead code!!
+factor generic HTML out of liveblog.rb
+rethink helper libs?
+distinguish view and view\_name
+.end
+
+.sublist robust Faster/sturdier code
+=more tests!
+check user input
+more/better exceptions
+internal error handling
+livetext error handling
+code coverage analysis
+profiling
+.end
+
+.sublist misc Miscellaneous/Other
+allow test code to add to post?
+tag pools? dumb??
+verify view is publishable before trying
+methods such as get\_post\_template?
+make hierarchy of publish files?
+safe way to delete a view?
+test credentials for publishing?
+config files: persistent comments?
+change interaction of liveblog and process\_file (arbitrary ostruct?)
+hash same as metadata??
+allow templates to be .lt3 files?
+snippets for templates?
+facebook/twitter as snippets?
+changes in liveblog for snippets??
+Fix/rewrite asset handling? .asset and .asset! tags?
+use a database???
+possibly change: relink, rebuild, etc.?
+back-sync with remote?
+.end
+
+
+.sublist docs Documentation and tutorials
+=github README
+=docs: getting started
+=docs: overview of Livetext
+explicitly document use of ssh/scp
+update docs
+out-of-the-box workflow
+video tutorial
+docs: how-to
+docs: how to write templates (incl main one)
 .end
 
 .sublist dec2019 Recently completed (Dec 2019)
@@ -146,137 +299,6 @@ Widget rebuild is fixed
 Deleted card1, card2, card_iframe
 Deleted "pieces" dir under widget
 Fixed mkwidget
-.end
-
-.sublist easyish Easy stuff?
-="preview post" command
-=change teaser to excerpt?
-=detect non-OSX and print warning
-"wrap"-style include maybe?
-add CSS ref to post?
-specific kinds of rebuild?
-custom.rb (livetext) gets included if present?
-Warn when .img (etc.) refs nonexistent asset
-.end
-
-.sublist funky General functionality
-=better asset management
-autopost: Twitter
-autopost: Facebook
-autopost: linkedin
-post analyzer - SEO, spell, wcount, etc.
-dynamically add commands/code to repl?
-need categories??
-.end
-
-.sublist widgets Widget functionality, etc.
-=standard/nonstandard marker for widgets
-=work on "standard widget" concept
-=common widget code
-=tag cloud
-=site map widget
-=automated news search
-bydates manager
-search
-.end
-
-.sublist livetext Livetext bugs/features
-fix bug .set var="this, that"
-mixin as module (livetext -m)
-$$dd[incr]?
-permit omission of .lt3?
-\.include dir/    # refs dir/main.lt3 ?
-.end
-
-.sublist ui UI and UX
-shorten commands?
-allow large output for lsp/lsd (scroll? more?)
-undo last post?
-allow for post title changing
-add post template capability (create, edit, post)
-allow windows to scroll back
-.end
-
-.sublist advanced More advanced features
-FB/Twitter icons on posts
-second sidebar??
-footer? holding a widget?
-support for Windows?? (open, paths, ...)
-Twitter-embed widget
-verify image assets
-auto-notify on post (FB/Twitter)
-subscription?
-analytics?
-connect to REST interface??
-up/down votes, etc.?
-Select themes/styles for blog??
-real support for tags (and cloud)
-Move some pieces into "snippets" (e.g. Facebook/Twitter integration)
-.end
-
-.sublist pretty Prettier code
-=don't use vars.lt3
-=fix \$DotDir
-=more keyword parameters as needed
-liveblog: separate dot-commands from helpers
-remove duplicated and double-scoped code
-cards as .lt3 files?
-remove dead code!!
-factor generic HTML out of liveblog.rb
-rethink helper libs?
-distinguish view and view\_name
-.end
-
-.sublist robust Faster/sturdier code
-=more/better exceptions
-=internal error handling
-=livetext error handling
-=more tests!
-code coverage analysis
-profiling
-.end
-
-.sublist misc Miscellaneous/Other
-allow test code to add to post?
-tag pools? dumb??
-verify view is publishable before trying
-methods such as get\_post\_template?
-make hierarchy of publish files?
-safe way to delete a view?
-test credentials for publishing?
-config files: persistent comments?
-change interaction of liveblog and process\_file (arbitrary ostruct?)
-hash same as metadata??
-allow templates to be .lt3 files?
-snippets for templates?
-facebook/twitter as snippets?
-changes in liveblog for snippets??
-Fix/rewrite asset handling? .asset and .asset! tags?
-use a database???
-possibly change: relink, rebuild, etc.?
-back-sync with remote?
-.end
-
-
-.sublist docs Documentation and tutorials
-=github README
-=docs: getting started
-=docs: overview of Livetext
-explicitly document use of ssh/scp
-update docs
-out-of-the-box workflow
-video tutorial
-docs: how-to
-docs: how to write templates (incl main one)
-.end
-
-.sublist bugs Bugs, etc.
-=tt tag not working with blog.css?
-=No way to update widget-specific code?
-=FAQ bootstrap code is weird
-widgets don't honor their CSS?
-things deleted locally aren't deleted remotely (rsync??)
-delete post, edit elsewhere, comes back (change source!)
 .end
 
 .sublist comp1 Completed tasks
@@ -500,29 +522,9 @@ comp3-6
 complete Completed tasks
 .end
 
-.sublist nextish Next steps...
-=better lsd, lsp output (title, not slug)
-=Update software safely?
-=fix "head" stuff
-=Formalize example blog
-=Use example blog in automated testing
-=Move custom code into widgets
-=backup/restore?
-=ssh-copy-id in setup
-=special tags: intra-blog, gist, github, youtube, ...
-=special tags: vimeo, twitter, fb?, reddit?, ...
-=RubyText settings in file
-=Make an intro video
-=fix/delete Runeblog::Default (post\_template)?
-=Facebook buttons
-=Twitter buttons
-=bin/blog: Error when escaping from menu
-=bin/blog: autocomplete fails when no valid prefix
-.end
-
 .sublist nextlive Next steps (Livetext, etc.)
-=Livetext: mixin? include? copy? seek?
-=RubyText: let yesno accept characters
+Livetext: mixin? include? copy? seek?
+RubyText: let yesno accept characters
 Livetext: Var as replacement for \_var  (see varmint)
 Livetext: open/close
 .end
@@ -544,42 +546,42 @@ Livetext: open/close
 <table border=0 width=96% cellpadding=8 cellspacing=8>
   <tr>
     <td valign=top width=32%>$nextish</td>
-    <td valign=top width=32%>$nextlive</td>
     <td valign=top width=32%>$easyish</td>
+    <td valign=top width=32%>$bugs</td>
   </tr>
   <tr>
     <td valign=top width=32%>$funky</td>
-    <td valign=top width=32%>$dec2019</td>
-    <td valign=top width=32%>$octnov2019</td>
-  </tr>
-  <tr>
-    <td valign=top width=32%>$bugs</td>
+    <td valign=top width=32%>$nextlive</td>
     <td valign=top width=32%>$livetext</td>
-    <td valign=top width=32%>$widgets</td>
   </tr>
   <tr>
+    <td valign=top width=32%>$widgets</td>
     <td valign=top width=32%>$ui</td>
     <td valign=top width=32%>$pretty</td>
-    <td valign=top width=32%>$robust</td>
   </tr>
   <tr>
+    <td valign=top width=32%>$robust</td>
     <td valign=top width=32%>$docs</td>
     <td valign=top width=32%>$advanced</td>
-    <td valign=top width=32%>$misc</td>
   </tr>
   <tr>
+    <td valign=top width=32%>$misc</td>
+    <td valign=top width=32%>$jan2020</td>
+    <td valign=top width=32%>$dec2019</td>
+  </tr>
+  <tr>
+    <td valign=top width=32%>$octnov2019</td>
     <td valign=top width=32%>$rcomp</td>
     <td valign=top width=32%>$comp1</td>
-    <td valign=top width=32%>$comp2</td>
   </tr>
   <tr>
+    <td valign=top width=32%>$comp2</td>
     <td valign=top width=32%>$comp3</td>
     <td valign=top width=32%>$comp4</td>
-    <td valign=top width=32%>$comp5</td>
   </tr>
   <tr>
+    <td valign=top width=32%>$comp5</td>
     <td valign=top width=32%>$comp6</td>
-    <td valign=top width=32%>...</td>
     <td valign=top width=32%>...</td>
   </tr>
 </table>
