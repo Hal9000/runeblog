@@ -327,18 +327,21 @@ module RuneBlog::REPL
     posts = @blog.posts  # current view
     str = @blog.view.name + ":\n"
     puts
-    puts "  ", fx(str, :bold)
     if posts.empty?
       puts "  No posts"
     else
       posts.each do |post| 
         base = post.sub(/.lt3$/, "")
-        num, rest = base[0..3], base[4..-1]
-        puts "  ", fx(num, Red), fx(rest, Blue)
+        dir = @blog.root/:posts/base
+        meta = nil 
+        Dir.chdir(dir) { meta = @blog.read_metadata }
+        num, title = meta.num, meta.title
+        num = '%4d' % num.to_s
+        puts "  ", fx(num, Red), "  ", fx(title, Blue)
         draft = @blog.root/:drafts/post + ".lt3"
-        other = @blog._get_views(draft) - [@blog.view.to_s]
+        other = meta.views - [@blog.view.to_s]
         unless other.empty?
-          print fx(" "*7 + "also in: ", :bold) 
+          print fx(" "*9 + "also in: ", :bold) 
           puts other.join(", ") 
         end
       end
@@ -355,11 +358,15 @@ module RuneBlog::REPL
       puts
       drafts.each do |draft| 
         base = draft.sub(/.lt3$/, "")
-        num, rest = base[0..3], base[4..-1]
-        puts "  ", fx(num, Red), fx(rest, Blue)
+        dir = @blog.root/:posts/base
+        meta = nil 
+        Dir.chdir(dir) { meta = @blog.read_metadata }
+        num, title = meta.num, meta.title
+        num = '%4d' % num.to_s
+        puts "  ", fx(num, Red), "  ", fx(title, Blue)
         other = @blog._get_views(@blog.root/:drafts/draft) - [@blog.view.to_s]
         unless other.empty?
-          print fx(" "*7 + "also in: ", :bold) 
+          print fx(" "*9 + "also in: ", :bold) 
           puts other.join(", ") 
         end
       end

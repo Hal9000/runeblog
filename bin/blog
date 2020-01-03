@@ -25,14 +25,13 @@ end
 def get_universal
   univ = "#{@blog.root}/data/universal.lt3"
   if yesno("Faster initial setup? (no: edit universal.lt3)")
-    author = ask!("    Author name: ")
-    site   = ask!("    Site/domain: ")
+    author = ask!("      Author name: ")
+    site   = ask!("      Site/domain: ")
     # Now stash it...
     str = File.read(univ)
     str = str.gsub(/AUTHOR/, author)
     str = str.gsub(/SITE_DOMAIN/, site)
     File.write(univ, str)
-# STDERR.puts "------ universal ------\n#{`cat #{univ}`}\n------------------------"
   else
     vim_params = '-c ":set hlsearch" -c ":hi Search ctermfg=2 ctermbg=6" +/"\(AUTHOR.*\|SITE.*\)"'
     edit_file(univ, vim: vim_params)
@@ -41,11 +40,11 @@ end
 
 def get_global
   if yesno("Faster view setup? (no: edit global.lt3)")
-    view_name = ask!("\n    Filename: ")
+    view_name = ask!("      Filename: ")
     @blog.create_view(view_name)   # call change_view??
-    title     = ask!("    View title: ")
-    subtitle  = ask!("    Subtitle  : ")
-    domain    = ask!("    Domain    : ")
+    title     = ask!("      View title: ")
+    subtitle  = ask!("      Subtitle  : ")
+    domain    = ask!("      Domain    : ")
 
     vfile = "#{@blog.root}/views/#{view_name}/settings/view.txt"
     hash = {/VIEW_NAME/     => view_name,
@@ -54,7 +53,7 @@ def get_global
             /VIEW_DOMAIN/   => domain}
     @blog.complete_file(vfile, nil, hash)
   else
-    view_name = ask!("\n    Filename: ")
+    view_name = ask!("      Filename: ")
     @blog.create_view(view_name)   # call change_view??
     vim_params = '-c ":set hlsearch" -c ":hi Search ctermfg=2 ctermbg=6" +/"\(VIEW_.*\|SITE.*\)"'
     edit_file(@blog.view.dir/"themes/standard/global.lt3", vim: vim_params)
@@ -75,11 +74,10 @@ def get_started
     puts fx("\n  Quick setup complete!", :bold)
     if yesno("Create your first view now?")
       get_global
-      puts "\n  View #{@blog.view} created!\n "
+      puts fx("\n      View #{@blog.view} created!\n ", :bold)
     end
   end
 
-  puts
   print fx("  For help", :bold)
   puts " type h or help."
   print fx("  Create a view", :bold)

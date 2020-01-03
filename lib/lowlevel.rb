@@ -46,6 +46,7 @@
     hash = {}
     lines.each do |line|
       key, val = line.split(" ", 2)
+      val ||= ""
       hash[key] = val
     end
     hash
