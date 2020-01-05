@@ -12,6 +12,10 @@
     File.write(name, obj)
   end
 
+  def timelog(line, file)
+    File.open(file, "a") {|f| f.puts "#{Time.now} #{line}" }
+  end
+
   def system!(str, show: false)
     log!(enter: __method__, args: [str], level: 2)
     STDERR.puts str if show

@@ -21,6 +21,18 @@ def init_liveblog    # FIXME - a lot of this logic sucks
   @vdir = @blog.view.dir rescue "NONAME"
   @version = RuneBlog::VERSION
   @theme = @vdir/:themes/:standard
+
+  @reddit_comments = ""
+  @reddit_enabled = @blog.features["reddit"]
+  if @reddit_enabled
+    @reddit_comments = <<~HTML
+      <a href="#reddit_comments">
+        <img src="assets/reddit-logo.png" 
+             width=24 height=24
+             alt="Scroll to reddit comments"></img>
+      </a>
+    HTML
+  end
 rescue
   raise "Only works inside a blog repo"
 end
@@ -52,11 +64,11 @@ end
     str.length > 0
   end
 
-  def _reddit_post_url(vdir, title, url)
+  def _reddit_post_url(vdir, date, title, url)
     _got_python?
     tmpfile = "/tmp/reddit-post-url.txt"
     File.open(tmpfile, "w") do |tmp|
-      tmp.puts "[Post] " + title
+      tmp.puts "[#{date}]  #{title}"
       tmp.puts url
     end
     rid = nil
@@ -65,6 +77,13 @@ end
     rid  # returns reddit id
   end
 
+def post_toolbar
+  back = %[<a style="text-decoration: none" href="javascript:history.go(-1)">[Back]</a>]
+  _out <<~HTML
+    <div align='right'>#{back} #@reddit_comments</div>
+  HTML
+end
+
 def post_trailer
   perma = _var("publish.proto") + "://" + _var("publish.server") +
           "/" + _var("publish.path") + "/" + _var("post.aslug") + 
@@ -72,31 +91,32 @@ def post_trailer
   tags = _var("post.tags")
   taglist = tags.empty? ? "" : "Tags: #{tags}"
 
-  reddit_enabled = @blog.features["reddit"]
   reddit_txt = ""
-  if reddit_enabled
+  if @reddit_enabled
     vdir  = @blog.root/:views/@blog.view
     nslug = "#{_var("post.num")}-#{_var("post.aslug")}"
+    date  = _var("post.date")
     rid_file = vdir/:posts/nslug/"reddit.id"
     rid = File.exist?(rid_file) ? File.read(rid_file).chomp : nil
     if rid.nil?
       title = _var("title")
-      rid = _reddit_post_url(vdir, title, perma)
+      rid = _reddit_post_url(vdir, date, title, perma)
       dump(rid, rid_file)
     end
     reddit_txt = <<~HTML
-      <hr>
+      <a name='reddit_comments'>
       <script src='https://redditjs.com/post.js' 
               data-url="#{rid}" data-width=800 ></script>
     HTML
   # damned syntax highlighting </>
   end
   _out <<~HTML
+  #{reddit_txt}
+  <hr>
   <table width=100%><tr>
     <td width=10%><a style="text-decoration: none" href="javascript:history.go(-1)">[Back]</a></td>
     <td width=10%><a style="text-decoration: none" href="#{perma}"> [permalink] </a></td>
     <td width=80% align=right><font size=-3>#{taglist}</font></td></tr></table>
-  #{reddit_txt}
   HTML
 end
 
@@ -105,7 +125,7 @@ def faq
   _out "<br>" if @faq_count == 0
   @faq_count += 1
   ques = _data.chomp
-  ans  = _body_text
+  ans  = _body.join("\n")
   id = "faq#@faq_count"
   _out %[&nbsp;<a data-toggle="collapse" href="##{id}" role="button" aria-expanded="false" aria-controls="collapseExample"><font size=+3>&#8964;</font></a>]
   _out %[&nbsp;<b>#{ques}</b>]

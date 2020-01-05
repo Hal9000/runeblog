@@ -41,24 +41,25 @@ module RuneBlog::REPL
   end
 
   def cmd_config
-    hash = {"Global configuration"                     => "global.lt3",
-            "   View-specific variables"               => "../../settings/view.txt",
-            "   Recent posts"                          => "../../settings/recent.txt",
-            "   Publishing vars"                       => "../../settings/publish.txt",
-            "   Config for reddit"                     => "../../config/reddit/credentials.txt",
-            "   Config for Facebook"                   => "../../config/facebook/credentials.txt",
-            "   Config for Twitter"                    => "../../config/twitter/credentials.txt",
-            "View generator"                           => "blog/generate.lt3",
-            "   Banner: Description"                   => "blog/banner.lt3",
-            "   Banner: Text portion"                  => "banner/top.lt3",
-            "   HEAD info for view"                    => "blog/head.lt3",
-            "   User-edited detail for view"           => "blog/index.lt3",
-            "   Generator for recent-posts entry"      => "blog/post_entry.lt3",
-            "Generator for a post"                     => "post/generate.lt3",
-            "   HEAD info for post"                    => "post/head.lt3",
-            "   Content for post"                      => "post/index.lt3",
-            "Global CSS"                               => "etc/blog.css.lt3",
-            "External JS/CSS (Bootstrap, etc.)"        => "/etc/externals.lt3"
+    hash = {"Variables (general)"                 => "global.lt3",
+            "   View-specific"                    => "../../settings/view.txt",
+            "   Recent posts"                     => "../../settings/recent.txt",
+            "   Publishing"                       => "../../settings/publish.txt",
+            "Configuration: enable/disable"       => "../../settings/features.txt",
+            "   Reddit"                           => "../../config/reddit/credentials.txt",
+            "   Facebook"                         => "../../config/facebook/credentials.txt",
+            "   Twitter"                          => "../../config/twitter/credentials.txt",
+            "View: generator"                     => "blog/generate.lt3",
+            "   HEAD info"                        => "blog/head.lt3",
+            "   Layout "                          => "blog/index.lt3",
+            "   Recent-posts entry"               => "blog/post_entry.lt3",
+            "   Banner: Description"              => "blog/banner.lt3",
+            "      Text portion"                  => "banner/top.lt3",
+            "Generator for a post"                => "post/generate.lt3",
+            "   HEAD info for post"               => "post/head.lt3",
+            "   Content for post"                 => "post/index.lt3",
+            "Global CSS"                          => "etc/blog.css.lt3",
+            "External JS/CSS (Bootstrap, etc.)"   => "/etc/externals.lt3"
            }
 
     dir = @blog.view.dir/"themes/standard/"
@@ -209,12 +210,13 @@ module RuneBlog::REPL
 
   def regen_posts
     drafts = @blog.drafts  # current view
+    puts "  Regenerating posts..." unless drafts.empty?
     drafts.each do |draft|
       orig = @blog.root/:drafts/draft
       html = @blog.root/:posts/draft
       html.sub!(/.lt3$/, "/guts.html")
       next if fresh?(orig, html)
-      puts "  Regenerating #{draft}"
+      puts "    #{draft}"
       @blog.generate_post(orig)    # rebuild post
     end
     puts
@@ -224,8 +226,11 @@ module RuneBlog::REPL
     debug "Starting cmd_rebuild..."
     puts
     regen_posts
+    puts "  Generating view"
     @blog.generate_view(@blog.view)
+    puts "  Generating index"
     @blog.generate_index(@blog.view)
+    puts "  ...finished!"
   rescue => err
     _tmp_error(err)
   end

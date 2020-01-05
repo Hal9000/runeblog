@@ -39,9 +39,8 @@ module RuneBlog::Helpers
     puts "dir = #{Dir.pwd}"
   end
 
-  def copy_data(tag, dest)
+  def copy_data(dest)
     data  = RuneBlog::Path + "/../data"    # files kept inside gem
-    # FIXME tag no longer used
     files = %w[ROOT VIEW EDITOR universal.lt3 global.lt3 features.txt]
     files.each {|file| copy(data + "/" + file, dest) unless File.exist?(dest/file) }
   end

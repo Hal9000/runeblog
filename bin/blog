@@ -153,7 +153,8 @@ ver = major.to_i*10 + minor.to_i
 unless ver >= 24
   RubyText.stop
   sleep 0.2
-  abort "Needs Ruby 2.4 or greater" 
+  puts "Needs Ruby 2.4 or greater" 
+  exit
 end
 
 include RuneBlog::Helpers  # for try_read_config

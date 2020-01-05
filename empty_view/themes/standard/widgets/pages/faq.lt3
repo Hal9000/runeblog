@@ -1,3 +1,4 @@
+.nopara    # FIXME later
 .mixin liveblog
 
 <html>
@@ -27,7 +28,7 @@ Don't be stupid. I just told you I was a rabbit.
 .end
 
 .faq Why do you answer a question with a question?
-*Do I in fact answer a question with a question?
+ *Do I in fact answer a question with a question?
 .end
 
 .faq Are you serious?

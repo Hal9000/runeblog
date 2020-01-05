@@ -23,6 +23,7 @@ style       blog.css
 
 <section class="post">
   <div class="recent-content">
+    $.post_toolbar
     <table border=0 width=100%><tr>
       <td align=left valign=bottom><h2 class="recent-title">$title</h2></td>
       <td align=right valign=top><font size=-5><br></font>$longdate</td>
@@ -32,7 +33,6 @@ style       blog.css
 </section>
 
 <br>
-<hr>
 .post_trailer 
 </body>
 </html>

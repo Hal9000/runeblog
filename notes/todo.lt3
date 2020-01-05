@@ -26,6 +26,10 @@ removed more dead code
 added read_metadata
 added rebuild of post and index when post edited
 better lsd, lsp output (title, not slug)
+fixed reddit stuff
+added enable/disable
+fixed FAQ
+fixed sorting in lsd/lsp
 .end
 
 .sublist nextish Next steps...
@@ -34,6 +38,8 @@ better lsd, lsp output (title, not slug)
 =Use example blog in automated testing
 ssh-copy-id in setup
 Update software safely?
+post aliases
+intra-blog links (incl aliases)
 Move custom code into widgets
 backup/restore?
 special tags: intra-blog, gist, github, youtube, ...
@@ -46,7 +52,6 @@ Twitter buttons
 .end
 
 .sublist bugs Bugs, etc.
-FAQ is weird (see computing, navbar vs pages)
 bin/blog: Error when escaping from menu
 bin/blog: autocomplete fails when no valid prefix
 tt tag not working with blog.css?

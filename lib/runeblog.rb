@@ -87,9 +87,9 @@ class RuneBlog
       new_sequence
     end
     unless File.exist?(repo_root/"data/VIEW")
-      copy_data(:config, repo_root/:data)   
+      copy_data(repo_root/:data)   
     end
-    copy_data(:extra,  repo_root/:config)
+#   copy_data(:extra,  repo_root/:config)
     write_repo_config(root: repo_root)
     @blog = self.new
     @blog
@@ -494,13 +494,14 @@ class RuneBlog
     log!(enter: __method__, level: 3)
     dir = self.view.dir/:posts
     posts = Dir.entries(dir).grep(/^\d{4}/)
-    posts
+    posts.sort
   end
 
   def drafts
     log!(enter: __method__, level: 3)
     dir = @root/:drafts
     drafts = Dir.entries(dir).grep(/^\d{4}.*/)
+    drafts.sort
   end
 
   def change_view(view)
@@ -589,6 +590,9 @@ class RuneBlog
         .heredoc post.aslug
         #{aslug}
         .end
+        .heredoc post.date
+        #{date}
+        .end
         .heredoc title
         #{title.chomp}
         .end
@@ -653,10 +657,11 @@ class RuneBlog
     copy(pdraft/"guts.html", @theme/:post) 
     copy(pdraft/"vars.lt3",  @theme/:post) 
     # Step 4...
-    # FIXME dependencies?
     preprocess cwd: @theme/:post, src: "generate.lt3", force: true, 
-               dst: remote/ahtml, copy: @theme/:post,
+               dst: remote/ahtml, # copy: @theme/:post,
                call: ".nopara"    # , debug: true
+    FileUtils.rm_f(remote/"published")
+    timelog("Generated", remote/"history")
     copy_widget_html(view_name)
   rescue => err
     _tmp_error(err)
@@ -664,7 +669,7 @@ class RuneBlog
 
   def _check_view?(view)
     flag = self.view?(view)
-    puts "  Warning: '#{view}' is not a view" unless flag
+    puts "        Warning: '#{view}' is not a view" unless flag
     flag
   end
 
@@ -672,6 +677,9 @@ class RuneBlog
     log!(enter: __method__, args: [draft], level: 1)
     views = _get_views(draft)
     views.each {|view| _handle_post(draft, view) }
+    # For current view: 
+    slug = File.basename(draft).sub(/.lt3$/, "")
+    postdir = self.view.dir/"remote/post/"/slug
   rescue => err
     _tmp_error(err)
   end

@@ -38,14 +38,22 @@ class RuneBlog::Publishing
     url = "#@proto://#@server/#@path"  # /#{vname}"
   end
 
+  def check_new_posts
+    # How do we know??
+    # If it's newly published:
+    #   autopost on reddit   (if enabled and not already)
+    #       "    "  twitter  (if enabled and not already)
+    #       "    "  facebook (if enabled and not already)
+  end
+
   def publish
     log!(enter: __method__, level: 1)
     dir = @docroot/@path
     view_name = @blog.view.name
-    viewpath = dir # /view_name
-    # FIXME rsync doesn't work
+    viewpath = dir 
     cmd = "rsync -r -z #{@blog.root}/views/#{@blog.view}/remote/ #@user@#@server:#{viewpath}/"
     system!(cmd)
+    check_new_posts
     dump("#{@blog.view} at #{Time.now}", "#{@blog.view.dir}/last_published")
     true
   end
