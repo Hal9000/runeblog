@@ -499,6 +499,21 @@ class RuneBlog
 
   def drafts
     log!(enter: __method__, level: 3)
+    curr_drafts = self.all_drafts
+    list = []
+    curr_drafts.each do |draft|
+      postdir = @root/:views/self.view/:posts/draft.sub(/.lt3$/, "")
+      next unless Dir.exist?(postdir)
+      meta = nil
+      Dir.chdir(postdir) { meta = read_metadata }
+# puts [draft, meta.views].inspect
+      list << draft if meta.views.include?(self.view.to_s)
+    end
+    list.sort
+  end
+
+  def all_drafts
+    log!(enter: __method__, level: 3)
     dir = @root/:drafts
     drafts = Dir.entries(dir).grep(/^\d{4}.*/)
     drafts.sort

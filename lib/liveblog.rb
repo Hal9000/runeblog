@@ -78,7 +78,8 @@ end
   end
 
 def post_toolbar
-  back = %[<a style="text-decoration: none" href="javascript:history.go(-1)">[Back]</a>]
+  back_icon = %[<img src="assets/back-icon.png" width=24 height=24 alt="Go back"></img>]
+  back = %[<a style="text-decoration: none" href="javascript:history.go(-1)">#{back_icon}</a>]
   _out <<~HTML
     <div align='right'>#{back} #@reddit_comments</div>
   HTML

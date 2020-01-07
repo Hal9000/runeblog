@@ -69,10 +69,10 @@ module RuneBlog::REPL
 
   def cmd_manage(arg)
     case arg
-      when "pages";   _manage_pages(nil)
-      when "links";   _manage_links(nil)
-      when "navbar";  _manage_navbar(nil)
-#     when "pinned";  _manage_pinned(nil)  # ditch this??
+      when "pages";   _manage_pages
+      when "links";   _manage_links
+      when "navbar";  _manage_navbar
+      when "pinned";  _manage_pinned  # ditch this??
     else
       puts "#{arg} is unknown"
     end
@@ -119,7 +119,7 @@ module RuneBlog::REPL
     edit_file(data)
   end
 
-  def _manage_pages(arg)
+  def _manage_pages
     dir = @blog.view.dir/"themes/standard/widgets/pages"
     # Assume child files already generated (and list.data??)
     data = dir/"list.data"
@@ -213,13 +213,18 @@ module RuneBlog::REPL
     puts "  Regenerating posts..." unless drafts.empty?
     drafts.each do |draft|
       orig = @blog.root/:drafts/draft
-      html = @blog.root/:posts/draft
-      html.sub!(/.lt3$/, "/guts.html")
-      next if fresh?(orig, html)
-      puts "    #{draft}"
+      postdir = @blog.root/:posts/draft.sub(/.lt3$/, "")
+      content = postdir/"/guts.html"
+      next if fresh?(orig, content)
+
       @blog.generate_post(orig)    # rebuild post
+      Dir.chdir(postdir) do
+        meta = @blog.read_metadata
+        num, title = meta.num, meta.title
+        num = '%4d' % num.to_s
+        puts "  ", fx(num, Red), "  ", fx(title, Black)
+      end
     end
-    puts
   end
 
   def cmd_rebuild
@@ -235,8 +240,7 @@ module RuneBlog::REPL
     _tmp_error(err)
   end
 
-  def cmd_change_view(arg)
-    # Simplify this
+  def cmd_change_view(arg = nil)
     if arg.nil?
       viewnames = @blog.views.map {|x| x.name }
       n = viewnames.find_index(@blog.view.name)
@@ -323,7 +327,7 @@ module RuneBlog::REPL
       lines = lines.select {|x| x =~ /^title / && x !~ /VIEW_/ }
       title = lines.first.split(" ", 2)[1]
       print "  ", ('%15s' % v)
-      puts  "  ", fx(title, :black)
+      puts  "  ", fx(title, Black)
     end
     puts
   end
@@ -342,7 +346,7 @@ module RuneBlog::REPL
         Dir.chdir(dir) { meta = @blog.read_metadata }
         num, title = meta.num, meta.title
         num = '%4d' % num.to_s
-        puts "  ", fx(num, Red), "  ", fx(title, Blue)
+        puts "  ", fx(num, Red), "  ", fx(title, Black)
         draft = @blog.root/:drafts/post + ".lt3"
         other = meta.views - [@blog.view.to_s]
         unless other.empty?
@@ -355,23 +359,23 @@ module RuneBlog::REPL
   end
 
   def cmd_list_drafts
-    drafts = @blog.drafts  # current view
-    if drafts.empty?
+    curr_drafts = @blog.drafts  # current view
+    if curr_drafts.empty?
       puts "\n  No drafts\n "
       return
     else
       puts
-      drafts.each do |draft| 
+      curr_drafts.each do |draft| 
         base = draft.sub(/.lt3$/, "")
         dir = @blog.root/:posts/base
         meta = nil 
         Dir.chdir(dir) { meta = @blog.read_metadata }
         num, title = meta.num, meta.title
         num = '%4d' % num.to_s
-        puts "  ", fx(num, Red), "  ", fx(title, Blue)
+        puts "  ", fx(num, Red), "  ", fx(title, Black)
         other = @blog._get_views(@blog.root/:drafts/draft) - [@blog.view.to_s]
         unless other.empty?
-          print fx(" "*9 + "also in: ", :bold) 
+          print fx(" "*9 + "also in: ", Bold) 
           puts other.join(", ") 
         end
       end

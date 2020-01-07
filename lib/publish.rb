@@ -52,6 +52,7 @@ class RuneBlog::Publishing
     view_name = @blog.view.name
     viewpath = dir 
     cmd = "rsync -r -z #{@blog.root}/views/#{@blog.view}/remote/ #@user@#@server:#{viewpath}/"
+puts cmd
     system!(cmd)
     check_new_posts
     dump("#{@blog.view} at #{Time.now}", "#{@blog.view.dir}/last_published")

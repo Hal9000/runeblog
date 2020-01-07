@@ -1,25 +1,6 @@
 <div style="font-family: verdana">
-.def sublist
-  title = _data
-  var, title = title.split(" ", 2)
-  lines = _body.to_a
-  lines.map! do |line|
-    line = line.chomp
-    line = "<font color=red>#{line[1..-1]}</font>" if line[0] == "=" || line[0] == "!"
-    line = "<li>#{line}</li>"
-  end
-  text = lines.join("\n")
-  text = "&nbsp;&nbsp;<b>#{title}</b><br><ul>" + text + "</ul>"
-  setvar var, text
-.end
 
-.func split
-  param.dup.gsub!(" || ", "\n")
-.end
-
-.func dd
-   "$$" + param
-.end
+.mixin notes/todo
 
 .sublist jan2020 Recently completed (Jan 2020)
 removed more dead code
@@ -30,6 +11,9 @@ fixed reddit stuff
 added enable/disable
 fixed FAQ
 fixed sorting in lsd/lsp
+minor ui/ux fixes
+tweaked bump-gem, etc.
+compensated for scary livetext bug
 .end
 
 .sublist nextish Next steps...
@@ -94,6 +78,7 @@ search
 .end
 
 .sublist livetext Livetext bugs/features
+=problem with \.def??
 fix bug .set var="this, that"
 mixin as module (livetext -m)
 $$dd[incr]?
