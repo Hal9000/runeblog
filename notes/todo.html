@@ -5,6 +5,8 @@
 
 <p>
 
+<p>
+
 <html>
   <head>
 <!--
@@ -17,31 +19,60 @@
 <p>
 
 <h2>Runeblog TODO</h2>
-</h3>Generated from <code><font size=+1><b>notes/todo.lt3</b></font></code> - 2020-01-07 10:34:52</h3>
+</h3>Generated from <code><font size=+1><b>notes/todo.lt3</b></font></code> - 2020-01-10 15:26:07</h3>
 <p>
 
 <table border=0 width=96% cellpadding=8 cellspacing=8>
   <tr>
     <td valign=top width=32%>&nbsp;&nbsp;<b>Next steps...
-</b><br><ul><li><font color=red>fix "head" stuff</font></li>
+</b><br><ul><li><font color=red>Double occurrence in .views</font></li>
+<li><font color=red>Regenerate (posts) command?</font></li>
+<li><font color=red>Pinned posts: Add date</font></li>
+<li><font color=red>manage navbar (navbar.lt3, .html, ...)</font></li>
+<li><font color=red>Facebook buttons</font></li>
+<li><font color=red>Twitter buttons</font></li>
+<li><font color=red>fix "head" stuff</font></li>
 <li><font color=red>Formalize example blog</font></li>
 <li><font color=red>Use example blog in automated testing</font></li>
+<li><font color=red>up-arrow broken</font></li>
+<li><font color=red>configure navbar</font></li>
 <li>ssh-copy-id in setup</li>
-<li>Update software safely?</li>
-<li>post aliases</li>
-<li>intra-blog links (incl aliases)</li>
-<li>Move custom code into widgets</li>
-<li>backup/restore?</li>
+<li><font color=red>Update software safely? (widget-specific code)</font></li>
+<li><font color=red>post aliases</font></li>
+<li><font color=red>intra-blog links (incl aliases)</font></li>
+<li><font color=red>Move custom code into widgets</font></li>
+<li><font color=red>backup/restore?</font></li>
+<li>Change teaser to excerpt</li>
+<li>Add excerpt! form</li>
+<li>Dropcap for excerpt?</li>
+<li>Reread vars after any update</li>
+<li>Publish crashes on failure</li>
+<li>REPL doesn't trap ^C</li>
+<li>REPL doesn't honor ^D</li>
+<li>Need "older posts" link</li>
+<li>stay in menu?? ("sticky" menus?)</li>
+<li>rubytext colors?</li>
+<li>set up publishing</li>
+<li>ssh-copy-id</li>
+<li>select widgets</li>
+<li>configure each widget (pages, links, ...)</li>
+<li>configure facebook, twitter, reddit, etc.</li>
+<li>On publish: Autopost to twitter (if enabled and not posted)</li>
+<li>On publish: Autopost to facebook (if enabled and not posted)</li>
+<li>Wizard: Keep track of what is done/undone (per view)</li>
+<li>Wizard: no view</li>
+<li>Wizard: servers referenced but no keys set up</li>
+<li>Wizard: widget enabled but not configured</li>
+<li>Wizard: standard entities? About, Contact, FAQ, ...</li>
+<li>Wizard: unpublished changes</li>
 <li>special tags: intra-blog, gist, github, youtube, ...</li>
 <li>special tags: vimeo, twitter, fb?, reddit?, ...</li>
 <li>RubyText settings in file</li>
 <li>Make an intro video</li>
-<li>fix/delete Runeblog::Default (post_template)?</li>
-<li>Facebook buttons</li>
-<li>Twitter buttons</li></ul></td>
+<li>fix/delete Runeblog::Default (post_template)?</li></ul></td>
     <td valign=top width=32%>&nbsp;&nbsp;<b>Easy stuff?
-</b><br><ul><li>"preview post" command</li>
-<li>change teaser to excerpt?</li>
+</b><br><ul><li><font color=red>"preview post" command</font></li>
+<li><font color=red>change teaser to excerpt?</font></li>
 <li>detect non-OSX and print warning</li>
 <li>"wrap"-style include maybe?</li>
 <li>add CSS ref to post?</li>
@@ -52,7 +83,6 @@
 </b><br><ul><li>bin/blog: Error when escaping from menu</li>
 <li>bin/blog: autocomplete fails when no valid prefix</li>
 <li>tt tag not working with blog.css?</li>
-<li>No way to update widget-specific code?</li>
 <li>widgets don't honor their CSS?</li>
 <li>things deleted locally aren't deleted remotely (rsync??)</li>
 <li>delete post, edit elsewhere, comes back (change source!)</li></ul></td>
@@ -72,8 +102,7 @@
 <li>Livetext: Var as replacement for _var  (see varmint)</li>
 <li>Livetext: open/close</li></ul></td>
     <td valign=top width=32%>&nbsp;&nbsp;<b>Livetext bugs/features
-</b><br><ul><li><font color=red>problem with .def??</font></li>
-<li>fix bug .set var="this, that"</li>
+</b><br><ul><li>fix bug .set var="this, that"</li>
 <li>mixin as module (livetext -m)</li>
 <li>$$incr?</li>
 <li>permit omission of .lt3?</li>
@@ -128,7 +157,7 @@
 <li>docs: how-to</li>
 <li>docs: how to write templates (incl main one)</li></ul></td>
     <td valign=top width=32%>&nbsp;&nbsp;<b>More advanced features
-</b><br><ul><li>FB/Twitter icons on posts</li>
+</b><br><ul><li><font color=red>FB/Twitter icons on posts</font></li>
 <li>poll support</li>
 <li>second sidebar??</li>
 <li>footer? holding a widget?</li>
@@ -175,7 +204,9 @@
 <li>fixed sorting in lsd/lsp</li>
 <li>minor ui/ux fixes</li>
 <li>tweaked bump-gem, etc.</li>
-<li>compensated for scary livetext bug</li></ul></td>
+<li>compensated for scary livetext bug</li>
+<li>fixed problem with .def</li>
+<li>improved some exceptions</li></ul></td>
     <td valign=top width=32%>&nbsp;&nbsp;<b>Recently completed (Dec 2019)
 </b><br><ul><li>Added explanations to config menu</li>
 <li>.banner now takes body</li>

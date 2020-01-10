@@ -6,6 +6,8 @@ require 'pathmagic'
 make_exception(:PublishError,  "Error during publishing")
 make_exception(:EditorProblem, "Could not edit $1")
 
+Signal.trap("INT") { puts "Don't  :)" }
+
 module RuneBlog::REPL
   def edit_file(file, vim: "")
 #   STDSCR.saveback
@@ -183,7 +185,6 @@ module RuneBlog::REPL
   end
 
   def cmd_publish
-# Future Hal says please refactor this
     puts
     unless @blog.view.can_publish?
       msg = "Can't publish... see global.lt3"

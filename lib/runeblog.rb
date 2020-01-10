@@ -18,6 +18,30 @@ require 'pathmagic'
 
 ###
 
+module ErrorChecks
+  def check_nonempty_string(str)
+    confirm(ExpectedString, str.inspect, str.class) { str.is_a?(String) && ! str.empty? }
+  end
+
+  def check_view_parameter(view)
+    confirm(ExpectedView, view, view.class) { view.is_a?(String) || view.is_a?(RuneBlog::View) }
+  end
+
+  def check_integer(num)
+    confirm(ExpectedInteger, num, num.class) { num.is_a? Integer }
+  end
+
+  def confirm(exception, *args, &block)
+    # raise if block is NOT true
+    raise send(exception.to_s, *args) if ! block.call
+  end
+
+  def check_error(exception, *args, &block)
+    # raise if block IS true
+    raise send(exception.to_s, *args) if block.call
+  end
+end
+
 class RuneBlog
  
   DotDir     = ".blogs"
@@ -33,10 +57,16 @@ class RuneBlog
   make_exception(:EditorProblem,         "Could not edit $1")
   make_exception(:NoSuchView,            "No such view: $1")
   make_exception(:NoBlogAccessor,        "Runeblog.blog is not set")
+  make_exception(:ExpectedString,        "Expected nonempty string but got $1 ($2)")
+  make_exception(:ExpectedView,          "Expected string or View object but got $1 ($2)")
+  make_exception(:ExpectedInteger,       "Expected integer but got $1 ($2)")
+
+  include ErrorChecks
 
   class << self
     attr_accessor :blog
     include Helpers
+    include ErrorChecks
   end
 
   attr_reader :views, :sequence
@@ -77,10 +107,11 @@ class RuneBlog
 
   def self.create_new_blog_repo(root_rel = ".blogs")
     log!(enter: __method__, args: [root_rel])
-    raise ArgumentError unless root_rel.is_a?(String) && ! root_rel.empty?
+    check_nonempty_string(root_rel)
     self.blog = self   # Weird. Like a singleton - dumbass circular dependency?
     repo_root = Dir.pwd/root_rel
-    raise BlogRepoAlreadyExists if Dir.exist?(repo_root)
+    check_error(BlogRepoAlreadyExists) { Dir.exist?(repo_root) }
+
     create_dirs(repo_root)
     Dir.chdir(repo_root) do
       create_dirs(:data, :config, :drafts, :views, :posts)
@@ -237,19 +268,21 @@ class RuneBlog
 
   def view?(name)
     log!(enter: __method__, args: [name], level: 3)
-    raise ArgumentError unless name.is_a?(String) && ! name.empty?
+    check_nonempty_string(name)
     views.any? {|x| x.name == name }
   end
 
   def view(name = nil)
     log!(enter: __method__, args: [name], level: 3)
-    raise ArgumentError unless name.nil? || (name.is_a?(String) && ! name.empty?)
-    name.nil? ? @view : str2view(name)
+    return @view if name.nil?
+
+    check_nonempty_string(name)
+    return str2view(name)
   end
 
   def str2view(str)
     log!(enter: __method__, args: [str], level: 3)
-    raise ArgumentError unless str.is_a?(String) && ! str.empty?
+    check_nonempty_string(str)  # redundant?
     @views.find {|x| x.name == str }
   end
 
@@ -273,7 +306,7 @@ class RuneBlog
         _set_publisher
       when String
         new_view = str2view(arg)
-        raise NoSuchView(arg) if new_view.nil?
+        check_error(NoSuchView, arg) { new_view.nil? }
         @view = new_view
         read_features(@view)
         @view.get_globals
@@ -299,9 +332,8 @@ class RuneBlog
 
   def viewdir(v = nil)   # delete?
     log!(enter: __method__, args: [v], level: 3)
-    v ||= @view
-    v = str2view(v) if v.is_a?(String)
-    raise ArgumentError unless v.nil? || v.is_a?(RuneBlog::View)
+    return @view if v.nil?
+    check_nonempty_string(v)
     return @root/:views/v
   end
 
@@ -336,14 +368,11 @@ class RuneBlog
 
   def check_valid_new_view(view_name)
     log!(enter: __method__, args: [view_name], level: 3)
-    raise ArgumentError unless view_name.is_a?(String)
-    raise ArgumentError if view_name.empty?
-    names = self.views.map(&:to_s)
-    bad = names.include?(view_name)
-    raise ViewAlreadyExists(view_name) if bad
+    check_nonempty_string(view_name)
     vdir = @root/:views/view_name
-    raise DirAlreadyExists(view_name) if Dir.exist?(vdir)
-    return true   # hm?
+    check_error(ViewAlreadyExists, view_name) { self.views.map(&:to_s).include?(view_name) }
+    check_error(DirAlreadyExists, view_name) { Dir.exist?(vdir) }
+    return true
   end
 
   def create_view(view_name)
@@ -359,7 +388,7 @@ class RuneBlog
 
   def delete_view(name, force = false)
     log!(enter: __method__, args: [name, force])
-    raise ArgumentError unless name.is_a?(String) && ! name.empty?
+    check_nonempty_string(name)
     if force
       vname = @root/:views/name
       system!("rm -rf #{vname}")
@@ -521,7 +550,7 @@ class RuneBlog
 
   def change_view(view)
     log!(enter: __method__, args: [view], level: 3)
-    raise ArgumentError unless view.is_a?(String) || view.is_a?(RuneBlog::View)
+    check_view_parameter(view)
     File.write(@root/"data/VIEW", view)
     # write_repo_config
     self.view = view   # error checking?
@@ -529,7 +558,7 @@ class RuneBlog
 
   def generate_index(view)
     log!(enter: __method__, args: [view], pwd: true, dir: true)
-    raise ArgumentError unless view.is_a?(String) || view.is_a?(RuneBlog::View)
+    check_view_parameter(view)
     @vdir = @root/:views/view
     num = collect_recent_posts
     return num
@@ -701,7 +730,7 @@ class RuneBlog
 
   def remove_post(num)
     log!(enter: __method__, args: [num], level: 1)
-    raise ArgumentError unless num.is_a?(Integer)
+    check_integer(num)
     # FIXME update original draft .views
     tag = prefix(num)
     files = Find.find(self.view.dir).to_a
@@ -718,7 +747,7 @@ class RuneBlog
 
   def undelete_post(num)
     log!(enter: __method__, args: [num], level: 1)
-    raise ArgumentError unless num.is_a?(Integer)
+    check_integer(num)
     files = Find.find(@root/:views).to_a
     tag = prefix(num)
     list = files.select {|x| File.directory?(x) and x =~ /_#{tag}/ }
@@ -734,14 +763,14 @@ class RuneBlog
 
   def delete_draft(num)
     log!(enter: __method__, args: [num], level: 1)
-    raise ArgumentError unless num.is_a?(Integer)
+    check_integer(num)
     tag = prefix(num)
     system!("rm -rf #@root/drafts/#{tag}-*")
   end
 
   def make_slug(meta)
     log!(enter: __method__, args: [meta], level: 3)
-    raise ArgumentError unless meta.title.is_a?(String)
+    check_nonempty_string(meta.title)
     label = '%04d' % meta.num   # FIXME can do better
     slug0 = meta.title.downcase.strip.gsub(' ', '-').gsub(/[^\w-]/, '')
     str = "#{label}-#{slug0}"

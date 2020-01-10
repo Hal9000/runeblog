@@ -42,24 +42,6 @@ class RuneBlog::View
     @name
   end
 
-  def publishable_files
-    log!(enter: __method__, level: 2)
-    vdir = dir()
-    remote = local_index()
-    files = [remote]
-    others = Dir.entries(vdir/:remote) - %w[. ..]
-    others.map! {|x| "#{vdir}/remote/#{x}" }
-
-    assets = Dir.entries("#{vdir}/assets") - %w[. ..]
-    assets.map! {|x| "#{vdir}/assets/#{x}" }
-    assets.reject! {|x| File.directory?(x) }
-#   assets.reject! {|x| ! recent?(x) }
-    files = files + others
-    all = files.dup
-    dirty = files.reject {|f| ! recent?(f) }
-    [dirty, all, assets]
-  end
-
   def can_publish?
     @can_publish
   end

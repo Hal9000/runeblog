@@ -3,7 +3,7 @@ if !defined?(RuneBlog::Path)
 # if ! (Object.constants.include?(:RuneBlog) && RuneBlog.constants.include?(:Path))
 
 class RuneBlog
-  VERSION = "0.3.10"
+  VERSION = "0.3.11"
 
   path = Gem.find_files("runeblog").grep(/runeblog-/).first
   Path  = File.dirname(path)
@@ -30,14 +30,14 @@ end
 
 # Refactor, move stuff elsewhere?
 
-def make_exception(sym, str)
-  log!(enter: __method__, args: [sym, str], level: 3)
-  return if Object.constants.include?(sym)
-  Object.const_set(sym, StandardError.dup)
+def make_exception(sym, str, target_class = Object)
+  return if target_class.constants.include?(sym)
+
+  target_class.const_set(sym, StandardError.dup)
   define_method(sym) do |*args|
-    msg = str
+    msg = str.dup
     args.each.with_index {|arg, i| msg.sub!("$#{i+1}", arg) }
-    Object.class_eval(sym.to_s).new(msg)
+    target_class.class_eval(sym.to_s).new(msg)
   end
 end
 

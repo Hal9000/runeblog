@@ -2,6 +2,7 @@
 
 .mixin notes/todo
 
+
 .sublist jan2020 Recently completed (Jan 2020)
 removed more dead code
 added read_metadata
@@ -14,40 +15,70 @@ fixed sorting in lsd/lsp
 minor ui/ux fixes
 tweaked bump-gem, etc.
 compensated for scary livetext bug
+fixed problem with \.def
+improved some exceptions
 .end
 
 .sublist nextish Next steps...
+=Double occurrence in .views
+=Regenerate (posts) command?
+=Pinned posts: Add date
+=manage navbar (navbar.lt3, .html, ...)
+=Facebook buttons
+=Twitter buttons
 =fix "head" stuff
 =Formalize example blog
 =Use example blog in automated testing
+=up-arrow broken
+=configure navbar
 ssh-copy-id in setup
-Update software safely?
-post aliases
-intra-blog links (incl aliases)
-Move custom code into widgets
-backup/restore?
+=Update software safely? (widget-specific code)
+=post aliases
+=intra-blog links (incl aliases)
+=Move custom code into widgets
+=backup/restore?
+Change teaser to excerpt
+Add excerpt! form
+Dropcap for excerpt?
+Reread vars after any update
+Publish crashes on failure
+REPL doesn't trap ^C
+REPL doesn't honor ^D
+Need "older posts" link
+stay in menu?? ("sticky" menus?)
+rubytext colors?
+set up publishing
+ssh-copy-id
+select widgets
+configure each widget (pages, links, ...)
+configure facebook, twitter, reddit, etc.
+On publish: Autopost to twitter (if enabled and not posted)
+On publish: Autopost to facebook (if enabled and not posted)
+Wizard: Keep track of what is done/undone (per view)
+Wizard: no view
+Wizard: servers referenced but no keys set up
+Wizard: widget enabled but not configured
+Wizard: standard entities? About, Contact, FAQ, ...
+Wizard: unpublished changes
 special tags: intra-blog, gist, github, youtube, ...
 special tags: vimeo, twitter, fb?, reddit?, ...
 RubyText settings in file
 Make an intro video
 fix/delete Runeblog::Default (post\_template)?
-Facebook buttons
-Twitter buttons
 .end
 
 .sublist bugs Bugs, etc.
 bin/blog: Error when escaping from menu
 bin/blog: autocomplete fails when no valid prefix
 tt tag not working with blog.css?
-No way to update widget-specific code?
 widgets don't honor their CSS?
 things deleted locally aren't deleted remotely (rsync??)
 delete post, edit elsewhere, comes back (change source!)
 .end
 
 .sublist easyish Easy stuff?
-"preview post" command
-change teaser to excerpt?
+="preview post" command
+=change teaser to excerpt?
 detect non-OSX and print warning
 "wrap"-style include maybe?
 add CSS ref to post?
@@ -78,7 +109,6 @@ search
 .end
 
 .sublist livetext Livetext bugs/features
-=problem with \.def??
 fix bug .set var="this, that"
 mixin as module (livetext -m)
 $$dd[incr]?
@@ -96,7 +126,7 @@ allow windows to scroll back
 .end
 
 .sublist advanced More advanced features
-FB/Twitter icons on posts
+=FB/Twitter icons on posts
 poll support
 second sidebar??
 footer? holding a widget?

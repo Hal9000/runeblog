@@ -89,6 +89,9 @@ def post_trailer
   perma = _var("publish.proto") + "://" + _var("publish.server") +
           "/" + _var("publish.path") + "/" + _var("post.aslug") + 
           ".html"
+Livetext::Vars.each_pair do |k,v|
+  STDERR.puts "#{k}: #{v.inspect}" unless k.is_a? Symbol
+end
   tags = _var("post.tags")
   taglist = tags.empty? ? "" : "Tags: #{tags}"
 
@@ -140,7 +143,7 @@ def backlink
 end
 
 def code
-  lines = _body_text
+  lines = _body # _text
   _out "<font size=+1><pre>\n#{lines}\n</pre></font>"
 end
 
@@ -434,7 +437,7 @@ end
 
 def teaser
   raise "'post' was not called" unless @meta
-  text = _body_text
+  text = _body.join("\n")
   @meta.teaser = text
   setvar :teaser, @meta.teaser
   if _args[0] == "dropcap"   # FIXME doesn't work yet!
