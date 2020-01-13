@@ -89,9 +89,6 @@ def post_trailer
   perma = _var("publish.proto") + "://" + _var("publish.server") +
           "/" + _var("publish.path") + "/" + _var("post.aslug") + 
           ".html"
-Livetext::Vars.each_pair do |k,v|
-  STDERR.puts "#{k}: #{v.inspect}" unless k.is_a? Symbol
-end
   tags = _var("post.tags")
   taglist = tags.empty? ? "" : "Tags: #{tags}"
 

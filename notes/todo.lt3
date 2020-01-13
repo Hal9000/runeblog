@@ -17,12 +17,12 @@ tweaked bump-gem, etc.
 compensated for scary livetext bug
 fixed problem with \.def
 improved some exceptions
+added dates to list of pinned posts
 .end
 
 .sublist nextish Next steps...
 =Double occurrence in .views
 =Regenerate (posts) command?
-=Pinned posts: Add date
 =manage navbar (navbar.lt3, .html, ...)
 =Facebook buttons
 =Twitter buttons

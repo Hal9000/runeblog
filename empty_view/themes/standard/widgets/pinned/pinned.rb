@@ -10,6 +10,13 @@ class ::RuneBlog::Widget
       @lines = _get_data?(@datafile)
     end
 
+  def read_metadata
+    meta = read_pairs!("metadata.txt")
+    meta.views = meta.views.split
+    meta.tags  = meta.tags.split
+    meta
+  end
+
     def _html_body(file, css = nil)    # FIXME
       file.puts "<html>"
       if css
@@ -23,8 +30,9 @@ class ::RuneBlog::Widget
     end
 
     def build
+      dir = @blog.root/:posts
       posts = nil
-      Dir.chdir(@blog.root/:posts) { posts = Dir["*"] }
+      Dir.chdir(dir) { posts = Dir["*"] }
       hash = {}
       @links = []
       @lines.each do |x| 
@@ -32,9 +40,12 @@ class ::RuneBlog::Widget
         hash[num] = title
         pre = '%04d' % num 
         nslug = posts.grep(/#{pre}-/).first
+        meta = nil
+        Dir.chdir(dir/nslug) { meta = read_metadata }
+        pubdate = meta.pubdate
         name = nslug[5..-1]
         link = name+".html"
-        @links << [title, link]
+        @links << [pubdate, title, link]
       end
       write_main
       write_card
@@ -49,10 +60,11 @@ class ::RuneBlog::Widget
         _html_body(f, css) do
           f.puts "<!-- #{@lines.inspect} in #{Dir.pwd} -->"
           f.puts "<h1>#{card_title}</h1><br><hr>"
-          @links.each do |title, file| 
+          @links.each do |pubdate, title, file| 
             title = title.gsub(/\\/, "")  # kludge
             css = "color: #8888FF; text-decoration: none; font-size: 21px" 
-            f.puts %[<a style="#{css}" href="../../#{file}">#{title}</a> <br>]
+            f.puts "<!-- pubdate = #{pubdate.inspect} -->"
+            f.puts %[#{pubdate} <a style="#{css}" href="../../#{file}">#{title}</a> <br>]
           end
         end
       end
@@ -75,7 +87,7 @@ class ::RuneBlog::Widget
               </h5>
               <div class="collapse" id="#{tag}">
         EOS
-        @links.each do |title, file|  
+        @links.each do |pubdate, title, file|  
           url2 = file
           url_ref = %[href="javascript: void(0)" onclick="javascript:open_main('#{url2}')"]
           anchor = %[<a #{url_ref}>#{title}</a>]
