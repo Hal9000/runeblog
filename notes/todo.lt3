@@ -4,53 +4,76 @@
 
 
 .sublist jan2020 Recently completed (Jan 2020)
-removed more dead code
-added read_metadata
-added rebuild of post and index when post edited
-better lsd, lsp output (title, not slug)
-fixed reddit stuff
-added enable/disable
-fixed FAQ
-fixed sorting in lsd/lsp
-minor ui/ux fixes
-tweaked bump-gem, etc.
-compensated for scary livetext bug
-fixed problem with \.def
-improved some exceptions
-added dates to list of pinned posts
+Removed more dead code
+Added read_metadata
+Added rebuild of post and index when post edited
+Better lsd, lsp output (title, not slug)
+Fixed reddit stuff
+Added enable/disable
+Fixed FAQ
+Fixed sorting in lsd/lsp
+Minor ui/ux fixes
+Tweaked bump-gem, etc.
+Compensated for scary livetext bug
+Fixed problem with \.def
+Improved some exceptions
+Added dates to list of pinned posts
+Starting to move widget code
 .end
 
 .sublist nextish Next steps...
-=Double occurrence in .views
-=Regenerate (posts) command?
-=manage navbar (navbar.lt3, .html, ...)
-=Facebook buttons
-=Twitter buttons
-=fix "head" stuff
+=Move widgets to special dir in gem
+=Allow installing widgets
+=Allow updating widgets
+=Manage navbar (navbar.lt3, .html, ...)
+=Let bin/blog detect current view
+=More ARGV-style commands for bin/blog
 =Formalize example blog
 =Use example blog in automated testing
-=up-arrow broken
-=configure navbar
-ssh-copy-id in setup
-=Update software safely? (widget-specific code)
-=post aliases
+=Double occurrence in .views
+=Don't use vars.lt3
+=Fix \$DotDir
+="preview post" command
+=Need "older posts" link
+=Fix "head" stuff
+=Stay in menu?? ("sticky" menus?)
+=Regenerate (posts) command?
+=Move "manage" code into widgets
+=ssh-copy-id in setup
+=post aliases (scoped to view? or view/name)
 =intra-blog links (incl aliases)
-=Move custom code into widgets
+=Reread vars after any update
+.end
+
+.sublist bugs Bugs, etc.
+=REPL doesn't trap ^C
+=REPL doesn't honor ^D
+=up-arrow broken
+=bin/blog: Error when escaping from menu
+=bin/blog: autocomplete fails when no valid prefix
+tt tag not working with blog.css?
+widgets don't honor their CSS?
+things deleted locally aren't deleted remotely (rsync??)
+delete post, edit elsewhere, comes back (change source!)
+.end
+
+.sublist easyish Easy and/or soonish...
+detect non-OSX and print warning
+=Change teaser to excerpt?
+=Collapse and rename "themes/standard"
+=Facebook buttons
+=Twitter buttons
 =backup/restore?
-Change teaser to excerpt
 Add excerpt! form
 Dropcap for excerpt?
-Reread vars after any update
-Publish crashes on failure
-REPL doesn't trap ^C
-REPL doesn't honor ^D
-Need "older posts" link
-stay in menu?? ("sticky" menus?)
-rubytext colors?
+Publish will crash on failure
+"wrap"-style include maybe?
+add CSS ref to post?
+specific kinds of rebuild?
+custom.rb (livetext) gets included if present?
+Warn when .img (etc.) refs nonexistent asset
+RubyText settings in file
 set up publishing
-ssh-copy-id
-select widgets
-configure each widget (pages, links, ...)
 configure facebook, twitter, reddit, etc.
 On publish: Autopost to twitter (if enabled and not posted)
 On publish: Autopost to facebook (if enabled and not posted)
@@ -62,29 +85,7 @@ Wizard: standard entities? About, Contact, FAQ, ...
 Wizard: unpublished changes
 special tags: intra-blog, gist, github, youtube, ...
 special tags: vimeo, twitter, fb?, reddit?, ...
-RubyText settings in file
-Make an intro video
 fix/delete Runeblog::Default (post\_template)?
-.end
-
-.sublist bugs Bugs, etc.
-bin/blog: Error when escaping from menu
-bin/blog: autocomplete fails when no valid prefix
-tt tag not working with blog.css?
-widgets don't honor their CSS?
-things deleted locally aren't deleted remotely (rsync??)
-delete post, edit elsewhere, comes back (change source!)
-.end
-
-.sublist easyish Easy stuff?
-="preview post" command
-=change teaser to excerpt?
-detect non-OSX and print warning
-"wrap"-style include maybe?
-add CSS ref to post?
-specific kinds of rebuild?
-custom.rb (livetext) gets included if present?
-Warn when .img (etc.) refs nonexistent asset
 .end
 
 .sublist funky General functionality
@@ -144,8 +145,6 @@ Move some pieces into "snippets" (e.g. Facebook/Twitter integration)
 .end
 
 .sublist pretty Prettier code
-=don't use vars.lt3
-=fix \$DotDir
 more keyword parameters as needed
 liveblog: separate dot-commands from helpers
 remove duplicated and double-scoped code
@@ -192,6 +191,7 @@ back-sync with remote?
 =github README
 =docs: getting started
 =docs: overview of Livetext
+Make an intro video
 explicitly document use of ssh/scp
 update docs
 out-of-the-box workflow

@@ -121,7 +121,7 @@ module RuneBlog::REPL
     edit_file(data)
   end
 
-  def _manage_pages
+  def _manage_pages    # FIXME move into widget code
     dir = @blog.view.dir/"themes/standard/widgets/pages"
     # Assume child files already generated (and list.data??)
     data = dir/"list.data"

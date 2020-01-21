@@ -1,0 +1,13 @@
+Idea: Example blog is "99 Interestng Things" --
+includes pieces about runeblog...
+
+The Red Queen's Race
+
+
+1. Most recent post explains example blog
+2. Pages:
+   - What is a view? (and other terminology)
+   - What is livetext?
+   - What is a widget? (and list them)
+   - The banner and the navbar
+   - Dropcaps and inset quotes

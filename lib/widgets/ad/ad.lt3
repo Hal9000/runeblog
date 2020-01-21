@@ -1,0 +1,22 @@
+. In real life, ads won't work this way...
+
+.include vars.lt3
+
+.set classname="btn btn-light float-right"
+.set card.title="Advertisement"
+.set card.text="Build your amazing website with blabla.com."
+. set extra="bg-dark text-white"
+
+<!-- "$ad.image" -->
+
+<div class="card $extra mb-3">
+  <div class="card-body">
+<!--
+    <h5 class="card-title">$card.title</h5>
+    <p class="card-text">$card.text</p>
+    <a href="javascript: void(0)" onclick="javascript:open_main('widgets/ad/ad.html')" class="$classname">Visit page</a>
+-->
+    <img style="max-height: 100%; max-width: 100%" src="$ad.image"></img>
+  </div>
+</div>
+

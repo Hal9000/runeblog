@@ -1,3 +1,22 @@
+
+Deploying/updating
+------------------
+
+1. Idea: Widgets are stored in gem; code is not necessarily copied over
+   to a new view.
+
+2. Therefore, widgets can be installed or updated.
+
+3. The gem "knows" which widgets are available, so they can be put in
+   the "available" list but not installed unless requested.
+
+4. Where to store them in gem?
+
+
+
+Original notes
+--------------
+
 1.  Originally my concept of a "widget" was a self-contained item that would
     display in a box in the sidebar.
 

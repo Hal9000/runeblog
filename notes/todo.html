@@ -19,42 +19,50 @@
 <p>
 
 <h2>Runeblog TODO</h2>
-</h3>Generated from <code><font size=+1><b>notes/todo.lt3</b></font></code> - 2020-01-12 20:16:56</h3>
+</h3>Generated from <code><font size=+1><b>notes/todo.lt3</b></font></code> - 2020-01-20 20:50:22</h3>
 <p>
 
 <table border=0 width=96% cellpadding=8 cellspacing=8>
   <tr>
     <td valign=top width=32%>&nbsp;&nbsp;<b>Next steps...
-</b><br><ul><li><font color=red>Double occurrence in .views</font></li>
-<li><font color=red>Regenerate (posts) command?</font></li>
-<li><font color=red>manage navbar (navbar.lt3, .html, ...)</font></li>
-<li><font color=red>Facebook buttons</font></li>
-<li><font color=red>Twitter buttons</font></li>
-<li><font color=red>fix "head" stuff</font></li>
+</b><br><ul><li><font color=red>Move widgets to special dir in gem</font></li>
+<li><font color=red>Allow installing widgets</font></li>
+<li><font color=red>Allow updating widgets</font></li>
+<li><font color=red>Manage navbar (navbar.lt3, .html, ...)</font></li>
+<li><font color=red>Let bin/blog detect current view</font></li>
+<li><font color=red>More ARGV-style commands for bin/blog</font></li>
 <li><font color=red>Formalize example blog</font></li>
 <li><font color=red>Use example blog in automated testing</font></li>
-<li><font color=red>up-arrow broken</font></li>
-<li><font color=red>configure navbar</font></li>
-<li>ssh-copy-id in setup</li>
-<li><font color=red>Update software safely? (widget-specific code)</font></li>
-<li><font color=red>post aliases</font></li>
+<li><font color=red>Double occurrence in .views</font></li>
+<li><font color=red>Don't use vars.lt3</font></li>
+<li><font color=red>Fix $DotDir</font></li>
+<li><font color=red>"preview post" command</font></li>
+<li><font color=red>Need "older posts" link</font></li>
+<li><font color=red>Fix "head" stuff</font></li>
+<li><font color=red>Stay in menu?? ("sticky" menus?)</font></li>
+<li><font color=red>Regenerate (posts) command?</font></li>
+<li><font color=red>Move "manage" code into widgets</font></li>
+<li><font color=red>ssh-copy-id in setup</font></li>
+<li><font color=red>post aliases (scoped to view? or view/name)</font></li>
 <li><font color=red>intra-blog links (incl aliases)</font></li>
-<li><font color=red>Move custom code into widgets</font></li>
+<li><font color=red>Reread vars after any update</font></li></ul></td>
+    <td valign=top width=32%>&nbsp;&nbsp;<b>Easy and/or soonish...
+</b><br><ul><li>detect non-OSX and print warning</li>
+<li><font color=red>Change teaser to excerpt?</font></li>
+<li><font color=red>Collapse and rename "themes/standard"</font></li>
+<li><font color=red>Facebook buttons</font></li>
+<li><font color=red>Twitter buttons</font></li>
 <li><font color=red>backup/restore?</font></li>
-<li>Change teaser to excerpt</li>
 <li>Add excerpt! form</li>
 <li>Dropcap for excerpt?</li>
-<li>Reread vars after any update</li>
-<li>Publish crashes on failure</li>
-<li>REPL doesn't trap ^C</li>
-<li>REPL doesn't honor ^D</li>
-<li>Need "older posts" link</li>
-<li>stay in menu?? ("sticky" menus?)</li>
-<li>rubytext colors?</li>
+<li>Publish will crash on failure</li>
+<li>"wrap"-style include maybe?</li>
+<li>add CSS ref to post?</li>
+<li>specific kinds of rebuild?</li>
+<li>custom.rb (livetext) gets included if present?</li>
+<li>Warn when .img (etc.) refs nonexistent asset</li>
+<li>RubyText settings in file</li>
 <li>set up publishing</li>
-<li>ssh-copy-id</li>
-<li>select widgets</li>
-<li>configure each widget (pages, links, ...)</li>
 <li>configure facebook, twitter, reddit, etc.</li>
 <li>On publish: Autopost to twitter (if enabled and not posted)</li>
 <li>On publish: Autopost to facebook (if enabled and not posted)</li>
@@ -66,21 +74,13 @@
 <li>Wizard: unpublished changes</li>
 <li>special tags: intra-blog, gist, github, youtube, ...</li>
 <li>special tags: vimeo, twitter, fb?, reddit?, ...</li>
-<li>RubyText settings in file</li>
-<li>Make an intro video</li>
 <li>fix/delete Runeblog::Default (post_template)?</li></ul></td>
-    <td valign=top width=32%>&nbsp;&nbsp;<b>Easy stuff?
-</b><br><ul><li><font color=red>"preview post" command</font></li>
-<li><font color=red>change teaser to excerpt?</font></li>
-<li>detect non-OSX and print warning</li>
-<li>"wrap"-style include maybe?</li>
-<li>add CSS ref to post?</li>
-<li>specific kinds of rebuild?</li>
-<li>custom.rb (livetext) gets included if present?</li>
-<li>Warn when .img (etc.) refs nonexistent asset</li></ul></td>
     <td valign=top width=32%>&nbsp;&nbsp;<b>Bugs, etc.
-</b><br><ul><li>bin/blog: Error when escaping from menu</li>
-<li>bin/blog: autocomplete fails when no valid prefix</li>
+</b><br><ul><li><font color=red>REPL doesn't trap ^C</font></li>
+<li><font color=red>REPL doesn't honor ^D</font></li>
+<li><font color=red>up-arrow broken</font></li>
+<li><font color=red>bin/blog: Error when escaping from menu</font></li>
+<li><font color=red>bin/blog: autocomplete fails when no valid prefix</font></li>
 <li>tt tag not working with blog.css?</li>
 <li>widgets don't honor their CSS?</li>
 <li>things deleted locally aren't deleted remotely (rsync??)</li>
@@ -125,9 +125,7 @@
 <li>add post template capability (create, edit, post)</li>
 <li>allow windows to scroll back</li></ul></td>
     <td valign=top width=32%>&nbsp;&nbsp;<b>Prettier code
-</b><br><ul><li><font color=red>don't use vars.lt3</font></li>
-<li><font color=red>fix $DotDir</font></li>
-<li>more keyword parameters as needed</li>
+</b><br><ul><li>more keyword parameters as needed</li>
 <li>liveblog: separate dot-commands from helpers</li>
 <li>remove duplicated and double-scoped code</li>
 <li>cards as .lt3 files?</li>
@@ -149,6 +147,7 @@
 </b><br><ul><li><font color=red>github README</font></li>
 <li><font color=red>docs: getting started</font></li>
 <li><font color=red>docs: overview of Livetext</font></li>
+<li>Make an intro video</li>
 <li>explicitly document use of ssh/scp</li>
 <li>update docs</li>
 <li>out-of-the-box workflow</li>
@@ -193,20 +192,21 @@
 <li>possibly change: relink, rebuild, etc.?</li>
 <li>back-sync with remote?</li></ul></td>
     <td valign=top width=32%>&nbsp;&nbsp;<b>Recently completed (Jan 2020)
-</b><br><ul><li>removed more dead code</li>
-<li>added read_metadata</li>
-<li>added rebuild of post and index when post edited</li>
-<li>better lsd, lsp output (title, not slug)</li>
-<li>fixed reddit stuff</li>
-<li>added enable/disable</li>
-<li>fixed FAQ</li>
-<li>fixed sorting in lsd/lsp</li>
-<li>minor ui/ux fixes</li>
-<li>tweaked bump-gem, etc.</li>
-<li>compensated for scary livetext bug</li>
-<li>fixed problem with .def</li>
-<li>improved some exceptions</li>
-<li>added dates to list of pinned posts</li></ul></td>
+</b><br><ul><li>Removed more dead code</li>
+<li>Added read_metadata</li>
+<li>Added rebuild of post and index when post edited</li>
+<li>Better lsd, lsp output (title, not slug)</li>
+<li>Fixed reddit stuff</li>
+<li>Added enable/disable</li>
+<li>Fixed FAQ</li>
+<li>Fixed sorting in lsd/lsp</li>
+<li>Minor ui/ux fixes</li>
+<li>Tweaked bump-gem, etc.</li>
+<li>Compensated for scary livetext bug</li>
+<li>Fixed problem with .def</li>
+<li>Improved some exceptions</li>
+<li>Added dates to list of pinned posts</li>
+<li>Starting to move widget code</li></ul></td>
     <td valign=top width=32%>&nbsp;&nbsp;<b>Recently completed (Dec 2019)
 </b><br><ul><li>Added explanations to config menu</li>
 <li>.banner now takes body</li>
