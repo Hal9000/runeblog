@@ -114,7 +114,9 @@ class RuneBlog
 
     create_dirs(repo_root)
     Dir.chdir(repo_root) do
-      create_dirs(:data, :config, :drafts, :views, :posts)
+      create_dirs(:data, :config, :widgets, :drafts, :views, :posts)  # ?? widgets?
+      # FIXME
+      get_all_widgets("widgets")
       new_sequence
     end
     unless File.exist?(repo_root/"data/VIEW")
@@ -360,6 +362,8 @@ class RuneBlog
     log!(enter: __method__, args: [view_name], level: 2)
     Dir.chdir(@root) do
       cmd = "cp -r #{RuneBlog::Path}/../empty_view views/#{view_name}"
+      system!(cmd)
+      cmd = "cp -r widgets views/#{view_name}"
       system!(cmd)
     end
   rescue => err
@@ -660,14 +664,14 @@ class RuneBlog
     log!(enter: __method__, level: 2)
     vdir = @root/:views/view
     remote = vdir/:remote
-    wdir = vdir/:themes/:standard/:widgets
+    wdir = vdir/:widgets
     widgets = Dir[wdir/"*"].select {|w| File.directory?(w) }
     widgets.each do |w|
       dir = File.basename(w)
-      rem = w.sub(/themes.standard/, "remote")
+      rem = w.sub(/widgets/, "remote/widgets")
       create_dirs(rem)
       files = Dir[w/"*"]
-      files = files.select {|x| x =~ /(html|css)$/ }
+      # files = files.select {|x| x =~ /(html|css)$/ }
       tag = File.basename(w)
       files.each {|file| system!("cp #{file} #{rem}", show: (tag == "zzz")) }
     end
@@ -688,6 +692,7 @@ class RuneBlog
     pdraft = @root/:posts/nslug
     remote = @root/:views/view_name/:remote
     @theme = @root/:views/view_name/:themes/:standard
+
     # Step 1...
     create_dirs(pdraft)
     # FIXME dependencies?

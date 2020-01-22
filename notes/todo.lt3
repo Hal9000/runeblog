@@ -19,18 +19,13 @@ Fixed problem with \.def
 Improved some exceptions
 Added dates to list of pinned posts
 Starting to move widget code
+Mostly finished widget reorg
 .end
 
 .sublist nextish Next steps...
-=Move widgets to special dir in gem
 =Allow installing widgets
 =Allow updating widgets
 =Manage navbar (navbar.lt3, .html, ...)
-=Let bin/blog detect current view
-=More ARGV-style commands for bin/blog
-=Formalize example blog
-=Use example blog in automated testing
-=Double occurrence in .views
 =Don't use vars.lt3
 =Fix \$DotDir
 ="preview post" command
@@ -39,6 +34,11 @@ Starting to move widget code
 =Stay in menu?? ("sticky" menus?)
 =Regenerate (posts) command?
 =Move "manage" code into widgets
+=Let bin/blog detect current view
+=More ARGV-style commands for bin/blog
+=Formalize example blog
+=Use example blog in automated testing
+=Double occurrence in .views
 =ssh-copy-id in setup
 =post aliases (scoped to view? or view/name)
 =intra-blog links (incl aliases)
@@ -60,6 +60,7 @@ delete post, edit elsewhere, comes back (change source!)
 .sublist easyish Easy and/or soonish...
 detect non-OSX and print warning
 =Change teaser to excerpt?
+=Change "guts" to "contents"
 =Collapse and rename "themes/standard"
 =Facebook buttons
 =Twitter buttons

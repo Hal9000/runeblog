@@ -39,6 +39,21 @@ module RuneBlog::Helpers
     puts "dir = #{Dir.pwd}"
   end
 
+  def get_all_widgets(dest)
+    wdir  = RuneBlog::Path + "/widgets"    # files kept inside gem
+    copy!(wdir/"*", dest)
+  end
+
+  def get_widget(dest, widget: :all)   # recursive
+    wdir  = ".blogs/widgets"
+    wdir  = RuneBlog::Path + "/widgets"    # files kept inside gem
+    if widget == :all
+      copy!(wdir/"*", dest)
+    else
+      copy!(wdir/widget, dest)
+    end
+  end 
+
   def copy_data(dest)
     data  = RuneBlog::Path + "/../data"    # files kept inside gem
     files = %w[ROOT VIEW EDITOR universal.lt3 global.lt3 features.txt]

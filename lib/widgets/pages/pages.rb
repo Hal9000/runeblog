@@ -87,7 +87,7 @@ class ::RuneBlog::Widget
     end
 
     def manage
-      dir = @blog.view.dir/"themes/standard/widgets/pages"
+      dir = @blog.view.dir/"widgets/pages"
       # Assume child files already generated (and list.data??)
       data = dir/"list.data"
       lines = _get_data?(data)

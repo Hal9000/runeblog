@@ -81,7 +81,7 @@ module RuneBlog::REPL
   end
 
   def _manage_pinned   # cloned from manage_links
-    dir = @blog.view.dir/"themes/standard/widgets/pinned"
+    dir = @blog.view.dir/"widgets/pinned"
     data = dir/"list.data"
     edit_file(data)
   end
@@ -116,13 +116,13 @@ module RuneBlog::REPL
   end
 
   def _manage_links
-    dir = @blog.view.dir/"themes/standard/widgets/links"
+    dir = @blog.view.dir/"widgets/links"
     data = dir/"list.data"
     edit_file(data)
   end
 
   def _manage_pages    # FIXME move into widget code
-    dir = @blog.view.dir/"themes/standard/widgets/pages"
+    dir = @blog.view.dir/"widgets/pages"
     # Assume child files already generated (and list.data??)
     data = dir/"list.data"
     lines = _get_data?(data)
@@ -376,7 +376,7 @@ module RuneBlog::REPL
         puts "  ", fx(num, Red), "  ", fx(title, Black)
         other = @blog._get_views(@blog.root/:drafts/draft) - [@blog.view.to_s]
         unless other.empty?
-          print fx(" "*9 + "also in: ", Bold) 
+          print fx(" "*9 + "also in: ", :bold) 
           puts other.join(", ") 
         end
       end

@@ -408,7 +408,7 @@ def pin
   pinned = @_args
   @meta.pinned = pinned
   pinned.each do |pinview|
-    dir = @blog.root/:views/pinview/"themes/standard/widgets/pinned/"
+    dir = @blog.root/:views/pinview/"widgets/pinned/"
     datafile = dir/"list.data"
     pins = _get_data?(datafile)
     pins << "#{@meta.num} #{@meta.title}\n"
@@ -552,7 +552,7 @@ def _make_class_name(app)
 end
 
 def _load_local(widget)
-  Dir.chdir("widgets/#{widget}") do
+  Dir.chdir("../../widgets/#{widget}") do
     rclass = _make_class_name(widget)
     found = (require("./#{widget}") if File.exist?("#{widget}.rb"))
     code = found ? ::RuneBlog::Widget.class_eval(rclass) : nil
@@ -566,7 +566,7 @@ rescue => err
 end
 
 def _handle_standard_widget(tag)
-  wtag = :widgets/tag
+  wtag = "../../widgets"/tag
   code = _load_local(tag)
   if code 
     Dir.chdir(wtag) do 
@@ -589,21 +589,15 @@ def sidebar
 
   _body do |token|
     tag = token.chomp.strip.downcase
-    wtag = :widgets/tag
+    wtag = "../../widgets"/tag
     raise "Can't find #{wtag}" unless Dir.exist?(wtag)
     tcard = "#{tag}-card.html"
 
     case
       when standard.include?(tag)
         _handle_standard_widget(tag)
-      when tag == "ad"
-        num = rand(1..4)
-        img = "widgets/ad/ad#{num}.png"
-        src, dst = img, @root/:views/@view_name/"remote/widgets/ad/"
-        system!("cp #{src} #{dst}")
-        File.open(wtag/"vars.lt3", "w") {|f| f.puts ".set ad.image = #{img}" }
-        preprocess cwd: wtag, src: tag, dst: tcard, call: ".nopara", 
-                   force: true # , debug: true # , deps: depend 
+      else
+        raise "Nonstandard widget?"
     end
 
     _include_file wtag/tcard
