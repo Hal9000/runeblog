@@ -1,0 +1,9 @@
+
+X. repl: install WIDGET   (gem ->root?)
+X.       enable     "     (.txt file)
+X.       disable    "     (.txt file)
+X.       update     "     (gem -> view?)
+X. rebuild [post]
+X. rebuild [widget]
+X. Move "manage" code into widgets
+X. manage navbar

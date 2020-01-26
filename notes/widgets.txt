@@ -2,16 +2,21 @@
 Deploying/updating
 ------------------
 
-1. Idea: Widgets are stored in gem; code is not necessarily copied over
-   to a new view.
+x 1. Idea: Widgets are stored in gem; code is not necessarily copied over
+     to a new view.
 
-2. Therefore, widgets can be installed or updated.
+x 2. Therefore, widgets can be installed or updated.
 
-3. The gem "knows" which widgets are available, so they can be put in
-   the "available" list but not installed unless requested.
+x 3. The gem "knows" which widgets are available, so they can be put in
+     the "available" list but not installed unless requested.
 
-4. Where to store them in gem?
+x 4. Where to store them in gem?
 
+  5. repl: install WIDGET   (root -> view?)
+           enable     "     (.txt file)
+           disable    "     (.txt file)
+           update     "     (gem -> root and view?)
+     Version numbers for widgets?
 
 
 Original notes

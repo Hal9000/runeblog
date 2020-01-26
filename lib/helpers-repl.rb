@@ -31,6 +31,13 @@ module RuneBlog::REPL
      "cv"                => :cmd_change_view,  # 0-arity must come second
 
      "config"            => :cmd_config,
+
+     "list widgets"      => :cmd_list_widgets,
+     "lsw"               => :cmd_list_widgets,
+     "install $widget"   => :cmd_install_widget,
+     "enable $widget"    => :cmd_enable_widget,
+     "disable $widget"   => :cmd_disable_widget,
+     "update $widget"    => :cmd_update_widget,
      "manage $widget"    => :cmd_manage,
 
      "legacy"            => :cmd_legacy,
@@ -89,6 +96,7 @@ module RuneBlog::REPL
     rx = "^" + pat
     rx.gsub!(/ /, " +")
     rx.gsub!(/\$(\w+) */) { " *(?<#{$1}>\\w+)" }
+    # FIXME - detect when command is missing an arg
     # How to handle multiple optional args?
     rx.sub!(/>(\w+)$/) { "(.+)" }
     rx << "$"

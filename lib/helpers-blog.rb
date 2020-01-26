@@ -3,6 +3,7 @@ require 'fileutils'
 
 require 'processing'
 
+require 'pathmagic'
 require 'lowlevel'
 
 module RuneBlog::Helpers
@@ -16,16 +17,41 @@ module RuneBlog::Helpers
 
   def read_features(view = nil)
     hash = {}
-    if view.nil?  # toplevel default
-      dir = @root/"data"
+    root = @blog.root rescue ".blogs"
+    if view.nil?  # toplevel
+      dir = root/"data"
     else
-      dir = @root/:views/self.view/:settings
+      dir = root/:views/view/:settings
     end
     file = dir/"features.txt"
     pairs = read_pairs(file)
     enabled = {}
     pairs.each {|k,v| enabled[k] = (v == "1") }
     @features = enabled
+  end
+
+  def write_features(hash, view = nil)
+    root = @blog.root rescue ".blogs"
+    if view.nil?  # toplevel
+      dir = root/"data"
+    else
+      dir = root/:views/view/:settings
+    end
+    file = dir/"features.txt"
+    lines = File.readlines(file)
+    names = hash.keys
+    names.each do |name|
+      n, item = find_item!(lines) {|x| x =~ /^#{name} / }
+      k = name.length + 1  # 2nd blank after name
+      loop { break if item[k] != " "; k += 1 }
+      item[k] = hash[name]
+      lines[n] = item
+    end
+    File.write(file, lines.join)
+  rescue => err
+    puts "Error: #{err}"
+    puts err.backtrace.join("\n")
+    puts
   end
 
   def get_repo_config

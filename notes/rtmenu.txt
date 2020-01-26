@@ -1,0 +1,23 @@
+Thinking about RubyText (more complex) menus
+
+Top menu: 
+  Hash of strings
+  Each value is an action or a submenu
+  Esc = display/hide
+  Del = hide?
+  
+Top menu logic
+  - Display bar (one highlighted)
+  - left/right to select
+  - esc to exit
+  - Enter/down to execute (down=submenu, enter=sub or execute)
+  - display submenu without down arrow??
+  
+Submenu:
+  - Display menu (nothing highlighted)
+  - up/down to select
+  - Enter to execute
+  - sub-submenus??
+  - After execute: kill submenu; keep top menu?
+
+

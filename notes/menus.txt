@@ -1,0 +1,32 @@
+Big menu system...
+
+List of posts:
+  - edit 
+  - remove from view
+  - delete entirely?
+  - add views
+  - add tags
+  - pin
+  - import asset
+  - rebuild
+
+
+
+Top menu:  (triggered by Esc?)
+  - Config
+     - ...
+  - Build
+     - Rebuild
+     - Preview
+     - Publish
+     - Browse
+  - Help
+  - Drafts/Posts
+     - add/del views
+     - add/del tags
+     - add/del pins
+     - edit
+     - regen
+     - change title?
+  - Exit
+

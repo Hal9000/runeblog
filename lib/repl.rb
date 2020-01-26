@@ -449,6 +449,41 @@ module RuneBlog::REPL
     error(err)
   end
 
+=begin
+  {lsw, list widgets} List all known widgets
+  {install WIDGET}    Install a widget
+  {enable WIDGET}     Use widget in this view
+  {disable WIDGET}    Don't use widget in this view
+  {update WIDGET}     Update widget code (this view)
+  {manage WIDGET}     Manage widget content/layout 
+=end
+
+  def cmd_list_widgets
+    # find/list all available widgets
+    puts "\n  STUB: #{__method__}\n "
+  end
+
+  def cmd_install_widget(arg)
+    # install a widget (view? global?)
+    puts "\n  STUB: #{__method__}\n "
+  end
+
+  def cmd_enable_widget(arg)
+    write_features({arg.to_sym => "1"}, @blog.view)
+    puts "\n  Enabled #{arg}\n "
+  end
+
+  def cmd_disable_widget(arg)
+    write_features({arg.to_sym => "0"}, @blog.view)
+    puts "\n  Disabled #{arg}\n "
+  end
+
+  def cmd_update_widget(arg)
+    # update widget code
+    puts "\n  STUB: #{__method__}\n "
+  end
+
+
   Help = <<-EOS
 
   {Basics:}                                         {Views:}
@@ -469,7 +504,18 @@ module RuneBlog::REPL
   {delete ID [ID...]} Remove multiple posts         {rebuild}           Regenerate all posts and relink
   {undelete ID}       Undelete a post               {publish}           Publish (current view)
   {edit ID}           Edit a post                   {ssh}               Login to remote server
-  {import ASSETS}     Import assets (images, etc.)  {manage WIDGET}     Manage content/layout of a widget
+  {import ASSETS}     Import assets (images, etc.)  
+
+
+  {Widgets:}
+  -------------------------------------------       
+  {lsw, list widgets} List all known widgets
+  {install WIDGET}    Install a widget
+  {enable WIDGET}     Use widget in this view
+  {disable WIDGET}    Don't use in this view
+  {update WIDGET}     Update code (this view)
+  {manage WIDGET}     Manage content/layout 
+
   EOS
 
   def cmd_help

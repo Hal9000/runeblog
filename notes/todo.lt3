@@ -20,6 +20,9 @@ Improved some exceptions
 Added dates to list of pinned posts
 Starting to move widget code
 Mostly finished widget reorg
+Stubs for widget-related commands
+Added write_features to helpers-blog
+Added enable/disable commands
 .end
 
 .sublist nextish Next steps...
@@ -28,10 +31,19 @@ Mostly finished widget reorg
 =Manage navbar (navbar.lt3, .html, ...)
 =Don't use vars.lt3
 =Fix \$DotDir
+=Update posts: Views, tags, pinned?, ...
 ="preview post" command
 =Need "older posts" link
 =Fix "head" stuff
+=Big menu system (see menus.txt)
 =Stay in menu?? ("sticky" menus?)
+=RubyText: radio buttons
+=RubyText: checkboxes
+=RubyText: list controller
+=RubyText: settings
+=RubyText: better YesNo
+=RubyText: Top menu
+=RubyText: Nested menus
 =Regenerate (posts) command?
 =Move "manage" code into widgets
 =Let bin/blog detect current view

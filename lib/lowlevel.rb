@@ -103,6 +103,18 @@
     puts err.backtrace.join("\n")
   end
 
+  def find_item(list)
+    list2 = list.select(&block)
+    exactly_one(list2)
+  end
+
+  def find_item!(list, &block)
+    list2 = list.select(&block)
+    item = exactly_one(list2)
+    n = list.index(&block)
+    [n, item]
+  end
+
   def exactly_one(list)
     raise "List: Zero instances" if list.empty?
     raise "List: More than one instance" if list.size > 1
