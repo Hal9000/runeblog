@@ -23,13 +23,13 @@ Mostly finished widget reorg
 Stubs for widget-related commands
 Added write_features to helpers-blog
 Added enable/disable commands
+Removed vars.lt3
 .end
 
 .sublist nextish Next steps...
 =Allow installing widgets
 =Allow updating widgets
 =Manage navbar (navbar.lt3, .html, ...)
-=Don't use vars.lt3
 =Fix \$DotDir
 =Update posts: Views, tags, pinned?, ...
 ="preview post" command
