@@ -2,7 +2,7 @@ if ! defined?(LIVE)
 
 require 'livetext'
 
-LIVE = Livetext.new
+LIVE = "defined"
 LEXT = ".lt3"
 
 def newer?(f1, f2)
@@ -39,6 +39,7 @@ def preprocess(cwd: Dir.pwd, src:,
       STDERR.puts "#{sp}      in:   #{Dir.pwd}"
       STDERR.puts "#{sp}      from: #{caller[0]}"
       STDERR.puts "#{sp}      copy: #{copy}" if copy
+      STDERR.puts "#{sp}      vars: #{vars.inspect}" unless vars == {}
     end
     stale = stale?(src, dst, deps, force)
     if stale

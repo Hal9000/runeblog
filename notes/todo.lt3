@@ -123,6 +123,9 @@ search
 .end
 
 .sublist livetext Livetext bugs/features
+=nbsp function
+=center function
+=heredoc! adds break after each line
 fix bug .set var="this, that"
 mixin as module (livetext -m)
 $$dd[incr]?

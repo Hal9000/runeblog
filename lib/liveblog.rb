@@ -33,8 +33,10 @@ def init_liveblog    # FIXME - a lot of this logic sucks
       </a>
     HTML
   end
-rescue
-  raise "Only works inside a blog repo"
+rescue => err
+  STDERR.puts "err = #{err}"
+  STDERR.puts err.backtrace.join("\n")
+# raise "Only works inside a blog repo"
 end
 
 ##################

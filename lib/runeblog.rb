@@ -625,6 +625,7 @@ class RuneBlog
     nslug = fname.sub(/.lt3$/, "")     # 0001-this-is-a-post
     aslug = nslug.sub(/\d\d\d\d-/, "") # this-is-a-post
     pnum = nslug[0..3]                 # 0001
+    hash = {}
     Dir.chdir(pdraft) do 
       excerpt = File.read("teaser.txt")
       meta = read_metadata
@@ -633,29 +634,12 @@ class RuneBlog
       title = meta.title
       tags = meta.tags
       # FIXME simplify
-      vars = <<~LIVE
-        .set post.num = #{pnum}
-        .heredoc post.aslug
-        #{aslug}
-        .end
-        .heredoc post.date
-        #{date}
-        .end
-        .heredoc title
-        #{title.chomp}
-        .end
-        .heredoc post.tags
-        #{tags.join(" ")}
-        .end
-        .heredoc teaser
-        #{excerpt.chomp}
-        .end
-        .heredoc longdate
-        #{longdate}
-        .end
-      LIVE
-      File.open(pdraft/"vars.lt3", "w") {|f| f.puts vars }
+      addvar(hash, "post.num" => pnum,      "post.aslug" => aslug,
+             "post.date" => date,           title: title.chomp, 
+             "post.tags" => tags.join(" "), teaser: excerpt.chomp,
+             longdate: longdate)
     end
+    hash
   rescue => err
     _tmp_error(err)
   end
@@ -681,8 +665,6 @@ class RuneBlog
 
   def _handle_post(draft, view_name = self.view.to_s)
     log!(enter: __method__, args: [draft, view_name], level: 2)
-    # break into separate methods?
-
     return unless _check_view?(view_name)
 
     fname = File.basename(draft)       # 0001-this-is-a-post.lt3
@@ -693,22 +675,16 @@ class RuneBlog
     remote = @root/:views/view_name/:remote
     @theme = @root/:views/view_name/:themes/:standard
 
-    # Step 1...
-    create_dirs(pdraft)
-    # FIXME dependencies?
-    preprocess cwd: pdraft, src: draft, dst: "guts.html",
-               mix: "liveblog"  # , debug: true
-    _post_metadata(draft, pdraft)
-    # Step 2...
-    vposts = @root/:views/view_name/:posts
+    create_dirs(pdraft)                                # Step 1...
+    preprocess cwd: pdraft, src: draft,                # FIXME dependencies?
+               dst: "guts.html", mix: "liveblog"
+    hash = _post_metadata(draft, pdraft)
+    vposts = @root/:views/view_name/:posts             # Step 2...
     copy!(pdraft, vposts)    # ??
-    # Step 3..
-    copy(pdraft/"guts.html", @theme/:post) 
-    copy(pdraft/"vars.lt3",  @theme/:post) 
-    # Step 4...
-    preprocess cwd: @theme/:post, src: "generate.lt3", force: true, 
-               dst: remote/ahtml, # copy: @theme/:post,
-               call: ".nopara"    # , debug: true
+    copy(pdraft/"guts.html", @theme/:post)             # Step 3...
+    preprocess cwd: @theme/:post, src: "generate.lt3", # Step 4...
+               force: true, vars: hash, 
+               dst: remote/ahtml, call: ".nopara" 
     FileUtils.rm_f(remote/"published")
     timelog("Generated", remote/"history")
     copy_widget_html(view_name)

@@ -121,3 +121,10 @@
     list.first
   end
 
+  def addvar(vars, hash)
+    hash.each_pair do |k, v| 
+      vars[k.to_s] = v
+      vars[k.to_sym] = v
+    end
+    vars
+  end
