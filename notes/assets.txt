@@ -1,3 +1,7 @@
+Why have different levels of assets?
+  - possible name collisions between posts
+  - name collisions between views
+
 Problem: How to handle assets?
   - avoid duplicating them
   - hierarchy? global, view, post?
@@ -12,9 +16,9 @@ Problem: How to handle assets?
 Logic:
   Post is being published
   Asset reference is detected
-  Check if there's already a local one?
-  Check the view?
-  Check global?
+  Is there already a local one? Use it (manipulate URL)
+  Is there one in the view? (default) Use it for link
+  Is there a global one? Copy to view
   If not available, complain
   If available, handle in publish *and* deploy
   Write to manifest?

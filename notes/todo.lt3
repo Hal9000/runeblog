@@ -3,7 +3,7 @@
 .mixin notes/todo
 
 
-.sublist jan2020 Recently completed (Jan 2020)
+.sublist jan2020 Recently completed (Jan/Feb 2020)
 Removed more dead code
 Added read_metadata
 Added rebuild of post and index when post edited
@@ -24,6 +24,7 @@ Stubs for widget-related commands
 Added write_features to helpers-blog
 Added enable/disable commands
 Removed vars.lt3
+Added rudimentary menu system
 .end
 
 .sublist nextish Next steps...
@@ -35,15 +36,12 @@ Removed vars.lt3
 ="preview post" command
 =Need "older posts" link
 =Fix "head" stuff
-=Big menu system (see menus.txt)
 =Stay in menu?? ("sticky" menus?)
 =RubyText: radio buttons
 =RubyText: checkboxes
 =RubyText: list controller
 =RubyText: settings
 =RubyText: better YesNo
-=RubyText: Top menu
-=RubyText: Nested menus
 =Regenerate (posts) command?
 =Move "manage" code into widgets
 =Let bin/blog detect current view

@@ -5,6 +5,8 @@
 require 'runeblog'
 require 'rubytext'
 
+require 'menus'
+
 require 'repl'
 
 include RuneBlog::REPL
@@ -90,11 +92,21 @@ def mainloop
   info = @blog.view || "no view"
   print fx("[#{info}] ", Red, :bold)
   cmd = STDSCR.gets(history: @cmdhist, tab: @tabcom)
-  cmd_quit if cmd.nil?   # ^D
-  cmd.chomp!
-  return if cmd.empty?   # CR does nothing
-  invoking = RuneBlog::REPL.choose_method(cmd)
-  ret = send(*invoking)
+  case
+    when cmd == RubyText::Keys::Escape
+      show_top_menu
+      puts
+      return
+    when cmd == RubyText::Keys::CtlD    # ^D
+      cmd_quit
+    when cmd.is_a?(String)
+      cmd.chomp!
+      return if cmd.empty?  # CR does nothing
+      invoking = RuneBlog::REPL.choose_method(cmd)
+      ret = send(*invoking)
+  else
+    puts "Don't understand '#{cmd.inspect}'\n "
+  end
 rescue => err
   puts err
 end

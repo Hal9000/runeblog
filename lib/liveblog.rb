@@ -382,14 +382,6 @@ def pubdate
   _optional_blank_line
 end
 
-def image   # primitive so far
-  _debug "img: huh? <img src=#{_args.first}></img>"
-  fname = _args.first
-  path = :assets/fname
-  _out "<img src=#{path}></img>"
-  _optional_blank_line
-end
-
 def tags
   raise "'post' was not called" unless @meta
   _debug "args = #{_args}"

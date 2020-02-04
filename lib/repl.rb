@@ -3,6 +3,8 @@ require 'ostruct'
 require 'helpers-repl'  # FIXME structure
 require 'pathmagic'
 
+require 'menus'
+
 make_exception(:PublishError,  "Error during publishing")
 make_exception(:EditorProblem, "Could not edit $1")
 
