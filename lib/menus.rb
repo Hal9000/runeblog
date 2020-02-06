@@ -5,11 +5,42 @@ require 'repl'
 
 Menu = OpenStruct.new
 
+def edit(str)
+  proc { edit_file(str) }
+end
+
 notimp = proc { RubyText.splash("Not implemented yet") }
 
 top_about  = proc { RubyText.splash("RuneBlog v #{RuneBlog::VERSION}") }
 top_help   = proc { RubyText.splash(RuneBlog::REPL::Help.gsub(/[{}]/, " ")) }
 
+
+#   dir = @blog.view.dir/"themes/standard/"
+
+std = "themes/standard"
+
+Menu.top_config = {
+    "Variables (general)"                 => edit("#{std}/global.lt3"),
+    "   View-specific"                    => edit("settings/view.txt"),
+    "   Recent posts"                     => edit("settings/recent.txt"),
+    "   Publishing"                       => edit("settings/publish.txt"),
+    "Configuration: enable/disable"       => edit("settings/features.txt"),
+    "   Reddit"                           => edit("config/reddit/credentials.txt"),
+    "   Facebook"                         => edit("config/facebook/credentials.txt"),
+    "   Twitter"                          => edit("config/twitter/credentials.txt"),
+    "View: generator"                     => edit("#{std}/blog/generate.lt3"),
+    "   HEAD info"                        => edit("#{std}/blog/head.lt3"),
+    "   Layout "                          => edit("#{std}/blog/index.lt3"),
+    "   Recent-posts entry"               => edit("#{std}/blog/post_entry.lt3"),
+    "   Banner: Description"              => edit("#{std}/blog/banner.lt3"),
+    "      Text portion"                  => edit("#{std}/banner/top.lt3"),
+    "Generator for a post"                => edit("#{std}/post/generate.lt3"),
+    "   HEAD info for post"               => edit("#{std}/post/head.lt3"),
+    "   Content for post"                 => edit("#{std}/post/index.lt3"),
+    "Global CSS"                          => edit("#{std}/etc/blog.css.lt3"),
+    "External JS/CSS (Bootstrap, etc.)"   => edit("/etc/externals.lt3") 
+  }
+  
 Menu.top_build  = { 
      Rebuild: proc { cmd_rebuild },
      Preview: proc { cmd_preview },
@@ -20,19 +51,18 @@ Menu.top_build  = {
 
 Menu.top_items = {
     About:  top_about,
-    Views:  notimp,
+#   Views:  notimp,
     Build:  proc { STDSCR.menu(items: Menu.top_build) },
-    Config: notimp,
+    Config: proc { STDSCR.menu(items: Menu.top_config) },
     Help:   top_help,
     Quit:   proc { cmd_quit }
   }
 
 def show_top_menu
+  r, c = STDSCR.rc
   STDSCR.topmenu(items: Menu.top_items)
+  STDSCR.go r-1, 0
 end
-
-# about_items 
-
 
 =begin
    About (version)
@@ -86,30 +116,3 @@ end
 
    }
 
-#   def cmd_config
-#     hash = {"Variables (general)"                 => "global.lt3",
-#             "   View-specific"                    => "../../settings/view.txt",
-#             "   Recent posts"                     => "../../settings/recent.txt",
-#             "   Publishing"                       => "../../settings/publish.txt",
-#             "Configuration: enable/disable"       => "../../settings/features.txt",
-#             "   Reddit"                           => "../../config/reddit/credentials.txt",
-#             "   Facebook"                         => "../../config/facebook/credentials.txt",
-#             "   Twitter"                          => "../../config/twitter/credentials.txt",
-#             "View: generator"                     => "blog/generate.lt3",
-#             "   HEAD info"                        => "blog/head.lt3",
-#             "   Layout "                          => "blog/index.lt3",
-#             "   Recent-posts entry"               => "blog/post_entry.lt3",
-#             "   Banner: Description"              => "blog/banner.lt3",
-#             "      Text portion"                  => "banner/top.lt3",
-#             "Generator for a post"                => "post/generate.lt3",
-#             "   HEAD info for post"               => "post/head.lt3",
-#             "   Content for post"                 => "post/index.lt3",
-#             "Global CSS"                          => "etc/blog.css.lt3",
-#             "External JS/CSS (Bootstrap, etc.)"   => "/etc/externals.lt3"
-#            }
-# 
-#     dir = @blog.view.dir/"themes/standard/"
-#     num, target = STDSCR.menu(title: "Edit file:", items: hash)
-#     edit_file(dir/target)
-#   end
-# 

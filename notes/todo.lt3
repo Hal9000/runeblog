@@ -25,6 +25,9 @@ Added write_features to helpers-blog
 Added enable/disable commands
 Removed vars.lt3
 Added rudimentary menu system
+Fixed ^C and ^D bugs
+Updated rubytext to 0.1.22
+Cleaned up topmenu (responds to spacebar)
 .end
 
 .sublist nextish Next steps...
@@ -56,8 +59,6 @@ Added rudimentary menu system
 .end
 
 .sublist bugs Bugs, etc.
-=REPL doesn't trap ^C
-=REPL doesn't honor ^D
 =up-arrow broken
 =bin/blog: Error when escaping from menu
 =bin/blog: autocomplete fails when no valid prefix

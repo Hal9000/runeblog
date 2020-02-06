@@ -91,15 +91,16 @@ end
 def mainloop
   info = @blog.view || "no view"
   print fx("[#{info}] ", Red, :bold)
-  cmd = STDSCR.gets(history: @cmdhist, tab: @tabcom)
-  case
-    when cmd == RubyText::Keys::Escape
+  cmd = STDSCR.gets(history: @cmdhist, tab: @tabcom, capture: [" "])
+  case cmd
+    when " ", RubyText::Keys::Escape
+      Dir.chdir(@blog.view.dir)
       show_top_menu
       puts
       return
-    when cmd == RubyText::Keys::CtlD    # ^D
+    when RubyText::Keys::CtlD    # ^D
       cmd_quit
-    when cmd.is_a?(String)
+    when String
       cmd.chomp!
       return if cmd.empty?  # CR does nothing
       invoking = RuneBlog::REPL.choose_method(cmd)
