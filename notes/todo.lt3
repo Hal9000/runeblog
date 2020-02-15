@@ -28,6 +28,7 @@ Added rudimentary menu system
 Fixed ^C and ^D bugs
 Updated rubytext to 0.1.22
 Cleaned up topmenu (responds to spacebar)
+Added exceptions.rb + new exceptions
 .end
 
 .sublist nextish Next steps...
