@@ -36,7 +36,6 @@ def init_liveblog    # FIXME - a lot of this logic sucks
 rescue => err
   STDERR.puts "err = #{err}"
   STDERR.puts err.backtrace.join("\n")
-# raise "Only works inside a blog repo"
 end
 
 ##################
@@ -189,7 +188,7 @@ def banner
           if File.exist?(src)
             preprocess src: src, dst: file, call: ".nopara" # , vars: @blog.view.globals
           else
-            raise "Neither #{file} nor #{src} found"
+            raise FoundNeither(file, src)
           end
         end
         str2 << "<td>" + File.read(file) + "</td>" + "\n"
@@ -362,7 +361,7 @@ def inset
 end
 
 def title
-  raise "'post' was not called" unless @meta
+  raise NoPostCall unless @meta
   title = @_data.chomp
   @meta.title = title
   setvar :title, title
@@ -371,7 +370,7 @@ def title
 end
 
 def pubdate
-  raise "'post' was not called" unless @meta
+  raise NoPostCall unless @meta
   _debug "data = #@_data"
   # Check for discrepancy?
   match = /(\d{4}).(\d{2}).(\d{2})/.match @_data
@@ -383,21 +382,21 @@ def pubdate
 end
 
 def tags
-  raise "'post' was not called" unless @meta
+  raise NoPostCall unless @meta
   _debug "args = #{_args}"
   @meta.tags = _args.dup || []
   _optional_blank_line
 end
 
 def views
-  raise "'post' was not called" unless @meta
+  raise NoPostCall unless @meta
   _debug "data = #{_args}"
   @meta.views = _args.dup
   _optional_blank_line
 end
 
 def pin
-  raise "'post' was not called" unless @meta
+  raise NoPostCall unless @meta
   _debug "data = #{_args}"  # verify only valid views?
   pinned = @_args
   @meta.pinned = pinned
@@ -417,7 +416,7 @@ rescue => err
 end
 
 def write_post
-  raise "'post' was not called" unless @meta
+  raise NoPostCall unless @meta
   @meta.views = @meta.views.join(" ") if @meta.views.is_a? Array
   @meta.tags  = @meta.tags.join(" ") if @meta.tags.is_a? Array
   _write_metadata
@@ -427,7 +426,7 @@ rescue => err
 end
 
 def teaser
-  raise "'post' was not called" unless @meta
+  raise NoPostCall unless @meta
   text = _body.join("\n")
   @meta.teaser = text
   setvar :teaser, @meta.teaser
@@ -584,9 +583,8 @@ def sidebar
   _body do |token|
     tag = token.chomp.strip.downcase
     wtag = "../../widgets"/tag
-    raise "Can't find #{wtag}" unless Dir.exist?(wtag)
+    raise CantFindWidgetDir(wtag) unless Dir.exist?(wtag)
     tcard = "#{tag}-card.html"
-
     case
       when standard.include?(tag)
         _handle_standard_widget(tag)

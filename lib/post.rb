@@ -11,7 +11,7 @@ class RuneBlog::Post
   
   def self.load(post)
     log!(enter: __method__, args: [post], level: 3)
-    raise "Doesn't work right now"
+    raise NotImplemented
     raise NoBlogAccessor if RuneBlog.blog.nil?
     # "post" is a slug?
     pdir = RuneBlog.blog.root/:drafts/post
@@ -87,8 +87,8 @@ class RuneBlog::ViewPost
   attr_accessor :path, :title, :date, :teaser_text
 
   def self.make(blog:, view:, nslug:)
-    raise "No numeric prefix on #{nslug}" unless nslug =~ /^\d{4}-/
-    raise "Not expecting an extension" if nslug.end_with?(".lt3") || nslug.end_with?(".html")
+    raise NoNumericPrefix(nslug) unless nslug =~ /^\d{4}-/
+    raise NoExtensionExpected(nslug) if nslug.end_with?(".lt3") || nslug.end_with?(".html")
     view = view.to_s
     view.define_singleton_method :path do |subdir = ""|
       str = blog.root/:views/view

@@ -15,6 +15,7 @@ require 'publish'
 require 'post'
 
 require 'pathmagic'
+require 'exceptions'
 
 ###
 
@@ -47,19 +48,6 @@ class RuneBlog
   DotDir     = ".blogs"
   ConfigFile = "config"
   Themes     = RuneBlog::Path/"../themes"
-
-  make_exception(:FileNotFound,          "File $1 was not found")
-  make_exception(:BlogRepoAlreadyExists, "Blog repo $1 already exists")
-  make_exception(:CantAssignView,        "$1 is not a view")
-  make_exception(:ViewAlreadyExists,     "View $1 already exists")
-  make_exception(:DirAlreadyExists,      "Directory $1 already exists")
-  make_exception(:CantCreateDir,         "Can't create directory $1")
-  make_exception(:EditorProblem,         "Could not edit $1")
-  make_exception(:NoSuchView,            "No such view: $1")
-  make_exception(:NoBlogAccessor,        "Runeblog.blog is not set")
-  make_exception(:ExpectedString,        "Expected nonempty string but got $1 ($2)")
-  make_exception(:ExpectedView,          "Expected string or View object but got $1 ($2)")
-  make_exception(:ExpectedInteger,       "Expected integer but got $1 ($2)")
 
   include ErrorChecks
 

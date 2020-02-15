@@ -12,7 +12,7 @@ end
 def stale?(src, dst, deps, force = false)
   meh = File.new("/tmp/dammit-#{src.gsub(/\//, "-")}", "w")
   log!(enter: __method__, args: [src, dst], level: 3)
-  raise "Source #{src} not found in #{Dir.pwd}" unless File.exist?(src)
+  raise FileNotFound("#{Dir.pwd}/#{src}") unless File.exist?(src)
   return true if force
   return true unless File.exist?(dst)
   return true if newer?(src, dst)

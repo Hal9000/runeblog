@@ -2,35 +2,28 @@ require 'runeblog'
 require 'ostruct'
 require 'helpers-repl'  # FIXME structure
 require 'pathmagic'
+require 'exceptions'
 
 require 'menus'
-
-make_exception(:PublishError,  "Error during publishing")
-make_exception(:EditorProblem, "Could not edit $1")
 
 Signal.trap("INT") { puts "Don't  :)" }
 
 module RuneBlog::REPL
   def edit_file(file, vim: "")
-#   STDSCR.saveback
     ed = @blog.editor
     params = vim if ed =~ /vim$/
     result = system!("#{@blog.editor} #{file} #{params}")
     raise EditorProblem(file) unless result
-#   STDSCR.restback
     cmd_clear
   end
 
   def cmd_quit
     STDSCR.rows.times { puts " "*(STDSCR.cols-1) }
-    # FIXME please?
-    # sleep 0.1
     STDSCR.clear
     sleep 0.1
     RubyText.stop
     sleep 0.1
     system("clear")
-    # sleep 0.1
     exit
   end
 
@@ -441,7 +434,6 @@ module RuneBlog::REPL
       cmd = "cp #{name} #{@blog.root}/drafts/#@fname"
       result = system!(cmd)
       raise CantCopy(name, "#{@blog.root}/drafts/#@fname") unless result
-      # post = Post.load(@slug)
       draft = "#{@blog.root}/drafts/#@fname"
       @meta = @blog.generate_post(draft)
       puts
