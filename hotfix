@@ -4,6 +4,8 @@ require 'runeblog'
 
 lib = RuneBlog::Path
 
+puts lib
+
 files = Dir["lib/*.rb"]
 bad = false
 files.each do |f|

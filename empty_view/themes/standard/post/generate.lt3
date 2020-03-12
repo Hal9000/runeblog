@@ -10,10 +10,12 @@
 
 .seek global.lt3
 
+.variables post metadata.txt
+
 . FIXME
 .head
-og:title    $title 
-description $teaser
+og:title    $post.title 
+description $post.teaser
 style       blog.css
 .end
 
@@ -23,7 +25,8 @@ style       blog.css
   <div class="recent-content">
     $.post_toolbar
     <table border=0 width=100%><tr>
-      <td align=left valign=bottom><h2 class="recent-title">$title</h2></td>
+      <td align=left valign=bottom><h2 class="recent-title">$post.title</h2></td>
+. FIXME - longdate is passed in from outside
       <td align=right valign=top><font size=-5><br></font>$longdate</td>
     </tr></table><hr>
     $.copy guts.html
@@ -31,6 +34,6 @@ style       blog.css
 </section>
 
 <br>
-.post_trailer 
+.post_trailer $post.num
 </body>
 </html>

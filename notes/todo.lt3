@@ -29,6 +29,8 @@ Fixed ^C and ^D bugs
 Updated rubytext to 0.1.22
 Cleaned up topmenu (responds to spacebar)
 Added exceptions.rb + new exceptions
+Misc changes/fixes
+Working on "newpost" functionality
 .end
 
 .sublist nextish Next steps...

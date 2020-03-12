@@ -213,6 +213,7 @@ module RuneBlog::REPL
       content = postdir/"/guts.html"
       next if fresh?(orig, content)
 
+# puts "Calling generate_post(#{orig})"
       @blog.generate_post(orig)    # rebuild post
       Dir.chdir(postdir) do
         meta = @blog.read_metadata
@@ -227,9 +228,9 @@ module RuneBlog::REPL
     debug "Starting cmd_rebuild..."
     puts
     regen_posts
-    puts "  Generating view"
+    puts "  Generating view..."
     @blog.generate_view(@blog.view)
-    puts "  Generating index"
+    puts "  Generating index..."
     @blog.generate_index(@blog.view)
     puts "  ...finished!"
   rescue => err
@@ -256,6 +257,22 @@ module RuneBlog::REPL
   end
 
   def cmd_new_view(arg)
+    view_name = ask!("      Filename: ")
+    @blog.create_view(view_name)   # call change_view??
+    title     = ask!("      View title: ")
+    subtitle  = ask!("      Subtitle  : ")
+    domain    = ask!("      Domain    : ")
+
+    vfile = "#{@blog.root}/views/#{view_name}/settings/view.txt"
+    hash = {/VIEW_NAME/     => view_name,
+            /VIEW_TITLE/    => title,
+            /VIEW_SUBTITLE/ => subtitle,
+            /VIEW_DOMAIN/   => domain}
+    @blog.complete_file(vfile, nil, hash)
+    @blog.change_view(view_name)
+  end 
+
+  def cmd_new_view_ORIG(arg)
     if arg.nil?
       arg = ask(fx("\nFilename: ", :bold))
       puts
@@ -320,6 +337,7 @@ module RuneBlog::REPL
       v = fx(v, :bold) if v == @blog.view.name
       # FIXME: next 3 lines are crufty as hell
       lines = File.readlines(@blog.root/"views/#{v}/settings/view.txt")
+      lines.map!(&:chomp)
       lines = lines.select {|x| x =~ /^title / && x !~ /VIEW_/ }
       title = lines.first.split(" ", 2)[1]
       print "  ", ('%15s' % v)

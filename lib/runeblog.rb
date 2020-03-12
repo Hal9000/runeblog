@@ -49,6 +49,7 @@ class RuneBlog
   ConfigFile = "config"
   Themes     = RuneBlog::Path/"../themes"
 
+  include Helpers
   include ErrorChecks
 
   class << self
@@ -60,10 +61,10 @@ class RuneBlog
   attr_reader :views, :sequence
   attr_accessor :root, :editor, :features
   attr_accessor :view  # overridden
+  attr_accessor :post
 
   attr_accessor :post_views, :post_tags, :dirty_views
 
-  include Helpers
 
     class Default
 
@@ -216,6 +217,7 @@ class RuneBlog
     meta = read_pairs!("metadata.txt")
     meta.views = meta.views.split
     meta.tags  = meta.tags.split
+    RuneBlog.blog.post = meta
     meta
   end
 
@@ -296,6 +298,7 @@ class RuneBlog
         _set_publisher
       when String
         new_view = str2view(arg)
+# puts "new_view = #{new_view} (#{new_view.class})"
         check_error(NoSuchView, arg) { new_view.nil? }
         @view = new_view
         read_features(@view)
@@ -530,7 +533,8 @@ class RuneBlog
 # puts [draft, meta.views].inspect
       list << draft if meta.views.include?(self.view.to_s)
     end
-    list.sort
+    # list.sort
+    curr_drafts
   end
 
   def all_drafts
@@ -622,10 +626,11 @@ class RuneBlog
       title = meta.title
       tags = meta.tags
       # FIXME simplify
-      addvar(hash, "post.num" => pnum,      "post.aslug" => aslug,
-             "post.date" => date,           title: title.chomp, 
-             "post.tags" => tags.join(" "), teaser: excerpt.chomp,
-             longdate: longdate)
+      addvar(hash, "post.num" => pnum, "post.aslug" => aslug,
+             "post.date" => date,      title: title.chomp, 
+             teaser: excerpt.chomp,    longdate: longdate,
+             "post.nslug" => pnum + "-" + aslug,
+             "post.tags" => tags.join(" "))
     end
     hash
   rescue => err
@@ -668,6 +673,9 @@ class RuneBlog
                dst: "guts.html", mix: "liveblog"
     hash = _post_metadata(draft, pdraft)
     vposts = @root/:views/view_name/:posts             # Step 2...
+puts "-- hpost:"
+hash.each_pair {|k,v| puts "    #{k}:    #{v}" if k.is_a? Symbol }
+puts
     copy!(pdraft, vposts)    # ??
     copy(pdraft/"guts.html", @theme/:post)             # Step 3...
     preprocess cwd: @theme/:post, src: "generate.lt3", # Step 4...

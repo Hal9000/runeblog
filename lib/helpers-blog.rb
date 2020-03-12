@@ -24,6 +24,7 @@ module RuneBlog::Helpers
       dir = root/:views/view/:settings
     end
     file = dir/"features.txt"
+# puts "-- in #{Dir.pwd} trying to read #{file}"
     pairs = read_pairs(file)
     enabled = {}
     pairs.each {|k,v| enabled[k] = (v == "1") }

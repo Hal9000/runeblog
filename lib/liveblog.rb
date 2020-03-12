@@ -55,6 +55,7 @@ end
 def post
   @meta = OpenStruct.new
   @meta.num = _args[0]
+  setvar("post.num", @meta.num.to_i)
   _out "  <!-- Post number #{@meta.num} -->\n "
 end
 
@@ -87,21 +88,35 @@ def post_toolbar
 end
 
 def post_trailer
-  perma = _var("publish.proto") + "://" + _var("publish.server") +
-          "/" + _var("publish.path") + "/" + _var("post.aslug") + 
-          ".html"
-  tags = _var("post.tags")
+  # Not called from *inside* a post, therefore no @meta --
+  # can/must call read_metadata
+  num = _var("post.num").to_i
+puts "post_trailer: num = #{num}"
+  vp = _post_lookup(num)
+puts "post_trailer: lookup = #{vp.num} #{vp.title}"
+  dir = @blog.root/:posts/vp.nslug
+puts "  -- dir = #{dir}"
+  meta = Dir.chdir(dir) { @blog.read_metadata }
+  nslug = @blog.make_slug(meta)
+  aslug = nslug[5..-1]
+  proto  = _var("publish.proto")
+  server = _var("publish.server")
+  path   = _var("publish.path")
+  perma = "#{proto}://#{server}/#{path}/#{aslug}.html"
+  tags = meta.tags
   taglist = tags.empty? ? "" : "Tags: #{tags}"
 
   reddit_txt = ""
   if @reddit_enabled
     vdir  = @blog.root/:views/@blog.view
-    nslug = "#{_var("post.num")}-#{_var("post.aslug")}"
-    date  = _var("post.date")
+    date  = meta.date
     rid_file = vdir/:posts/nslug/"reddit.id"
-    rid = File.exist?(rid_file) ? File.read(rid_file).chomp : nil
-    if rid.nil?
-      title = _var("title")
+    if File.exist?(rid_file) 
+ puts "    reading #{rid_file}"
+      rid = File.read(rid_file).chomp
+    else
+ puts "    creating #{rid_file}"
+      title = meta.title
       rid = _reddit_post_url(vdir, date, title, perma)
       dump(rid, rid_file)
     end
@@ -112,6 +127,7 @@ def post_trailer
     HTML
   # damned syntax highlighting </>
   end
+print "Pause... "; getch
   _out <<~HTML
   #{reddit_txt}
   <hr>

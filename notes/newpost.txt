@@ -1,0 +1,12 @@
+IdeaL A special sub-environment for creating a post
+
+1. Display: view, post number, date
+2. Menu?
+3.   - Edit/enter title
+4.   - Edit teaser
+5.   - Add views
+6.   - Add tags
+7.   - Import assets
+8.   - Edit body
+9.   - Save 
+10.  - Quit

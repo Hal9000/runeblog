@@ -12,7 +12,7 @@ end
 
 make_exception(:NotImplemented,        "Feature not yet implemented")
 make_exception(:CantOpen,              "Can't open '%1'")
-make_exception(:CantDelete,            "Can't open '%1'")
+make_exception(:CantDelete,            "Can't delete '%1'")
 make_exception(:InternalError,         "Glitch: %1 got arg '%2'")
 make_exception(:CantCopy,              "Can't copy %1 to %2")
 
