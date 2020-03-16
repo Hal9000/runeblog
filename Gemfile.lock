@@ -13,7 +13,7 @@ GEM
     minitest (5.11.3)
     minitest-fail-fast (0.1.0)
       minitest (~> 5)
-    rake (12.3.2)
+    rake (13.0.1)
     rubytext (0.1.16)
       curses (~> 1.2, >= 1.2.5)
 

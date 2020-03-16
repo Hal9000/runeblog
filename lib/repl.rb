@@ -239,14 +239,19 @@ module RuneBlog::REPL
 
   def cmd_change_view(arg = nil)
     if arg.nil?
-      viewnames = @blog.views.map {|x| x.name }
-      n = viewnames.find_index(@blog.view.name)
+      viewnames = {}
+      @blog.views.each do |v| 
+        name = v.to_s
+        title = view2title(name)
+        string = "#{'%-25s' % title}  #{name}"
+        viewnames[string] = name
+      end
+      n = viewnames.values.find_index(@blog.view.name)
       name = @blog.view.name
-      # TODO: Add view description 
       k, name = STDSCR.menu(title: "Views", items: viewnames, curr: n)
       return if name.nil?
       @blog.view = name
-      puts "\n  ", fx(name, :bold), "\n"
+#     puts "\n  ", fx(name, :bold), "\n"
       return
     else
       if @blog.view?(arg)
@@ -330,16 +335,19 @@ module RuneBlog::REPL
     _tmp_error(err)
   end
 
+  def view2title(name)  # FIXME: crufty as hell
+    lines = File.readlines(@blog.root/"views/#{name}/settings/view.txt")
+    lines.map!(&:chomp)
+    lines = lines.select {|x| x =~ /^title / && x !~ /VIEW_/ }
+    title = lines.first.split(" ", 2)[1]
+  end
+
   def cmd_list_views
     puts
     @blog.views.each do |v| 
       v = v.to_s
+      title = view2title(v)
       v = fx(v, :bold) if v == @blog.view.name
-      # FIXME: next 3 lines are crufty as hell
-      lines = File.readlines(@blog.root/"views/#{v}/settings/view.txt")
-      lines.map!(&:chomp)
-      lines = lines.select {|x| x =~ /^title / && x !~ /VIEW_/ }
-      title = lines.first.split(" ", 2)[1]
       print "  ", ('%15s' % v)
       puts  "  ", fx(title, Black)
     end

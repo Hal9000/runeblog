@@ -3,7 +3,7 @@
 .mixin notes/todo
 
 
-.sublist jan2020 Recently completed (Jan/Feb 2020)
+.sublist jan2020 Recently completed (Jan-Mar 2020)
 Removed more dead code
 Added read_metadata
 Added rebuild of post and index when post edited
@@ -31,6 +31,7 @@ Cleaned up topmenu (responds to spacebar)
 Added exceptions.rb + new exceptions
 Misc changes/fixes
 Working on "newpost" functionality
+Fixed/improved 'change view' command
 .end
 
 .sublist nextish Next steps...
