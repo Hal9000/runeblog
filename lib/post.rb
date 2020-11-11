@@ -66,7 +66,7 @@ class RuneBlog::Post
   end
 
   def edit
-    # log!(enter: __method__)
+    log!(enter: __method__)
     edit_file(@draft, vim: "+8")
     build
   rescue => err
@@ -75,10 +75,14 @@ class RuneBlog::Post
 
   def build
     log!(enter: __method__)
+    STDERR.puts "#build 1..."; getch
     post = self
     views = post.meta.views
+    STDERR.puts "#build 2..."; getch
     @blog.generate_post(@draft)
+    STDERR.puts "#build 3..."; getch
     @blog.generate_index(@blog.view)
+    STDERR.puts "#build 4..."; getch
   end
 end
 

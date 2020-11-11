@@ -268,6 +268,12 @@ module RuneBlog::REPL
     subtitle  = ask!("      Subtitle  : ")
     domain    = ask!("      Domain    : ")
 
+    gfile = "#{@blog.root}/views/#{view_name}/data/global.lt3"
+    lines = File.readlines(gfile)
+    lines.insert(5, "View     #{view_name}", 
+                    "ViewDir  #{@blog.root}/views/#{view_name}")                    
+    File.write(gfile, lines)
+
     vfile = "#{@blog.root}/views/#{view_name}/settings/view.txt"
     hash = {/VIEW_NAME/     => view_name,
             /VIEW_TITLE/    => title,
@@ -283,7 +289,7 @@ module RuneBlog::REPL
       puts
     end
     @blog.create_view(arg)
-    text = File.read("#{@blog.root}/data/global.lt3")
+    lines = File.read("#{@blog.root}/data/global.lt3")
     File.write("#{@blog.root}/views/#{@blog.view}/themes/standard/global.lt3", 
                text.gsub(/VIEW_NAME/, @blog.view.to_s))
     vim_params = '-c ":set hlsearch" -c ":hi Search ctermfg=2 ctermbg=6" +/"\(VIEW_.*\|SITE.*\)"'

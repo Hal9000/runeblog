@@ -6,6 +6,7 @@
       f.puts err.backtrace.join("\n")
     end
     puts "Error: See #{out}"
+    sleep 3
   end
 
   def dump(obj, name)
@@ -97,8 +98,8 @@
   end
 
   def error(err)
-    # log!(str: err, enter: __method__, args: [err], level: 2)
-    str = "\n  Error: #{err}"
+    log!(str: err, enter: __method__, args: [err], level: 2)
+    str = "\n  Error... #{err}"
     puts str
     puts err.backtrace.join("\n")
   end

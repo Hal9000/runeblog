@@ -146,6 +146,11 @@ class RuneBlog
     @sequence = get_sequence
     @post_views = []
     @post_tags = []
+  rescue => err
+    puts "Error - see stdout.txt"
+    STDERR.puts err.inspect
+    STDERR.puts err.backtrace
+    sleep 3
   end
 
   def complete_file(name, vars, hash)
@@ -327,7 +332,9 @@ class RuneBlog
     log!(enter: __method__, args: [v], level: 3)
     return @view if v.nil?
     check_nonempty_string(v)
-    return @root/:views/v
+    dir = @root/:views/v
+    puts "Dir = #{dir}"; sleep 5
+    return dir
   end
 
   def self.exist?
@@ -424,7 +431,7 @@ class RuneBlog
     depend = [post_entry_name]
     html = "/tmp/post_entry.html"
     preprocess src: post_entry_name, dst: html,
-               call: ".nopara"  # , deps: depend  # , debug: true
+               call: ".nopara"   # , deps: depend  # , debug: true
     @_post_entry = File.read(html)
     vp = post_lookup(id)
     nslug, aslug, title, date, teaser_text = 
@@ -571,10 +578,10 @@ class RuneBlog
              # @theme/"navbar/navbar.lt3",
              @theme/"blog/index.lt3"]   # FIXME what about assets?
     preprocess cwd: vdir/"themes/standard/etc", src: "blog.css.lt3", 
-               copy: vdir/"remote/etc/", call: [".nopara"], strip: true
+               copy: vdir/"remote/etc/", call: [".nopara"], strip: true 
     preprocess cwd: vdir/"themes/standard", deps: depend, force: true,
                src: "blog/generate.lt3", dst: vdir/:remote/"index.html", 
-               call: ".nopara"
+               call: ".nopara" 
     copy!("#{vdir}/themes/standard/banner/*", "#{vdir}/remote/banner/")  # includes navbar/
     copy("#{vdir}/assets/*", "#{vdir}/remote/assets/")
     # rebuild widgets?
@@ -626,11 +633,14 @@ class RuneBlog
       title = meta.title
       tags = meta.tags
       # FIXME simplify
-      addvar(hash, "post.num" => pnum, "post.aslug" => aslug,
-             "post.date" => date,      title: title.chomp, 
-             teaser: excerpt.chomp,    longdate: longdate,
-             "post.nslug" => pnum + "-" + aslug,
-             "post.tags" => tags.join(" "))
+      addvar(hash, "post.num" => pnum, 
+                   "post.aslug" => aslug,
+                   "post.date" => date,      
+                   title: title.chomp, 
+                   teaser: excerpt.chomp,    
+                   longdate: longdate,
+                   "post.nslug" => pnum + "-" + aslug,
+                   "post.tags" => tags.join(" "))
     end
     hash
   rescue => err
@@ -667,20 +677,25 @@ class RuneBlog
     pdraft = @root/:posts/nslug
     remote = @root/:views/view_name/:remote
     @theme = @root/:views/view_name/:themes/:standard
+    pmeta  = @root/:views/view_name/:posts/nslug
 
     create_dirs(pdraft)                                # Step 1...
     preprocess cwd: pdraft, src: draft,                # FIXME dependencies?
-               dst: "guts.html", mix: "liveblog"
+               dst: "guts.html", mix: "liveblog" 
     hash = _post_metadata(draft, pdraft)
+    hash[:CurrentPost] = pmeta
     vposts = @root/:views/view_name/:posts             # Step 2...
-puts "-- hpost:"
-hash.each_pair {|k,v| puts "    #{k}:    #{v}" if k.is_a? Symbol }
-puts
+# 5.times { STDERR.puts }
+# STDERR.puts "-- hpost:"
+# hash.each_pair {|k,v| STDERR.puts "    #{k}:    #{v}" if k.is_a? Symbol }
+# 5.times { STDERR.puts }
     copy!(pdraft, vposts)    # ??
-    copy(pdraft/"guts.html", @theme/:post)             # Step 3...
-    preprocess cwd: @theme/:post, src: "generate.lt3", # Step 4...
-               force: true, vars: hash, 
-               dst: remote/ahtml, call: ".nopara" 
+    copy(pdraft/"guts.html", vposts/nslug)             # Step 3...
+                                                       # Step 4...
+    # preprocess cwd: @theme/:post, src: "generate.lt3", 
+    preprocess cwd: pmeta, src: "../../themes/standard/post/generate.lt3", 
+               force: true, vars: hash, debug: true,
+               dst: remote/ahtml, call: ".nopara"
     FileUtils.rm_f(remote/"published")
     timelog("Generated", remote/"history")
     copy_widget_html(view_name)

@@ -91,11 +91,12 @@ def post_trailer
   # Not called from *inside* a post, therefore no @meta --
   # can/must call read_metadata
   num = _var("post.num").to_i
-puts "post_trailer: num = #{num}"
+STDERR.puts "post_trailer: num = #{num}"
   vp = _post_lookup(num)
-puts "post_trailer: lookup = #{vp.num} #{vp.title}"
+STDERR.puts "post_trailer: lookup = #{vp.num} #{vp.title}"
   dir = @blog.root/:posts/vp.nslug
-puts "  -- dir = #{dir}"
+STDERR.puts "  -- dir = #{dir}"
+getch
   meta = Dir.chdir(dir) { @blog.read_metadata }
   nslug = @blog.make_slug(meta)
   aslug = nslug[5..-1]
@@ -112,10 +113,10 @@ puts "  -- dir = #{dir}"
     date  = meta.date
     rid_file = vdir/:posts/nslug/"reddit.id"
     if File.exist?(rid_file) 
- puts "    reading #{rid_file}"
+ STDERR.puts "    reading #{rid_file}"
       rid = File.read(rid_file).chomp
     else
- puts "    creating #{rid_file}"
+ STDERR.puts "    creating #{rid_file}"
       title = meta.title
       rid = _reddit_post_url(vdir, date, title, perma)
       dump(rid, rid_file)
@@ -127,7 +128,7 @@ puts "  -- dir = #{dir}"
     HTML
   # damned syntax highlighting </>
   end
-print "Pause... "; getch
+STDERR.print "Pausing... "; getch
   _out <<~HTML
   #{reddit_txt}
   <hr>

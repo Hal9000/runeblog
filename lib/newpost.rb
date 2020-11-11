@@ -2,7 +2,7 @@ require 'rubytext'
 
 RubyText.start
   
-#  IdeaL A special sub-environment for creating a post
+#  Idea: A special sub-environment for creating a post
 #  
 #  1. Display: view, post number, date
 #  2. Menu?
@@ -15,44 +15,43 @@ RubyText.start
 #  9.  - Quit
 # Edit body after save/quit
 
+def ask(prompt)  # elsewhere?
+  print prompt
+  str = gets
+  str.chomp! if str
+  str
+end
+
 def enter_title
-  STDSCR.puts __method__
-  r = STDSCR.rows / 2 - 3
-  @win = RubyText.window(1, 30, r: r, c: 30, border: false, bg: White, fg: Black)
-  @win.home
-  str = @win.gets
-  STDSCR.puts str.inspect
-  [__method__, 0]
+  puts __method__
+  str = ask("Title:    ")
+  puts str.inspect
 end
 
 def edit_teaser
-  STDSCR.puts __method__
-  [__method__, 1]
+  puts __method__
+  str = ask("Teaser:   ")
+  puts str.inspect
 end
 
 def add_views
-  STDSCR.puts __method__
-  [__method__, 2]
+  puts __method__
 end
 
 def add_tags
-  STDSCR.puts __method__
-  [__method__, 3]
+  puts __method__
 end
 
 def import_assets
-  STDSCR.puts __method__
-  [__method__, 4]
+  puts __method__
 end
 
 def save_post
-  STDSCR.puts __method__
-  [__method__, 5]
+  puts __method__
 end
 
 def quit_post
-  STDSCR.puts __method__
-  [__method__, 6]
+  puts __method__
 end
 
 items = {
@@ -65,9 +64,19 @@ items = {
   "Quit"          => proc { quit_post }
 }
 
-curr = 0
-loop do
-  str, curr = STDSCR.menu(c: 10, items: items, curr: curr, sticky: true)
-  break if curr.nil?
-  STDSCR.puts "str = #{str}  curr = #{curr}"
-end
+enter_title
+edit_teaser
+add_views
+add_tags
+import_assets
+save_post
+quit_post
+
+getch
+
+# curr = 0
+# loop do
+#   str, curr = menu(c: 10, items: items, curr: curr, sticky: true)
+#   break if curr.nil?
+#   puts "str = #{str}  curr = #{curr}"
+# end
