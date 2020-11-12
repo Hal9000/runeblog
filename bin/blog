@@ -110,6 +110,7 @@ def mainloop
   end
 rescue => err
   puts err
+  puts "Pausing..."; gets
 end
 
 def cmdline_preview
@@ -159,57 +160,82 @@ def handle_cmdline
   exit
 end
 
-### Main
-
-major, minor = RUBY_VERSION.split(".").values_at(0,1)
-ver = major.to_i*10 + minor.to_i
-unless ver >= 24
-  RubyText.stop
-  sleep 0.2
-  puts "Needs Ruby 2.4 or greater" 
-  exit
+def check_ruby_version
+  major, minor = RUBY_VERSION.split(".").values_at(0,1)
+  ver = major.to_i*10 + minor.to_i
+  unless ver >= 24
+    RubyText.stop
+    sleep 0.2
+    puts "Needs Ruby 2.4 or greater" 
+    exit
+  end
 end
+
+def reopen_stderr
+  errfile = File.new("stderr.out", "w")
+  STDERR.reopen(errfile)
+end
+
+def set_fgbg
+  # read a .rubytext file here?? Call it something else?
+  home = ENV['HOME']
+  @fg, @bg = Blue, White   ##  FIXME!! try_read_config("#{home}/.rubytext", fg: Blue, bg: White)
+  @fg = @fg.downcase.to_sym
+  @bg = @bg.downcase.to_sym
+
+  RubyText.start(:_echo, :keypad, scroll: true, log: "binblog.txt", fg: @fg, bg: @bg)
+end
+
+def create_new_repo?
+  new_repo = false
+  if ! RuneBlog.exist?
+    exit unless yesno("No blog repo found. Create new one?")
+    RuneBlog.create_new_blog_repo
+    puts fx("  Blog repo successfully created.", :bold)
+    new_repo = true
+  end
+
+  @blog = RuneBlog.new
+  get_started if new_repo
+rescue => err
+  STDERR.puts "Error - #{err}"
+  STDERR.puts err.backtrace
+end
+
+def print_intro
+  print fx("  For help", :bold)
+  puts " type h or help.\n "
+
+  puts fx("\n  RuneBlog", :bold), fx(" v #{RuneBlog::VERSION}\n", Red)
+end
+
+def cmd_history_etc
+  @cmdhist = []
+  @tabcom = RuneBlog::REPL::Patterns.keys.uniq - RuneBlog::REPL::Abbr.keys
+  @tabcom.map! {|x| x.sub(/ [\$\>].*/, "") + " " }
+  @tabcom.sort!
+end
+
+def exit_repl
+  # RubyText.stop
+  sleep 0.2
+  puts
+end
+
+### Main
 
 include RuneBlog::Helpers  # for try_read_config
 
+reopen_stderr
+
+check_ruby_version
 handle_cmdline unless ARGV.empty?
-
-errfile = File.new("stderr.out", "w")
-STDERR.reopen(errfile)
-
-# read a .rubytext file here?? Call it something else?
-home = ENV['HOME']
-@fg, @bg = Blue, White   ##  FIXME!! try_read_config("#{home}/.rubytext", fg: Blue, bg: White)
-@fg = @fg.downcase.to_sym
-@bg = @bg.downcase.to_sym
-
-RubyText.start(:_echo, :keypad, scroll: true, log: "binblog.txt", fg: @fg, bg: @bg)
-
-
-new_repo = false
-if ! RuneBlog.exist?
-  exit unless yesno("No blog repo found. Create new one?")
-  RuneBlog.create_new_blog_repo
-  puts fx("  Blog repo successfully created.", :bold)
-  new_repo = true
-end
-
-@blog = RuneBlog.new
-get_started if new_repo
-
-print fx("  For help", :bold)
-puts " type h or help.\n "
-
-puts fx("\n  RuneBlog", :bold), fx(" v #{RuneBlog::VERSION}\n", Red)
-
-@cmdhist = []
-@tabcom = RuneBlog::REPL::Patterns.keys.uniq - RuneBlog::REPL::Abbr.keys
-@tabcom.map! {|x| x.sub(/ [\$\>].*/, "") + " " }
-@tabcom.sort!
-  
+set_fgbg
+print_intro
+STDERR.puts "cp 6 - pause"; gets
+create_new_repo?
+STDERR.puts "cp 7 - pause"; gets
+cmd_history_etc
+STDERR.puts "cp 8 - pause"; gets
 loop { mainloop }
-
-# system("tput clear")
-sleep 0.2
-puts
-
+exit_repl

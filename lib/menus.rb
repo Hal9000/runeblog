@@ -18,9 +18,10 @@ top_help   = proc { RubyText.splash(RuneBlog::REPL::Help.gsub(/[{}]/, " ")) }
 #   dir = @blog.view.dir/"themes/standard/"
 
 std = "themes/standard"
+data = "."    # CHANGED
 
 Menu.top_config = {
-    "Variables (general)"                 => edit("#{std}/global.lt3"),
+    "Variables (general)"                 => edit("#{data}/global.lt3"),
     "   View-specific"                    => edit("settings/view.txt"),
     "   Recent posts"                     => edit("settings/recent.txt"),
     "   Publishing"                       => edit("settings/publish.txt"),

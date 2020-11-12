@@ -290,10 +290,12 @@ module RuneBlog::REPL
     end
     @blog.create_view(arg)
     lines = File.read("#{@blog.root}/data/global.lt3")
-    File.write("#{@blog.root}/views/#{@blog.view}/themes/standard/global.lt3", 
+    # File.write("#{@blog.root}/views/#{@blog.view}/themes/standard/global.lt3", 
+    File.write("#{@blog.root}/views/#{@blog.view}/data/global.lt3", 
                text.gsub(/VIEW_NAME/, @blog.view.to_s))
     vim_params = '-c ":set hlsearch" -c ":hi Search ctermfg=2 ctermbg=6" +/"\(VIEW_.*\|SITE.*\)"'
-    edit_file(@blog.view.dir/"themes/standard/global.lt3", vim: vim_params)
+    # edit_file(@blog.view.dir/"themes/standard/global.lt3", vim: vim_params)
+    edit_file(@blog.view.dir/"data/global.lt3", vim: vim_params)
     @blog.change_view(arg)
   rescue ViewAlreadyExists
     puts 'Blog already exists'

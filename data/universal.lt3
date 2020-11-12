@@ -1,0 +1,20 @@
+. "Universal" settings -- new defaults for global.lt3
+. work in progress - defaults for each global.lt3
+
+. --------------------------------------------------
+. Global settings are stored here in the form       
+.   <variable>  <value>                             
+. --------------------------------------------------
+.nopara
+
+.set Root=REPO_ROOT
+
+.variables
+univ.author        AUTHOR
+univ.site          SITE_DOMAIN
+
+font.family   verdana
+
+charset       utf-8
+locale        en_US
+.end

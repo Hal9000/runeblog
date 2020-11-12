@@ -18,7 +18,8 @@ class RuneBlog::View
   end
 
   def get_globals
-    gfile = @blog.root/"views/#@name/themes/standard/global.lt3"
+    # gfile = @blog.root/"views/#@name/themes/standard/global.lt3"
+    gfile = @blog.root/"views/#@name/data/global.lt3"
     return unless File.exist?(gfile)  # Hackish!! how is View.new called from create_view??
 
     live = Livetext.customize(call: ".nopara")

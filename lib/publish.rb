@@ -14,7 +14,9 @@ class RuneBlog::Publishing
   def initialize(view)
     log!(enter: __method__, args: [view.to_s])
     @blog = RuneBlog.blog
-    dir = @blog.root/:views/view/"themes/standard/"
+    dir0 = @blog.root/:views/view/"themes/standard/"
+    # CHANGED
+    dir = @blog.root/:views/view/:data
     gfile = dir/"global.lt3"
     return unless File.exist?(gfile)  # FIXME Hackish as hell
 
