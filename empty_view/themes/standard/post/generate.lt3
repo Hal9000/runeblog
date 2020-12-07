@@ -8,9 +8,9 @@
 <html>
   <!-- Generated from $File on $$date; editing not recommended.   -->
 
-.seek global.lt3
+.include $ViewDir/data/global.lt3
 
-.variables post metadata.txt
+.variables! post metadata.txt
 
 . FIXME
 .head

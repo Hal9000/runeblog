@@ -13,18 +13,36 @@ class RuneBlog::View
     @name = name
     @publisher = RuneBlog::Publishing.new(name)
     @can_publish = true  # FIXME
-    @blog.view = self
+    #  @blog.view = self  # NOOOO??
     get_globals
   end
 
-  def get_globals
+  def dump_globals_stderr
+    log!(enter: __method__, args: [list], level: 2)
+    list2 = list.select(&block)
+    STDERR.puts "-- globals = "
+    log!(str: "-- globals = ")
+    @globals.each_pair do |k, v| 
+      msg = sprintf "     %-10s  %s\n", k, v if k.is_a? Symbol 
+      STDERR.puts msg
+    log!(str: msg)
+    end
+    STDERR.puts 
+    log!(str: "")
+  end
+
+  def get_globals(force = false)
+    return if @globals && !force
     # gfile = @blog.root/"views/#@name/themes/standard/global.lt3"
     gfile = @blog.root/"views/#@name/data/global.lt3"
     return unless File.exist?(gfile)  # Hackish!! how is View.new called from create_view??
 
     live = Livetext.customize(call: ".nopara")
     live.xform_file(gfile)
+    live._setvar("ViewDir", @blog.root/:views/@name)
+    live._setvar("View",    @name)
     @globals = live.vars
+#   dump_globals_stderr
   end
 
   def dir

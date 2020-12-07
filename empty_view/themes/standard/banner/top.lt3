@@ -1,4 +1,4 @@
-.seek global.lt3    # FIXME this is a hack!
+.include $ViewDir/data/global.lt3
 
 <svg width="98%" height="120"
      viewBox="0 0 98% 100">

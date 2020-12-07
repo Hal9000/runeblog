@@ -25,7 +25,6 @@ def preprocess(cwd: Dir.pwd, src:,
           deps: [], copy: nil, debug: false, force: false, 
           mix: [], call: [], 
           vars: {})
-debug = true
   src += LEXT unless src.end_with?(LEXT)
   if strip
     dst = File.basename(src).sub(/.lt3$/,"")
@@ -50,23 +49,20 @@ debug = true
     stale = stale?(src, dst, deps, force)
     if stale
       live = Livetext.customize(mix: "liveblog", call: call, vars: vars)
-STDERR.puts <<~EOF
-  cwd = #{cwd.inspect}
-  src = #{src.inspect}
-  dst = #{dst.inspect}
-  strip = #{strip.inspect}
-  deps = #{deps.inspect}
-  copy = #{copy.inspect}
-  debug = #{debug.inspect}
-  force = #{force.inspect}
-  mix = #{mix.inspect}
-  call = #{call.inspect}
-  vars = #{vars.inspect}
-EOF
-puts "Calling xform_file... src = #{src} pwd = #{Dir.pwd}"
-STDERR.puts "Calling xform_file... src = #{src} pwd = #{Dir.pwd}"
-# [lib/processor] Error: No such file or directory @ rb_sysopen - 
-# /Users/Hal/topx/git/runeblog/.blogs/views/around_austin/themes/standard/metadata.txt
+      STDERR.puts <<~EOF
+        cwd = #{cwd.inspect}
+        src = #{src.inspect}
+        dst = #{dst.inspect}
+        strip = #{strip.inspect}
+        deps = #{deps.inspect}
+        copy = #{copy.inspect}
+        debug = #{debug.inspect}
+        force = #{force.inspect}
+        mix = #{mix.inspect}
+        call = #{call.inspect}
+        vars = #{vars.inspect}
+      EOF
+      log!(str: "Calling xform_file... src = #{src} pwd = #{Dir.pwd}")
       out = live.xform_file(src)
       File.write(dst, out)
       system!("cp #{dst} #{copy}") if copy
@@ -77,8 +73,8 @@ end
 
 def get_live_vars(src)
   live = Livetext.customize(call: [".nopara"])
-puts "glv: src = #{src.inspect}"
-STDERR.puts "glv: src = #{src.inspect}"
+# puts "glv: src = #{src.inspect}"
+# STDERR.puts "glv: src = #{src.inspect}"
   live.xform_file(src)
   live
 end

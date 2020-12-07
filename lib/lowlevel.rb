@@ -1,12 +1,17 @@
 
   def _tmp_error(err)
+    STDERR.puts err
+    STDERR.puts err.backtrace.join("\n") if err.respond_to?(:backtrace)
+    log!(str: "#{err} - see also stderr.out")
+    return
+
     out = "/tmp/blog#{rand(100)}.txt"
     File.open(out, "w") do |f|
       f.puts err.to_s + "\n--------"
       f.puts err.backtrace.join("\n")
     end
     puts "Error: See #{out}"
-    sleep 3
+    # sleep 3
   end
 
   def dump(obj, name)
@@ -21,6 +26,7 @@
     log!(enter: __method__, args: [str], level: 2)
     STDERR.puts str if show
     rc = system(str)
+    STDERR.puts "  rc = #{rc.inspect}" if show
     return rc if rc
     STDERR.puts "FAILED: #{str.inspect}"
     STDERR.puts "\ncaller = \n#{caller.join("\n  ")}\n"
@@ -33,10 +39,12 @@
   end
 
   def _get_data?(file)   # File need not exist
+    log!(enter: __method__, args: [file], level: 2)
     File.exist?(file) ? _get_data(file) : []
   end
 
   def _get_data(file)
+    log!(enter: __method__, args: [file], level: 2)
     lines = File.readlines(file)
     lines = lines.map do |line|
       line = line.chomp.strip
@@ -47,6 +55,7 @@
   end
 
   def read_pairs(file)       # returns a hash
+    log!(enter: __method__, args: [file], level: 2)
     lines = _get_data(file)
     hash = {}
     lines.each do |line|
@@ -58,6 +67,7 @@
   end
 
   def read_pairs!(file)       # returns an openstruct
+    log!(enter: __method__, args: [file], level: 2)
     lines = _get_data(file)
     obj = OpenStruct.new
     lines.each do |line|
@@ -105,20 +115,25 @@
   end
 
   def find_item(list)
+    log!(enter: __method__, args: [list], level: 2)
     list2 = list.select(&block)
-    exactly_one(list2)
+    exactly_one(list2, list.join("/"))
   end
 
   def find_item!(list, &block)
+    log!(enter: __method__, args: [list], level: 2)
     list2 = list.select(&block)
-    item = exactly_one(list2)
+    list2 = list.select(&block)
+    item = exactly_one(list2, list.join("/"))
     n = list.index(&block)
     [n, item]
   end
 
-  def exactly_one(list)
-    raise "List: Zero instances" if list.empty?
-    raise "List: More than one instance" if list.size > 1
+  def exactly_one(list, tag = nil)
+    log!(enter: __method__, args: [list], level: 2)
+    list2 = list.select(&block)
+    raise "List: Zero instances #{"- #{tag}" if tag}" if list.empty?
+    raise "List: More than one instance #{"- #{tag}" if tag}" if list.size > 1
     list.first
   end
 

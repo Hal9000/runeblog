@@ -32,7 +32,7 @@ system("cp -r lib/* #{lib}/")
 rc = system("cp -R empty_view #{lib}/..")
 puts "Error copying empty_view!" unless rc
 
-rc = system("cp -R .blogs/data #{lib}/..")
+rc = system("cp -R data/* #{lib}/../data")
 puts "Error copying data dir!" unless rc
 
 # puts "...finished"

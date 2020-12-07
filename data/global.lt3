@@ -3,11 +3,11 @@
 .   <variable>  <value>                             
 . --------------------------------------------------
 
-.variables view     ../../settings/view.txt
+.variables view     ../settings/view.txt
 
-.variables recent   ../../settings/recent.txt
+.variables recent   ../settings/recent.txt
 
-.variables publish  ../../settings/publish.txt
+.variables publish  ../settings/publish.txt
 
 .variables
 host        http://SITE

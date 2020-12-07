@@ -3,7 +3,9 @@
 . Most of the global CSS goes here                  
 . --------------------------------------------------
 
-.seek global.lt3
+.say Inside $File in $FileDir: view/dir = $View $ViewDir
+
+.include $ViewDir/data/global.lt3
 
 body { font-family: $font.family }
 

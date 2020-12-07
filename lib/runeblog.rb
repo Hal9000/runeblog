@@ -97,7 +97,6 @@ class RuneBlog
   def self.create_new_blog_repo(root_rel = ".blogs")
     log!(enter: __method__, args: [root_rel])
     check_nonempty_string(root_rel)
-    self.blog = self   # Weird. Like a singleton - dumbass circular dependency?
     repo_root = Dir.pwd/root_rel
     check_error(BlogRepoAlreadyExists) { Dir.exist?(repo_root) }
 
@@ -113,16 +112,17 @@ class RuneBlog
     end
 #   copy_data(:extra,  repo_root/:config)
     write_repo_config(root: repo_root)
-    @blog = self.new
-    @blog
+    # Weird. Like a singleton - dumbass circular dependency?
+    self.blog = blog = self.new
+    blog
   rescue => err
     puts "Can't create blog repo: '#{repo_root}' - #{err}"
     puts err.backtrace.join("\n")
   end
 
   def self.open(root_rel = ".blogs")
+    raise "Not impl"
     log!(enter: __method__, args: [root_rel])
-    self.blog = self   # Weird. Like a singleton - dumbass circular dependency?
     blog = self.new(root_rel)
   rescue => err
     _tmp_error(err)
@@ -130,10 +130,11 @@ class RuneBlog
 
   def initialize(root_rel = ".blogs")   # always assumes existing blog
     log!(enter: "initialize", args: [root_rel])
-    self.class.blog = self   # Weird. Like a singleton - dumbass circular dependency?
+    # Weird. Like a singleton - dumbass circular dependency?
+    self.class.blog = self   
 
     @root = Dir.pwd/root_rel
-    write_repo_config(root: @root)   # ?? FIXME
+    # write_repo_config(root: @root)   # ?? FIXME
     get_repo_config
     read_features   # top level
     @views = retrieve_views
@@ -246,7 +247,7 @@ class RuneBlog
     create_dirs(dir)
     # FIXME dependencies?
     preprocess cwd: dir, src: @root/:drafts/sourcefile, dst: @root/:posts/sourcefile.sub(/.lt3/, ".html"),  # ZZZ
-               mix: "liveblog"  # , debug: true
+               mix: "liveblog", vars: @view.globals  # , debug: true
     _deploy_local(dir)
   rescue => err
     _tmp_error(err)
@@ -269,13 +270,13 @@ class RuneBlog
     views.any? {|x| x.name == name }
   end
 
-  def view(name = nil)
-    log!(enter: __method__, args: [name], level: 3)
-    return @view if name.nil?
-
-    check_nonempty_string(name)
-    return str2view(name)
-  end
+# def view(name = nil)
+#   log!(enter: __method__, args: [name], level: 3)
+#   return @view if name.nil?
+# 
+#   check_nonempty_string(name)
+#   return str2view(name)
+# end
 
   def str2view(str)
     log!(enter: __method__, args: [str], level: 3)
@@ -292,26 +293,28 @@ class RuneBlog
 
   def view=(arg)
     log!(enter: __method__, args: [arg], level: 2)
+    if arg == "[no view]"
+      @view = nil
+      return
+    end
+# STDERR.puts "view=  #{arg.inspect}"
+
     case arg
-      when "[no view]"
-        # puts "Warning: No current view set"
-        @view = nil
       when RuneBlog::View
         @view = arg
-        read_features(@view)
-        @view.get_globals
-        _set_publisher
+        @view.get_globals(true)
       when String
         new_view = str2view(arg)
-# puts "new_view = #{new_view} (#{new_view.class})"
+# STDERR.puts "view=  new view #{new_view.inspect}"
         check_error(NoSuchView, arg) { new_view.nil? }
         @view = new_view
-        read_features(@view)
-        @view.get_globals
-        _set_publisher
       else 
         raise CantAssignView(arg.class.to_s)
     end
+    read_features(@view)
+    @view.get_globals(true)
+    _set_publisher
+    File.write(@root/"data/VIEW", @view.to_s)
   rescue => err
     _tmp_error(err)
   end
@@ -333,7 +336,7 @@ class RuneBlog
     return @view if v.nil?
     check_nonempty_string(v)
     dir = @root/:views/v
-    puts "Dir = #{dir}"; sleep 5
+    puts "Dir = #{dir}"  # ; sleep 5
     return dir
   end
 
@@ -384,7 +387,7 @@ class RuneBlog
     mark_last_published("Initial creation")
     # system("cp #@root/data/global.lt3 #@root/views/#{view_name}/themes/standard/global.lt3")
     system("cp #@root/data/global.lt3 #@root/views/#{view_name}/data/global.lt3")
-    @view.get_globals
+    @view.get_globals(true)
   rescue => err
     _tmp_error(err)
   end
@@ -416,7 +419,7 @@ class RuneBlog
     posts.select! {|x| File.directory?(x) }
 
     posts = posts.select {|x| File.basename(x).to_i == postid }
-    postdir = exactly_one(posts)
+    postdir = exactly_one(posts, posts.join("/"))
     vp = RuneBlog::ViewPost.new(self.view, postdir)
     vp
   rescue => err
@@ -432,7 +435,7 @@ class RuneBlog
     depend = [post_entry_name]
     html = "/tmp/post_entry.html"
     preprocess src: post_entry_name, dst: html,
-               call: ".nopara"   # , deps: depend  # , debug: true
+               call: ".nopara", vars: @view.globals    # , deps: depend  # , debug: true
     @_post_entry = File.read(html)
     vp = post_lookup(id)
     nslug, aslug, title, date, teaser_text = 
@@ -580,10 +583,10 @@ class RuneBlog
              # @theme/"navbar/navbar.lt3",
              @theme/"blog/index.lt3"]   # FIXME what about assets?
     preprocess cwd: vdir/"themes/standard/etc", src: "blog.css.lt3", 
-               copy: vdir/"remote/etc/", call: [".nopara"], strip: true 
+               copy: vdir/"remote/etc/", call: [".nopara"], strip: true , vars: @view.globals 
     preprocess cwd: vdir/"themes/standard", deps: depend, force: true,
                src: "blog/generate.lt3", dst: vdir/:remote/"index.html", 
-               call: ".nopara" 
+               call: ".nopara" , vars: @view.globals 
     copy!("#{vdir}/themes/standard/banner/*", "#{vdir}/remote/banner/")  # includes navbar/
     copy("#{vdir}/assets/*", "#{vdir}/remote/assets/")
     # rebuild widgets?
@@ -597,7 +600,7 @@ class RuneBlog
   def _get_views(draft)
     log!(enter: __method__, args: [draft], level: 2)
     # FIXME dumb code
-    view_line = exactly_one(File.readlines(draft).grep(/^.views /))
+    view_line = exactly_one(File.readlines(draft).grep(/^.views /), ".view line")
     views = view_line[7..-1].split
     views.uniq 
   rescue => err
@@ -651,19 +654,25 @@ class RuneBlog
 
   def copy_widget_html(view)
     log!(enter: __method__, level: 2)
+log! str:  "=== cwh cp 1"
     vdir = @root/:views/view
     remote = vdir/:remote
     wdir = vdir/:widgets
     widgets = Dir[wdir/"*"].select {|w| File.directory?(w) }
+log! str:  "=== cwh cp 2"
     widgets.each do |w|
       dir = File.basename(w)
       rem = w.sub(/widgets/, "remote/widgets")
+log! str:  "=== cwh cp 3  w = #{w.inspect}"
       create_dirs(rem)
       files = Dir[w/"*"]
       # files = files.select {|x| x =~ /(html|css)$/ }
       tag = File.basename(w)
-      files.each {|file| system!("cp #{file} #{rem}", show: (tag == "zzz")) }
+log! str:  "=== cwh cp 4   tag = #{tag.inspect}"
+      files.each {|file| system!("cp #{file} #{rem}", show: true) }
+log! str:  "=== cwh cp 5   tag was #{tag.inspect}"
     end
+log! str:  "=== cwh cp 6"
   rescue => err
     _tmp_error(err)
   end
@@ -681,10 +690,15 @@ class RuneBlog
     @theme = @root/:views/view_name/:themes/:standard
     pmeta  = @root/:views/view_name/:posts/nslug
 
+log! str:  "=== hpost cp 1"
+
     create_dirs(pdraft)                                # Step 1...
+log! str:  "=== hpost cp 2"
     preprocess cwd: pdraft, src: draft,                # FIXME dependencies?
-               dst: "guts.html", mix: "liveblog" 
+               dst: "guts.html", mix: "liveblog", vars: (@view.globals || {})
+log! str:  "=== hpost cp 3"
     hash = _post_metadata(draft, pdraft)
+log! str:  "=== hpost cp 4"
     hash[:CurrentPost] = pmeta
     vposts = @root/:views/view_name/:posts             # Step 2...
 # 5.times { STDERR.puts }
@@ -695,14 +709,21 @@ class RuneBlog
     copy(pdraft/"guts.html", vposts/nslug)             # Step 3...
                                                        # Step 4...
     # preprocess cwd: @theme/:post, src: "generate.lt3", 
+log! str:  "=== hpost cp 5"
+# @view.dump_globals_stderr
     preprocess cwd: pmeta, src: "../../themes/standard/post/generate.lt3", 
                force: true, vars: hash, debug: true,
                dst: remote/ahtml, call: ".nopara"
+log! str:  "=== hpost cp 6"
     FileUtils.rm_f(remote/"published")
+log! str:  "=== hpost cp 7"
     timelog("Generated", remote/"history")
     copy_widget_html(view_name)
+log! str:  "=== hpost cp 8"
   rescue => err
+log! str:  "=== hpost cp 9"
     _tmp_error(err)
+    # puts err.backtrace.join("\n")
   end
 
   def _check_view?(view)
@@ -713,8 +734,11 @@ class RuneBlog
 
   def generate_post(draft, force = false)
     log!(enter: __method__, args: [draft], level: 1)
+log! str:  "=== gpost cp 1"
     views = _get_views(draft)
+log! str:  "=== gpost cp 2"
     views.each {|view| _handle_post(draft, view) }
+log! str:  "=== gpost cp 3"
     # For current view: 
     slug = File.basename(draft).sub(/.lt3$/, "")
     postdir = self.view.dir/"remote/post/"/slug

@@ -55,11 +55,12 @@ module RuneBlog::Helpers
     puts
   end
 
-  def get_repo_config
+  def get_repo_config(root = ".blogs")
     log!(enter: __method__, level: 3)
-    @editor = File.read(".blogs/data/EDITOR").chomp
-    @current_view = File.read(".blogs/data/VIEW").chomp
-    @root = File.read(".blogs/data/ROOT").chomp
+    @editor = File.read("#{root}/data/EDITOR").chomp
+    @current_view = File.read("#{root}/data/VIEW").chomp
+    @root = File.read("#{root}/data/ROOT").chomp  
+    # Huh? Why not just @root = root?  Hal.wtf?
   rescue => err
     puts "Can't read config: #{err}"
     puts err.backtrace.join("\n")

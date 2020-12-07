@@ -72,7 +72,7 @@ import_assets
 save_post
 quit_post
 
-getch
+# getch
 
 # curr = 0
 # loop do

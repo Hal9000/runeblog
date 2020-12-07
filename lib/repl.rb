@@ -206,14 +206,14 @@ module RuneBlog::REPL
 
   def regen_posts
     drafts = @blog.drafts  # current view
-    puts "  Regenerating posts..." unless drafts.empty?
+log! str:  "===  Regenerating posts..." unless drafts.empty?
     drafts.each do |draft|
       orig = @blog.root/:drafts/draft
       postdir = @blog.root/:posts/draft.sub(/.lt3$/, "")
       content = postdir/"/guts.html"
       next if fresh?(orig, content)
 
-# puts "Calling generate_post(#{orig})"
+log! str:  "=== Calling generate_post(#{orig})"
       @blog.generate_post(orig)    # rebuild post
       Dir.chdir(postdir) do
         meta = @blog.read_metadata
@@ -225,14 +225,14 @@ module RuneBlog::REPL
   end
 
   def cmd_rebuild
-    debug "Starting cmd_rebuild..."
+log! str:  "=== Starting cmd_rebuild..."
     puts
     regen_posts
-    puts "  Generating view..."
+log! str:  "===   Generating view..."
     @blog.generate_view(@blog.view)
-    puts "  Generating index..."
+log! str:  "===   Generating index..."
     @blog.generate_index(@blog.view)
-    puts "  ...finished!"
+log! str:  "===   ...finished!"
   rescue => err
     _tmp_error(err)
   end
@@ -250,6 +250,7 @@ module RuneBlog::REPL
       name = @blog.view.name
       k, name = STDSCR.menu(title: "Views", items: viewnames, curr: n)
       return if name.nil?
+log! str:  "cv Setting to #{name.inspect}"
       @blog.view = name
 #     puts "\n  ", fx(name, :bold), "\n"
       return
@@ -261,25 +262,40 @@ module RuneBlog::REPL
     end
   end
 
+  # move to helpers
+  def modify_view_global(view_name)
+    gfile = "#{@blog.root}/views/#{view_name}/data/global.lt3"
+    lines = File.readlines(gfile).map(&:chomp)
+    vars = <<~EOF
+      .variables
+      View     #{view_name}
+      ViewDir  #{@blog.root}/views/#{view_name}
+      .end
+
+    EOF
+    # lines.insert(5, vars)
+    text = lines.join("\n")
+    File.write(gfile, text)
+  end
+
+  def modify_view_settings(name:, title:, subtitle:, domain:)
+    vfile = "#{@blog.root}/views/#{name}/settings/view.txt"
+    hash = {/VIEW_NAME/     => name,
+            /VIEW_TITLE/    => title,
+            /VIEW_SUBTITLE/ => subtitle,
+            /VIEW_DOMAIN/   => domain}
+    @blog.complete_file(vfile, nil, hash)
+  end
+
   def cmd_new_view(arg)
     view_name = ask!("      Filename: ")
     @blog.create_view(view_name)   # call change_view??
     title     = ask!("      View title: ")
     subtitle  = ask!("      Subtitle  : ")
     domain    = ask!("      Domain    : ")
-
-    gfile = "#{@blog.root}/views/#{view_name}/data/global.lt3"
-    lines = File.readlines(gfile)
-    lines.insert(5, "View     #{view_name}", 
-                    "ViewDir  #{@blog.root}/views/#{view_name}")                    
-    File.write(gfile, lines)
-
-    vfile = "#{@blog.root}/views/#{view_name}/settings/view.txt"
-    hash = {/VIEW_NAME/     => view_name,
-            /VIEW_TITLE/    => title,
-            /VIEW_SUBTITLE/ => subtitle,
-            /VIEW_DOMAIN/   => domain}
-    @blog.complete_file(vfile, nil, hash)
+    modify_view_global(view_name)
+    modify_view_settings(name: view_name, title: title, subtitle: subtitle,
+                         domain: domain)
     @blog.change_view(view_name)
   end 
 
@@ -336,7 +352,7 @@ module RuneBlog::REPL
     tag = "#{'%04d' % id}"
     files = ::Find.find(@blog.root/:drafts).to_a
     files = files.grep(/#{tag}-.*lt3/)
-    draft = exactly_one(files)
+    draft = exactly_one(files, files.join("/"))
     result = edit_file(draft, vim: '-c$')
     @blog.generate_post(draft)
   rescue => err

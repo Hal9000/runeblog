@@ -75,14 +75,10 @@ class RuneBlog::Post
 
   def build
     log!(enter: __method__)
-    STDERR.puts "#build 1..."; getch
     post = self
     views = post.meta.views
-    STDERR.puts "#build 2..."; getch
     @blog.generate_post(@draft)
-    STDERR.puts "#build 3..."; getch
     @blog.generate_index(@blog.view)
-    STDERR.puts "#build 4..."; getch
   end
 end
 
@@ -173,7 +169,8 @@ class RuneBlog::ViewPost
       @date  = meta.pubdate
     end
   rescue => err
-    STDERR.puts "--- #{err}\n #{err.backtrace.join("\n  ")}"
+    STDERR.puts "--- #{err}"
+    STDERR.puts "    #{err.backtrace.join("\n  ")}" if err.respond_to?(:backtrace)
   end
 
   def get_dirs

@@ -27,8 +27,12 @@ end
 def get_universal
   univ = "#{@blog.root}/data/universal.lt3"
   if yesno("Faster initial setup? (no: edit universal.lt3)")
-    author = ask!("      Author name: ")
-    site   = ask!("      Site/domain: ")
+#   author = ask!("      Author name: ")
+#   site   = ask!("      Site/domain: ")
+# Temporarily, for speed:
+author, site = "Hal Fulton", "somedomain.com"
+puts "      Author name: #{author}"
+puts "      Site/domain: #{site}"
     # Now stash it...
     str = File.read(univ)
     str = str.gsub(/AUTHOR/, author)
@@ -41,22 +45,16 @@ def get_universal
 end
 
 def get_global
+  view_name = ask!("      Filename: ")
+  @blog.create_view(view_name)   # call change_view??
   if yesno("Faster view setup? (no: edit global.lt3)")
-    view_name = ask!("      Filename: ")
-    @blog.create_view(view_name)   # call change_view??
     title     = ask!("      View title: ")
     subtitle  = ask!("      Subtitle  : ")
     domain    = ask!("      Domain    : ")
-
-    vfile = "#{@blog.root}/views/#{view_name}/settings/view.txt"
-    hash = {/VIEW_NAME/     => view_name,
-            /VIEW_TITLE/    => title,
-            /VIEW_SUBTITLE/ => subtitle,
-            /VIEW_DOMAIN/   => domain}
-    @blog.complete_file(vfile, nil, hash)
+    modify_view_global(view_name)
+    modify_view_settings(name: view_name, title: title, subtitle: subtitle,
+                         domain: domain)
   else
-    view_name = ask!("      Filename: ")
-    @blog.create_view(view_name)   # call change_view??
     vim_params = '-c ":set hlsearch" -c ":hi Search ctermfg=2 ctermbg=6" +/"\(VIEW_.*\|SITE.*\)"'
     edit_file(@blog.view.dir/"themes/standard/global.lt3", vim: vim_params)
   end
@@ -109,7 +107,7 @@ def mainloop
     puts "Don't understand '#{cmd.inspect}'\n "
   end
 rescue => err
-  puts err
+  puts err.to_s
   puts "Pausing..."; gets
 end
 
@@ -198,7 +196,7 @@ def create_new_repo?
   @blog = RuneBlog.new
   get_started if new_repo
 rescue => err
-  STDERR.puts "Error - #{err}"
+  STDERR.puts "Error - #{err.to_s}"
   STDERR.puts err.backtrace
 end
 
@@ -232,10 +230,10 @@ check_ruby_version
 handle_cmdline unless ARGV.empty?
 set_fgbg
 print_intro
-STDERR.puts "cp 6 - pause"; gets
+# STDERR.puts "cp 6 - pause"; gets
 create_new_repo?
-STDERR.puts "cp 7 - pause"; gets
+# STDERR.puts "cp 7 - pause"; gets
 cmd_history_etc
-STDERR.puts "cp 8 - pause"; gets
+# STDERR.puts "cp 8 - pause"; gets
 loop { mainloop }
 exit_repl

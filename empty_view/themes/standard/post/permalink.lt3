@@ -12,7 +12,7 @@
   <!-- Editing this file is not recommended.   -->
   <!-- It was generated from $File on $$date.  -->
 
-.seek    global.lt3
+.include $ViewDir/data/global.lt3
 
 .head
 og:title    $title

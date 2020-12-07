@@ -12,6 +12,7 @@ require 'processing'
 
 
 def init_liveblog    # FIXME - a lot of this logic sucks
+  log!(enter: __method__)
   dir = Dir.pwd.sub(/\.blogs.*/, "")
   @blog = nil
   Dir.chdir(dir) { @blog = RuneBlog.new }
@@ -19,6 +20,8 @@ def init_liveblog    # FIXME - a lot of this logic sucks
   @view = @blog.view
   @view_name = @blog.view.name unless @view.nil?
   @vdir = @blog.view.dir rescue "NONAME"
+  setvar("View", @view_name)
+  setvar("ViewDir", @blog.root/:views/@view_name)
   @version = RuneBlog::VERSION
   @theme = @vdir/:themes/:standard
 
@@ -33,9 +36,10 @@ def init_liveblog    # FIXME - a lot of this logic sucks
       </a>
     HTML
   end
+  log!(str: "End of init_liveblog")
 rescue => err
   STDERR.puts "err = #{err}"
-  STDERR.puts err.backtrace.join("\n")
+  STDERR.puts err.backtrace.join("\n") if err.respond_to?(:backtrace)
 end
 
 ##################
@@ -43,6 +47,7 @@ end
 ##################
 
 def dropcap
+  log!(enter: __method__)
   # Bad form: adds another HEAD
   text = _data
   _out " "
@@ -53,6 +58,7 @@ def dropcap
 end
 
 def post
+  log!(enter: __method__)
   @meta = OpenStruct.new
   @meta.num = _args[0]
   setvar("post.num", @meta.num.to_i)
@@ -60,6 +66,7 @@ def post
 end
 
   def _got_python?
+    log!(enter: __method__)
     # Dumb - fix later - check up front as needed
     # Should also check for praw lib
     str = `which python3`
@@ -67,6 +74,7 @@ end
   end
 
   def _reddit_post_url(vdir, date, title, url)
+    log!(enter: __method__)
     _got_python?
     tmpfile = "/tmp/reddit-post-url.txt"
     File.open(tmpfile, "w") do |tmp|
@@ -80,6 +88,7 @@ end
   end
 
 def post_toolbar
+  log!(enter: __method__)
   back_icon = %[<img src="assets/back-icon.png" width=24 height=24 alt="Go back"></img>]
   back = %[<a style="text-decoration: none" href="javascript:history.go(-1)">#{back_icon}</a>]
   _out <<~HTML
@@ -88,15 +97,15 @@ def post_toolbar
 end
 
 def post_trailer
+  log!(enter: __method__)
   # Not called from *inside* a post, therefore no @meta --
   # can/must call read_metadata
   num = _var("post.num").to_i
-STDERR.puts "post_trailer: num = #{num}"
+log! str:  "post_trailer: num = #{num}"
   vp = _post_lookup(num)
-STDERR.puts "post_trailer: lookup = #{vp.num} #{vp.title}"
+log! str:  "post_trailer: lookup = #{vp.num} #{vp.title}"
   dir = @blog.root/:posts/vp.nslug
-STDERR.puts "  -- dir = #{dir}"
-getch
+log! str:  "  -- dir = #{dir}"
   meta = Dir.chdir(dir) { @blog.read_metadata }
   nslug = @blog.make_slug(meta)
   aslug = nslug[5..-1]
@@ -128,7 +137,7 @@ getch
     HTML
   # damned syntax highlighting </>
   end
-STDERR.print "Pausing... "; getch
+# STDERR.print "Pausing... "; getch
   _out <<~HTML
   #{reddit_txt}
   <hr>
@@ -140,6 +149,7 @@ STDERR.print "Pausing... "; getch
 end
 
 def faq
+  log!(enter: __method__)
   @faq_count ||= 0
   _out "<br>" if @faq_count == 0
   @faq_count += 1
@@ -154,15 +164,18 @@ def faq
 end
 
 def backlink
+  log!(enter: __method__)
   _out %[<br><a href="javascript:history.go(-1)">[Back]</a>]
 end
 
 def code
+  log!(enter: __method__)
   lines = _body # _text
   _out "<font size=+1><pre>\n#{lines}\n</pre></font>"
 end
 
 def _read_navbar_data
+  log!(enter: __method__)
   vdir = @blog.root/:views/@blog.view
   dir = vdir/"themes/standard/banner/navbar/"
   datafile = dir/"list.data"
@@ -170,6 +183,7 @@ def _read_navbar_data
 end
 
 def banner
+  log!(enter: __method__)
   count = 0
   bg = "white"  # outside loop
   wide = nil
@@ -203,7 +217,7 @@ def banner
         if ! File.exist?(file) 
           src = file.sub(/html$/, "lt3")
           if File.exist?(src)
-            preprocess src: src, dst: file, call: ".nopara" # , vars: @blog.view.globals
+            preprocess src: src, dst: file, call: ".nopara", vars: @blog.view.globals
           else
             raise FoundNeither(file, src)
           end
@@ -229,11 +243,11 @@ def banner
   _out navbar if navbar
 rescue => err
   STDERR.puts "err = #{err}"
-  STDERR.puts err.backtrace.join("\n")
-  gets
+  STDERR.puts err.backtrace.join("\n") if err.respond_to?(:backtrace)
 end
 
 def _svg_title(*args)
+  log!(enter: __method__)
   width    = "95%"
   height   = 90
   bgcolor  = "black"
@@ -289,6 +303,7 @@ def _svg_title(*args)
 end
 
 def quote
+  log!(enter: __method__)
   _passthru "<blockquote>"
   _passthru _body.join(" ")
   _passthru "</blockquote>"
@@ -296,9 +311,11 @@ def quote
 end
 
 def categories   # does nothing right now
+  log!(enter: __method__)
 end
 
 def style
+  log!(enter: __method__)
   fname = _args[0]
   _passthru %[<link rel="stylesheet" href="???/etc/#{fname}')">]
 end
@@ -315,6 +332,7 @@ def h6; _passthru "<h6>#{@_data}</h6>"; end
 def hr; _passthru "<hr>"; end
 
 def nlist
+  log!(enter: __method__)
   _out "<ol>"
   _body {|line| _out "<li>#{line}</li>" }
   _out "</ol>"
@@ -322,6 +340,7 @@ def nlist
 end
 
 def list
+  log!(enter: __method__)
   _out "<ul>"
   _body {|line| _out "<li>#{line}</li>" }
   _out "</ul>"
@@ -329,6 +348,7 @@ def list
 end
 
 def list!
+  log!(enter: __method__)
   _out "<ul>"
   lines = _body.each 
   loop do 
@@ -347,6 +367,7 @@ end
 ### inset
 
 def inset
+  log!(enter: __method__)
   lines = _body
   box = ""
   output = []
@@ -378,6 +399,7 @@ def inset
 end
 
 def title
+  log!(enter: __method__)
   raise NoPostCall unless @meta
   title = @_data.chomp
   @meta.title = title
@@ -387,6 +409,7 @@ def title
 end
 
 def pubdate
+  log!(enter: __method__)
   raise NoPostCall unless @meta
   _debug "data = #@_data"
   # Check for discrepancy?
@@ -399,6 +422,7 @@ def pubdate
 end
 
 def tags
+  log!(enter: __method__)
   raise NoPostCall unless @meta
   _debug "args = #{_args}"
   @meta.tags = _args.dup || []
@@ -406,6 +430,7 @@ def tags
 end
 
 def views
+  log!(enter: __method__)
   raise NoPostCall unless @meta
   _debug "data = #{_args}"
   @meta.views = _args.dup
@@ -413,6 +438,7 @@ def views
 end
 
 def pin
+  log!(enter: __method__)
   raise NoPostCall unless @meta
   _debug "data = #{_args}"  # verify only valid views?
   pinned = @_args
@@ -428,21 +454,22 @@ def pin
   _optional_blank_line
 rescue => err
   STDERR.puts "err = #{err}"
-  STDERR.puts err.backtrace.join("\n")
-  gets
+  STDERR.puts err.backtrace.join("\n") if err.respond_to?(:backtrace)
 end
 
 def write_post
+  log!(enter: __method__)
   raise NoPostCall unless @meta
   @meta.views = @meta.views.join(" ") if @meta.views.is_a? Array
   @meta.tags  = @meta.tags.join(" ") if @meta.tags.is_a? Array
   _write_metadata
 rescue => err
   puts "err = #{err}"
-  puts err.backtrace.join("\n")
+  puts err.backtrace.join("\n") if err.respond_to?(:backtrace)
 end
 
 def teaser
+  log!(enter: __method__)
   raise NoPostCall unless @meta
   text = _body.join("\n")
   @meta.teaser = text
@@ -457,6 +484,7 @@ def teaser
 end
 
 def finalize
+  log!(str: "Now exiting livetext processing...")
   return unless @meta
   return @meta if @blog.nil?
 
@@ -468,6 +496,7 @@ def finalize
 end
  
 def head  # Does NOT output <head> tags
+  log!(enter: __method__)
   args = _args
   args.each do |inc|
     self.data = inc
@@ -523,6 +552,7 @@ end
 ########## newer stuff...
 
 def meta
+  log!(enter: __method__)
   args = _args
   enum = args.each
   str = "<meta"
@@ -542,6 +572,7 @@ def meta
 end
 
 def recent_posts    # side-effect
+  log!(enter: __method__)
   _out <<-HTML
     <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
       <iframe id="main" style="width: 70vw; height: 100vh; position: relative;" 
@@ -552,6 +583,7 @@ def recent_posts    # side-effect
 end
 
 def _make_class_name(app)
+  log!(enter: __method__)
   if app =~ /[-_]/
     words = app.split(/[-_]/)
     name = words.map(&:capitalize).join
@@ -562,6 +594,7 @@ def _make_class_name(app)
 end
 
 def _load_local(widget)
+  log!(enter: __method__)
   Dir.chdir("../../widgets/#{widget}") do
     rclass = _make_class_name(widget)
     found = (require("./#{widget}") if File.exist?("#{widget}.rb"))
@@ -570,12 +603,13 @@ def _load_local(widget)
   end
 rescue => err
   STDERR.puts err.to_s
-  STDERR.puts err.backtrace.join("\n")
+  STDERR.puts err.backtrace.join("\n") if err.respond_to?(:backtrace)
   sleep 6; RubyText.stop
   exit
 end
 
 def _handle_standard_widget(tag)
+  log!(enter: __method__)
   wtag = "../../widgets"/tag
   code = _load_local(tag)
   if code 
@@ -587,6 +621,7 @@ def _handle_standard_widget(tag)
 end
 
 def sidebar
+  log!(enter: __method__)
   _debug "--- handling sidebar\r"
   if _args.include? "off"
     _body { }  # iterate, do nothing
@@ -614,12 +649,13 @@ def sidebar
   _out %[</div>]
 rescue => err
   puts "err = #{err}"
-  puts err.backtrace.join("\n")
+  puts err.backtrace.join("\n") if err.respond_to?(:backtrace)
   sleep 6; RubyText.stop
   exit
 end
 
 def stylesheet
+  log!(enter: __method__)
   lines = _body
   url = lines[0]
   integ = lines[1]
@@ -628,6 +664,7 @@ def stylesheet
 end
 
 def script
+  log!(enter: __method__)
   lines = _body
   url = lines[0]
   integ = lines[1]
@@ -677,6 +714,7 @@ end
 
 
 def tag_cloud
+  log!(enter: __method__)
   title = _data
   title = "Tag Cloud" if title.empty?
   open = <<-HTML
@@ -700,18 +738,22 @@ def tag_cloud
 end
 
 def vnavbar
+  log!(enter: __method__)
   str = _make_navbar(:vert)
 end
 
 def hnavbar
+  log!(enter: __method__)
   str = _make_navbar  # horiz is default
 end
 
 def navbar
+  log!(enter: __method__)
   str = _make_navbar  # horiz is default
 end
 
 def _make_navbar(orient = :horiz)
+  log!(enter: __method__)
   vdir = @root/:views/@blog.view
   title = _var("view.title")
 
@@ -752,7 +794,7 @@ def _make_navbar(orient = :horiz)
     else
       dir = @blog.root/:views/@blog.view/"themes/standard/banner/navbar"
       dest = vdir/"remote/banner/navbar"/basename+".html"
-      preprocess cwd: dir, src: basename, dst: dest, call: ".nopara" # , debug: true
+      preprocess cwd: dir, src: basename, dst: dest, call: ".nopara", vars: @blog.view.globals # , debug: true
       output.puts %[#{li1} <a class="nav-link" #{href_main}>#{cdata}</a> #{li2}]
     end
   end
@@ -767,6 +809,7 @@ end
 ##################
 
 def _html_body(file, css = nil)
+  log!(enter: __method__)
   file.puts "<html>"
   if css
     file.puts "    <head>"  
@@ -779,10 +822,12 @@ def _html_body(file, css = nil)
 end
 
 def _errout(*args)
+  log!(enter: __method__)
   ::STDERR.puts *args
 end
 
 def _passthru(line)
+  log!(enter: __method__)
   return if line.nil?
   line = _format(line)
   _out line + "\n"
@@ -790,6 +835,7 @@ def _passthru(line)
 end
 
 def _passthru_noline(line)
+  log!(enter: __method__)
   return if line.nil?
   line = _format(line)
   _out line
@@ -797,6 +843,7 @@ def _passthru_noline(line)
 end
 
 def _write_metadata
+  log!(enter: __method__)
   File.write("teaser.txt", @meta.teaser)
   fields = [:num, :title, :date, :pubdate, :views, :tags, :pinned]
   fname = "metadata.txt"
@@ -806,20 +853,32 @@ def _write_metadata
 end
 
 def _post_lookup(postid)    # side-effect
+  log!(enter: __method__)
   # .. = templates, ../.. = views/thisview
   slug = title = date = teaser_text = nil
 
+  view = @blog.view
+  vdir = view.dir rescue "NONAME"
+  setvar("View", view.name)
+  setvar("ViewDir", @blog.root/:views/view.name)
+tmp = File.new("/tmp/PL-#{Time.now.to_i}.txt", "w")
+tmp.puts "_post_lookup: blog.view = #{@blog.view.inspect}"
+tmp.puts "_post_lookup: vdir = #{vdir}"
   dir_posts = @vdir/:posts
   posts = Dir.entries(dir_posts).grep(/^\d\d\d\d/).map {|x| dir_posts/x }
   posts.select! {|x| File.directory?(x) }
 
+tmp.puts "_post_lookup: postid = #{postid}"
+tmp.puts "_post_lookup: posts  = \n#{posts.inspect}"
+tmp.close
   posts = posts.select {|x| File.basename(x).to_i == postid }
-  postdir = exactly_one(posts)
+  postdir = exactly_one(posts, posts.inspect)
   vp = RuneBlog::ViewPost.new(@blog.view, postdir)
   vp
 end
 
 def _card_generic(card_title:, middle:, extra: "")
+  log!(enter: __method__)
   front = <<-HTML
     <div class="card #{extra} mb-3">
       <div class="card-body">
@@ -835,14 +894,17 @@ def _card_generic(card_title:, middle:, extra: "")
 end
 
 def _var(name)  # FIXME scope issue!
+  log!(enter: __method__)
   ::Livetext::Vars[name] || "[:#{name} is undefined]"
 end
 
 def _main(url)
+  log!(enter: __method__)
   %[href="javascript: void(0)" onclick="javascript:open_main('#{url}')"]
 end
 
 def _blank(url)
+  log!(enter: __method__)
   %[href='#{url}' target='blank']
 end
 
