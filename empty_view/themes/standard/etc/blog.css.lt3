@@ -3,8 +3,6 @@
 . Most of the global CSS goes here                  
 . --------------------------------------------------
 
-.say Inside $File in $FileDir: view/dir = $View $ViewDir
-
 .include $ViewDir/data/global.lt3
 
 body { font-family: $font.family }

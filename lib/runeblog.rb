@@ -150,7 +150,7 @@ class RuneBlog
   rescue => err
     puts "Error - see stdout.txt"
     STDERR.puts err.inspect
-    STDERR.puts err.backtrace
+    STDERR.puts err&.backtrace
     sleep 3
   end
 
@@ -690,39 +690,31 @@ log! str:  "=== cwh cp 6"
     @theme = @root/:views/view_name/:themes/:standard
     pmeta  = @root/:views/view_name/:posts/nslug
 
-log! str:  "=== hpost cp 1"
 
     create_dirs(pdraft)                                # Step 1...
-log! str:  "=== hpost cp 2"
+    @view.globals ||= {}
+args = {cwd: pdraft, src: draft, debug: true, dst: "guts.html", 
+        mix: "liveblog", vars: @view.globals}
     preprocess cwd: pdraft, src: draft,                # FIXME dependencies?
-               dst: "guts.html", mix: "liveblog", vars: (@view.globals || {})
-log! str:  "=== hpost cp 3"
+               debug: true,
+               dst: "guts.html", mix: "liveblog", vars: @view.globals
     hash = _post_metadata(draft, pdraft)
-log! str:  "=== hpost cp 4"
     hash[:CurrentPost] = pmeta
     vposts = @root/:views/view_name/:posts             # Step 2...
-# 5.times { STDERR.puts }
-# STDERR.puts "-- hpost:"
-# hash.each_pair {|k,v| STDERR.puts "    #{k}:    #{v}" if k.is_a? Symbol }
-# 5.times { STDERR.puts }
     copy!(pdraft, vposts)    # ??
     copy(pdraft/"guts.html", vposts/nslug)             # Step 3...
                                                        # Step 4...
-    # preprocess cwd: @theme/:post, src: "generate.lt3", 
-log! str:  "=== hpost cp 5"
-# @view.dump_globals_stderr
     preprocess cwd: pmeta, src: "../../themes/standard/post/generate.lt3", 
                force: true, vars: hash, debug: true,
                dst: remote/ahtml, call: ".nopara"
-log! str:  "=== hpost cp 6"
     FileUtils.rm_f(remote/"published")
-log! str:  "=== hpost cp 7"
     timelog("Generated", remote/"history")
     copy_widget_html(view_name)
-log! str:  "=== hpost cp 8"
   rescue => err
-log! str:  "=== hpost cp 9"
-    _tmp_error(err)
+    puts "Error - see stdout.txt"
+    STDERR.puts err.inspect
+    STDERR.puts err&.backtrace
+    # _tmp_error(err)
     # puts err.backtrace.join("\n")
   end
 
@@ -734,11 +726,10 @@ log! str:  "=== hpost cp 9"
 
   def generate_post(draft, force = false)
     log!(enter: __method__, args: [draft], level: 1)
-log! str:  "=== gpost cp 1"
     views = _get_views(draft)
-log! str:  "=== gpost cp 2"
-    views.each {|view| _handle_post(draft, view) }
-log! str:  "=== gpost cp 3"
+    views.each do |view| 
+      _handle_post(draft, view)
+    end
     # For current view: 
     slug = File.basename(draft).sub(/.lt3$/, "")
     postdir = self.view.dir/"remote/post/"/slug

@@ -3,6 +3,7 @@
     STDERR.puts err
     STDERR.puts err.backtrace.join("\n") if err.respond_to?(:backtrace)
     log!(str: "#{err} - see also stderr.out")
+    log!(str: err.backtrace.join("\n")) if err.respond_to?(:backtrace)
     return
 
     out = "/tmp/blog#{rand(100)}.txt"
@@ -114,7 +115,7 @@
     puts err.backtrace.join("\n")
   end
 
-  def find_item(list)
+  def find_item(list, &block)
     log!(enter: __method__, args: [list], level: 2)
     list2 = list.select(&block)
     exactly_one(list2, list.join("/"))
@@ -129,7 +130,7 @@
     [n, item]
   end
 
-  def exactly_one(list, tag = nil)
+  def exactly_one(list, tag = nil, &block)
     log!(enter: __method__, args: [list], level: 2)
     list2 = list.select(&block)
     raise "List: Zero instances #{"- #{tag}" if tag}" if list.empty?

@@ -32,9 +32,8 @@ def preprocess(cwd: Dir.pwd, src:,
     dst += ".html" unless dst.end_with?(".html")
   end
   sp = " "*12
-# STDERR.puts "=== ls -l #{cwd} = "
-# STDERR.puts `ls -l #{cwd}`
-# STDERR.puts "=== going into #{cwd}"
+
+
 
   Dir.chdir(cwd) do
     if debug
@@ -45,23 +44,25 @@ def preprocess(cwd: Dir.pwd, src:,
       STDERR.puts "#{sp}      from: #{caller[0]}"
       STDERR.puts "#{sp}      copy: #{copy}" if copy
       STDERR.puts "#{sp}      vars: #{vars.inspect}" unless vars == {}
+      STDERR.flush
     end
     stale = stale?(src, dst, deps, force)
+    STDERR.puts <<~EOF if debug
+      STALE = #{stale}
+      cwd = #{cwd.inspect}
+      src = #{src.inspect}
+      dst = #{dst.inspect}
+      strip = #{strip.inspect}
+      deps = #{deps.inspect}
+      copy = #{copy.inspect}
+      debug = #{debug.inspect}
+      force = #{force.inspect}
+      mix = #{mix.inspect}
+      call = #{call.inspect}
+      vars = #{vars.inspect}
+    EOF
     if stale
       live = Livetext.customize(mix: "liveblog", call: call, vars: vars)
-      STDERR.puts <<~EOF
-        cwd = #{cwd.inspect}
-        src = #{src.inspect}
-        dst = #{dst.inspect}
-        strip = #{strip.inspect}
-        deps = #{deps.inspect}
-        copy = #{copy.inspect}
-        debug = #{debug.inspect}
-        force = #{force.inspect}
-        mix = #{mix.inspect}
-        call = #{call.inspect}
-        vars = #{vars.inspect}
-      EOF
       log!(str: "Calling xform_file... src = #{src} pwd = #{Dir.pwd}")
       out = live.xform_file(src)
       File.write(dst, out)
@@ -69,6 +70,12 @@ def preprocess(cwd: Dir.pwd, src:,
     end
     puts "#{sp} -- ^ Already up to date!" if debug && ! stale
   end
+rescue => err
+  msg = err.to_s
+  msg << err.backtrace.join("\n") if err.respond_to?(:backtrace)
+  STDERR.puts msg
+  STDERR.flush
+  log!(str: msg) 
 end
 
 def get_live_vars(src)

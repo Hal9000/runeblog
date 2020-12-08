@@ -176,7 +176,10 @@ module RuneBlog::REPL
     result = system!("open #{local}")
     raise CantOpen(local) unless result
   rescue => err
-    _tmp_error(err)
+    msg = err.to_s
+    msg << "\n" << err.backtrace.join("\n") if err.respond_to?(:backtrace)
+    puts msg
+    log!(str: msg) 
   end
 
   def cmd_publish
@@ -415,6 +418,7 @@ log! str:  "cv Setting to #{name.inspect}"
         base = draft.sub(/.lt3$/, "")
         dir = @blog.root/:posts/base
         meta = nil 
+puts "Trying chdir into #{dir}..."
         Dir.chdir(dir) { meta = @blog.read_metadata }
         num, title = meta.num, meta.title
         num = '%4d' % num.to_s

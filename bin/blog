@@ -107,7 +107,11 @@ def mainloop
     puts "Don't understand '#{cmd.inspect}'\n "
   end
 rescue => err
-  puts err.to_s
+  log!(str: err.to_s)
+  log!(str: err.backtrace.join("\n")) if err.respond_to?(:backtrace)
+  puts "Current dir = #{Dir.pwd}"
+  puts err
+  puts err.backtrace.join("\n")
   puts "Pausing..."; gets
 end
 
@@ -197,7 +201,7 @@ def create_new_repo?
   get_started if new_repo
 rescue => err
   STDERR.puts "Error - #{err.to_s}"
-  STDERR.puts err.backtrace
+  STDERR.puts err.backtrace if err.respond_to?(:backtrace)
 end
 
 def print_intro
