@@ -1,0 +1,46 @@
+Create new repo...
+  create_dirs(repo_root)
+  cd root
+  create_dirs(:data, :config, :widgets, :drafts, :views, :posts)  # ?? widgets?
+  get_all_widgets  # FIXME ?
+    copy! from gemlib/widgets 
+  new_sequence
+    0 into data/sequence
+    vnum into data/VERSION
+  copy_data(repo_root/:data) unless VIEW exists  
+    copy from gemlib/../data to dest
+  write_repo_config
+    write data/  VIEW,ROOT,EDITOR
+  self.blog = blog = self.new    # Calls initialize...
+
+Initialize repo...
+  self.class.blog = self   
+  # write_repo_config   # ???
+  get_repo_config
+    read data/ EDITOR,VIEW,ROOT
+  read_features
+    view.nil?  # toplevel
+      then dir = root/"data"
+      else dir = root/:views/view/:settings
+    read_pairs(dir/features.txt)
+    set @features (which enabled)
+  retrieve_views
+    subdirs of @root/views
+    pass each name into View.new
+  get_sequence
+    @sequence = read sequence file
+  
+
+New view...   (#cmd_new_view)
+  Ask filename
+  create_view
+  Ask title, subtitle, domain
+  Read gfile ( viewname/data/global.lt3)
+  Insert View, ViewDir Livetext variables
+  Write gfile
+  Set up hash (view_name, title, subtitle, domain)
+  complete_file vfile with hash (vf = viewname/settings/view.txt)
+  change_view to view_name
+
+
+  

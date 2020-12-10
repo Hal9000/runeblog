@@ -197,6 +197,7 @@ def banner
     count += 1
     tag, *data = line.split
     data ||= []
+    deps = [@blog.view.globals[:ViewDir]/:data/"global.lt3"]
     case tag
       when "width";   wide = data[0]
       when "height";  high = data[0]
@@ -217,7 +218,7 @@ def banner
         if ! File.exist?(file) 
           src = file.sub(/html$/, "lt3")
           if File.exist?(src)
-            preprocess src: src, dst: file, call: ".nopara", vars: @blog.view.globals
+            preprocess src: src, dst: file, deps: deps, call: ".nopara", vars: @blog.view.globals
           else
             raise FoundNeither(file, src)
           end

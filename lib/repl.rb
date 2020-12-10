@@ -251,7 +251,7 @@ log! str:  "===   ...finished!"
       end
       n = viewnames.values.find_index(@blog.view.name)
       name = @blog.view.name
-      k, name = STDSCR.menu(title: "Views", items: viewnames, curr: n)
+      k, name = STDSCR.menu(title: "Views", items: viewnames, curr: n, wrap: true)
       return if name.nil?
 log! str:  "cv Setting to #{name.inspect}"
       @blog.view = name
@@ -418,7 +418,6 @@ log! str:  "cv Setting to #{name.inspect}"
         base = draft.sub(/.lt3$/, "")
         dir = @blog.root/:posts/base
         meta = nil 
-puts "Trying chdir into #{dir}..."
         Dir.chdir(dir) { meta = @blog.read_metadata }
         num, title = meta.num, meta.title
         num = '%4d' % num.to_s
