@@ -9,7 +9,7 @@ STEPS:
 
 Remember "pages" and so on...
 
-.blog
+ .blog
   local
     src (drafts)
     views

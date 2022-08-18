@@ -14,7 +14,7 @@ What are some TODO items?
 How is the tree structured?
 ===========================
 
-.blogs                                 The root dir of the blog(s) 
+\.blogs                                 The root dir of the blog(s) 
 ├── config                             Small config file (global)       
 └── data                               The data directory where "all" stuff lives          
     ├── VERSION                        Version info, date blog was created            
@@ -132,19 +132,19 @@ Here is a shortened version of a real blog post. Afterward there's a
 brief explanation.
 
 --------------------------------------------------------------------------
-.mixin liveblog
-.mixin bookish
+  .mixin liveblog
+  .mixin bookish
 
-.title Immutable data (ditching the wax tablet)
-.pubdate 2015-08-25
-.tags elixir ruby
-.views computing
+  .title Immutable data (ditching the wax tablet)
+  .pubdate 2015-08-25
+  .tags elixir ruby
+  .views computing
 
-.teaser
+  .teaser
 A couple of weeks ago, I went to Phoenix training prior to the Lone Star Ruby
 Conference in Austin. I was talking with Bruce Tate, and he shared with me 
 some thoughts about functional programming in general. 
-.end
+  .end
 
 Obviously Bruce isn't responsible if I misquote him. My memory is faulty.
 

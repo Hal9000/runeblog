@@ -1,7 +1,8 @@
 <div style="font-family: verdana">
 
-.mixin notes/todo
+.mixin todo
 
+. These just set variables - see bottom of file
 
 .sublist jan2020 Recently completed (Jan-Mar 2020)
 Removed more dead code
@@ -60,6 +61,7 @@ Fixed/improved 'change view' command
 =post aliases (scoped to view? or view/name)
 =intra-blog links (incl aliases)
 =Reread vars after any update
+=Guidelines for extending runeblog (liveblog)
 .end
 
 .sublist bugs Bugs, etc.
@@ -73,7 +75,7 @@ delete post, edit elsewhere, comes back (change source!)
 .end
 
 .sublist easyish Easy and/or soonish...
-detect non-OSX and print warning
+=detect OSX/other and print warning (filename case sensitivity)
 =Change teaser to excerpt?
 =Change "guts" to "contents"
 =Collapse and rename "themes/standard"

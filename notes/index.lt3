@@ -1,0 +1,52 @@
+
+.def embed
+  fname, title = api.data.split(" ", 2)
+  text = File.read(fname)
+  # Read the file...
+  # For each entry:
+  #   - append to index
+  #   - write to monolithic file
+.end
+
+
+My thoughts/ideas are kind of scattered. They end up in notes in 
+different files. Here they are.
+
+. copy INDEX.txt             # This file.
+
+.include ../README.lt3         # The README for the git repo
+
+.include html-sucks.lt3
+
+. copy runeblog-layout.pdf   # Diagrams explaining how runeblog works at present. Will change.
+. copy dumb-mockup.png       # Crude mockup of how a view "might" look.
+
+<pre>
+.copy how-layout.txt        # Brainstorming how a highest-level template might look.
+
+.copy internals.txt         # If you're working on this - one of the most important files.
+.copy notes.txt             # Misc notes on logic and workflow.
+.copy dir.struct
+.copy logic.txt
+.copy issues.txt            # Thinking about robustness and consistency.
+.copy pondering.txt         # The title/metadata problem. Permit changing title?
+.copy tracing.txt           # Trying to figure out convoluted logic of posting.
+.copy global-vars.txt
+.copy design.txt
+.copy configuring.txt
+.copy newpost.txt
+.copy assets.txt            # Thinking about asset management.
+.copy thinking.txt          # Thinking about assets and templates.
+.copy hmm-tags.txt          # Thinking about tags.
+.copy tag-cloud.txt
+
+.copy argh.txt
+.copy menus.txt
+.copy prio.txt
+.copy recent-history.txt
+.copy ronak.txt
+.copy rtmenu.txt
+.copy widgets.txt
+</pre>
+
+.copy todo.html              # One of the most important sets of notes -- a rough to-do list and work log.

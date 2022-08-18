@@ -69,7 +69,7 @@
    - fix/delete Runeblog::Default (post_template)
    - tricky? put navbar inside blog/index.lt3
    - tricky? move global.lt3 into etc
-  x - livetext --> xlate (or whatever) everywhere
+ x - livetext --> xlate (or whatever) everywhere
  x - header/trailer for widgets?
    - livetext: non-system mode?
    - livetext: permit trailing comments?

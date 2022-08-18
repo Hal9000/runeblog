@@ -39,8 +39,8 @@ class RuneBlog::View
 
     live = Livetext.customize(call: ".nopara")
     live.xform_file(gfile)
-    live._setvar("ViewDir", @blog.root/:views/@name)
-    live._setvar("View",    @name)
+    live.setvar("ViewDir", @blog.root/:views/@name)
+    live.setvar("View",    @name)
     @globals = live.vars
 #   dump_globals_stderr
   end

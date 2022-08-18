@@ -35,27 +35,27 @@ HAL9000:runeblog Hal$ ls -l .blogs/data/views/around_austin/themes/standard/
   462 Jul  6 20:59 sidebar-news.lt3
   407 Jul  6 20:59 sidebar-tag-cloud.lt3
 
-.
-├── README
-├── blog
-│   ├── assets
-│   │   ├── application.css
-│   │   └── favicon.ico
-│   ├── _postentry.lt3
-│   ├── application.css
-│   ├── blog-generate.lt3
-│   ├── index.lt3
-│   ├── blog-meta.lt3    SAME
-│   ├── navbar.lt3
-│   └── sidebar
-│       ├── ad.lt3
-│       ├── calendar.lt3
-│       ├── news.lt3
-│       └── tag-cloud.lt3
-├── global.lt3
-├── head.lt3
-├── meta.lt3
-└── post
-    ├── generate.lt3
-    ├── head.lt3
-    └── index.lt3
+  .
+  ├── README
+  ├── blog
+  │   ├── assets
+  │   │   ├── application.css
+  │   │   └── favicon.ico
+  │   ├── _postentry.lt3
+  │   ├── application.css
+  │   ├── blog-generate.lt3
+  │   ├── index.lt3
+  │   ├── blog-meta.lt3    SAME
+  │   ├── navbar.lt3
+  │   └── sidebar
+  │       ├── ad.lt3
+  │       ├── calendar.lt3
+  │       ├── news.lt3
+  │       └── tag-cloud.lt3
+  ├── global.lt3
+  ├── head.lt3
+  ├── meta.lt3
+  └── post
+      ├── generate.lt3
+      ├── head.lt3
+      └── index.lt3

@@ -44,6 +44,7 @@ But the important points are these:
  * Each view can have its own look and feel, and it can be linked/published separately from the others.
  * Each view can be hosted in a different location and/or a different server and domain
  * Any post can be in more than one view
+
 ## The <tt>blog</tt> environment
 There is a command-line tool called <font size=+1><tt>blog</tt></font>  which is a REPL (read-eval-print loop). 
 Note that this tool is a curses-based environment (mainly so it can display menus
@@ -60,7 +61,7 @@ The help message looks like this:
   <b>q, quit</b>           Exit the program              <b>cv VIEW</b>           Change current view
   <b>v, version</b>        Print version information     <b>new view</b>          Create a new view
   <b>clear</b>             Clear screen                  <b>list views</b>        List all views available
-                                                  <b>lsv</b>               Same as: list views
+                                                         <b>lsv</b>               Same as: list views
 <br>
   <b>Posts:</b>                                          <b>Advanced:</b>
   -------------------------------------------     -------------------------------------------
@@ -73,6 +74,7 @@ The help message looks like this:
   <b>edit ID</b>           Edit a post                   <b>ssh</b>               Login to remote server
   <b>import ASSETS</b>     Import assets (images, etc.)  <b>manage WIDGET</b>     Manage content/layout of a widget
 </pre>
+
 ## Getting started
 But when you first run the REPL, it checks for an existing blog repository under 
 the <font size=+1><tt>.blogs</tt></font> directory. If it doesn't find one, it asks whether you want to create 

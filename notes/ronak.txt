@@ -52,27 +52,28 @@ and I am trying to reduce your HTML example to its essence.
 For now, this `lt3` file produces your example HTML down to the end
 of the `head`. It doesn't handle the body yet.
 
-```.mixin experimental
+```
+  .mixin experimental
 
-.set title="Your awesome title", host=http://localhost:4000
+  .set title="Your awesome title", host=http://localhost:4000
 
-.heredoc desc
+  .heredoc desc
 Write an awesome description for your new site here. It will appear in your document head meta (for Google search results) and in your feed.xml site
-.end
+  .end
 
-. Note: 
-.   The command head takes the first word of each line as
-.   a sort of "subcommand"; there are other values besides
-.   these three, but they are defaulted based partly on
-.   title, host, and desc (and "frequently used" defaults
-.   such as en_US
+  . Note: 
+  .   The command head takes the first word of each line as
+  .   a sort of "subcommand"; there are other values besides
+  .   these three, but they are defaulted based partly on
+  .   title, host, and desc (and "frequently used" defaults
+  .   such as en_US
 
-.head
+  .head
 viewport width=device-width, initial-scale=1
 script head.lt3
 style main.css
 feed 
-.end
+  .end
 ```
 That is only 22 lines (counting comments), and it seems to me
 much more readable. My intent is to carry "custom formatting"

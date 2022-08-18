@@ -10,14 +10,16 @@
   <li>It's based on Livetext (highly extensible Ruby-based markup)</li>
   <li>It has the concept of multiple "views" for a blog</li>
   <li>The multiple views are in effect multiple blogs managed with the same backend.</li>
+  <li>Each view may have its own "look and feel" (and even be hosted on differing domains)</li>
 </ul>
 
 
 
 .h2 What is Livetext?
 
-Livetext is a markup format that is a throwback to the old, old days of text 
-formatters such as ``nroff. It's very flexible, and it is extensible _[in Ruby]. 
+Livetext is a markup format (media generator?) that is a throwback to the old, 
+old days of text formatters such as ``nroff. It's very flexible, and it is 
+extensible _[in Ruby]. 
 
 It is far from mature or full-featured, but it is usable. Runeblog uses Livetext, 
 along with some custom definitions, to try to ease the formatting of a blog entry.
@@ -45,8 +47,8 @@ Any post can be in more than one view
 .h2 The <tt>blog</tt> environment
 
 There is a command-line tool called `blog which is a REPL (read-eval-print loop). 
-Note that this tool is a curses-based environment (mainly so it can display menus
-and such to the user).
+Note that this tool is a curses-based environment (mainly so that it can display 
+menus and such to the user).
 
 The help message looks like this:
 
@@ -57,7 +59,7 @@ The help message looks like this:
   <b>q, quit</b>           Exit the program              <b>cv VIEW</b>           Change current view
   <b>v, version</b>        Print version information     <b>new view</b>          Create a new view
   <b>clear</b>             Clear screen                  <b>list views</b>        List all views available
-                                                  <b>lsv</b>               Same as: list views
+                                                         <b>lsv</b>               Same as: list views
 <br>
   <b>Posts:</b>                                          <b>Advanced:</b>
   -------------------------------------------     -------------------------------------------
@@ -82,6 +84,7 @@ You'll then enter the editor (vim for now) to add configuration info to the `glo
 
 <!-- <pre><b>FIXME add menu screenshot here</b></pre> -->
 <!-- <pre><b>FIXME add vim screenshot here</b></pre> -->
+
 <img src="readme/vim-global.png" width="494" height="696" align="center"></img>
 
 The next thing you should do is to create at least one view of your own. Use the `[new view] 

@@ -14,33 +14,107 @@ notimp = proc { RubyText.splash("Not implemented yet") }
 top_about  = proc { RubyText.splash("RuneBlog v #{RuneBlog::VERSION}") }
 top_help   = proc { RubyText.splash(RuneBlog::REPL::Help.gsub(/[{}]/, " ")) }
 
+def edit_blog_generate
+  edit_file("#@std/blog/generate.lt3")
+end
+
+def edit_blog_head
+  edit_file("#@std/blog/head.lt3")
+end
+
+def edit_blog_index
+  edit_file("#@std/blog/index.lt3")
+end
+
+def edit_post_entry
+  edit_file("#@std/blog/post_entry.lt3")
+end
+
+def edit_blog_banner
+  edit_file("#@std/banner/banner.lt3")
+end
+
+def edit_blog_navbar
+  edit_file("#@std/navbar/navbar.lt3")
+end
+
+def edit_post_generate
+  edit_file("#@std/post/generate.lt3")
+end
+
+def edit_post_head
+  edit_file("#@std/post/head.lt3")
+end
+
+def edit_post_index
+  edit_file("#@std/post/index.lt3")
+end
+
+def edit_view_global
+  edit_file("#@data/global.lt3")
+end
+
+def edit_settings_view
+  edit_file("settings/view.txt")
+end
+
+def edit_settings_recent
+  edit_file("settings/recent.txt")
+end
+
+def edit_settings_publish
+  edit_file("settings/publish.txt")
+end
+
+def edit_settings_features
+  edit_file("settings/features.txt")
+end
+
+def edit_config_reddit
+  edit_file("config/reddit/credentials.txt")
+end
+
+def edit_config_facebook
+  edit_file("config/facebook/credentials.txt")
+end
+
+def edit_config_twitter
+  edit_file("config/twitter/credentials.txt")
+end
+
+def edit_etc_blog_css
+  edit_file("#@std/etc/blog.css.lt3")
+end
+
+def edit_etc_externals
+  edit_file("#@std/etc/externals.lt3") 
+end
 
 #   dir = @blog.view.dir/"themes/standard/"
 
-std = "themes/standard"
-data = "."    # CHANGED
+@std  = "themes/standard"
+@data = "."    # CHANGED
 
 Menu.top_config = {
-    "View: generator"                     => edit("#{std}/blog/generate.lt3"),
-    "   HEAD info"                        => edit("#{std}/blog/head.lt3"),
-    "   Layout "                          => edit("#{std}/blog/index.lt3"),
-    "   Recent-posts entry"               => edit("#{std}/blog/post_entry.lt3"),
-    "   Banner: Description"              => edit("#{std}/banner/banner.lt3"),
-    "      Navbar"                        => edit("#{std}/navbar/navbar.lt3"),
-#   "      Text portion"                  => edit("#{std}/banner/top.lt3"),
-    "Generator for a post"                => edit("#{std}/post/generate.lt3"),
-    "   HEAD info for post"               => edit("#{std}/post/head.lt3"),
-    "   Content for post"                 => edit("#{std}/post/index.lt3"),
-    "Variables (general)"                 => edit("#{data}/global.lt3"),
-    "   View-specific"                    => edit("settings/view.txt"),
-    "   Recent posts"                     => edit("settings/recent.txt"),
-    "   Publishing"                       => edit("settings/publish.txt"),
-    "Configuration: enable/disable"       => edit("settings/features.txt"),
-    "   Reddit"                           => edit("config/reddit/credentials.txt"),
-    "   Facebook"                         => edit("config/facebook/credentials.txt"),
-    "   Twitter"                          => edit("config/twitter/credentials.txt"),
-    "Global CSS"                          => edit("#{std}/etc/blog.css.lt3"),
-    "External JS/CSS (Bootstrap, etc.)"   => edit("/etc/externals.lt3") 
+    "View: generator"                     => proc { edit_blog_generate },
+    "   HEAD info"                        => proc { edit_blog_head },
+    "   Layout "                          => proc { edit_blog/index },
+    "   Recent-posts entry"               => proc { edit_post_entry },
+    "   Banner: Description"              => proc { edit_banner },
+    "      Navbar"                        => proc { edit_navbar },
+    "Generator for a post"                => proc { edit_post_generate },
+    "   HEAD info for post"               => proc { edit_post_head },
+    "   Content for post"                 => proc { edit_post_index },
+    "Variables (general)"                 => proc { edit_view_global },
+    "   View-specific"                    => proc { edit_settings_view },
+    "   Recent posts"                     => proc { edit_settings_recent },
+    "   Publishing"                       => proc { edit_settings_publish },
+    "Configuration: enable/disable"       => proc { edit_settings_features },
+    "   Reddit"                           => proc { edit_config_reddit },
+    "   Facebook"                         => proc { edit_config_facebook },
+    "   Twitter"                          => proc { edit_config_twitter },
+    "Global CSS"                          => proc { edit_etc_blog_css },
+    "External JS/CSS (Bootstrap, etc.)"   => proc { edit_etc_externals }
   }
   
 Menu.top_build  = { 
