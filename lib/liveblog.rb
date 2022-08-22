@@ -49,20 +49,20 @@ end
 def dropcap
   log!(enter: __method__)
   # Bad form: adds another HEAD
-  text = _data
-  _out " "
+  text = api.data
+  api.out " "
   letter = text[0]
   remain = text[1..-1]
-  _out %[<div class='mydrop'>#{letter}</div>]
-  _out %[<div style="padding-top: 1px">#{remain}]
+  api.out %[<div class='mydrop'>#{letter}</div>]
+  api.out %[<div style="padding-top: 1px">#{remain}]
 end
 
 def post
   log!(enter: __method__)
   @meta = OpenStruct.new
-  @meta.num = _args[0]
+  @meta.num = api.args[0]
   setvar("post.num", @meta.num.to_i)
-  _out "  <!-- Post number #{@meta.num} -->\n "
+  api.out "  <!-- Post number #{@meta.num} -->\n "
 end
 
   def _got_python?
@@ -91,7 +91,7 @@ def post_toolbar
   log!(enter: __method__)
   back_icon = %[<img src="assets/back-icon.png" width=24 height=24 alt="Go back"></img>]
   back = %[<a style="text-decoration: none" href="javascript:history.go(-1)">#{back_icon}</a>]
-  _out <<~HTML
+  api.out <<~HTML
     <div align='right'>#{back} #@reddit_comments</div>
   HTML
 end
@@ -138,7 +138,7 @@ log! str:  "  -- dir = #{dir}"
   # damned syntax highlighting </>
   end
 # STDERR.print "Pausing... "; getch
-  _out <<~HTML
+  api.out <<~HTML
   #{reddit_txt}
   <hr>
   <table width=100%><tr>
@@ -151,27 +151,27 @@ end
 def faq
   log!(enter: __method__)
   @faq_count ||= 0
-  _out "<br>" if @faq_count == 0
+  api.out "<br>" if @faq_count == 0
   @faq_count += 1
-  ques = _data.chomp
-  ans  = _body.join("\n")
+  ques = api.data.chomp
+  ans  = api.body.join("\n")
   id = "faq#@faq_count"
-  _out %[&nbsp;<a data-toggle="collapse" href="##{id}" role="button" aria-expanded="false" aria-controls="collapseExample"><font size=+3>&#8964;</font></a>]
-  _out %[&nbsp;<b>#{ques}</b>]
-  _out %[<div class="collapse" id="#{id}"><br><font size=+1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#{ans}</font></div>\n]
-  _out "<br>" # unless @faq_count == 1
-  _optional_blank_line
+  api.out %[&nbsp;<a data-toggle="collapse" href="##{id}" role="button" aria-expanded="false" aria-controls="collapseExample"><font size=+3>&#8964;</font></a>]
+  api.out %[&nbsp;<b>#{ques}</b>]
+  api.out %[<div class="collapse" id="#{id}"><br><font size=+1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#{ans}</font></div>\n]
+  api.out "<br>" # unless @faq_count == 1
+  api.optional_blank_line
 end
 
 def backlink
   log!(enter: __method__)
-  _out %[<br><a href="javascript:history.go(-1)">[Back]</a>]
+  api.out %[<br><a href="javascript:history.go(-1)">[Back]</a>]
 end
 
 def code
   log!(enter: __method__)
-  lines = _body # _text
-  _out "<font size=+1><pre>\n#{lines}\n</pre></font>"
+  lines = api.body # _text
+  api.out "<font size=+1><pre>\n#{lines}\n</pre></font>"
 end
 
 def _read_navbar_data
@@ -191,7 +191,7 @@ def banner
   str2 = ""
   navbar = nil
   vdir = @blog.root/:views/@blog.view
-  lines = _body.to_a
+  lines = api.body.to_a
 
   lines.each do |line|
     count += 1
@@ -234,14 +234,14 @@ def banner
       str2 << "        '#{tag}' isn't known" + "\n"
     end
   end
-  _out <<~HTML
+  api.out <<~HTML
     <table width=100% bgcolor=#{bg}>
       <tr>
         #{str2}
       </tr>
     </table>
   HTML
-  _out navbar if navbar
+  api.out navbar if navbar
 rescue => err
   STDERR.puts "err = #{err}"
   STDERR.puts err.backtrace.join("\n") if err.respond_to?(:backtrace)
@@ -306,7 +306,7 @@ end
 def quote
   log!(enter: __method__)
   _passthru "<blockquote>"
-  _passthru _body.join(" ")
+  _passthru api.body.join(" ")
   _passthru "</blockquote>"
   _optional_blank_line
 end
@@ -317,7 +317,7 @@ end
 
 def style
   log!(enter: __method__)
-  fname = _args[0]
+  fname = api.args[0]
   _passthru %[<link rel="stylesheet" href="???/etc/#{fname}')">]
 end
 
@@ -333,43 +333,43 @@ def h6; _passthru "<h6>#{@_data}</h6>"; end
 def hr; _passthru "<hr>"; end
 
 def nlist
-  log!(enter: __method__)
-  _out "<ol>"
-  _body {|line| _out "<li>#{line}</li>" }
-  _out "</ol>"
-  _optional_blank_line
+  log!(enter: api._method__)
+  api.out "<ol>"
+  api.body {|line| api.out "<li>#{line}</li>" }
+  api.out "</ol>"
+  api.optional_blank_line
 end
 
 def list
   log!(enter: __method__)
-  _out "<ul>"
-  _body {|line| _out "<li>#{line}</li>" }
-  _out "</ul>"
-  _optional_blank_line
+  api.out "<ul>"
+  api.body {|line| api.out "<li>#{line}</li>" }
+  api.out "</ul>"
+  api.optional_blank_line
 end
 
 def list!
   log!(enter: __method__)
-  _out "<ul>"
-  lines = _body.each 
+  api.out "<ul>"
+  lines = api.body.each 
   loop do 
     line = lines.next
-    line = _format(line)
+    line = api.format(line)
     if line[0] == " "
-      _out line
+      api.out line
     else
-      _out "<li>#{line}</li>"
+      api.out "<li>#{line}</li>"
     end
   end
-  _out "</ul>"
-  _optional_blank_line
+  api.out "</ul>"
+  api.optional_blank_line
 end
 
 ### inset
 
 def inset
   log!(enter: __method__)
-  lines = _body
+  lines = api.body
   box = ""
   output = []
   lines.each do |line| 
@@ -387,16 +387,16 @@ def inset
       output << line 
     end
   end
-  lr = _args.first
-  wide = _args[1] || "25"
+  lr = api.args.first
+  wide = api.args[1] || "25"
   stuff = "<div style='float:#{lr}; width: #{wide}%; padding:8px; padding-right:12px'>"
   stuff << '<b><i>' + box + '</i></b></div>'
-  _out "</p>"   #  kludge!! nopara
+  api.out "</p>"   #  kludge!! nopara
   0.upto(2) {|i| _passthru output[i] }
   _passthru stuff
   3.upto(output.length-1) {|i| _passthru output[i] }
-  _out "<p>"  #  kludge!! para
-  _optional_blank_line
+  api.out "<p>"  #  kludge!! para
+  api.optional_blank_line
 end
 
 def title
@@ -406,42 +406,42 @@ def title
   @meta.title = title
   setvar :title, title
   # FIXME refactor -- just output variables for a template
-  _optional_blank_line
+  api.optional_blank_line
 end
 
 def pubdate
   log!(enter: __method__)
   raise NoPostCall unless @meta
-  _debug "data = #@_data"
+  api.debug "data = #@_data"
   # Check for discrepancy?
   match = /(\d{4}).(\d{2}).(\d{2})/.match @_data
   junk, y, m, d = match.to_a
   y, m, d = y.to_i, m.to_i, d.to_i
   @meta.date = ::Date.new(y, m, d)
   @meta.pubdate = "%04d-%02d-%02d" % [y, m, d]
-  _optional_blank_line
+  api.optional_blank_line
 end
 
 def tags
   log!(enter: __method__)
   raise NoPostCall unless @meta
-  _debug "args = #{_args}"
-  @meta.tags = _args.dup || []
-  _optional_blank_line
+  api.debug "args = #{_args}"
+  @meta.tags = api.args.dup || []
+  api.optional_blank_line
 end
 
 def views
   log!(enter: __method__)
   raise NoPostCall unless @meta
-  _debug "data = #{_args}"
-  @meta.views = _args.dup
-  _optional_blank_line
+  api.debug "data = #{_args}"
+  @meta.views = api.args.dup
+  api.optional_blank_line
 end
 
 def pin
   log!(enter: __method__)
   raise NoPostCall unless @meta
-  _debug "data = #{_args}"  # verify only valid views?
+  api.debug "data = #{_args}"  # verify only valid views?
   pinned = @_args
   @meta.pinned = pinned
   pinned.each do |pinview|
@@ -452,7 +452,7 @@ def pin
     pins.uniq!
     File.open(datafile, "w") {|out| pins.each {|pin| out.puts pin } }
   end
-  _optional_blank_line
+  api.optional_blank_line
 rescue => err
   STDERR.puts "err = #{err}"
   STDERR.puts err.backtrace.join("\n") if err.respond_to?(:backtrace)
@@ -472,15 +472,15 @@ end
 def teaser
   log!(enter: __method__)
   raise NoPostCall unless @meta
-  text = _body.join("\n")
+  text = api.body.join("\n")
   @meta.teaser = text
   setvar :teaser, @meta.teaser
-  if _args[0] == "dropcap"   # FIXME doesn't work yet!
+  if api.args[0] == "dropcap"   # FIXME doesn't work yet!
     letter, remain = text[0], text[1..-1]
-    _out %[<div class='mydrop'>#{letter}</div>]
-    _out %[<div style="padding-top: 1px">#{remain}] + "\n"
+    api.out %[<div class='mydrop'>#{letter}</div>]
+    api.out %[<div style="padding-top: 1px">#{remain}] + "\n"
   else
-    _out @meta.teaser + "\n"
+    api.out @meta.teaser + "\n"
   end
 end
 
@@ -498,10 +498,10 @@ end
  
 def head  # Does NOT output <head> tags
   log!(enter: __method__)
-  args = _args
+  args = api.args
   args.each do |inc|
     self.data = inc
-    _include
+    dot_include
   end
   # Depends on vars: title, desc, host
   defaults = {}
@@ -522,7 +522,7 @@ def head  # Does NOT output <head> tags
                "favicon"        => %[<link rel="shortcut icon" type="image/x-icon" href="etc/favicon.ico">\n <link rel="apple-touch-icon" href="etc/favicon.ico">]
              }
   result = {}
-  lines = _body
+  lines = api.body
   lines.each do |line|
     line.chomp
     word, remain = line.split(" ", 2)
@@ -547,14 +547,14 @@ def head  # Does NOT output <head> tags
   end
   hash = defaults.dup.update(result)  # FIXME collisions?
 
-  hash.each_value {|x| _out "  " + x }
+  hash.each_value {|x| api.out "  " + x }
 end
 
 ########## newer stuff...
 
 def meta
   log!(enter: __method__)
-  args = _args
+  args = api.args
   enum = args.each
   str = "<meta"
   arg = enum.next
@@ -569,12 +569,12 @@ def meta
     arg = enum.next
   end
   str << ">"
-  _out str
+  api.out str
 end
 
 def recent_posts    # side-effect
   log!(enter: __method__)
-  _out <<-HTML
+  api.out <<-HTML
     <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
       <iframe id="main" style="width: 70vw; height: 100vh; position: relative;" 
        src='recent.html' width=100% frameborder="0" allowfullscreen>
@@ -623,17 +623,17 @@ end
 
 def sidebar
   log!(enter: __method__)
-  _debug "--- handling sidebar\r"
-  if _args.include? "off"
-    _body { }  # iterate, do nothing
+  api.debug "--- handling sidebar\r"
+  if api.args.include? "off"
+    api.body { }  # iterate, do nothing
     return 
   end
 
-  _out %[<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">]
+  api.out %[<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">]
 
   standard = %w[pinned pages links news]
 
-  _body do |token|
+  api.body do |token|
     tag = token.chomp.strip.downcase
     wtag = "../../widgets"/tag
     raise CantFindWidgetDir(wtag) unless Dir.exist?(wtag)
@@ -645,9 +645,9 @@ def sidebar
         raise "Nonstandard widget?"
     end
 
-    _include_file wtag/tcard
+    api.include_file wtag/tcard
   end
-  _out %[</div>]
+  api.out %[</div>]
 rescue => err
   puts "err = #{err}"
   puts err.backtrace.join("\n") if err.respond_to?(:backtrace)
@@ -657,20 +657,20 @@ end
 
 def stylesheet
   log!(enter: __method__)
-  lines = _body
+  lines = api.body
   url = lines[0]
   integ = lines[1]
   cross = lines[2] || "anonymous"
-  _out %[<link rel="stylesheet" href="#{url}" integrity="#{integ}" crossorigin="#{cross}"></link>]
+  api.out %[<link rel="stylesheet" href="#{url}" integrity="#{integ}" crossorigin="#{cross}"></link>]
 end
 
 def script
   log!(enter: __method__)
-  lines = _body
+  lines = api.body
   url = lines[0]
   integ = lines[1]
   cross = lines[2] || "anonymous"
-  _out %[<script src="#{url}" integrity="#{integ}" crossorigin="#{cross}"></script>]
+  api.out %[<script src="#{url}" integrity="#{integ}" crossorigin="#{cross}"></script>]
 end
 
 $Dot = self   # Clunky! for dot commands called from Functions class
@@ -716,7 +716,7 @@ end
 
 def tag_cloud
   log!(enter: __method__)
-  title = _data
+  title = api.data
   title = "Tag Cloud" if title.empty?
   open = <<-HTML
         <div class="card mb-3">
@@ -727,15 +727,15 @@ def tag_cloud
             </h5>
             <div class="collapse" id="tag-cloud">
   HTML
-  _out open
-  _body do |line|
+  api.out open
+  api.body do |line|
     line.chomp!
     url, classname, cdata = line.split(",", 3)
     main = _main(url)
-    _out %[<a #{main} class="#{classname}">#{cdata}</a>]
+    api.out %[<a #{main} class="#{classname}">#{cdata}</a>]
   end
   close = %[       </div>\n    </div>\n  </div>]
-  _out close
+  api.out close
 end
 
 def vnavbar
@@ -785,7 +785,7 @@ def _make_navbar(orient = :horiz)
   output = File.new(html_file, "w")
   output.puts start
   lines = _read_navbar_data
-  lines = ["index  Home"] + lines  unless _args.include?("nohome")
+  lines = ["index  Home"] + lines  unless api.args.include?("nohome")
   lines.each do |line|
     basename, cdata = line.chomp.strip.split(" ", 2)
     full = :banner/:navbar/basename+".html"
@@ -831,16 +831,16 @@ def _passthru(line)
   log!(enter: __method__)
   return if line.nil?
   line = _format(line)
-  _out line + "\n"
-  _out "<p>" if line.empty? && ! @_nopara
+  api.out line + "\n"
+  api.out "<p>" if line.empty? && ! @_nopara
 end
 
 def _passthru_noline(line)
   log!(enter: __method__)
   return if line.nil?
   line = _format(line)
-  _out line
-  _out "<p>" if line.empty? && ! @_nopara
+  api.out line
+  api.out "<p>" if line.empty? && ! @_nopara
 end
 
 def _write_metadata
@@ -891,7 +891,7 @@ def _card_generic(card_title:, middle:, extra: "")
     </div>
   HTML
   text = front + middle + tail
-  _out text + "\n "
+  api.out text + "\n "
 end
 
 def _var(name)  # FIXME scope issue!
