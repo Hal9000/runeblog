@@ -87,7 +87,7 @@ def get_started
 end
 
 def mainloop
-  info = @blog.view || "no view"
+  info = @blog.view.name rescue "No view"
   print fx("[#{info}] ", Red, :bold)
   cmd = STDSCR.gets(history: @cmdhist, tab: @tabcom, capture: [" "])
   case cmd
@@ -107,6 +107,8 @@ def mainloop
     puts "Don't understand '#{cmd.inspect}'\n "
   end
 rescue => err
+  # puts "----- ML_RESCUE err = #{err.inspect}  VIEW = #{@blog.view.inspect}"
+  puts "----- ML_RESCUE err = #{err.inspect} "
   log!(str: err.to_s)
   log!(str: err.backtrace.join("\n")) if err.respond_to?(:backtrace)
   puts "Current dir = #{Dir.pwd}"
@@ -148,7 +150,7 @@ end
 
 def handle_cmdline
   cmd = ARGV[0]
-  @blog = RuneBlog.new
+  @blog = RuneBlog.read    # was .new
   abort "No blog found" if @blog.nil?
 
   case cmd
@@ -197,7 +199,7 @@ def create_new_repo?
     new_repo = true
   end
 
-  @blog = RuneBlog.new
+  @blog = RuneBlog.read   # was .new
   get_started if new_repo
 rescue => err
   STDERR.puts "Error - #{err.to_s}"

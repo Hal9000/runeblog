@@ -633,7 +633,8 @@ def sidebar
 
   standard = %w[pinned pages links news]
 
-  api.body do |token|
+  lines = api.body.to_a
+  lines.each do |token|
     tag = token.chomp.strip.downcase
     wtag = "../../widgets"/tag
     raise CantFindWidgetDir(wtag) unless Dir.exist?(wtag)

@@ -24,7 +24,6 @@ module RuneBlog::Helpers
       dir = root/:views/view/:settings
     end
     file = dir/"features.txt"
-# puts "-- in #{Dir.pwd} trying to read #{file}"
     pairs = read_pairs(file)
     enabled = {}
     pairs.each {|k,v| enabled[k] = (v == "1") }
@@ -106,12 +105,6 @@ module RuneBlog::Helpers
     puts err.backtrace.join("\n")
     puts "dir = #{Dir.pwd}"
     stop_RubyText rescue nil
-  end
-
-  def retrieve_views   # read from filesystem
-    log!(enter: __method__, level: 3)
-    dirs = subdirs("#@root/views/").sort
-    dirs.map {|name| RuneBlog::View.new(name) }
   end
 
   def write_repo_config(root: "#{Dir.pwd}/.blogs", view: nil, editor: "/usr/local/bin/vim")

@@ -77,11 +77,14 @@ rescue => err
 end
 
 def get_live_vars(src)
+  dir, base = File.dirname(src), File.basename(src)
   live = Livetext.customize(call: [".nopara"])
-# puts "glv: src = #{src.inspect}"
-# STDERR.puts "glv: src = #{src.inspect}"
-  live.xform_file(src)
+  Dir.chdir(dir) { live.xform_file(base) }
   live
+rescue => e
+  puts e
+  puts $!
+  gets
 end
 
 end

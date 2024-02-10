@@ -39,7 +39,7 @@ module RuneBlog::REPL
 
   def cmd_config
     hash = {"Variables (general)"                 => "global.lt3",
-            "   View-specific"                    => "../../settings/view.txt",
+            "   View-specific"                    => "../settings/view.txt",
             "   Recent posts"                     => "../../settings/recent.txt",
             "   Publishing"                       => "../../settings/publish.txt",
             "Configuration: enable/disable"       => "../../settings/features.txt",
@@ -253,7 +253,6 @@ log! str:  "===   ...finished!"
       name = @blog.view.name
       k, name = STDSCR.menu(title: "Views", items: viewnames, curr: n, wrap: true)
       return if name.nil?
-log! str:  "cv Setting to #{name.inspect}"
       @blog.view = name
 #     puts "\n  ", fx(name, :bold), "\n"
       return
@@ -371,7 +370,8 @@ log! str:  "cv Setting to #{name.inspect}"
 
   def cmd_list_views
     puts
-    @blog.views.each do |v| 
+    list = @blog.views
+    list.each do |v| 
       v = v.to_s
       title = view2title(v)
       v = fx(v, :bold) if v == @blog.view.name
@@ -412,22 +412,16 @@ log! str:  "cv Setting to #{name.inspect}"
     if curr_drafts.empty?
       puts "\n  No drafts\n "
       return
-    else
-      puts
-      curr_drafts.each do |draft| 
-        base = draft.sub(/.lt3$/, "")
-        dir = @blog.root/:posts/base
-        meta = nil 
-        Dir.chdir(dir) { meta = @blog.read_metadata }
-        num, title = meta.num, meta.title
-        num = '%4d' % num.to_s
-        puts "  ", fx(num, Red), "  ", fx(title, Black)
-        other = @blog._get_views(@blog.root/:drafts/draft) - [@blog.view.to_s]
-        unless other.empty?
-          print fx(" "*9 + "also in: ", :bold) 
-          puts other.join(", ") 
-        end
-      end
+    end
+    puts
+    curr_drafts.each do |draft| 
+      base = draft.sub(/.lt3$/, "")
+      dir = @blog.root/:posts/base
+      meta = nil 
+      Dir.chdir(dir) { meta = @blog.read_metadata }
+      num, title = meta.num, meta.title
+      num = '%4d' % num.to_s
+      puts "  ", fx(num, Red), "  ", fx(title, Black)
     end
     puts
   end
@@ -438,12 +432,11 @@ log! str:  "cv Setting to #{name.inspect}"
     if assets.empty?
       puts "  No assets"
       return
-    else
-      puts
-      assets.each do |name| 
-        asset = File.basename(name)
-        puts "  ", fx(asset, Blue)
-      end
+    end
+    puts
+    assets.each do |name| 
+      asset = File.basename(name)
+      puts "  ", fx(asset, Blue)
     end
     puts
   end

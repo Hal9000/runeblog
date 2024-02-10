@@ -23,13 +23,14 @@
     File.open(file, "a") {|f| f.puts "#{Time.now} #{line}" }
   end
 
-  def system!(str, show: false)
-    log!(enter: __method__, args: [str], level: 2)
-    STDERR.puts str if show
-    rc = system(str)
+  def system!(os_cmd, show: false)
+    log!(enter: __method__, args: [os_cmd], level: 2)
+caller.each {|x| print ":::  "; p x }
+    STDERR.puts os_cmd if show
+    rc = system(os_cmd)
     STDERR.puts "  rc = #{rc.inspect}" if show
     return rc if rc
-    STDERR.puts "FAILED: #{str.inspect}"
+    STDERR.puts "FAILED: #{os_cmd.inspect}"
     STDERR.puts "\ncaller = \n#{caller.join("\n  ")}\n"
     if defined?(RubyText)
       sleep 6

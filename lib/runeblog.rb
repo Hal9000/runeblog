@@ -58,9 +58,9 @@ class RuneBlog
     include ErrorChecks
   end
 
-  attr_reader :views, :sequence
-  attr_accessor :root, :editor, :features
-  attr_accessor :view  # overridden
+  attr_reader   :views, :sequence
+  attr_accessor :root,  :editor, :features
+  attr_accessor :view   # overridden
   attr_accessor :post
 
   attr_accessor :post_views, :post_tags, :dirty_views
@@ -74,7 +74,7 @@ class RuneBlog
                                teaser: "No teaser", body: "No body", tags: ["untagged"], 
                                views: [], back: "javascript:history.go(-1)", home: "no url")
       log!(enter: __method__, args: [num, title, date, view, teaser, body, tags, views, back, home], level: 3)
-      viewlist = (views + [view.to_s]).join(" ")
+      viewlist = (views + [view.to_s]).join(" ").uniq
       taglist = ".tags " + tags.join(" ")
 
       <<~TEXT
@@ -96,9 +96,9 @@ class RuneBlog
 
   def self.create_new_blog_repo(root_rel = ".blogs")
     log!(enter: __method__, args: [root_rel])
+    check_error(BlogRepoAlreadyExists) { Dir.exist?(repo_root) }
     check_nonempty_string(root_rel)
     repo_root = Dir.pwd/root_rel
-    check_error(BlogRepoAlreadyExists) { Dir.exist?(repo_root) }
 
     create_dirs(repo_root)
     Dir.chdir(repo_root) do
@@ -110,7 +110,6 @@ class RuneBlog
     unless File.exist?(repo_root/"data/VIEW")
       copy_data(repo_root/:data)   
     end
-#   copy_data(:extra,  repo_root/:config)
     write_repo_config(root: repo_root)
     # Weird. Like a singleton - dumbass circular dependency?
     self.blog = blog = self.new
@@ -128,30 +127,33 @@ class RuneBlog
     _tmp_error(err)
   end
 
-  def initialize(root_rel = ".blogs")   # always assumes existing blog
-    log!(enter: "initialize", args: [root_rel])
-    # Weird. Like a singleton - dumbass circular dependency?
-    self.class.blog = self   
+################
 
-    @root = Dir.pwd/root_rel
-    # write_repo_config(root: @root)   # ?? FIXME
-    get_repo_config
-    read_features   # top level
-    @views = retrieve_views
-    self.view = File.read(@root/"data/VIEW").chomp
-    md = Dir.pwd.match(%r[.*/views/(.*?)/])
-    if md
-      @view_name = md[1]
-      @view = str2view(@view_name)
+  def self.read(root_rel = ".blogs")   # always assumes existing blog
+    log!(enter: "RuneBlog.read", args: [root_rel])
+    instance = RuneBlog.allocate
+    instance.instance_eval do
+      @blog = instance    # Duhhh
+      @root = Dir.pwd/root_rel
+      # _init_get_view    ##########??????
+      # self.class.blog = self   # Weird, like singleton. Dumbass circular dependency?
+      RuneBlog.blog = instance
+      dirs = subdirs("#@root/views/").sort
+      @views = dirs.map {|name| RuneBlog::View.new(name) }
+      @curr = str2view(File.read(@root/"data/VIEW").chomp)
+      @view = @curr
+      # ...was init_get_view
+      @sequence, @post_views, @post_tags = get_sequence, [], []
     end
-    @sequence = get_sequence
-    @post_views = []
-    @post_tags = []
+    return instance
   rescue => err
-    puts "Error - see stdout.txt"
-    STDERR.puts err.inspect
-    STDERR.puts err&.backtrace
+    puts "ERROR - #{err.inspect}"
+    # puts "Error - see stderr.out"
+    puts err.inspect + "\n" + err&.backtrace
     sleep 3
+  end
+
+  def initialize    ##### FIXME ??
   end
 
   def complete_file(name, vars, hash)
@@ -270,14 +272,6 @@ class RuneBlog
     views.any? {|x| x.name == name }
   end
 
-# def view(name = nil)
-#   log!(enter: __method__, args: [name], level: 3)
-#   return @view if name.nil?
-# 
-#   check_nonempty_string(name)
-#   return str2view(name)
-# end
-
   def str2view(str)
     log!(enter: __method__, args: [str], level: 3)
     check_nonempty_string(str)  # redundant?
@@ -297,15 +291,12 @@ class RuneBlog
       @view = nil
       return
     end
-# STDERR.puts "view=  #{arg.inspect}"
-
     case arg
       when RuneBlog::View
         @view = arg
         @view.get_globals(true)
       when String
         new_view = str2view(arg)
-# STDERR.puts "view=  new view #{new_view.inspect}"
         check_error(NoSuchView, arg) { new_view.nil? }
         @view = new_view
       else 
@@ -541,11 +532,10 @@ class RuneBlog
       next unless Dir.exist?(postdir)
       meta = nil
       Dir.chdir(postdir) { meta = read_metadata }
-# puts [draft, meta.views].inspect
       list << draft if meta.views.include?(self.view.to_s)
     end
-    # list.sort
-    curr_drafts
+    # curr_drafts
+    list.sort
   end
 
   def all_drafts
@@ -739,8 +729,7 @@ args = {cwd: pdraft, src: draft, debug: true, dst: "guts.html",
 
   def remove_post(num)
     log!(enter: __method__, args: [num], level: 1)
-    check_integer(num)
-    # FIXME update original draft .views
+    check_integer(num)   # FIXME update original draft .views
     tag = prefix(num)
     files = Find.find(self.view.dir).to_a
     list = files.select {|x| File.directory?(x) and x =~ /#{tag}/ }

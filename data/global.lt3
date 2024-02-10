@@ -15,6 +15,6 @@ charset     utf-8
 url         http://SITE
 locale      en_US
 
-font.family       verdana
+font.family verdana
 .end
 
