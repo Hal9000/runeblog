@@ -195,6 +195,7 @@ def create_new_repo?
   if ! RuneBlog.exist?
     exit unless yesno("No blog repo found. Create new one?")
     RuneBlog.create_new_blog_repo
+    puts "Sleeping..."; sleep 15
     puts fx("  Blog repo successfully created.", :bold)
     new_repo = true
   end
@@ -204,6 +205,7 @@ def create_new_repo?
 rescue => err
   STDERR.puts "Error - #{err.to_s}"
   STDERR.puts err.backtrace if err.respond_to?(:backtrace)
+  puts "Sleeping..."; sleep 10
 end
 
 def print_intro

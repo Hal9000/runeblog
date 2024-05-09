@@ -1,6 +1,6 @@
 <div style="font-family: verdana">
 
-.mixin todo
+.mixin notes/todo
 
 . These just set variables - see bottom of file
 

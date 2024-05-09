@@ -12,7 +12,7 @@
       f.puts err.backtrace.join("\n")
     end
     puts "Error: See #{out}"
-    # sleep 3
+    puts "Sleeping..."; sleep 10
   end
 
   def dump(obj, name)

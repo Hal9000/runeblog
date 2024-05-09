@@ -11,8 +11,10 @@ Signal.trap("INT") { puts "Don't  :)" }
 module RuneBlog::REPL
   def edit_file(file, vim: "")
     ed = @blog.editor
+STDERR.puts ">>> edit_file: ed = #{ed.inspect}"
     params = vim if ed =~ /vim$/
     result = system!("#{@blog.editor} #{file} #{params}")
+STDERR.puts ">>> edit_file: after system call"
     raise EditorProblem(file) unless result
     cmd_clear
   end
@@ -38,7 +40,7 @@ module RuneBlog::REPL
   end
 
   def cmd_config
-    hash = {"Variables (general)"                 => "global.lt3",
+    hash = {"Variables (General)"                 => "global.lt3",
             "   View-specific"                    => "../settings/view.txt",
             "   Recent posts"                     => "../../settings/recent.txt",
             "   Publishing"                       => "../../settings/publish.txt",
@@ -60,6 +62,7 @@ module RuneBlog::REPL
            }
 
     dir = @blog.view.dir/"themes/standard/"
+STDERR.puts ">>> cmd_config: dir = #{dir.inspect}"
     num, target = STDSCR.menu(title: "Edit file:", items: hash)
     edit_file(dir/target)
   end

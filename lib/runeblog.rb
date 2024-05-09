@@ -96,7 +96,7 @@ class RuneBlog
 
   def self.create_new_blog_repo(root_rel = ".blogs")
     log!(enter: __method__, args: [root_rel])
-    check_error(BlogRepoAlreadyExists) { Dir.exist?(repo_root) }
+    check_error(BlogRepoAlreadyExists) { Dir.exist?(root_rel) }
     check_nonempty_string(root_rel)
     repo_root = Dir.pwd/root_rel
 
@@ -131,21 +131,7 @@ class RuneBlog
 
   def self.read(root_rel = ".blogs")   # always assumes existing blog
     log!(enter: "RuneBlog.read", args: [root_rel])
-    instance = RuneBlog.allocate
-    instance.instance_eval do
-      @blog = instance    # Duhhh
-      @root = Dir.pwd/root_rel
-      # _init_get_view    ##########??????
-      # self.class.blog = self   # Weird, like singleton. Dumbass circular dependency?
-      RuneBlog.blog = instance
-      dirs = subdirs("#@root/views/").sort
-      @views = dirs.map {|name| RuneBlog::View.new(name) }
-      @curr = str2view(File.read(@root/"data/VIEW").chomp)
-      @view = @curr
-      # ...was init_get_view
-      @sequence, @post_views, @post_tags = get_sequence, [], []
-    end
-    return instance
+    RuneBlog.new(root_rel)
   rescue => err
     puts "ERROR - #{err.inspect}"
     # puts "Error - see stderr.out"
@@ -153,7 +139,44 @@ class RuneBlog
     sleep 3
   end
 
-  def initialize    ##### FIXME ??
+#   def self.read(root_rel = ".blogs")   # always assumes existing blog
+#     log!(enter: "RuneBlog.read", args: [root_rel])
+#     instance = RuneBlog.allocate
+#     instance.instance_eval do
+#       # @blog = instance    # Duhhh
+#       @root = Dir.pwd/root_rel
+#       # _init_get_view    ##########??????
+#       # self.class.blog = self   # Weird, like singleton. Dumbass circular dependency?
+#       RuneBlog.blog = instance
+#       dirs = subdirs("#@root/views/").sort
+#       @views = dirs.map {|name| RuneBlog::View.new(name) }
+#       @curr = str2view(File.read(@root/"data/VIEW").chomp)
+#       @view = @curr
+#       # ...was init_get_view
+#       @sequence, @post_views, @post_tags = get_sequence, [], []
+#     end
+#     return instance
+#   rescue => err
+#     puts "ERROR - #{err.inspect}"
+#     # puts "Error - see stderr.out"
+#     puts err.inspect + "\n" + err&.backtrace
+#     sleep 3
+#   end
+
+  def initialize(root_rel)    ##### FIXME ??
+    # @blog = instance    # Duhhh
+    @root = Dir.pwd/root_rel
+    # _init_get_view    ##########??????
+    # self.class.blog = self   # Weird, like singleton. Dumbass circular dependency?
+    RuneBlog.blog = self
+    dirs = subdirs("#@root/views/").sort
+    @views = dirs.map {|name| RuneBlog::View.new(name) }
+    @curr = str2view(File.read(@root/"data/VIEW").chomp)
+    @view = @curr
+    # ...was init_get_view
+    @sequence, @post_views, @post_tags = get_sequence, [], []
+    get_repo_config
+    read_features
   end
 
   def complete_file(name, vars, hash)
