@@ -1,8 +1,8 @@
 require 'logging'
 
 class RuneBlog::View
-  attr_reader :name, :state, :globals
-  attr_accessor :publisher
+  attr_reader :name, :state
+  attr_accessor :publisher, :globals
 
   include RuneBlog::Helpers
 
@@ -33,14 +33,25 @@ class RuneBlog::View
 
   def get_globals(force = false)
     return if @globals && !force
+
     # gfile = @blog.root/"views/#@name/themes/standard/global.lt3"
     gfile = @blog.root/"views/#@name/data/global.lt3"
     return unless File.exist?(gfile)  # Hackish!! how is View.new called from create_view??
 
     live = Livetext.customize(call: ".nopara")
+puts "get_globals - 1 - transforming #{gfile}"
+    # FIXME - error here somehow:
+    # get_globals - 1 - transforming /private/tmp/.blogs/views/foobar/data/global.lt3
+    # >> variables: pre="view"  file="../settings/view.txt" pwd=/private/tmp
+    # No such dir "../settings" (file ../settings/view.txt)
+    # No such dir "../settings" (file ../settings/view.txt)
+    # get_globals - 2
     live.xform_file(gfile)
+puts "get_globals - 2"
     live.setvar("ViewDir", @blog.root/:views/@name)
+puts "get_globals - 3"
     live.setvar("View",    @name)
+puts "get_globals - 4"
     @globals = live.vars
 #   dump_globals_stderr
   end

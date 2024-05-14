@@ -103,7 +103,6 @@ class RuneBlog
     create_dirs(repo_root)
     Dir.chdir(repo_root) do
       create_dirs(:data, :config, :widgets, :drafts, :views, :posts)  # ?? widgets?
-      # FIXME
       get_all_widgets("widgets")
       new_sequence
     end
@@ -139,31 +138,7 @@ class RuneBlog
     sleep 3
   end
 
-#   def self.read(root_rel = ".blogs")   # always assumes existing blog
-#     log!(enter: "RuneBlog.read", args: [root_rel])
-#     instance = RuneBlog.allocate
-#     instance.instance_eval do
-#       # @blog = instance    # Duhhh
-#       @root = Dir.pwd/root_rel
-#       # _init_get_view    ##########??????
-#       # self.class.blog = self   # Weird, like singleton. Dumbass circular dependency?
-#       RuneBlog.blog = instance
-#       dirs = subdirs("#@root/views/").sort
-#       @views = dirs.map {|name| RuneBlog::View.new(name) }
-#       @curr = str2view(File.read(@root/"data/VIEW").chomp)
-#       @view = @curr
-#       # ...was init_get_view
-#       @sequence, @post_views, @post_tags = get_sequence, [], []
-#     end
-#     return instance
-#   rescue => err
-#     puts "ERROR - #{err.inspect}"
-#     # puts "Error - see stderr.out"
-#     puts err.inspect + "\n" + err&.backtrace
-#     sleep 3
-#   end
-
-  def initialize(root_rel)    ##### FIXME ??
+  def initialize(root_rel = ".blogs")    ##### FIXME ??
     # @blog = instance    # Duhhh
     @root = Dir.pwd/root_rel
     # _init_get_view    ##########??????

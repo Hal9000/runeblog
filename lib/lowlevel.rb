@@ -4,15 +4,6 @@
     STDERR.puts err.backtrace.join("\n") if err.respond_to?(:backtrace)
     log!(str: "#{err} - see also stderr.out")
     log!(str: err.backtrace.join("\n")) if err.respond_to?(:backtrace)
-    return
-
-    out = "/tmp/blog#{rand(100)}.txt"
-    File.open(out, "w") do |f|
-      f.puts err.to_s + "\n--------"
-      f.puts err.backtrace.join("\n")
-    end
-    puts "Error: See #{out}"
-    puts "Sleeping..."; sleep 10
   end
 
   def dump(obj, name)
@@ -25,7 +16,6 @@
 
   def system!(os_cmd, show: false)
     log!(enter: __method__, args: [os_cmd], level: 2)
-caller.each {|x| print ":::  "; p x }
     STDERR.puts os_cmd if show
     rc = system(os_cmd)
     STDERR.puts "  rc = #{rc.inspect}" if show

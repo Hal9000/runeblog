@@ -34,4 +34,5 @@ make_exception(:CantFindWidgetDir,     "Can't find widget dir '%1'")
 make_exception(:PublishError,          "Error during publishing")
 make_exception(:NoNumericPrefix,       "No numeric prefix on slug '%1'")
 make_exception(:NoExtensionExpected,   "No file extension expected on '%1'")
+make_exception(:FilenameHasBlank,      "File '%1' contains a blank space.")
 
