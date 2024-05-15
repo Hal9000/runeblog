@@ -425,7 +425,7 @@ end
 def tags
   log!(enter: __method__)
   raise NoPostCall unless @meta
-  api.debug "args = #{_args}"
+  api.debug "args = #{api.args}"
   @meta.tags = api.args.dup || []
   api.optional_blank_line
 end
@@ -433,7 +433,7 @@ end
 def views
   log!(enter: __method__)
   raise NoPostCall unless @meta
-  api.debug "data = #{_args}"
+  api.debug "args = #{api.args}"
   @meta.views = api.args.dup
   api.optional_blank_line
 end
@@ -441,7 +441,7 @@ end
 def pin
   log!(enter: __method__)
   raise NoPostCall unless @meta
-  api.debug "data = #{_args}"  # verify only valid views?
+  api.debug "args = #{api.args}"  # verify only valid views?
   pinned = api.args
   @meta.pinned = pinned
   pinned.each do |pinview|
