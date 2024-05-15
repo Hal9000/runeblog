@@ -323,12 +323,12 @@ end
 
 # Move elsewhere later!
 
-def h1; _passthru "<h1>#{@_data}</h1>"; end
-def h2; _passthru "<h2>#{@_data}</h2>"; end
-def h3; _passthru "<h3>#{@_data}</h3>"; end
-def h4; _passthru "<h4>#{@_data}</h4>"; end
-def h5; _passthru "<h5>#{@_data}</h5>"; end
-def h6; _passthru "<h6>#{@_data}</h6>"; end
+def h1; _passthru "<h1>#{api.data}</h1>"; end
+def h2; _passthru "<h2>#{api.data}</h2>"; end
+def h3; _passthru "<h3>#{api.data}</h3>"; end
+def h4; _passthru "<h4>#{api.data}</h4>"; end
+def h5; _passthru "<h5>#{api.data}</h5>"; end
+def h6; _passthru "<h6>#{api.data}</h6>"; end
 
 def hr; _passthru "<hr>"; end
 
@@ -402,7 +402,7 @@ end
 def title
   log!(enter: __method__)
   raise NoPostCall unless @meta
-  title = @_data.chomp
+  title = api.data.chomp
   @meta.title = title
   setvar :title, title
   # FIXME refactor -- just output variables for a template
@@ -412,9 +412,9 @@ end
 def pubdate
   log!(enter: __method__)
   raise NoPostCall unless @meta
-  api.debug "data = #@_data"
+  api.debug "data = #{api.data}"
   # Check for discrepancy?
-  match = /(\d{4}).(\d{2}).(\d{2})/.match @_data
+  match = /(\d{4}).(\d{2}).(\d{2})/.match api.data
   junk, y, m, d = match.to_a
   y, m, d = y.to_i, m.to_i, d.to_i
   @meta.date = ::Date.new(y, m, d)
@@ -442,7 +442,7 @@ def pin
   log!(enter: __method__)
   raise NoPostCall unless @meta
   api.debug "data = #{_args}"  # verify only valid views?
-  pinned = @_args
+  pinned = api.args
   @meta.pinned = pinned
   pinned.each do |pinview|
     dir = @blog.root/:views/pinview/"widgets/pinned/"
@@ -833,7 +833,7 @@ def _passthru(line)
   return if line.nil?
   line = _format(line)
   api.out line + "\n"
-  api.out "<p>" if line.empty? && ! @_nopara
+  api.out "<p>" if line.empty? && ! api.nopara
 end
 
 def _passthru_noline(line)
@@ -841,7 +841,7 @@ def _passthru_noline(line)
   return if line.nil?
   line = _format(line)
   api.out line
-  api.out "<p>" if line.empty? && ! @_nopara
+  api.out "<p>" if line.empty? && ! api.nopara
 end
 
 def _write_metadata
