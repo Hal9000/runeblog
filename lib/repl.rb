@@ -9,12 +9,12 @@ require 'menus'
 Signal.trap("INT") { puts "Don't  :)" }
 
 module RuneBlog::REPL
+
   def edit_file(file, vim: "")
     ed = @blog.editor
-STDERR.puts ">>> edit_file: ed = #{ed.inspect}"
     params = vim if ed =~ /vim$/
-    result = system!("#{@blog.editor} #{file} #{params}")
-STDERR.puts ">>> edit_file: after system call"
+    cmd = "#{@blog.editor} #{file} #{params}"
+    result = system!(cmd)
     raise EditorProblem(file) unless result
     cmd_clear
   end
@@ -41,7 +41,7 @@ STDERR.puts ">>> edit_file: after system call"
 
   def cmd_config
     hash = {"Variables (General)"                 => "global.lt3",
-            "   View-specific"                    => "../settings/view.txt",
+            "   View-specific"                    => "../../settings/view.txt",
             "   Recent posts"                     => "../../settings/recent.txt",
             "   Publishing"                       => "../../settings/publish.txt",
             "Configuration: enable/disable"       => "../../settings/features.txt",

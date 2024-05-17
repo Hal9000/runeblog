@@ -12,6 +12,7 @@ class RuneBlog::View
     @blog = RuneBlog.blog
     @name = name
     @publisher = RuneBlog::Publishing.new(name)
+# puts "view #{name}: pub = #{@publisher.inspect}"
     @can_publish = true  # FIXME
     #  @blog.view = self  # NOOOO??
     get_globals
@@ -39,19 +40,9 @@ class RuneBlog::View
     return unless File.exist?(gfile)  # Hackish!! how is View.new called from create_view??
 
     live = Livetext.customize(call: ".nopara")
-puts "get_globals - 1 - transforming #{gfile}"
-    # FIXME - error here somehow:
-    # get_globals - 1 - transforming /private/tmp/.blogs/views/foobar/data/global.lt3
-    # >> variables: pre="view"  file="../settings/view.txt" pwd=/private/tmp
-    # No such dir "../settings" (file ../settings/view.txt)
-    # No such dir "../settings" (file ../settings/view.txt)
-    # get_globals - 2
     live.xform_file(gfile)
-puts "get_globals - 2"
     live.setvar("ViewDir", @blog.root/:views/@name)
-puts "get_globals - 3"
     live.setvar("View",    @name)
-puts "get_globals - 4"
     @globals = live.vars
 #   dump_globals_stderr
   end

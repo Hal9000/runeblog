@@ -14,13 +14,15 @@ class RuneBlog::Publishing
   def initialize(view)
     log!(enter: __method__, args: [view.to_s])
     @blog = RuneBlog.blog
-    dir0 = @blog.root/:views/view/"themes/standard/"
-    # CHANGED
-    dir = @blog.root/:views/view/:data
+    dir = @blog.root/:views/view/"themes/standard/"
     gfile = dir/"global.lt3"
+there = File.exist?(gfile)
+puts "Pub#init 0 gfile = $ gfile.inspect}  exist = #{there}"
     return unless File.exist?(gfile)  # FIXME Hackish as hell
 
+# puts "Pub#init 1"
     live = get_live_vars(gfile)
+# puts "Pub#init 2 - vars = #{live.vars.inspect}\n "
     @user    = live.vars["publish.user"]
     @server  = live.vars["publish.server"]
     @docroot = live.vars["publish.docroot"]

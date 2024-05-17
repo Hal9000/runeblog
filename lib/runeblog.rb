@@ -134,7 +134,7 @@ class RuneBlog
   rescue => err
     puts "ERROR - #{err.inspect}"
     # puts "Error - see stderr.out"
-    puts err.inspect + "\n" + err&.backtrace
+    puts err.inspect # + "\n" + err&.backtrace
     sleep 3
   end
 

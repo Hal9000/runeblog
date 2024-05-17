@@ -247,7 +247,7 @@ handle_cmdline unless ARGV.empty?
 
 set_fgbg
 print_intro
-create_new_repo?
+create_new_repo?   # calls @blog.load
 
 cmd_history_etc
 
