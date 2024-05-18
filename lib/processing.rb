@@ -82,7 +82,7 @@ def get_live_vars(src)
   dir, base = File.dirname(src), File.basename(src)
 # puts "glv 1: src = #{src.inspect} dir,base = #{dir.inspect}, #{base.inspect}"
   live = Livetext.customize(call: [".nopara"])
-puts "glv 2: cd #{dir}  xform #{base}\n "
+# puts "glv 2: cd #{dir}  xform #{base}\n "
 # HAL9000:~ Hal$ find .blogs/views/computing/ -name global.lt3
 # .blogs/views/computing//themes/standard/global.lt3
 # HAL9000:~ Hal$ find .blogs/views/computing/ -name view.txt
@@ -92,7 +92,7 @@ puts "glv 2: cd #{dir}  xform #{base}\n "
 rescue => e
   puts e
   puts $!
-  gets
+  abort "Terminated."
 end
 
 end

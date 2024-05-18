@@ -8,7 +8,7 @@
 <html>
   <!-- Generated from $File on $$date; editing not recommended.   -->
 
-.include $ViewDir/data/global.lt3
+.include $ViewDir/global.lt3
 
 .variables! post metadata.txt
 

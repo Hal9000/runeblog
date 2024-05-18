@@ -5,7 +5,7 @@ require 'runeblog'
 # If gem is not installed, hotfix is meaningless.
 begin
   entry = `gem list | grep runeblog`
-  abort "Can't hotfix: Gem is not installed"
+  entry.nil? && abort("Can't hotfix: Gem is not installed")
 rescue
   abort "Can't verify hotfix: Can't run 'gem' command."
 end

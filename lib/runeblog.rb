@@ -73,8 +73,9 @@ class RuneBlog
     def RuneBlog.post_template(num: 0, title: "No title", date: nil, view: "test_view", 
                                teaser: "No teaser", body: "No body", tags: ["untagged"], 
                                views: [], back: "javascript:history.go(-1)", home: "no url")
-      log!(enter: __method__, args: [num, title, date, view, teaser, body, tags, views, back, home], level: 3)
-      viewlist = (views + [view.to_s]).join(" ").uniq
+      arglist = [num, title, date, view, teaser, body, tags, views, back, home]
+      log!(enter: __method__, args: arglist, level: 3)
+      viewlist = (views + [view.to_s]).uniq.join(" ")
       taglist = ".tags " + tags.join(" ")
 
       <<~TEXT
@@ -91,7 +92,8 @@ class RuneBlog
       #{body}
       TEXT
     end
-
+  rescue => err
+    abort "Error in #{__method__}: #{err}\n #{err.backtrace.join("\n")}"
   end
 
   def self.create_new_blog_repo(root_rel = ".blogs")
@@ -352,6 +354,7 @@ class RuneBlog
     log!(enter: __method__, args: [view_name], level: 2)
     Dir.chdir(@root) do
       cmd = "cp -r #{RuneBlog::Path}/../empty_view views/#{view_name}"
+puts "#{__method__}: cmd = #{cmd.inspect}"
       system!(cmd)
       cmd = "cp -r widgets views/#{view_name}"
       system!(cmd)
@@ -373,9 +376,9 @@ class RuneBlog
     log!(enter: __method__, args: [view_name], level: 2)
     make_empty_view_tree(view_name)
     add_view(view_name)
+    src, dst = "#@root/data/global.lt3", "#@root/views/#{view_name}/global.lt3"
+    system("cp #{src} #{dst}")
     mark_last_published("Initial creation")
-    # system("cp #@root/data/global.lt3 #@root/views/#{view_name}/themes/standard/global.lt3")
-    system("cp #@root/data/global.lt3 #@root/views/#{view_name}/data/global.lt3")
     @view.get_globals(true)
   rescue => err
     _tmp_error(err)
@@ -565,8 +568,7 @@ class RuneBlog
     log!(enter: __method__, args: [view])
     vdir = @root/:views/view
     @theme = @root/:views/view/:themes/:standard
-    @data  = @root/:views/view/:data
-    depend = [vdir/"remote/etc/blog.css.lt3", @data/"global.lt3", 
+    depend = [vdir/"remote/etc/blog.css.lt3", @theme/"global.lt3", 
              @theme/"blog/head.lt3", 
              # @theme/"navbar/navbar.lt3",
              @theme/"blog/index.lt3"]   # FIXME what about assets?
@@ -642,25 +644,25 @@ class RuneBlog
 
   def copy_widget_html(view)
     log!(enter: __method__, level: 2)
-log! str:  "=== cwh cp 1"
+# log! str:  "=== cwh cp 1"
     vdir = @root/:views/view
     remote = vdir/:remote
     wdir = vdir/:widgets
     widgets = Dir[wdir/"*"].select {|w| File.directory?(w) }
-log! str:  "=== cwh cp 2"
+# log! str:  "=== cwh cp 2"
     widgets.each do |w|
       dir = File.basename(w)
       rem = w.sub(/widgets/, "remote/widgets")
-log! str:  "=== cwh cp 3  w = #{w.inspect}"
+# log! str:  "=== cwh cp 3  w = #{w.inspect}"
       create_dirs(rem)
       files = Dir[w/"*"]
       # files = files.select {|x| x =~ /(html|css)$/ }
       tag = File.basename(w)
-log! str:  "=== cwh cp 4   tag = #{tag.inspect}"
-      files.each {|file| system!("cp #{file} #{rem}", show: true) }
-log! str:  "=== cwh cp 5   tag was #{tag.inspect}"
+# log! str:  "=== cwh cp 4   tag = #{tag.inspect}"
+      files.each {|file| system!("cp #{file} #{rem}") }  # , show: true) }
+# log! str:  "=== cwh cp 5   tag was #{tag.inspect}"
     end
-log! str:  "=== cwh cp 6"
+# log! str:  "=== cwh cp 6"
   rescue => err
     _tmp_error(err)
   end
@@ -681,10 +683,9 @@ log! str:  "=== cwh cp 6"
 
     create_dirs(pdraft)                                # Step 1...
     @view.globals ||= {}
-args = {cwd: pdraft, src: draft, debug: true, dst: "guts.html", 
+args = {cwd: pdraft, src: draft, dst: "guts.html", 
         mix: "liveblog", vars: @view.globals}
     preprocess cwd: pdraft, src: draft,                # FIXME dependencies?
-               debug: true,
                dst: "guts.html", mix: "liveblog", vars: @view.globals
     hash = _post_metadata(draft, pdraft)
     hash[:CurrentPost] = pmeta
@@ -693,7 +694,7 @@ args = {cwd: pdraft, src: draft, debug: true, dst: "guts.html",
     copy(pdraft/"guts.html", vposts/nslug)             # Step 3...
                                                        # Step 4...
     preprocess cwd: pmeta, src: "../../themes/standard/post/generate.lt3", 
-               force: true, vars: hash, debug: true,
+               force: true, vars: hash, 
                dst: remote/ahtml, call: ".nopara"
     FileUtils.rm_f(remote/"published")
     timelog("Generated", remote/"history")

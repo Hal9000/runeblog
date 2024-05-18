@@ -52,9 +52,14 @@ t0 = Time.now
 puts
 debug bold("Generating test blog...")
 
-system("rm -rf .blogs")
-RuneBlog.create_new_blog_repo # (".blogs")
-x = RuneBlog.new  # (".blogs")
+if File.exist?(".blogs/PRODUCTION")
+  abort "Production blog repo detected! Test halts."
+end
+
+system("rm -rf .blogs")  # Just a temporary repo
+
+RuneBlog.create_new_blog_repo
+x = RuneBlog.new
 
 debug("create_view: #{bold('around_austin')}")
 x.create_view("around_austin")   # FIXME remember view title!

@@ -51,7 +51,7 @@ def edit_post_index
 end
 
 def edit_view_global
-  edit_file("#@data/global.lt3")
+  edit_file("#@std/global.lt3")
 end
 
 def edit_settings_view
@@ -93,7 +93,6 @@ end
 #   dir = @blog.view.dir/"themes/standard/"
 
 @std  = "themes/standard"
-@data = "."    # CHANGED
 
 Menu.top_config = {
     "View: generator"                     => proc { edit_blog_generate },

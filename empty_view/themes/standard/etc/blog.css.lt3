@@ -3,7 +3,7 @@
 . Most of the global CSS goes here                  
 . --------------------------------------------------
 
-.include $ViewDir/data/global.lt3
+.include $ViewDir/global.lt3
 
 body { font-family: $font.family }
 

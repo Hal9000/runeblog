@@ -35,7 +35,7 @@ New view...   (#cmd_new_view)
   Ask filename
   create_view
   Ask title, subtitle, domain
-  Read gfile ( viewname/data/global.lt3)
+  Read gfile ( viewname/global.lt3)
   Insert View, ViewDir Livetext variables
   Write gfile
   Set up hash (view_name, title, subtitle, domain)

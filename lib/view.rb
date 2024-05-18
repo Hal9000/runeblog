@@ -12,7 +12,7 @@ class RuneBlog::View
     @blog = RuneBlog.blog
     @name = name
     @publisher = RuneBlog::Publishing.new(name)
-# puts "view #{name}: pub = #{@publisher.inspect}"
+puts "view #{name}: pub = #{@publisher.inspect}"
     @can_publish = true  # FIXME
     #  @blog.view = self  # NOOOO??
     get_globals
@@ -35,8 +35,7 @@ class RuneBlog::View
   def get_globals(force = false)
     return if @globals && !force
 
-    # gfile = @blog.root/"views/#@name/themes/standard/global.lt3"
-    gfile = @blog.root/"views/#@name/data/global.lt3"
+    gfile = @blog.root/"views/#@name/global.lt3"
     return unless File.exist?(gfile)  # Hackish!! how is View.new called from create_view??
 
     live = Livetext.customize(call: ".nopara")
@@ -44,7 +43,11 @@ class RuneBlog::View
     live.setvar("ViewDir", @blog.root/:views/@name)
     live.setvar("View",    @name)
     @globals = live.vars
+puts "#{__method__} 9"
 #   dump_globals_stderr
+  rescue => err
+    puts "Error: #{err}\n#{err.backtrace.join("\n")}"
+    abort "Terminated."
   end
 
   def dir

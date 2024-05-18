@@ -16,13 +16,9 @@ class RuneBlog::Publishing
     @blog = RuneBlog.blog
     dir = @blog.root/:views/view/"themes/standard/"
     gfile = dir/"global.lt3"
-there = File.exist?(gfile)
-puts "Pub#init 0 gfile = $ gfile.inspect}  exist = #{there}"
-    return unless File.exist?(gfile)  # FIXME Hackish as hell
+    raise MissingGlobal unless File.exist?(gfile)
 
-# puts "Pub#init 1"
     live = get_live_vars(gfile)
-# puts "Pub#init 2 - vars = #{live.vars.inspect}\n "
     @user    = live.vars["publish.user"]
     @server  = live.vars["publish.server"]
     @docroot = live.vars["publish.docroot"]

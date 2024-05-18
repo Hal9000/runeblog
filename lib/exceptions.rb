@@ -36,3 +36,5 @@ make_exception(:NoNumericPrefix,       "No numeric prefix on slug '%1'")
 make_exception(:NoExtensionExpected,   "No file extension expected on '%1'")
 make_exception(:FilenameHasBlank,      "File '%1' contains a blank space.")
 
+make_exception(:MissingGlobal,         "File global.lt3 is missing.")
+

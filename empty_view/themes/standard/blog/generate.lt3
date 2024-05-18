@@ -8,7 +8,7 @@
 <html>
   <!-- Generated from $File on $$date.  
        Editing not recommended. -->
-  $.include $ViewDir/data/global.lt3
+  $.include $ViewDir/global.lt3
   $.include blog/head.lt3
   <body>
     $.include banner/banner.lt3
