@@ -67,13 +67,13 @@ module RuneBlog::Helpers
   end
 
   def get_all_widgets(dest)
-    wdir  = RuneBlog::Path + "/widgets"    # files kept inside gem
+    wdir  = RuneBlog::Path + "/widgets"    # files kept inside gem (or dev repo)
     copy!(wdir/"*", dest)
   end
 
   def get_widget(dest, widget: :all)   # recursive
     wdir  = ".blogs/widgets"
-    wdir  = RuneBlog::Path + "/widgets"    # files kept inside gem
+    wdir  = RuneBlog::Path + "/widgets"    # files kept inside gem (or dev repo)
     if widget == :all
       copy!(wdir/"*", dest)
     else
@@ -82,7 +82,7 @@ module RuneBlog::Helpers
   end 
 
   def copy_data(dest)
-    data  = RuneBlog::Path + "/../data"    # files kept inside gem
+    data  = RuneBlog::Path + "/../data"    # files kept inside gem (or dev repo)
     files = %w[ROOT VIEW EDITOR universal.lt3 global.lt3 features.txt]
     files.each {|file| copy(data + "/" + file, dest) unless File.exist?(dest/file) }
   end

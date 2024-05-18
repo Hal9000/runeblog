@@ -7,10 +7,6 @@ require 'runeblog'
 require 'pathmagic'
 require 'processing'
 
-# top = Livetext::Path + "/../plugin/liveblog/"
-# eval(File.read("#{top}/testing.rb"))
-
-
 def init_liveblog    # FIXME - a lot of this logic sucks
   log!(enter: __method__)
   dir = Dir.pwd.sub(/\.blogs.*/, "")
@@ -65,27 +61,31 @@ def post
   api.out "  <!-- Post number #{@meta.num} -->\n "
 end
 
-  def _got_python?
-    log!(enter: __method__)
-    # Dumb - fix later - check up front as needed
-    # Should also check for praw lib
-    str = `which python3`
-    str.length > 0
-  end
+### reddit integration broke at their end...
 
-  def _reddit_post_url(vdir, date, title, url)
-    log!(enter: __method__)
-    _got_python?
-    tmpfile = "/tmp/reddit-post-url.txt"
-    File.open(tmpfile, "w") do |tmp|
-      tmp.puts "[#{date}]  #{title}"
-      tmp.puts url
-    end
-    rid = nil
-    Dir.chdir(vdir/:config) { rid = `python3 reddit/reddit_post_url.py` }
-    system("rm #{tmpfile}")
-    rid  # returns reddit id
+def _got_python?
+  log!(enter: __method__)
+  # Dumb - fix later - check up front as needed
+  # Should also check for praw lib
+  str = `which python3`
+  str.length > 0
+end
+
+def _reddit_post_url(vdir, date, title, url)
+  log!(enter: __method__)
+  _got_python?
+  tmpfile = "/tmp/reddit-post-url.txt"
+  File.open(tmpfile, "w") do |tmp|
+    tmp.puts "[#{date}]  #{title}"
+    tmp.puts url
   end
+  rid = nil
+  Dir.chdir(vdir/:config) { rid = `python3 reddit/reddit_post_url.py` }
+  system("rm #{tmpfile}")
+  rid  # returns reddit id
+end
+
+### ...end of reddit piece
 
 def post_toolbar
   log!(enter: __method__)

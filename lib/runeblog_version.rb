@@ -1,10 +1,14 @@
 if !defined?(RuneBlog::Path)
 
+require 'pathname'
+
 class RuneBlog
   VERSION = "0.3.34"
 
   path = Gem.find_files("runeblog").grep(/runeblog-/).first
-  Path  = File.dirname(path)
+  path ||= Pathname(__FILE__).realpath.dirname.to_s
+
+  Path  = File.dirname(path)   # inside gem or dev repo
 end
 
 # skeleton
