@@ -197,7 +197,7 @@ def banner
     count += 1
     tag, *data = line.split
     data ||= []
-    deps = [@blog.view.globals[:ViewDir]/:data/"global.lt3"]
+    deps = [@blog.view.globals[:ViewDir]/"global.lt3"]
     case tag
       when "width";   wide = data[0]
       when "height";  high = data[0]

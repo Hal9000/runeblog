@@ -51,7 +51,8 @@ def edit_post_index
 end
 
 def edit_view_global
-  edit_file("#@std/global.lt3")
+  # CHANGED redefining "global" location
+  edit_file("global.lt3")
 end
 
 def edit_settings_view

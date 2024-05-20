@@ -14,7 +14,8 @@ class RuneBlog::Publishing
   def initialize(view)
     log!(enter: __method__, args: [view.to_s])
     @blog = RuneBlog.blog
-    dir = @blog.root/:views/view/"themes/standard/"
+    # CHANGED redefining "global" location
+    dir = @blog.root/:views/view  # /"themes/standard/"
     gfile = dir/"global.lt3"
     raise MissingGlobal unless File.exist?(gfile)
 

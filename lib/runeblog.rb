@@ -423,6 +423,7 @@ puts "#{__method__}: cmd = #{cmd.inspect}"
     log!(enter: __method__, args: [view_name], level: 2)
     make_empty_view_tree(view_name)
     add_view(view_name)
+    # FIXME - fundamentally illogical?? what is "global" really?
     src, dst = "#@root/data/global.lt3", "#@root/views/#{view_name}/global.lt3"
     system("cp #{src} #{dst}")
     mark_last_published("Initial creation")
@@ -639,7 +640,9 @@ puts "#{__method__}: cmd = #{cmd.inspect}"
     log!(enter: __method__, args: [view])
     vdir = @root/:views/view
     @theme = @root/:views/view/:themes/:standard
-    depend = [vdir/"remote/etc/blog.css.lt3", @theme/"global.lt3", 
+    # CHANGED - redefining "global"
+    # depend = [vdir/"remote/etc/blog.css.lt3", @theme/"global.lt3", 
+    depend = [vdir/"remote/etc/blog.css.lt3", vdir/"global.lt3", 
              @theme/"blog/head.lt3", 
              # @theme/"navbar/navbar.lt3",
              @theme/"blog/index.lt3"]   # FIXME what about assets?

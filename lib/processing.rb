@@ -69,32 +69,16 @@ def preprocess(cwd: Dir.pwd, src:,
     puts "#{sp} -- ^ Already up to date!" if debug && ! stale
   end
 rescue => err
-  msg = err.to_s
-  msg << err.backtrace.join("\n") if err.respond_to?(:backtrace)
-  STDERR.puts msg
-  STDERR.flush
-  log!(str: msg) 
+  fatal(err)
 end
-
-# glv 2 -  No such file or directory @ rb_check_realpath_internal - /Users/Hal/.blogs/views/computing/themes/standard/settings/view.txt
 
 def get_live_vars(src)
   dir, base = File.dirname(src), File.basename(src)
-# puts "glv 1: src = #{src.inspect} dir,base = #{dir.inspect}, #{base.inspect}"
   live = Livetext.customize(call: [".nopara"])
-# puts "glv 2: cd #{dir}  xform #{base}\n "
-# HAL9000:~ Hal$ find .blogs/views/computing/ -name global.lt3
-# .blogs/views/computing//themes/standard/global.lt3
-# HAL9000:~ Hal$ find .blogs/views/computing/ -name view.txt
-# .blogs/views/computing//settings/view.txt
   Dir.chdir(dir) { live.xform_file(base) }
   live
 rescue => err
-  puts "Error in #{__method__} in #{__FILE__}
-  puts  "     #{err.inspect}"
-  context = err.backtrace.map {|x| "     " + x}.join("\n")
-  puts context
-  abort "\nTerminated."
+  fatal(err)
 end
 
 end
