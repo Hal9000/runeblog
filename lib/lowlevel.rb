@@ -1,3 +1,38 @@
+  def whence(back = 0)
+    file, line, inmeth = caller[back].split(":")
+    meth = inmeth[4..-2]
+    [file, line, meth]
+  end
+
+  def checkpoint(msg = nil)
+    file, line, meth = whence(1)
+    print "--- "
+    if msg
+      puts msg 
+      print "    "
+    end
+    puts "#{meth}  #{line} in #{file}"
+  end
+
+  def warning(err)
+    file, line, meth = whence(2)  # 2 = skip rescue
+    puts "Error in #{meth} in #{file} (non-fatal?)"
+    puts "      err = #{err.inspect}"
+    puts "      #{err.backtrace[0]}" if err.respond_to?(:backtrace)
+    puts
+  end
+
+  def fatal(err)
+    file, line, meth = whence(2)  # 2 = skip rescue
+    puts "Error in #{meth} in #{file}"
+    puts "WTF??"
+    puts  "     err = #{err.inspect}"
+    if err.respond_to?(:backtrace)
+      context = err.backtrace.map {|x| "     " + x + "\n" }
+      puts context
+    end
+    abort "Terminated."
+  end
 
   def _tmp_error(err)
     STDERR.puts err

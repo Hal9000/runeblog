@@ -89,10 +89,12 @@ def get_live_vars(src)
 # .blogs/views/computing//settings/view.txt
   Dir.chdir(dir) { live.xform_file(base) }
   live
-rescue => e
-  puts e
-  puts $!
-  abort "Terminated."
+rescue => err
+  puts "Error in #{__method__} in #{__FILE__}
+  puts  "     #{err.inspect}"
+  context = err.backtrace.map {|x| "     " + x}.join("\n")
+  puts context
+  abort "\nTerminated."
 end
 
 end

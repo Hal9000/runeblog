@@ -12,10 +12,11 @@ class RuneBlog::View
     @blog = RuneBlog.blog
     @name = name
     @publisher = RuneBlog::Publishing.new(name)
-puts "view #{name}: pub = #{@publisher.inspect}"
     @can_publish = true  # FIXME
     #  @blog.view = self  # NOOOO??
     get_globals
+  rescue => err
+    fatal(err)
   end
 
   def dump_globals_stderr
@@ -30,6 +31,8 @@ puts "view #{name}: pub = #{@publisher.inspect}"
     end
     STDERR.puts 
     log!(str: "")
+  rescue => err
+    fatal(err)
   end
 
   def get_globals(force = false)
@@ -39,15 +42,15 @@ puts "view #{name}: pub = #{@publisher.inspect}"
     return unless File.exist?(gfile)  # Hackish!! how is View.new called from create_view??
 
     live = Livetext.customize(call: ".nopara")
+checkpoint "Error here? gfile = #{gfile}"
     live.xform_file(gfile)
+checkpoint "After xform"
     live.setvar("ViewDir", @blog.root/:views/@name)
     live.setvar("View",    @name)
     @globals = live.vars
-puts "#{__method__} 9"
 #   dump_globals_stderr
   rescue => err
-    puts "Error: #{err}\n#{err.backtrace.join("\n")}"
-    abort "Terminated."
+    fatal(err)
   end
 
   def dir

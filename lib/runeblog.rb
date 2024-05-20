@@ -93,7 +93,13 @@ class RuneBlog
       TEXT
     end
   rescue => err
-    abort "Error in #{__method__}: #{err}\n #{err.backtrace.join("\n")}"
+    puts "Error in #{__method__} in #{__FILE__}
+    puts  "     #{err.inspect}"
+    if err.respond_to?(:backtrace)
+      context = err.backtrace.map {|x| "     " + x}.join("\n")
+      puts context
+    end
+    abort "\nTerminated."
   end
 
   def self.create_new_blog_repo(root_rel = ".blogs")
@@ -154,6 +160,9 @@ class RuneBlog
     @sequence, @post_views, @post_tags = get_sequence, [], []
     get_repo_config
     read_features
+  rescue => err
+    puts "Error: #{__method__} - #{err.inspect}\n#{err.backtrace.join("\n")}\n "
+    abort "Terminated."
   end
 
   def complete_file(name, vars, hash)
@@ -167,6 +176,12 @@ class RuneBlog
 
     hash.each_pair {|key, var| text.gsub!(key, vars[var]) }
     File.write(name, text)
+  rescue => err
+    puts "Error in #{__method__} in #{__FILE__}
+    puts  "     #{err.inspect}"
+    context = err.backtrace.map {|x| "     " + x}.join("\n")
+    puts context
+    abort "\nTerminated."
   end
 
   def _generate_settings(view = nil)
@@ -205,6 +220,14 @@ class RuneBlog
       # recent.txt - SKIP THIS?
       complete_file(settings/"recent.txt",  {})
     end
+  rescue => err
+    puts "Error in #{__method__} in #{__FILE__}
+    puts  "     #{err.inspect}"
+    if err.respond_to?(:backtrace)
+      context = err.backtrace.map {|x| "     " + x}.join("\n")
+      puts context
+    end
+    abort "\nTerminated."
   end
 
   def _generate_global
@@ -217,6 +240,14 @@ class RuneBlog
             /LOCALE/  => :locale}
     complete_file(gfile, vars, hash)
     _generate_settings
+  rescue => err
+    puts "Error in #{__method__} in #{__FILE__}
+    puts  "     #{err.inspect}"
+    if err.respond_to?(:backtrace)
+      context = err.backtrace.map {|x| "     " + x}.join("\n")
+      puts context
+    end
+    abort "\nTerminated."
   end
 
   # FIXME reconcile with _get_draft data
@@ -227,6 +258,14 @@ class RuneBlog
     meta.tags  = meta.tags.split
     RuneBlog.blog.post = meta
     meta
+  rescue => err
+    puts "Error in #{__method__} in #{__FILE__}
+    puts  "     #{err.inspect}"
+    if err.respond_to?(:backtrace)
+      context = err.backtrace.map {|x| "     " + x}.join("\n")
+      puts context
+    end
+    abort "\nTerminated."
   end
 
   def _deploy_local(dir)
@@ -348,6 +387,14 @@ class RuneBlog
     File.write(@root/"data/VIEW", view_name)
     @views << view  # all views
     view
+  rescue => err
+    puts "Error in #{__method__} in #{__FILE__}
+    puts  "     #{err.inspect}"
+    if err.respond_to?(:backtrace)
+      context = err.backtrace.map {|x| "     " + x}.join("\n")
+      puts context
+    end
+    abort "\nTerminated."
   end
 
   def make_empty_view_tree(view_name)
@@ -537,6 +584,14 @@ puts "#{__method__}: cmd = #{cmd.inspect}"
     end
     # curr_drafts
     list.sort
+  rescue => err
+    puts "Error in #{__method__} in #{__FILE__}
+    puts  "     #{err.inspect}"
+    if err.respond_to?(:backtrace)
+      context = err.backtrace.map {|x| "     " + x}.join("\n")
+      puts context
+    end
+    abort "\nTerminated."
   end
 
   def all_drafts
@@ -544,6 +599,14 @@ puts "#{__method__}: cmd = #{cmd.inspect}"
     dir = @root/:drafts
     drafts = Dir.entries(dir).grep(/^\d{4}.*/)
     drafts.sort
+  rescue => err
+    puts "Error in #{__method__} in #{__FILE__}
+    puts  "     #{err.inspect}"
+    if err.respond_to?(:backtrace)
+      context = err.backtrace.map {|x| "     " + x}.join("\n")
+      puts context
+    end
+    abort "\nTerminated."
   end
 
   def change_view(view)
@@ -552,6 +615,14 @@ puts "#{__method__}: cmd = #{cmd.inspect}"
     File.write(@root/"data/VIEW", view)
     # write_repo_config
     self.view = view   # error checking?
+  rescue => err
+    puts "Error in #{__method__} in #{__FILE__}
+    puts  "     #{err.inspect}"
+    if err.respond_to?(:backtrace)
+      context = err.backtrace.map {|x| "     " + x}.join("\n")
+      puts context
+    end
+    abort "\nTerminated."
   end
 
   def generate_index(view)
@@ -582,9 +653,13 @@ puts "#{__method__}: cmd = #{cmd.inspect}"
     # rebuild widgets?
     copy_widget_html(view)
   rescue => err
-    STDERR.puts err
-    STDERR.puts err.backtrace.join("\n")
-    # _tmp_error(err)
+    puts "Error in #{__method__} in #{__FILE__}
+    puts  "     #{err.inspect}"
+    if err.respond_to?(:backtrace)
+      context = err.backtrace.map {|x| "     " + x}.join("\n")
+      puts context
+    end
+    abort "\nTerminated."
   end
 
   def _get_views(draft)
@@ -644,25 +719,19 @@ puts "#{__method__}: cmd = #{cmd.inspect}"
 
   def copy_widget_html(view)
     log!(enter: __method__, level: 2)
-# log! str:  "=== cwh cp 1"
     vdir = @root/:views/view
     remote = vdir/:remote
     wdir = vdir/:widgets
     widgets = Dir[wdir/"*"].select {|w| File.directory?(w) }
-# log! str:  "=== cwh cp 2"
     widgets.each do |w|
       dir = File.basename(w)
       rem = w.sub(/widgets/, "remote/widgets")
-# log! str:  "=== cwh cp 3  w = #{w.inspect}"
       create_dirs(rem)
       files = Dir[w/"*"]
       # files = files.select {|x| x =~ /(html|css)$/ }
       tag = File.basename(w)
-# log! str:  "=== cwh cp 4   tag = #{tag.inspect}"
       files.each {|file| system!("cp #{file} #{rem}") }  # , show: true) }
-# log! str:  "=== cwh cp 5   tag was #{tag.inspect}"
     end
-# log! str:  "=== cwh cp 6"
   rescue => err
     _tmp_error(err)
   end
@@ -683,8 +752,8 @@ puts "#{__method__}: cmd = #{cmd.inspect}"
 
     create_dirs(pdraft)                                # Step 1...
     @view.globals ||= {}
-args = {cwd: pdraft, src: draft, dst: "guts.html", 
-        mix: "liveblog", vars: @view.globals}
+    # args = {cwd: pdraft, src: draft, dst: "guts.html", 
+    #         mix: "liveblog", vars: @view.globals}
     preprocess cwd: pdraft, src: draft,                # FIXME dependencies?
                dst: "guts.html", mix: "liveblog", vars: @view.globals
     hash = _post_metadata(draft, pdraft)
