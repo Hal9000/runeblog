@@ -1,17 +1,29 @@
-  def whence(back = 0)
+  private def whence(back = 0)
     file, line, inmeth = caller[back].split(":")
     meth = inmeth[4..-2]
     [file, line, meth]
   end
 
+  private def display(file, line, meth, msg)
+    puts "--- #{meth}  #{line} in #{file}"
+    puts "::: " + msg if msg
+  end
+
   def checkpoint(msg = nil)
     file, line, meth = whence(1)
-    print "--- "
-    if msg
-      puts msg 
-      print "    "
-    end
-    puts "#{meth}  #{line} in #{file}"
+    display(file, line, meth, msg)
+  end
+
+  def checkpoint?(msg = nil)        # with sleep 3
+    file, line, meth = whence(1)
+    display(file, line, meth, msg)
+  end
+
+  def checkpoint!(msg = nil)        # with pause
+    file, line, meth = whence(1)
+    display(file, line, meth, msg)
+    print "::: Pause..."
+    gets
   end
 
   def warning(err)

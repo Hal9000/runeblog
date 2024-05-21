@@ -140,10 +140,7 @@ class RuneBlog
     log!(enter: "RuneBlog.read", args: [root_rel])
     RuneBlog.new(root_rel)
   rescue => err
-    puts "ERROR - #{err.inspect}"
-    # puts "Error - see stderr.out"
-    puts err.inspect # + "\n" + err&.backtrace
-    sleep 3
+    fatal(err)
   end
 
   def initialize(root_rel = ".blogs")    ##### FIXME ??

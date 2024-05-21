@@ -3,7 +3,7 @@ if !defined?(RuneBlog::Path)
 require 'pathname'
 
 class RuneBlog
-  VERSION = "0.3.35"
+  VERSION = "0.3.36"
 
   path = Gem.find_files("runeblog").grep(/runeblog-/).first
   path ||= Pathname(__FILE__).realpath.dirname.to_s

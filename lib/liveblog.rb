@@ -646,6 +646,7 @@ def sidebar
         raise "Nonstandard widget?"
     end
 
+checkpoint "Running api.include_file... wtag = #{wtag.inspect} tcard = #{tcard.inspect} pwd = #{Dir.pwd}"
     api.include_file wtag/tcard
   end
   api.out %[</div>]

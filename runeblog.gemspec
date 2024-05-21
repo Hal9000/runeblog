@@ -23,11 +23,11 @@ spec = Gem::Specification.new do |s|
   s.authors     = ["Hal Fulton"]
   s.email       = 'rubyhacker@gmail.com'
   s.executables << "blog"
-  s.add_runtime_dependency 'livetext', '~> 0.9',  '>= 0.9.44'
+  s.add_runtime_dependency 'livetext', '~> 0.9',  '>= 0.9.45'
   s.add_runtime_dependency 'rubytext', '~> 0.1',  '>= 0.1.27'
   s.add_runtime_dependency 'rouge',    '~> 3.25', '>= 3.25.0'
 
-  s.add_development_dependency 'minitest', '~> 5.10', '>= 5.10.0'
+  s.add_development_dependency 'minitest', '~> 5.20', '>= 5.20.0'
 
   # Files...
   main = Find.find("bin").to_a + 

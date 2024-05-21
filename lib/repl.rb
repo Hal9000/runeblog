@@ -231,14 +231,12 @@ log! str:  "=== Calling generate_post(#{orig})"
   end
 
   def cmd_rebuild
-log! str:  "=== Starting cmd_rebuild..."
     puts
     regen_posts
-log! str:  "===   Generating view..."
     @blog.generate_view(@blog.view)
-log! str:  "===   Generating index..."
+checkpoint! "Generating index..."
     @blog.generate_index(@blog.view)
-log! str:  "===   ...finished!"
+checkpoint! "...finished!"
   rescue => err
     _tmp_error(err)
   end

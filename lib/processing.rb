@@ -25,6 +25,10 @@ def preprocess(cwd: Dir.pwd, src:,
                deps: [], copy: nil, debug: false, force: false, 
                mix: [], call: [], 
                vars: {})
+params =  "cwd = #{cwd.inspect}\n          src = #{src.inspect}\n          dst = #{dst.inspect}"
+params << "\n          deps = #{deps.inspect}\n          copy = #{copy.inspect}\n          debug = #{debug} force = #{force}"
+params << "\n          mix = #{mix.inspect} call = #{call.inspect}\n          vars = #{vars.inspect}"
+# checkpoint! "args: #{params}"
   src += LEXT unless src.end_with?(LEXT)
   if strip
     dst = File.basename(src).sub(/.lt3$/,"")
@@ -61,8 +65,10 @@ def preprocess(cwd: Dir.pwd, src:,
     EOF
     if stale
       live = Livetext.customize(mix: "liveblog", call: call, vars: vars)
+checkpoint! "Calling xform_file"
       log!(str: "Calling xform_file... src = #{src} pwd = #{Dir.pwd}")
       out = live.xform_file(src)
+checkpoint!
       File.write(dst, out)
       system!("cp #{dst} #{copy}") if copy
     end

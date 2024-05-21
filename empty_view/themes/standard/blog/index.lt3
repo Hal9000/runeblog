@@ -8,9 +8,13 @@
 .recent_posts
 
 .sidebar
-  links 
-  pinned
-  pages 
-  news 
+  links
 .end
+
+. .sidebar
+.   links
+.   pinned
+.   pages 
+.   news 
+. .end
 

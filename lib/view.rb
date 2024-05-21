@@ -42,9 +42,7 @@ class RuneBlog::View
     return unless File.exist?(gfile)  # Hackish!! how is View.new called from create_view??
 
     live = Livetext.customize(call: ".nopara")
-checkpoint "Error here? gfile = #{gfile}"
     live.xform_file(gfile)
-checkpoint "After xform"
     live.setvar("ViewDir", @blog.root/:views/@name)
     live.setvar("View",    @name)
     @globals = live.vars
