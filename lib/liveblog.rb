@@ -702,7 +702,6 @@ class Livetext::Functions
   def image(param)
     "<img src='#{param}'></img>"
   end
-
 end
 
 ###### experimental...
