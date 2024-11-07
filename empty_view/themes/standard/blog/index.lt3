@@ -9,12 +9,8 @@
 
 .sidebar
   links
+  pinned
+  pages 
+  news 
 .end
-
-. .sidebar
-.   links
-.   pinned
-.   pages 
-.   news 
-. .end
 

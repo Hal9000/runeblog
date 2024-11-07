@@ -27,8 +27,8 @@ def preprocess(cwd: Dir.pwd, src:,
                vars: {})
 params =  "cwd = #{cwd.inspect}\n          src = #{src.inspect}\n          dst = #{dst.inspect}"
 params << "\n          deps = #{deps.inspect}\n          copy = #{copy.inspect}\n          debug = #{debug} force = #{force}"
-params << "\n          mix = #{mix.inspect} call = #{call.inspect}\n          vars = #{vars.inspect}"
-# checkpoint! "args: #{params}"
+params << "\n          mix = #{mix.inspect} call = #{call.inspect}\n          vars = (OMITTED)"  # #{vars.inspect}"
+checkpoint "args: #{params}"
   src += LEXT unless src.end_with?(LEXT)
   if strip
     dst = File.basename(src).sub(/.lt3$/,"")
@@ -64,9 +64,14 @@ params << "\n          mix = #{mix.inspect} call = #{call.inspect}\n          va
       vars = #{vars.inspect}
     EOF
     if stale
+checkpoint "Customize"
       live = Livetext.customize(mix: "liveblog", call: call, vars: vars)
-checkpoint! "Calling xform_file"
-      log!(str: "Calling xform_file... src = #{src} pwd = #{Dir.pwd}")
+#     live = Livetext.new
+# checkpoint "live 1 = #{live.inspect}"
+#     live.customize
+checkpoint "live 2 = #{live.inspect}"
+checkpoint "Calling xform_file... live = #{live.inspect}"
+# checkpoint "===== src = \n#{src.inspect}"
       out = live.xform_file(src)
 checkpoint!
       File.write(dst, out)

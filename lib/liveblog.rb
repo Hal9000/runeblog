@@ -596,12 +596,12 @@ end
 
 def _load_local(widget)
   log!(enter: __method__)
-  Dir.chdir("../../widgets/#{widget}") do
-    rclass = _make_class_name(widget)
-    found = (require("./#{widget}") if File.exist?("#{widget}.rb"))
-    code = found ? ::RuneBlog::Widget.class_eval(rclass) : nil
-    code
-  end
+  rclass = _make_class_name(widget)
+  found = require("./#{widget}")
+  checkpoint "widget: found = #{found}"
+  # found = (require("./#{widget}") if File.exist?("#{widget}.rb"))
+  code = found ? ::RuneBlog::Widget.class_eval(rclass) : nil
+  code
 rescue => err
   STDERR.puts err.to_s
   STDERR.puts err.backtrace.join("\n") if err.respond_to?(:backtrace)
@@ -612,9 +612,9 @@ end
 def _handle_standard_widget(tag)
   log!(enter: __method__)
   wtag = "../../widgets"/tag
-  code = _load_local(tag)
-  if code 
-    Dir.chdir(wtag) do 
+  Dir.chdir(wtag) do 
+    code = _load_local(tag)
+    if code 
       widget = code.new(@blog)
       widget.build
     end
@@ -624,6 +624,7 @@ end
 def sidebar
   log!(enter: __method__)
   api.debug "--- handling sidebar\r"
+  $debug = true
   if api.args.include? "off"
     api.body { }  # iterate, do nothing
     return 
@@ -634,26 +635,35 @@ def sidebar
   standard = %w[pinned pages links news]
 
   lines = api.body.to_a
+  checkpoint "lines = #{lines.inspect}"
   lines.each do |token|
     tag = token.chomp.strip.downcase
     wtag = "../../widgets"/tag
+    checkpoint "wtag = #{wtag}"
     raise CantFindWidgetDir(wtag) unless Dir.exist?(wtag)
     tcard = "#{tag}-card.html"
     case
       when standard.include?(tag)
+        checkpoint "About to handle '#{tag}'"
         _handle_standard_widget(tag)
       else
         raise "Nonstandard widget?"
     end
 
-checkpoint "Running api.include_file... wtag = #{wtag.inspect} tcard = #{tcard.inspect} pwd = #{Dir.pwd}"
+    checkpoint "Running api.include_file... wtag = #{wtag.inspect} tcard = #{tcard.inspect} pwd = #{Dir.pwd}"
+    checkpoint "self = #{self.inspect}"
+    checkpoint "api  = #{api.inspect}"
     api.include_file wtag/tcard
   end
   api.out %[</div>]
 rescue => err
   puts "err = #{err}"
   puts err.backtrace.join("\n") if err.respond_to?(:backtrace)
-  sleep 6; RubyText.stop
+  if RubyText.started?
+    puts "Sleeping 6..."
+    sleep 6; RubyText.stop
+  end
+  puts "Exiting.\n "
   exit
 end
 

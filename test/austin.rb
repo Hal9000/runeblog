@@ -59,10 +59,20 @@ end
 system("rm -rf .blogs")  # Just a temporary repo
 
 RuneBlog.create_new_blog_repo
+
 x = RuneBlog.new
 
 debug("create_view: #{bold('around_austin')}")
 x.create_view("around_austin")   # FIXME remember view title!
+
+######
+# Hack: Remove links from sidebar in index.lt3
+file = ".blogs/views/around_austin/themes/standard/blog/index.lt3"
+lines = File.readlines(file)
+lines.each {|line| line.sub!(/^/, ". ") if line =~ /^ *links/ }
+File.open(file, "w") {|f| f.puts lines }
+######
+
 
 #### FIXME
 
@@ -147,11 +157,17 @@ But I first heard of them
 in 2005.
 BODY
 
-debug "generate_index #{bold("around_austin")}"
-x.generate_index("around_austin") 
+$debug = true
+
+puts ">>>> generate_view...\n "
 
 debug("generate_view: #{bold('around_austin')}")
 x.generate_view("around_austin")
+
+puts ">>>> generate_index...\n "
+
+debug "generate_index #{bold("around_austin")}"
+x.generate_index("around_austin") 
 
 debug bold("...finished.\n")
 

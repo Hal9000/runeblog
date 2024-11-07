@@ -5,21 +5,24 @@
   end
 
   private def display(file, line, meth, msg)
-    puts "--- #{meth}  #{line} in #{file}"
+    puts "\n--- #{meth}  #{line} in #{file}"
     puts "::: " + msg if msg
   end
 
   def checkpoint(msg = nil)
+    return unless $debug
     file, line, meth = whence(1)
     display(file, line, meth, msg)
   end
 
   def checkpoint?(msg = nil)        # with sleep 3
+    return unless $debug
     file, line, meth = whence(1)
     display(file, line, meth, msg)
   end
 
   def checkpoint!(msg = nil)        # with pause
+    return unless $debug
     file, line, meth = whence(1)
     display(file, line, meth, msg)
     print "::: Pause..."

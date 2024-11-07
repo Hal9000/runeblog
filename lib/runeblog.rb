@@ -643,8 +643,12 @@ puts "#{__method__}: cmd = #{cmd.inspect}"
              @theme/"blog/head.lt3", 
              # @theme/"navbar/navbar.lt3",
              @theme/"blog/index.lt3"]   # FIXME what about assets?
+
     preprocess cwd: vdir/"themes/standard/etc", src: "blog.css.lt3", 
                copy: vdir/"remote/etc/", call: [".nopara"], strip: true , vars: @view.globals 
+
+# Where the ship hits the sand?
+
     preprocess cwd: vdir/"themes/standard", deps: depend, force: true,
                src: "blog/generate.lt3", dst: vdir/:remote/"index.html", 
                call: ".nopara" , vars: @view.globals 

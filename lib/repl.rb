@@ -234,9 +234,9 @@ log! str:  "=== Calling generate_post(#{orig})"
     puts
     regen_posts
     @blog.generate_view(@blog.view)
-checkpoint! "Generating index..."
+checkpoint "Generating index..."
     @blog.generate_index(@blog.view)
-checkpoint! "...finished!"
+checkpoint "...finished!"
   rescue => err
     _tmp_error(err)
   end
